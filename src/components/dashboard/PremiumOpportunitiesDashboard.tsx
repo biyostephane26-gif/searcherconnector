@@ -64,7 +64,7 @@ export default function PremiumOpportunitiesDashboard() {
         .limit(1000)
 
       const mockOpps = generateMockOpportunities()
-      const allOpps = (cachedOpps?.length || 0) > 0 ? cachedOpps : mockOpps
+      const allOpps = (cachedOpps && cachedOpps.length > 0) ? cachedOpps : mockOpps
 
       const scored = allOpps.map(opp => ({
         ...opp,
@@ -79,8 +79,9 @@ export default function PremiumOpportunitiesDashboard() {
       setTop10(scored.filter(opp => (opp.match_score || 0) >= 90).slice(0, 10))
 
       const skills = extractSkills(scored)
-      const skillPipelines = skills.map(skill => ({
+      const skillPipelines: SkillPipeline[] = skills.map(skill => ({
         skill,
+        count: 0,
         opportunities: scored.filter(opp => 
           opp.skills?.includes(skill) || opp.title?.toLowerCase().includes(skill.toLowerCase())
         ).slice(0, 100)
