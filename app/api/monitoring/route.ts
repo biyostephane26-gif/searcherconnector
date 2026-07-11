@@ -91,7 +91,7 @@ async function notifyFounder(event: MonitoringEvent) {
     metadata:  event.metadata || {},
     resolved:  false,
     created_at: new Date().toISOString(),
-  }).catch(() => {})
+  })
 }
 
 // ── POST — Recevoir un événement de monitoring ────────────────────

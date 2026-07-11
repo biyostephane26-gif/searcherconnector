@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
         title:   `🆘 Support: ${subject.trim().slice(0, 80)}`,
         message: `De: ${email || 'anonyme'}\n\n${message.trim().slice(0, 500)}`,
         is_read: false,
-      }).catch(() => {})
+      })
     }
 
     // Notifier le fondateur via une notification interne
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
       title:   `🆘 Nouveau ticket: ${subject.trim().slice(0, 60)}`,
       message: `De: ${email || 'anonyme'}\n${message.trim().slice(0, 300)}`,
       is_read: false,
-    }).catch(() => {})
+    })
 
     return NextResponse.json({ success: true })
   } catch (err: any) {

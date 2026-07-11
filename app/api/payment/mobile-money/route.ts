@@ -48,7 +48,7 @@ async function activatePlan(userId: string, plan: string, paymentRef: string, me
     payment_ref: paymentRef,
     status:      'completed',
     activated_at: new Date().toISOString(),
-  }).catch(() => {})
+  })
 
   // 3. Notification à l'utilisateur
   await supabase.from('notifications').insert({
@@ -57,7 +57,7 @@ async function activatePlan(userId: string, plan: string, paymentRef: string, me
     title:    `✅ Plan ${plan.charAt(0).toUpperCase() + plan.slice(1)} activé !`,
     message:  `Ton abonnement est actif. Profite de toutes les fonctionnalités premium.`,
     is_read:  false,
-  }).catch(() => {})
+  })
 }
 
 export async function POST(req: NextRequest) {
@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
             method:      'flutterwave',
             status:      'pending',
             payment_ref: paymentRef,
-          }).catch(() => {})
+          })
 
           return NextResponse.json({
             success:     true,
@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
           await supabase.from('payment_attempts').insert({
             user_id: userId, plan, amount: amountXAF, currency: 'XAF',
             phone, method: 'monetbil', status: 'pending', payment_ref: paymentRef,
-          }).catch(() => {})
+          })
 
           return NextResponse.json({
             success:     true,
@@ -226,7 +226,7 @@ export async function POST(req: NextRequest) {
       method:      'manual_pending',
       status:      'pending_manual',
       payment_ref: paymentRef,
-    }).catch(() => {})
+    })
 
     // Notification au fondateur
     const { data: founder } = await supabase
@@ -243,7 +243,7 @@ export async function POST(req: NextRequest) {
         message: `Utilisateur ${userId.slice(0, 8)} demande le plan ${plan} (${amountXAF.toLocaleString()} XAF). Phone: ${phone || 'non fourni'}. Réf: ${paymentRef}`,
         is_read: false,
         data:    JSON.stringify({ userId, plan, paymentRef }),
-      }).catch(() => {})
+      })
     }
 
     return NextResponse.json({

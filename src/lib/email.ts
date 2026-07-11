@@ -72,7 +72,7 @@ ${previewText ? `<div style="display:none;max-height:0;overflow:hidden;">${previ
 }
 
 // ── Envoi via Resend ──────────────────────────────────────────────
-async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
+export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
   if (!RESEND_KEY) {
     // Resend pas configuré — log silencieux en production
     if (process.env.NODE_ENV === 'development') {
