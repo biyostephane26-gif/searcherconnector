@@ -1,0 +1,52 @@
+# BrowserStack Configuration for Searcher Connector
+# Documentation: https://www.browserstack.com/docs/automate/playwright
+
+userName: stphanebiyo_KxgI1v
+accessKey: 33ykpDNieyPJbYspghAj
+
+framework: playwright
+platforms:
+  - os: Windows
+    osVersion: 11
+    browserName: Chrome
+    browserVersion: latest
+  - os: Windows
+    osVersion: 11
+    browserName: Firefox
+    browserVersion: latest
+  - os: Windows
+    osVersion: 11
+    browserName: Edge
+    browserVersion: latest
+  - os: OS X
+    osVersion: Sonoma
+    browserName: Safari
+    browserVersion: latest
+  - os: OS X
+    osVersion: Sonoma
+    browserName: Chrome
+    browserVersion: latest
+  - os: OS X
+    osVersion: Sonoma
+    browserName: Firefox
+    browserVersion: latest
+  - deviceName: iPhone 15 Pro
+    osVersion: 17
+    browserName: safari
+  - deviceName: Samsung Galaxy S24
+    osVersion: 14.0
+    browserName: chrome
+  - deviceName: Google Pixel 8 Pro
+    osVersion: 14.0
+    browserName: chrome
+
+parallelsPerPlatform: 1
+source: playwright-test-repo
+
+buildName: Searcher Connector Test Suite
+projectName: Searcher Connector
+debug: true
+networkLogs: true
+consoleLogs: info
+local: false
+localIdentifier: ''

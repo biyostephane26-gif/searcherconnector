@@ -1,0 +1,34 @@
+AJOUTS NÉCESSAIRES AU FOUNDER DASHBOARD (Founder.tsx)
+
+DÉJÀ FAIT:
+✅ Ajouté tabs "MongoDB/Sources" et "Scans & Logs"
+✅ Ajouté state pour sourcesStats, scanSessions, toggles
+✅ Ajouté state pour status expiry modal
+
+À AJOUTER MAINTENANT:
+
+1. Fonctions manquantes:
+   - toggleScan(type: 'free' | 'paid')
+   - testEmailAlert()
+   - updateUserTokens(userId, delta)
+   - activatePlan avec expiration
+
+2. Tab "Telemetry" content (après ligne ~236):
+   - Card avec 2000+ sources RSS
+   - Card avec 201 sources API
+   - Card sources actives 24h
+   - Toggles ON/OFF scans (free/paid/maintenance)
+   - Bouton test email
+   - Stats déduplication
+
+3. Tab "Scans" content:
+   - Liste 100 dernières sessions
+   - Afficher: date, trouvées, ajoutées, doublons, status
+   - Indicateur "Ultra Frais" si < 1h
+   - Stats freshness
+
+4. Users tab - ajouter:
+   - Bouton "Changer plan" qui ouvre modal avec expiration
+   - Boutons +10/-10 tokens
+
+5. Modal status change avec expiration temporaire

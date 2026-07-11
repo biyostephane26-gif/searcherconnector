@@ -1,0 +1,48 @@
+# ── Environnement (NE JAMAIS committer les clés) ─────────────────
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+
+# ── Next.js ───────────────────────────────────────────────────────
+.next/
+out/
+build/
+
+# ── Node ──────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Logs ──────────────────────────────────────────────────────────
+*.log
+chat-error.log
+ai-response.txt
+ai-3003-response.txt
+clear-cache.cmd
+
+# ── OS ────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── IDE ───────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+
+# ── TypeScript ────────────────────────────────────────────────────
+*.tsbuildinfo
+
+# ── Playwright ────────────────────────────────────────────────────
+test-results/
+playwright-report/
+playwright/.cache/
+
+# ── Checkly ───────────────────────────────────────────────────────
+.checkly/
+
+# ── BrowserStack ──────────────────────────────────────────────────
+browserstack-local.log
+.vercel

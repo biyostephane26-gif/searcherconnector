@@ -1,0 +1,20 @@
+{
+  "projectId": "YOUR_METICULOUS_PROJECT_ID",
+  "record": {
+    "url": "https://searcherconnector.com",
+    "recordingName": "Searcher Connector",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "replay": {
+    "baseUrl": "https://searcherconnector.com",
+    "testName": "Searcher Connector Test Suite",
+    "headless": false,
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    }
+  }
+}

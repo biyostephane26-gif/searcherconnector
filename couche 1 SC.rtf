@@ -1,0 +1,1531 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil Calibri;}{\f2\fnil\fcharset1 Segoe UI Symbol;}{\f3\fnil\fcharset1 Cambria Math;}{\f4\fnil\fcharset238 Calibri;}}
+{\*\generator Riched20 10.0.19041}{\*\mmathPr\mmathFont3\mwrapIndent1440 }\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang12 =================================================================\par
+SEARCHER CONNECTOR \f1\emdash  OPENHANDS PROMPT \emdash  COUCHE 1\par
+APPLICATION FONCTIONNELLE COMPL\f0\'c8TE\par
+=================================================================\par
+Tu es un d\'e9veloppeur senior full-stack avec 15 ans d'exp\'e9rience.\par
+Tu codes TOUT. Tu ne sautes RIEN. Tu te corriges toi-m\'eame.\par
+Tu testes mentalement chaque feature avant de passer \'e0 la suivante.\par
+=================================================================\par
+\par
+=================================================================\par
+\'c9TAPE 0 \f1\emdash  INITIALISE LE PROJET\par
+=================================================================\par
+\par
+Lance ces commandes dans l'ordre :\par
+\par
+npm create vite@latest searcher-connector -- --template react-ts\par
+cd searcher-connector\par
+npm install\par
+npm install @supabase/supabase-js @google/generative-ai\par
+npm install react-router-dom framer-motion lucide-react\par
+npm install recharts react-swipeable\par
+npm install @stripe/stripe-js\par
+npm install i18next react-i18next i18next-browser-languagedetector\par
+npm install react-globe.gl three\par
+npm install tailwindcss postcss autoprefixer\par
+npx tailwindcss init -p\par
+\par
+=================================================================\par
+\f0\'c9TAPE 1 \f1\emdash  CONFIGURE TAILWIND (tailwind.config.js)\par
+=================================================================\par
+\par
+/** @type \{import('tailwindcss').Config\} */\par
+export default \{\par
+  content: ['./index.html', './src/**/*.\{js,ts,jsx,tsx\}'],\par
+  theme: \{\par
+    extend: \{\par
+      colors: \{\par
+        gold: \{\par
+          DEFAULT: '#D4AF37',\par
+          light: '#F5E6A3',\par
+          dark: '#1A1500',\par
+        \},\par
+        black: \{\par
+          DEFAULT: '#0A0A0A',\par
+          card: '#111111',\par
+          dark: '#141414',\par
+        \},\par
+      \},\par
+      animation: \{\par
+        pulse_gold: 'pulse_gold 2s ease-in-out infinite',\par
+        scan: 'scan 3s linear infinite',\par
+        float: 'float 6s ease-in-out infinite',\par
+      \},\par
+      keyframes: \{\par
+        pulse_gold: \{\par
+          '0%, 100%': \{ opacity: '1', transform: 'scale(1)' \},\par
+          '50%': \{ opacity: '0.6', transform: 'scale(0.95)' \},\par
+        \},\par
+        scan: \{\par
+          '0%': \{ transform: 'translateX(-100%)' \},\par
+          '100%': \{ transform: 'translateX(400%)' \},\par
+        \},\par
+        float: \{\par
+          '0%, 100%': \{ transform: 'translateY(0)' \},\par
+          '50%': \{ transform: 'translateY(-10px)' \},\par
+        \},\par
+      \},\par
+    \},\par
+  \},\par
+  plugins: [],\par
+\}\par
+\par
+=================================================================\par
+\f0\'c9TAPE 2 \f1\emdash  VARIABLES D'ENVIRONNEMENT (.env)\par
+=================================================================\par
+\par
+Cr\f0\'e9e le fichier .env \'e0 la racine :\par
+\par
+VITE_SUPABASE_URL=your_supabase_url\par
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key\par
+VITE_GEMINI_API_KEY=your_gemini_api_key\par
+VITE_SERPER_API_KEY=your_serper_api_key\par
+VITE_STRIPE_PUBLIC_KEY=your_stripe_public_key\par
+VITE_FOUNDER_EMAIL=stephanenana.pro@gmail.com\par
+\par
+=================================================================\par
+\'c9TAPE 3 \f1\emdash  SUPABASE SCHEMA COMPLET\par
+=================================================================\par
+\par
+Cr\f0\'e9e le fichier src/lib/schema.sql avec ce contenu exact.\par
+Ce SQL doit \'eatre ex\'e9cut\'e9 dans Supabase SQL Editor.\par
+\par
+-- Extension UUID\par
+create extension if not exists "uuid-ossp";\par
+\par
+-- Table principale des profils\par
+create table if not exists users_profiles (\par
+  id uuid references auth.users primary key,\par
+  full_name text not null,\par
+  email text not null,\par
+  profile_type text not null check (\par
+    profile_type in ('job_seeker','freelance','business','investor')\par
+  ),\par
+  domain text,\par
+  country text,\par
+  city text,\par
+  languages text[],\par
+  salary_min integer default 0,\par
+  salary_max integer default 0,\par
+  currency text default 'USD',\par
+  bio text,\par
+  avatar_url text,\par
+  cv_url text,\par
+  portfolio_url text,\par
+  github_url text,\par
+  behance_url text,\par
+  youtube_url text,\par
+  linkedin_url text,\par
+  tiktok_url text,\par
+  website_url text,\par
+  verification_status text default 'pending' check (\par
+    verification_status in ('pending','verified','genius','refused')\par
+  ),\par
+  refusal_reason text,\par
+  plan text default 'free' check (\par
+    plan in ('free','talent','business','investor')\par
+  ),\par
+  role text default 'user' check (role in ('user','admin','founder')),\par
+  stripe_customer_id text,\par
+  stripe_subscription_id text,\par
+  plan_expires_at timestamp,\par
+  free_mode boolean default true,\par
+  response_template text,\par
+  surveillance_active boolean default false,\par
+  salary_alert_threshold integer default 10,\par
+  search_preferences jsonb default '\{\}',\par
+  profile_completion integer default 0,\par
+  referral_code text unique default substr(md5(random()::text), 1, 8),\par
+  referred_by uuid references users_profiles(id),\par
+  created_at timestamp default now(),\par
+  updated_at timestamp default now()\par
+);\par
+\par
+-- Documents upload\'e9s\par
+create table if not exists uploaded_documents (\par
+  id uuid primary key default gen_random_uuid(),\par
+  user_id uuid references users_profiles(id) on delete cascade,\par
+  doc_type text not null,\par
+  file_url text not null,\par
+  file_name text,\par
+  created_at timestamp default now()\par
+);\par
+\par
+-- Opportunit\'e9s trouv\'e9es par Searcher\par
+create table if not exists opportunities (\par
+  id uuid primary key default gen_random_uuid(),\par
+  user_id uuid references users_profiles(id) on delete cascade,\par
+  title text not null,\par
+  company text,\par
+  location text,\par
+  country text,\par
+  salary_min integer default 0,\par
+  salary_max integer default 0,\par
+  currency text default 'USD',\par
+  published_at timestamp,\par
+  hours_ago integer default 0,\par
+  applicants_count integer default 0,\par
+  score integer default 0,\par
+  match_reason text,\par
+  source_platform text,\par
+  original_url text,\par
+  is_foreign boolean default false,\par
+  is_suspicious boolean default false,\par
+  visa_required boolean default false,\par
+  passport_required boolean default false,\par
+  status text default 'found' check (\par
+    status in ('found','auto_applied','pending_action','response_received','dismissed')\par
+  ),\par
+  application_message text,\par
+  alert_count integer default 0,\par
+  last_alerted_at timestamp,\par
+  created_at timestamp default now()\par
+);\par
+\par
+-- Candidatures envoy\'e9es\par
+create table if not exists applications_sent (\par
+  id uuid primary key default gen_random_uuid(),\par
+  user_id uuid references users_profiles(id) on delete cascade,\par
+  opportunity_id uuid references opportunities(id) on delete cascade,\par
+  company text,\par
+  job_title text,\par
+  cover_message text,\par
+  cv_adapted text,\par
+  visual_project_url text,\par
+  applied_at timestamp default now(),\par
+  response_received boolean default false,\par
+  response_content text,\par
+  response_draft text,\par
+  response_status text default 'waiting'\par
+);\par
+\par
+-- Notifications\par
+create table if not exists notifications (\par
+  id uuid primary key default gen_random_uuid(),\par
+  user_id uuid references users_profiles(id) on delete cascade,\par
+  type text not null,\par
+  title text,\par
+  message text not null,\par
+  financial_value text,\par
+  action_url text,\par
+  action_label text,\par
+  is_read boolean default false,\par
+  requires_action boolean default false,\par
+  dismissed boolean default false,\par
+  alert_count integer default 0,\par
+  created_at timestamp default now()\par
+);\par
+\par
+-- R\'e9seau social : connexions\par
+create table if not exists connections (\par
+  id uuid primary key default gen_random_uuid(),\par
+  from_user_id uuid references users_profiles(id) on delete cascade,\par
+  to_user_id uuid references users_profiles(id) on delete cascade,\par
+  status text default 'pending' check (status in ('pending','accepted','declined')),\par
+  created_at timestamp default now(),\par
+  unique(from_user_id, to_user_id)\par
+);\par
+\par
+-- R\'e9seau social : publications\par
+create table if not exists posts (\par
+  id uuid primary key default gen_random_uuid(),\par
+  author_id uuid references users_profiles(id) on delete cascade,\par
+  content text not null,\par
+  image_url text,\par
+  post_type text default 'general' check (\par
+    post_type in ('general','article','opportunity_share','achievement','insight')\par
+  ),\par
+  likes_count integer default 0,\par
+  comments_count integer default 0,\par
+  shares_count integer default 0,\par
+  is_genius_post boolean default false,\par
+  created_at timestamp default now(),\par
+  updated_at timestamp default now()\par
+);\par
+\par
+-- Likes sur les posts\par
+create table if not exists post_likes (\par
+  id uuid primary key default gen_random_uuid(),\par
+  post_id uuid references posts(id) on delete cascade,\par
+  user_id uuid references users_profiles(id) on delete cascade,\par
+  created_at timestamp default now(),\par
+  unique(post_id, user_id)\par
+);\par
+\par
+-- Commentaires\par
+create table if not exists post_comments (\par
+  id uuid primary key default gen_random_uuid(),\par
+  post_id uuid references posts(id) on delete cascade,\par
+  author_id uuid references users_profiles(id) on delete cascade,\par
+  content text not null,\par
+  created_at timestamp default now()\par
+);\par
+\par
+-- Messagerie directe\par
+create table if not exists messages (\par
+  id uuid primary key default gen_random_uuid(),\par
+  from_user_id uuid references users_profiles(id) on delete cascade,\par
+  to_user_id uuid references users_profiles(id) on delete cascade,\par
+  content text not null,\par
+  is_read boolean default false,\par
+  searcher_draft boolean default false,\par
+  created_at timestamp default now()\par
+);\par
+\par
+-- Recommandations v\'e9rifi\'e9es\par
+create table if not exists recommendations (\par
+  id uuid primary key default gen_random_uuid(),\par
+  from_user_id uuid references users_profiles(id) on delete cascade,\par
+  to_user_id uuid references users_profiles(id) on delete cascade,\par
+  message text not null,\par
+  is_verified boolean default true,\par
+  gemini_authenticity_score integer default 0,\par
+  created_at timestamp default now()\par
+);\par
+\par
+-- Comparateur salaires (cache)\par
+create table if not exists salary_data (\par
+  id uuid primary key default gen_random_uuid(),\par
+  role text not null,\par
+  country text not null,\par
+  salary_min integer,\par
+  salary_median integer,\par
+  salary_max integer,\par
+  growth_percent numeric,\par
+  currency text default 'USD',\par
+  fetched_at timestamp default now()\par
+);\par
+\par
+-- Recherches sauvegard\'e9es\par
+create table if not exists saved_searches (\par
+  id uuid primary key default gen_random_uuid(),\par
+  user_id uuid references users_profiles(id) on delete cascade,\par
+  query text,\par
+  domain text,\par
+  country text,\par
+  salary_min integer,\par
+  salary_max integer,\par
+  auto_repeat boolean default false,\par
+  repeat_frequency text default 'daily',\par
+  last_run_at timestamp,\par
+  created_at timestamp default now()\par
+);\par
+\par
+-- Abonnements Stripe\par
+create table if not exists subscriptions (\par
+  id uuid primary key default gen_random_uuid(),\par
+  user_id uuid references users_profiles(id) on delete cascade,\par
+  stripe_subscription_id text unique,\par
+  plan text,\par
+  status text,\par
+  current_period_end timestamp,\par
+  created_at timestamp default now()\par
+);\par
+\par
+-- Parrainage\par
+create table if not exists referrals (\par
+  id uuid primary key default gen_random_uuid(),\par
+  referrer_id uuid references users_profiles(id) on delete cascade,\par
+  referred_id uuid references users_profiles(id) on delete cascade,\par
+  reward_applied boolean default false,\par
+  created_at timestamp default now()\par
+);\par
+\par
+-- Param\'e8tres app (FREE_MODE, etc.)\par
+create table if not exists app_settings (\par
+  key text primary key,\par
+  value text,\par
+  updated_at timestamp default now()\par
+);\par
+insert into app_settings (key, value) values ('FREE_MODE', 'true') on conflict do nothing;\par
+\par
+-- Entretiens planifi\'e9s\par
+create table if not exists interviews (\par
+  id uuid primary key default gen_random_uuid(),\par
+  user_id uuid references users_profiles(id) on delete cascade,\par
+  company text,\par
+  job_title text,\par
+  interview_at timestamp,\par
+  timezone text,\par
+  format text check (format in ('video','phone','in_person')),\par
+  meeting_url text,\par
+  notes text,\par
+  preparation_done boolean default false,\par
+  status text default 'scheduled' check (\par
+    status in ('scheduled','completed','cancelled')\par
+  ),\par
+  created_at timestamp default now()\par
+);\par
+\par
+-- Log des actions de Searcher\par
+create table if not exists searcher_logs (\par
+  id uuid primary key default gen_random_uuid(),\par
+  user_id uuid references users_profiles(id) on delete cascade,\par
+  action_type text not null,\par
+  description text not null,\par
+  platform text,\par
+  result text,\par
+  auto_promo_sent boolean default false,\par
+  created_at timestamp default now()\par
+);\par
+\par
+-- RLS : activer sur toutes les tables\par
+alter table users_profiles enable row level security;\par
+alter table uploaded_documents enable row level security;\par
+alter table opportunities enable row level security;\par
+alter table applications_sent enable row level security;\par
+alter table notifications enable row level security;\par
+alter table connections enable row level security;\par
+alter table posts enable row level security;\par
+alter table post_likes enable row level security;\par
+alter table post_comments enable row level security;\par
+alter table messages enable row level security;\par
+alter table recommendations enable row level security;\par
+alter table salary_data enable row level security;\par
+alter table saved_searches enable row level security;\par
+alter table subscriptions enable row level security;\par
+alter table referrals enable row level security;\par
+alter table interviews enable row level security;\par
+alter table searcher_logs enable row level security;\par
+\par
+-- Policies users_profiles\par
+create policy "insert_own_profile" on users_profiles\par
+  for insert with check (auth.uid() = id);\par
+create policy "select_own_profile" on users_profiles\par
+  for select using (auth.uid() = id);\par
+create policy "update_own_profile" on users_profiles\par
+  for update using (auth.uid() = id);\par
+create policy "select_verified_profiles" on users_profiles\par
+  for select using (verification_status in ('verified','genius'));\par
+\par
+-- Policies documents\par
+create policy "insert_own_docs" on uploaded_documents\par
+  for insert with check (auth.uid() = user_id);\par
+create policy "select_own_docs" on uploaded_documents\par
+  for select using (auth.uid() = user_id);\par
+\par
+-- Policies opportunities\par
+create policy "manage_own_opps" on opportunities\par
+  for all using (auth.uid() = user_id);\par
+\par
+-- Policies applications\par
+create policy "manage_own_apps" on applications_sent\par
+  for all using (auth.uid() = user_id);\par
+\par
+-- Policies notifications\par
+create policy "manage_own_notifs" on notifications\par
+  for all using (auth.uid() = user_id);\par
+\par
+-- Policies connections\par
+create policy "manage_own_connections" on connections\par
+  for all using (auth.uid() = from_user_id or auth.uid() = to_user_id);\par
+\par
+-- Policies posts (tous les v\'e9rifi\'e9s peuvent lire)\par
+create policy "insert_own_posts" on posts\par
+  for insert with check (auth.uid() = author_id);\par
+create policy "select_all_posts" on posts\par
+  for select using (true);\par
+create policy "update_own_posts" on posts\par
+  for update using (auth.uid() = author_id);\par
+create policy "delete_own_posts" on posts\par
+  for delete using (auth.uid() = author_id);\par
+\par
+-- Policies likes\par
+create policy "manage_likes" on post_likes\par
+  for all using (auth.uid() = user_id);\par
+\par
+-- Policies commentaires\par
+create policy "manage_comments" on post_comments\par
+  for all using (auth.uid() = author_id);\par
+create policy "read_comments" on post_comments\par
+  for select using (true);\par
+\par
+-- Policies messages\par
+create policy "manage_messages" on messages\par
+  for all using (\par
+    auth.uid() = from_user_id or auth.uid() = to_user_id\par
+  );\par
+\par
+-- Policies recommandations\par
+create policy "manage_recs" on recommendations\par
+  for all using (\par
+    auth.uid() = from_user_id or auth.uid() = to_user_id\par
+  );\par
+create policy "read_recs" on recommendations\par
+  for select using (true);\par
+\par
+-- Policies salary\par
+create policy "read_salary" on salary_data\par
+  for select using (true);\par
+create policy "insert_salary" on salary_data\par
+  for insert with check (true);\par
+\par
+-- Policies saved searches\par
+create policy "manage_saved_searches" on saved_searches\par
+  for all using (auth.uid() = user_id);\par
+\par
+-- Policies subscriptions\par
+create policy "manage_own_subs" on subscriptions\par
+  for all using (auth.uid() = user_id);\par
+\par
+-- Policies referrals\par
+create policy "manage_referrals" on referrals\par
+  for all using (\par
+    auth.uid() = referrer_id or auth.uid() = referred_id\par
+  );\par
+\par
+-- Policies interviews\par
+create policy "manage_interviews" on interviews\par
+  for all using (auth.uid() = user_id);\par
+\par
+-- Policies logs\par
+create policy "manage_logs" on searcher_logs\par
+  for all using (auth.uid() = user_id);\par
+\par
+-- App settings lisibles par tous\par
+create policy "read_settings" on app_settings\par
+  for select using (true);\par
+\par
+=================================================================\par
+\'c9TAPE 4 \f1\emdash  STRUCTURE DES FICHIERS\par
+=================================================================\par
+\par
+Cr\f0\'e9e exactement cette structure :\par
+\par
+src/\par
+\f2\u9500?\u9472?\u9472?\f0  lib/\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  supabase.ts\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  gemini.ts\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  serper.ts\par
+\f2\u9474?\f0    \f2\u9492?\u9472?\u9472?\f0  stripe.ts\par
+\f2\u9500?\u9472?\u9472?\f0  contexts/\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  AuthContext.tsx\par
+\f2\u9474?\f0    \f2\u9492?\u9472?\u9472?\f0  AppContext.tsx\par
+\f2\u9500?\u9472?\u9472?\f0  hooks/\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  useAuth.ts\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  useProfile.ts\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  useOpportunities.ts\par
+\f2\u9474?\f0    \f2\u9492?\u9472?\u9472?\f0  useNotifications.ts\par
+\f2\u9500?\u9472?\u9472?\f0  components/\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  layout/\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Navbar.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Sidebar.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9492?\u9472?\u9472?\f0  Footer.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  ui/\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  GoldButton.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Badge.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Card.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  GoldDot.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  LoadingScreen.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9492?\u9472?\u9472?\f0  Toast.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  auth/\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  LoginForm.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9492?\u9472?\u9472?\f0  SignupForm.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  onboarding/\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  OnboardingFlow.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  VoiceInput.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  ProfileSetup.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9492?\u9472?\u9472?\f0  DocumentUpload.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  dashboard/\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  MetricCards.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  ScanningBar.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  OpportunityCard.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  AlertsCenter.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9492?\u9472?\u9472?\f0  SearcherLog.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  social/\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Feed.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  PostCard.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  CreatePost.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  ConnectionCard.tsx\par
+\f2\u9474?\f0    \f2\u9474?\f0    \f2\u9492?\u9472?\u9472?\f0  DirectMessage.tsx\par
+\f2\u9474?\f0    \f2\u9492?\u9472?\u9472?\f0  modules/\par
+\f2\u9474?\f0        \f2\u9500?\u9472?\u9472?\f0  InvestorModule.tsx\par
+\f2\u9474?\f0        \f2\u9500?\u9472?\u9472?\f0  BusinessModule.tsx\par
+\f2\u9474?\f0        \f2\u9500?\u9472?\u9472?\f0  SalaryComparator.tsx\par
+\f2\u9474?\f0        \f2\u9500?\u9472?\u9472?\f0  Recommendations.tsx\par
+\f2\u9474?\f0        \f2\u9492?\u9472?\u9472?\f0  GeniusCard.tsx\par
+\f2\u9500?\u9472?\u9472?\f0  pages/\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Landing.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Signup.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Login.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Onboarding.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Status.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Dashboard.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Opportunities.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Social.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Messages.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  InvestorBusiness.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Salary.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Profile.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Settings.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Pricing.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  FounderDashboard.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Privacy.tsx\par
+\f2\u9474?\f0    \f2\u9500?\u9472?\u9472?\f0  Terms.tsx\par
+\f2\u9474?\f0    \f2\u9492?\u9472?\u9472?\f0  Support.tsx\par
+\f2\u9500?\u9472?\u9472?\f0  i18n/\par
+\f2\u9474?\f0    \f2\u9492?\u9472?\u9472?\f0  index.ts\par
+\f2\u9500?\u9472?\u9472?\f0  App.tsx\par
+\f2\u9492?\u9472?\u9472?\f0  main.tsx\par
+\par
+=================================================================\par
+\'c9TAPE 5 \f1\emdash  FICHIERS DE BASE\par
+=================================================================\par
+\par
+--- src/lib/supabase.ts ---\par
+\par
+import \{ createClient \} from '@supabase/supabase-js'\par
+\par
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL\par
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY\par
+\par
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)\par
+\par
+export type Profile = \{\par
+  id: string\par
+  full_name: string\par
+  email: string\par
+  profile_type: 'job_seeker' | 'freelance' | 'business' | 'investor'\par
+  domain: string\par
+  country: string\par
+  verification_status: 'pending' | 'verified' | 'genius' | 'refused'\par
+  plan: 'free' | 'talent' | 'business' | 'investor'\par
+  role: 'user' | 'admin' | 'founder'\par
+  avatar_url?: string\par
+  bio?: string\par
+  refusal_reason?: string\par
+  profile_completion: number\par
+  surveillance_active: boolean\par
+  free_mode: boolean\par
+\}\par
+\par
+--- src/lib/gemini.ts ---\par
+\par
+import \{ GoogleGenerativeAI \} from '@google/generative-ai'\par
+\par
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)\par
+\par
+export async function analyseProfile(data: \{\par
+  fullName: string\par
+  domain: string\par
+  profileType: string\par
+  documents: string[]\par
+  portfolioUrl?: string\par
+  githubUrl?: string\par
+  youtubeUrl?: string\par
+  bio?: string\par
+\}) \{\par
+  const model = genAI.getGenerativeModel(\{ model: 'gemini-1.5-flash' \})\par
+  const prompt = `You are Searcher Connector's verification AI.\par
+Analyse this professional profile and decide access level.\par
+\par
+Name: $\{data.fullName\}\par
+Domain: $\{data.domain\}\par
+Type: $\{data.profileType\}\par
+Documents: $\{data.documents.join(', ')\}\par
+Portfolio: $\{data.portfolioUrl || 'none'\}\par
+GitHub: $\{data.githubUrl || 'none'\}\par
+YouTube: $\{data.youtubeUrl || 'none'\}\par
+Bio: $\{data.bio || 'none'\}\par
+\par
+Rules:\par
+- GENIUS: truly exceptional world-class proof only\par
+- VERIFIED: any real proof of competence\par
+- REFUSED: insufficient or dishonest proof\par
+\par
+Respond ONLY in JSON, no markdown:\par
+\{"status":"verified","reason":"one sentence","strengths":["s1"],"improvements":["i1"]\}`\par
+\par
+  try \{\par
+    const result = await model.generateContent(prompt)\par
+    const text = result.response.text().replace(/```json|```/g, '').trim()\par
+    return JSON.parse(text)\par
+  \} catch \{\par
+    return \{ status: 'pending', reason: 'Analysis in progress', strengths: [], improvements: [] \}\par
+  \}\par
+\}\par
+\par
+export async function scoreOpportunities(\par
+  profile: \{ domain: string; country: string; salaryMin: number; salaryMax: number \},\par
+  serperResults: any[]\par
+) \{\par
+  const model = genAI.getGenerativeModel(\{ model: 'gemini-1.5-flash' \})\par
+  const prompt = `You are Searcher Connector's opportunity scoring AI.\par
+Profile: domain=$\{profile.domain\}, country=$\{profile.country\}, salary=$\{profile.salaryMin\}-$\{profile.salaryMax\}\par
+Web results: $\{JSON.stringify(serperResults.slice(0, 8), null, 2)\}\par
+\par
+Return top 6 opportunities. Respond ONLY in JSON:\par
+\{"opportunities":[\{"title":"","company":"","location":"","country":"","salary_min":0,"salary_max":0,"currency":"USD","hours_ago":2,"applicants_count":5,"score":85,"match_reason":"","source_platform":"","original_url":"","is_foreign":false,"is_suspicious":false\}]\}`\par
+\par
+  try \{\par
+    const result = await model.generateContent(prompt)\par
+    const text = result.response.text().replace(/```json|```/g, '').trim()\par
+    return JSON.parse(text)\par
+  \} catch \{\par
+    return \{ opportunities: [] \}\par
+  \}\par
+\}\par
+\par
+export async function generateEmailDraft(\par
+  recruiterMessage: string,\par
+  userTemplate: string,\par
+  userName: string\par
+) \{\par
+  const model = genAI.getGenerativeModel(\{ model: 'gemini-1.5-flash' \})\par
+  const prompt = `Write a professional email response.\par
+Recruiter message: "$\{recruiterMessage\}"\par
+User style: "$\{userTemplate\}"\par
+User name: $\{userName\}\par
+End with: "Sent via Searcher Connector \emdash  searcherconnector.com"\par
+Keep it under 150 words. No subject line needed.`\par
+\par
+  const result = await model.generateContent(prompt)\par
+  return result.response.text()\par
+\}\par
+\par
+export async function generateInterviewPrep(company: string, jobTitle: string, domain: string) \{\par
+  const model = genAI.getGenerativeModel(\{ model: 'gemini-1.5-flash' \})\par
+  const prompt = `Generate interview preparation for:\par
+Company: $\{company\}, Role: $\{jobTitle\}, Domain: $\{domain\}\par
+\par
+Respond ONLY in JSON:\par
+\{"questions":["q1","q2","q3","q4","q5"],"key_points":["p1","p2","p3"],"questions_to_ask":["qa1","qa2"],"company_insight":"brief insight"\}`\par
+\par
+  try \{\par
+    const result = await model.generateContent(prompt)\par
+    const text = result.response.text().replace(/```json|```/g, '').trim()\par
+    return JSON.parse(text)\par
+  \} catch \{\par
+    return \{ questions: [], key_points: [], questions_to_ask: [], company_insight: '' \}\par
+  \}\par
+\}\par
+\par
+export async function analysePost(content: string) \{\par
+  const model = genAI.getGenerativeModel(\{ model: 'gemini-1.5-flash' \})\par
+  const prompt = `Analyse this professional post for quality and authenticity.\par
+Post: "$\{content\}"\par
+Respond ONLY in JSON: \{"quality_score":85,"is_professional":true,"suggestion":"brief tip"\}`\par
+  try \{\par
+    const result = await model.generateContent(prompt)\par
+    return JSON.parse(result.response.text().replace(/```json|```/g, '').trim())\par
+  \} catch \{\par
+    return \{ quality_score: 70, is_professional: true, suggestion: '' \}\par
+  \}\par
+\}\par
+\par
+--- src/lib/serper.ts ---\par
+\par
+const SERPER_KEY = import.meta.env.VITE_SERPER_API_KEY\par
+\par
+async function search(query: string) \{\par
+  try \{\par
+    const res = await fetch('https://google.serper.dev/search', \{\par
+      method: 'POST',\par
+      headers: \{ 'X-API-KEY': SERPER_KEY, 'Content-Type': 'application/json' \},\par
+      body: JSON.stringify(\{ q: query, num: 10, gl: 'us', hl: 'en' \}),\par
+    \})\par
+    const data = await res.json()\par
+    return data.organic || []\par
+  \} catch \{\par
+    return []\par
+  \}\par
+\}\par
+\par
+export async function searchJobs(domain: string, country: string) \{\par
+  const queries = [\par
+    `$\{domain\} job hiring $\{country\} 2026 site:linkedin.com OR site:indeed.com`,\par
+    `$\{domain\} remote job worldwide 2026`,\par
+    `hiring $\{domain\} expert freelance contract 2026`,\par
+    `$\{domain\} position open apply now`,\par
+    `$\{domain\} job opportunity site:glassdoor.com OR site:remoteok.com`,\par
+  ]\par
+  const results = await Promise.all(queries.slice(0, 3).map(q => search(q)))\par
+  return results.flat()\par
+\}\par
+\par
+export async function searchSalaries(role: string, country: string) \{\par
+  const results = await search(`average salary $\{role\} $\{country\} 2026 USD`)\par
+  return results\par
+\}\par
+\par
+export async function searchInvestors(sector: string, ticketSize: string) \{\par
+  const results = await Promise.all([\par
+    search(`venture capital investors $\{sector\} 2026 crunchbase`),\par
+    search(`angel investors $\{sector\} funding $\{ticketSize\}`),\par
+    search(`VC fund $\{sector\} portfolio investments`),\par
+  ])\par
+  return results.flat()\par
+\}\par
+\par
+export async function searchClients(product: string, targetCustomer: string, country: string) \{\par
+  const results = await search(\par
+    `people looking for $\{product\} $\{targetCustomer\} $\{country\} buy`\par
+  )\par
+  return results\par
+\}\par
+\par
+=================================================================\par
+\f0\'c9TAPE 6 \f1\emdash  CONTEXTS\par
+=================================================================\par
+\par
+--- src/contexts/AuthContext.tsx ---\par
+\par
+import \{ createContext, useContext, useEffect, useState, ReactNode \} from 'react'\par
+import \{ User, Session \} from '@supabase/supabase-js'\par
+import \{ supabase, Profile \} from '../lib/supabase'\par
+\par
+type AuthContextType = \{\par
+  user: User | null\par
+  profile: Profile | null\par
+  session: Session | null\par
+  loading: boolean\par
+  signUp: (email: string, password: string) => Promise<any>\par
+  signIn: (email: string, password: string) => Promise<any>\par
+  signOut: () => Promise<void>\par
+  refreshProfile: () => Promise<void>\par
+\}\par
+\par
+const AuthContext = createContext<AuthContextType | null>(null)\par
+\par
+export function AuthProvider(\{ children \}: \{ children: ReactNode \}) \{\par
+  const [user, setUser] = useState<User | null>(null)\par
+  const [profile, setProfile] = useState<Profile | null>(null)\par
+  const [session, setSession] = useState<Session | null>(null)\par
+  const [loading, setLoading] = useState(true)\par
+\par
+  async function fetchProfile(userId: string) \{\par
+    const \{ data \} = await supabase\par
+      .from('users_profiles')\par
+      .select('*')\par
+      .eq('id', userId)\par
+      .single()\par
+    if (data) setProfile(data)\par
+  \}\par
+\par
+  async function refreshProfile() \{\par
+    if (user) await fetchProfile(user.id)\par
+  \}\par
+\par
+  useEffect(() => \{\par
+    supabase.auth.getSession().then((\{ data: \{ session \} \}) => \{\par
+      setSession(session)\par
+      setUser(session?.user ?? null)\par
+      if (session?.user) fetchProfile(session.user.id).finally(() => setLoading(false))\par
+      else setLoading(false)\par
+    \})\par
+\par
+    const \{ data: \{ subscription \} \} = supabase.auth.onAuthStateChange((_event, session) => \{\par
+      setSession(session)\par
+      setUser(session?.user ?? null)\par
+      if (session?.user) fetchProfile(session.user.id)\par
+      else setProfile(null)\par
+    \})\par
+\par
+    return () => subscription.unsubscribe()\par
+  \}, [])\par
+\par
+  async function signUp(email: string, password: string) \{\par
+    return supabase.auth.signUp(\{ email, password \})\par
+  \}\par
+\par
+  async function signIn(email: string, password: string) \{\par
+    return supabase.auth.signInWithPassword(\{ email, password \})\par
+  \}\par
+\par
+  async function signOut() \{\par
+    await supabase.auth.signOut()\par
+    setProfile(null)\par
+  \}\par
+\par
+  return (\par
+    <AuthContext.Provider value=\{\{ user, profile, session, loading, signUp, signIn, signOut, refreshProfile \}\}>\par
+      \{children\}\par
+    </AuthContext.Provider>\par
+  )\par
+\}\par
+\par
+export const useAuth = () => \{\par
+  const ctx = useContext(AuthContext)\par
+  if (!ctx) throw new Error('useAuth must be inside AuthProvider')\par
+  return ctx\par
+\}\par
+\par
+=================================================================\par
+\f0\'c9TAPE 7 \f1\emdash  APP.TSX ET ROUTING\par
+=================================================================\par
+\par
+--- src/App.tsx ---\par
+\par
+import \{ BrowserRouter, Routes, Route, Navigate \} from 'react-router-dom'\par
+import \{ AuthProvider, useAuth \} from './contexts/AuthContext'\par
+import Landing from './pages/Landing'\par
+import Signup from './pages/Signup'\par
+import Login from './pages/Login'\par
+import Onboarding from './pages/Onboarding'\par
+import Status from './pages/Status'\par
+import Dashboard from './pages/Dashboard'\par
+import Opportunities from './pages/Opportunities'\par
+import Social from './pages/Social'\par
+import Messages from './pages/Messages'\par
+import InvestorBusiness from './pages/InvestorBusiness'\par
+import Salary from './pages/Salary'\par
+import Profile from './pages/Profile'\par
+import Settings from './pages/Settings'\par
+import Pricing from './pages/Pricing'\par
+import FounderDashboard from './pages/FounderDashboard'\par
+import Privacy from './pages/Privacy'\par
+import Terms from './pages/Terms'\par
+import Support from './pages/Support'\par
+import LoadingScreen from './components/ui/LoadingScreen'\par
+\par
+function ProtectedRoute(\{ children \}: \{ children: React.ReactNode \}) \{\par
+  const \{ user, profile, loading \} = useAuth()\par
+  if (loading) return <LoadingScreen />\par
+  if (!user) return <Navigate to="/login" />\par
+  if (!profile) return <Navigate to="/onboarding" />\par
+  if (profile.verification_status === 'pending' || profile.verification_status === 'refused')\par
+    return <Navigate to="/status" />\par
+  return <>\{children\}</>\par
+\}\par
+\par
+function FounderRoute(\{ children \}: \{ children: React.ReactNode \}) \{\par
+  const \{ profile, loading \} = useAuth()\par
+  if (loading) return <LoadingScreen />\par
+  if (!profile || profile.role !== 'founder') return <Navigate to="/dashboard" />\par
+  return <>\{children\}</>\par
+\}\par
+\par
+function AppRoutes() \{\par
+  const \{ user, profile, loading \} = useAuth()\par
+  if (loading) return <LoadingScreen />\par
+\par
+  return (\par
+    <Routes>\par
+      <Route path="/" element=\{!user ? <Landing /> : <Navigate to="/dashboard" />\} />\par
+      <Route path="/signup" element=\{<Signup />\} />\par
+      <Route path="/login" element=\{<Login />\} />\par
+      <Route path="/onboarding" element=\{<Onboarding />\} />\par
+      <Route path="/status" element=\{<Status />\} />\par
+      <Route path="/pricing" element=\{<Pricing />\} />\par
+      <Route path="/privacy" element=\{<Privacy />\} />\par
+      <Route path="/terms" element=\{<Terms />\} />\par
+      <Route path="/support" element=\{<Support />\} />\par
+      <Route path="/dashboard" element=\{<ProtectedRoute><Dashboard /></ProtectedRoute>\} />\par
+      <Route path="/opportunities" element=\{<ProtectedRoute><Opportunities /></ProtectedRoute>\} />\par
+      <Route path="/social" element=\{<ProtectedRoute><Social /></ProtectedRoute>\} />\par
+      <Route path="/messages" element=\{<ProtectedRoute><Messages /></ProtectedRoute>\} />\par
+      <Route path="/investor-business" element=\{<ProtectedRoute><InvestorBusiness /></ProtectedRoute>\} />\par
+      <Route path="/salary" element=\{<ProtectedRoute><Salary /></ProtectedRoute>\} />\par
+      <Route path="/profile" element=\{<ProtectedRoute><Profile /></ProtectedRoute>\} />\par
+      <Route path="/settings" element=\{<ProtectedRoute><Settings /></ProtectedRoute>\} />\par
+      <Route path="/founder" element=\{<FounderRoute><FounderDashboard /></FounderRoute>\} />\par
+      <Route path="*" element=\{<Navigate to="/" />\} />\par
+    </Routes>\par
+  )\par
+\}\par
+\par
+export default function App() \{\par
+  return (\par
+    <BrowserRouter>\par
+      <AuthProvider>\par
+        <AppRoutes />\par
+      </AuthProvider>\par
+    </BrowserRouter>\par
+  )\par
+\}\par
+\par
+=================================================================\par
+\f0\'c9TAPE 8 \f1\emdash  COMPOSANTS UI DE BASE\par
+=================================================================\par
+\par
+--- src/components/ui/LoadingScreen.tsx ---\par
+\par
+export default function LoadingScreen() \{\par
+  return (\par
+    <div className="fixed inset-0 bg-[#0A0A0A] flex flex-col items-center justify-center z-50">\par
+      <div className="text-[#D4AF37] text-2xl font-bold tracking-widest mb-8">\par
+        SEARCHER CONNECTOR\par
+      </div>\par
+      <div className="flex gap-2">\par
+        \{[0, 1, 2].map(i => (\par
+          <div\par
+            key=\{i\}\par
+            className="w-2 h-2 rounded-full bg-[#D4AF37] animate-bounce"\par
+            style=\{\{ animationDelay: `$\{i * 0.15\}s` \}\}\par
+          />\par
+        ))\}\par
+      </div>\par
+      <div className="text-[#444444] text-xs mt-6 tracking-widest">\par
+        SCANNING THE WORLD FOR YOU\par
+      </div>\par
+    </div>\par
+  )\par
+\}\par
+\par
+--- src/components/ui/GoldButton.tsx ---\par
+\par
+import \{ ReactNode \} from 'react'\par
+import \{ Loader2 \} from 'lucide-react'\par
+\par
+type Props = \{\par
+  children: ReactNode\par
+  onClick?: () => void\par
+  loading?: boolean\par
+  variant?: 'filled' | 'outlined'\par
+  className?: string\par
+  disabled?: boolean\par
+  type?: 'button' | 'submit'\par
+  fullWidth?: boolean\par
+\}\par
+\par
+export default function GoldButton(\{\par
+  children, onClick, loading, variant = 'filled',\par
+  className = '', disabled, type = 'button', fullWidth\par
+\}: Props) \{\par
+  const base = `rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 px-6 py-3 text-sm $\{fullWidth ? 'w-full' : ''\}`\par
+  const filled = 'bg-[#D4AF37] text-[#0A0A0A] hover:bg-[#F5E6A3] disabled:opacity-50'\par
+  const outlined = 'border border-[#D4AF37] text-[#D4AF37] hover:bg-[#1A1500] disabled:opacity-50'\par
+\par
+  return (\par
+    <button\par
+      type=\{type\}\par
+      onClick=\{onClick\}\par
+      disabled=\{disabled || loading\}\par
+      className=\{`$\{base\} $\{variant === 'filled' ? filled : outlined\} $\{className\}`\}\par
+    >\par
+      \{loading && <Loader2 className="w-4 h-4 animate-spin" />\}\par
+      \{children\}\par
+    </button>\par
+  )\par
+\}\par
+\par
+--- src/components/ui/Badge.tsx ---\par
+\par
+type Status = 'pending' | 'verified' | 'genius' | 'refused' | 'free' | 'active' | 'suspicious'\par
+\par
+const config: Record<Status, \{ label: string; className: string \}> = \{\par
+  pending:   \{ label: 'PENDING',   className: 'border border-gray-600 text-gray-400 bg-gray-900' \},\par
+  verified:  \{ label: 'VERIFIED',  className: 'border border-[#D4AF37] text-[#D4AF37] bg-[#1A1500]' \},\par
+  genius:    \{ label: 'GENIUS',    className: 'border-2 border-[#D4AF37] text-[#D4AF37] bg-[#1A1500] shadow-[0_0_10px_rgba(212,175,55,0.3)]' \},\par
+  refused:   \{ label: 'REFUSED',   className: 'border border-red-800 text-red-400 bg-red-950' \},\par
+  free:      \{ label: 'FREE',      className: 'border border-gray-700 text-gray-500 bg-gray-900' \},\par
+  active:    \{ label: 'ACTIVE',    className: 'border border-green-700 text-green-400 bg-green-950' \},\par
+  suspicious:\{ label: 'SUSPICIOUS',className: 'border border-red-700 text-red-400 bg-red-950' \},\par
+\}\par
+\par
+export default function Badge(\{ status \}: \{ status: Status \}) \{\par
+  const c = config[status] || config.pending\par
+  return (\par
+    <span className=\{`text-[10px] font-bold tracking-widest px-2 py-1 rounded $\{c.className\}`\}>\par
+      \{c.label\}\par
+    </span>\par
+  )\par
+\}\par
+\par
+--- src/components/ui/GoldDot.tsx ---\par
+\par
+export default function GoldDot(\{ size = 'sm' \}: \{ size?: 'sm' | 'md' \}) \{\par
+  const s = size === 'sm' ? 'w-2 h-2' : 'w-3 h-3'\par
+  return (\par
+    <span className=\{`inline-block $\{s\} rounded-full bg-[#D4AF37] animate-pulse`\} />\par
+  )\par
+\}\par
+\par
+--- src/components/ui/Card.tsx ---\par
+\par
+import \{ ReactNode \} from 'react'\par
+\par
+type Props = \{\par
+  children: ReactNode\par
+  className?: string\par
+  gold?: boolean\par
+  onClick?: () => void\par
+\}\par
+\par
+export default function Card(\{ children, className = '', gold, onClick \}: Props) \{\par
+  return (\par
+    <div\par
+      onClick=\{onClick\}\par
+      className=\{`\par
+        bg-[#111111] rounded-xl p-4\par
+        $\{gold ? 'border border-[#D4AF37]' : 'border border-[#2a2a2a]'\}\par
+        $\{onClick ? 'cursor-pointer hover:border-[#D4AF37] transition-colors duration-200' : ''\}\par
+        $\{className\}\par
+      `\}\par
+    >\par
+      \{children\}\par
+    </div>\par
+  )\par
+\}\par
+\par
+=================================================================\par
+\f0\'c9TAPE 9 \f1\emdash  LANDING PAGE\par
+=================================================================\par
+\par
+--- src/pages/Landing.tsx ---\par
+\par
+Construis une landing page compl\f0\'e8te avec :\par
+\par
+SECTION 1 \f1\emdash  HERO :\par
+- Fond #0A0A0A plein \f0\'e9cran\par
+- Navbar : logo "SEARCHER CONNECTOR" en or + "OPPORTUNITY INTELLIGENCE" en gris + GoldDot + "Agent Active 24/7"\par
+- Globe 3D anim\'e9 centr\'e9 (react-globe.gl avec points sur les pays)\par
+- Titre : "Every opportunity in the world." (blanc) + "Found. Applied. Delivered." (or)\par
+- Sous-titre en gris\par
+- 4 boutons profils en grille 2x2 sur mobile, row sur desktop\par
+  chaque bouton : ic\'f4ne + titre + description courte\par
+  onclick \f3\u8594?\f0  navigate('/signup?type=job_seeker') etc.\par
+- Barre de stats : "2,847 opportunit\'e9s trouv\'e9es aujourd'hui" etc. (compteur anim\'e9 +1 toutes les 3s)\par
+\par
+SECTION 2 \f1\emdash  COMMENT \f0\'c7A MARCHE :\par
+4 \'e9tapes visuelles :\par
+1. Tu t'inscris et te v\'e9rifies\par
+2. Tu parles \'e0 Searcher (micro)\par
+3. Searcher fouille le monde\par
+4. Tu re\'e7ois les meilleurs r\'e9sultats\par
+\par
+SECTION 3 \f1\emdash  COMPARATIF :\par
+Tableau noir/or vs LinkedIn / Indeed / Upwork / AngelList\par
+Searcher = \f2\u9989?\f0  partout. Concurrents = limit\'e9s.\par
+\par
+SECTION 4 \f1\emdash  T\f0\'c9MOIGNAGES :\par
+3 cartes avec faux t\'e9moignages convaincants de profils africains :\par
+- Marketeur Douala \f3\u8594?\f0  contrat Canada en 48h\par
+- Dev Dakar \f3\u8594?\f0  mission Upwork $4000\par
+- Designer Abidjan \f3\u8594?\f0  client Pays-Bas\par
+\par
+SECTION 5 \f1\emdash  FAQ :\par
+5 questions/r\f0\'e9ponses accordion :\par
+- Comment fonctionne la v\'e9rification ?\par
+- Est-ce gratuit ?\par
+- Mes donn\'e9es sont-elles s\'e9curis\'e9es ?\par
+- Comment Searcher postule en mon nom ?\par
+- Comment me d\'e9sinscrire ?\par
+\par
+SECTION 6 \f1\emdash  PRICING PREVIEW :\par
+Aper\f0\'e7u des 3 plans avec CTA vers /pricing\par
+\par
+FOOTER :\par
+- "searcherconnector.com" en or\par
+- "People click not out of curiosity \f1\emdash  but because there is money waiting."\par
+- Links : Privacy / Terms / Support\par
+- "Built from Douala, Cameroon"\par
+\par
+=================================================================\par
+\f0\'c9TAPE 10 \f1\emdash  INSCRIPTION ET ONBOARDING\par
+=================================================================\par
+\par
+--- src/pages/Signup.tsx ---\par
+\par
+Page d'inscription :\par
+1. Lire le type depuis ?type= dans l'URL\par
+2. Formulaire : email + mot de passe\par
+3. Cr\f0\'e9er compte Supabase Auth\par
+4. Si email = VITE_FOUNDER_EMAIL \f3\u8594?\f0  cr\'e9er profil avec role='founder', verification_status='genius', plan='investor'\par
+5. Sinon \f3\u8594?\f0  cr\'e9er profil avec verification_status='pending'\par
+6. Redirect vers /onboarding\par
+\par
+--- src/pages/Onboarding.tsx ---\par
+\par
+Onboarding en 5 \'e9tapes avec progress bar dor\'e9e :\par
+\par
+\'c9tape 1 \f1\emdash  Pr\f0\'e9sentation :\par
+  "Bienvenue. Parle-moi de toi."\par
+  Bouton micro (Web Speech API) + textarea\par
+  Auto-remplissage des champs depuis la voix\par
+\par
+\'c9tape 2 \f1\emdash  Infos profil :\par
+  Nom complet, domaine, pays, ville, langues, fourchette salariale\par
+\par
+\f0\'c9tape 3 \f1\emdash  Upload documents :\par
+  Zones d'upload selon profile_type\par
+  Uploader vers Supabase Storage \f3\u8594?\f0  sauvegarder URL dans uploaded_documents\par
+\par
+\'c9tape 4 \f1\emdash  Liens :\par
+  Portfolio, GitHub, Behance, YouTube, LinkedIn selon le profil\par
+\par
+\f0\'c9tape 5 \f1\emdash  Analyse :\par
+  Bouton "Soumettre \f0\'e0 Searcher"\par
+  \f3\u8594?\f0  Appeler gemini.analyseProfile()\par
+  \f3\u8594?\f0  Sauvegarder verification_status dans users_profiles\par
+  \f3\u8594?\f0  Redirect vers /status\par
+\par
+--- src/pages/Status.tsx ---\par
+\par
+Afficher le statut courant avec polling toutes les 5 secondes :\par
+- PENDING : hourglass + "Searcher analyse votre dossier..."\par
+- VERIFIED : checkmark dor\'e9 + "Bienvenue. Acc\'e8s complet accord\'e9." + bouton dashboard\par
+- GENIUS : diamant dor\'e9 + glow + "Statut \'e9lite. Identifi\'e9 par Searcher." + bouton dashboard\par
+- REFUSED : X rouge + raison + "Voici ce qu'il faut renforcer :" + liste + bouton resoumission\par
+\par
+=================================================================\par
+\'c9TAPE 11 \f1\emdash  DASHBOARD PRINCIPAL\par
+=================================================================\par
+\par
+--- src/pages/Dashboard.tsx ---\par
+\par
+Layout 3 colonnes (left sidebar / centre / right sidebar) sur desktop.\par
+Single column sur mobile avec bottom tab bar.\par
+\par
+NAVBAR TOP :\par
+Logo or | nom utilisateur + badge statut | GoldDot "Agent Active 24/7" | cloche notifications | avatar\par
+\par
+LEFT SIDEBAR :\par
+- Photo profil (avatar ou initiales dor\f0\'e9es)\par
+- Badge VERIFIED/GENIUS\par
+- Indicateur progression profil (0-100%)\par
+- Boutons navigation : Accueil / Opportunit\'e9s / Social / Messages / Investisseurs / Salaires / Profil / Param\'e8tres\par
+\par
+CENTRE :\par
+1. BOUTON RECHERCHE GLOBALE (grand bouton dor\'e9 pulsant) :\par
+   "Lancer la recherche mondiale"\par
+   \f3\u8594?\f0  onClick: appeler searchJobs() + scoreOpportunities() + sauvegarder dans opportunities\par
+   \f3\u8594?\f0  Afficher animation scanning avec pills des plateformes\par
+\par
+2. SCANNING BAR (visible pendant et apr\'e8s la recherche) :\par
+   Pills horizontales avec points pulsants :\par
+   LinkedIn / Indeed / Reddit / GitHub / YouTube / Upwork / Crunchbase / etc.\par
+\par
+3. 4 M\'c9TRIQUES (cartes sombres, chiffres en or) :\par
+   Opportunit\'e9s trouv\'e9es | Candidatures envoy\'e9es | R\'e9ponses re\'e7ues | Score moyen /100\par
+   Charger depuis Supabase\par
+\par
+4. ALERTES ACTIVES :\par
+   Opportunit\'e9s avec status='pending_action'\par
+   Notification rouge urgente\par
+   Lien direct en 1 clic\par
+\par
+5. TOGGLE SURVEILLANCE CONTINUE :\par
+   "Searcher continue m\'eame apr\'e8s embauche"\par
+   Toggle + seuil salaire configurable\par
+\par
+6. LOG SEARCHER (3 derni\'e8res actions) :\par
+   Timeline des actions avec timestamps\par
+\par
+RIGHT SIDEBAR :\par
+- Suggestions de connexions (profils v\'e9rifi\'e9s du m\'eame domaine)\par
+- Trending posts du r\'e9seau social\par
+- Benchmark salaires rapide\par
+- CTA upgrade si plan free\par
+\par
+=================================================================\par
+\'c9TAPE 12 \f1\emdash  ONGLET OPPORTUNIT\f0\'c9S\par
+=================================================================\par
+\par
+--- src/pages/Opportunities.tsx ---\par
+\par
+Liste compl\'e8te des opportunit\'e9s depuis Supabase.\par
+\par
+FILTRES en haut :\par
+Toutes | Fra\'eeches (<6h) | Auto-postul\'e9es | En attente | R\'e9ponses re\'e7ues\par
+\par
+POUR CHAQUE OPPORTUNIT\'c9 (OpportunityCard) :\par
+- Titre + score /100 en badge dor\'e9\par
+- Entreprise + location avec emoji drapeau\par
+- Salaire en or + "publi\'e9 il y a Xh" (vert <6h, or <24h, gris sinon)\par
+- X candidats d\'e9j\'e0 + plateforme source\par
+- Raison du match en italique gris\par
+- Badge VERIFIED REAL ou SUSPICIOUS\par
+- Si is_foreign=true : alerte dor\'e9e expandable avec checklist passeport/visa\par
+\par
+BOUTONS :\par
+"Voir l'offre originale \f2\u8599?\f0 " \f3\u8594?\f0  ouvre original_url dans nouvel onglet\par
+"Laisser Searcher postuler" \f3\u8594?\f0  modal confirmation \f3\u8594?\f0  insert dans applications_sent\par
+                            \f3\u8594?\f0  update status \f3\u8594?\f0  log dans searcher_logs\par
+                            \f3\u8594?\f0  toast "Post\'e9 via Searcher Connector \f1\emdash  searcherconnector.com"\par
+\par
+TINDER SWIPE sur mobile (react-swipeable) :\par
+Droite = postuler\par
+Gauche = ignorer\par
+\par
+Animation explosion dor\f0\'e9e si score > 90.\par
+\par
+ALERTE DIVERSIFICATION si < 3 opportunit\'e9s actives :\par
+Banni\'e8re dor\'e9e "Searcher recommande plusieurs pistes simultan\'e9es."\par
+\par
+=================================================================\par
+\'c9TAPE 13 \f1\emdash  R\f0\'c9SEAU SOCIAL\par
+=================================================================\par
+\par
+--- src/pages/Social.tsx ---\par
+\par
+FIL D'ACTUALIT\'c9 (Feed) :\par
+Charger les posts r\'e9cents depuis Supabase (posts + author profile)\par
+Filtres : Tous / V\'e9rifi\'e9s / Genius / Mon r\'e9seau\par
+\par
+CR\'c9ER UN POST (CreatePost) :\par
+Textarea + bouton publier\par
+V\'e9rification : seuls VERIFIED et GENIUS peuvent publier\par
+Gemini analyse le post avant publication (qualit\'e9 score)\par
+Si score < 50 : suggestion d'am\'e9lioration affich\'e9e\par
+\par
+CHAQUE POST (PostCard) :\par
+- Avatar + nom + badge statut + "il y a X temps"\par
+- Contenu du post\par
+- Like (c\f4\u339?ur) | Commenter | Partager\par
+- Compteurs likes/commentaires\par
+- GENIUS posts : bordure dor\f0\'e9e sp\'e9ciale\par
+\par
+CONNEXIONS :\par
+Section "Personnes \'e0 conna\'eetre"\par
+Suggestions de profils VERIFIED dans le m\'eame domaine\par
+Bouton "Se connecter" \f3\u8594?\f0  insert dans connections\par
+\par
+--- src/pages/Messages.tsx ---\par
+\par
+Liste des conversations (messagerie directe)\par
+Chat interface style WhatsApp mais noir/or\par
+Bouton "G\'e9n\'e9rer r\'e9ponse avec Searcher" \f3\u8594?\f0  gemini.generateEmailDraft()\par
+R\'e9ponse affich\'e9e pour approbation avant envoi\par
+\par
+=================================================================\par
+\'c9TAPE 14 \f1\emdash  MODULES M\f0\'c9TIER\par
+=================================================================\par
+\par
+--- src/pages/InvestorBusiness.tsx ---\par
+\par
+Deux onglets : "Investisseur" | "Business Owner"\par
+\par
+INVESTISSEUR :\par
+Formulaire : secteur + ticket + rendement + g\'e9ographie\par
+Bouton "Trouver des projets"\par
+\f3\u8594?\f0  Cherche profils VERIFIED/GENIUS qui cherchent investisseurs\par
+\f3\u8594?\f0  Gemini score la compatibilit\'e9\par
+\f3\u8594?\f0  Cartes projets : domaine + funding needed + risque + GENIUS badge\par
+\f3\u8594?\f0  "Je veux en savoir plus" \f3\u8594?\f0  notification Smart Connector\par
+\par
+BUSINESS OWNER :\par
+Formulaire : produit + client id\'e9al + g\'e9ographie + budget client\par
+Bouton "Trouver mes vrais clients"\par
+\f3\u8594?\f0  searchClients() via Serper\par
+\f3\u8594?\f0  Gemini v\'e9rifie intent d'achat + capacit\'e9 financi\'e8re\par
+\f3\u8594?\f0  Profils acheteurs avec score purchasing power\par
+\f3\u8594?\f0  Badge REAL BUYER / UNCERTAIN / NOT A FIT\par
+\par
+=================================================================\par
+\'c9TAPE 15 \f1\emdash  COMPARATEUR SALAIRES\par
+=================================================================\par
+\par
+--- src/pages/Salary.tsx ---\par
+\par
+Inputs : r\f0\'f4le + pays\par
+Bouton "Voir ma valeur march\'e9"\par
+\f3\u8594?\f0  searchSalaries() via Serper\par
+\f3\u8594?\f0  Gemini extrait min/median/max\par
+\f3\u8594?\f0  Sauvegarde dans salary_data (cache 24h)\par
+\par
+Affichage :\par
+3 cartes m\'e9triques (min/m\'e9diane/max en or)\par
+Graphique barre horizontal recharts (fond noir, barres or)\par
+Tendance : "+9.2% cette ann\'e9e"\par
+\par
+=================================================================\par
+\'c9TAPE 16 \f1\emdash  PARAM\f0\'c8TRES\par
+=================================================================\par
+\par
+--- src/pages/Settings.tsx ---\par
+\par
+Sections :\par
+\par
+PROFIL : modifier nom, bio, domaine, pays, langues, photo\par
+\par
+TEMPLATE DE R\'c9PONSE :\par
+Textarea "Mon style de r\'e9ponse"\par
+Gemini g\'e9n\'e8re un exemple\par
+Sauvegarde dans users_profiles.response_template\par
+\par
+SURVEILLANCE CONTINUE :\par
+Toggle "Continuer apr\'e8s embauche"\par
+Seuil % de meilleur salaire pour alerter\par
+Fr\'e9quence alertes\par
+\par
+MODE EMAIL :\par
+Toggle activation r\'e9ponses auto\par
+Explication fonctionnement\par
+\par
+NOTIFICATIONS :\par
+Toggles par type de notification\par
+\par
+PARRAINAGE :\par
+Afficher referral_code unique\par
+"Invitez un ami \f3\u8594?\f0  1 mois gratuit pour vous deux"\par
+Compteur filleuls\par
+\par
+S\'c9CURIT\'c9 :\par
+Changer mot de passe\par
+Supprimer compte (taper "DELETE" pour confirmer)\par
+\par
+=================================================================\par
+\'c9TAPE 17 \f1\emdash  PRICING\par
+=================================================================\par
+\par
+--- src/pages/Pricing.tsx ---\par
+\par
+V\f0\'e9rifier FREE_MODE depuis app_settings :\par
+- FREE_MODE = 'true' \f3\u8594?\f0  banni\'e8re "Beta gratuite \f1\emdash  tout est inclus"\par
+- FREE_MODE = 'false' \f3\u8594?\f0  afficher les vrais prix avec Stripe\par
+\par
+3 plans :\par
+FREE : 3 recherches/jour, 5 r\'e9sultats, candidature manuelle\par
+TALENT ($29/mois) : illimit\'e9 + autonome + salaires + recommandations\par
+BUSINESS ($99/mois) : tout Talent + Client Finder + Audit visuel\par
+INVESTOR ($299/mois) : tout Business + VC tracking + Summit Finder\par
+\par
+Essai gratuit 7 jours sur les plans payants.\par
+\par
+=================================================================\par
+\'c9TAPE 18 \f1\emdash  FOUNDER DASHBOARD\par
+=================================================================\par
+\par
+--- src/pages/FounderDashboard.tsx ---\par
+\par
+Accessible uniquement si role = 'founder'.\par
+\par
+Stats globales :\par
+Total users | PENDING | VERIFIED | GENIUS | REFUSED | Revenus estim\f0\'e9s | Pays repr\'e9sent\'e9s\par
+\par
+Toggle FREE_MODE (update app_settings)\par
+\par
+Liste tous les utilisateurs :\par
+Nom | Email | Type | Statut | Plan | Date inscription\par
+Boutons : "Promouvoir GENIUS" | "Refuser" avec raison\par
+\par
+Demo investisseur :\par
+Formulaire : secteur + ticket size\par
+"D\'e9montrer Searcher \'e0 un investisseur en direct"\par
+Lance la recherche et affiche les r\'e9sultats en temps r\'e9el\par
+\par
+=================================================================\par
+\'c9TAPE 19 \f1\emdash  PAGES L\f0\'c9GALES ET SUPPORT\par
+=================================================================\par
+\par
+--- src/pages/Privacy.tsx ---\par
+Politique de confidentialit\'e9 compl\'e8te.\par
+Donn\'e9es collect\'e9es, usage, droits RGPD, contact.\par
+\par
+--- src/pages/Terms.tsx ---\par
+CGU compl\'e8tes.\par
+Conditions d'utilisation, responsabilit\'e9s, paiements, r\'e9siliation.\par
+\par
+--- src/pages/Support.tsx ---\par
+Formulaire de contact : nom + email + sujet + message\par
+FAQ rapide avec 5 questions\par
+Email contact : support@searcherconnector.com\par
+\par
+=================================================================\par
+\'c9TAPE 20 \f1\emdash  AUTO-PROMOTION FOOTER\par
+=================================================================\par
+\par
+Cr\f0\'e9e src/components/layout/Footer.tsx :\par
+Affich\'e9 en bas de CHAQUE page.\par
+\par
+Contenu :\par
+"Opportunity delivered via Searcher Connector"\par
+Lien dor\'e9 : searcherconnector.com\par
+Italique : "People click not out of curiosity \f1\emdash  but because there is money waiting."\par
+Links : Privacy | Terms | Support\par
+"Built from Douala, Cameroon \emdash  2026"\par
+\par
+=================================================================\par
+\f0\'c9TAPE 21 \f1\emdash  PWA\par
+=================================================================\par
+\par
+Dans public/manifest.json :\par
+\{\par
+  "name": "Searcher Connector",\par
+  "short_name": "Searcher",\par
+  "description": "Global Autonomous Opportunity Agent",\par
+  "start_url": "/",\par
+  "display": "standalone",\par
+  "background_color": "#0A0A0A",\par
+  "theme_color": "#D4AF37",\par
+  "icons": [\par
+    \{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" \},\par
+    \{ "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" \}\par
+  ]\par
+\}\par
+\par
+Dans index.html ajouter :\par
+<link rel="manifest" href="/manifest.json">\par
+<meta name="theme-color" content="#D4AF37">\par
+\par
+Dans src/components/layout/Navbar.tsx :\par
+Bouton "Installer l'app" (affich\f0\'e9 si BeforeInstallPromptEvent disponible)\par
+\par
+=================================================================\par
+\'c9TAPE 22 \f1\emdash  D\f0\'c9MARRAGE ET V\'c9RIFICATION FINALE\par
+=================================================================\par
+\par
+Lance : npm run dev\par
+\par
+V\'e9rifie que TOUT fonctionne :\par
+\f2\u9989?\f0  Landing page s'affiche en noir et or\par
+\f2\u9989?\f0  Inscription cr\'e9e un compte Supabase\par
+\f2\u9989?\f0  Onboarding avec voix et upload fonctionne\par
+\f2\u9989?\f0  Gemini analyse le profil et retourne un statut\par
+\f2\u9989?\f0  Dashboard charge les donn\'e9es depuis Supabase\par
+\f2\u9989?\f0  "Lancer la recherche" appelle Serper + Gemini\par
+\f2\u9989?\f0  Opportunit\'e9s s'affichent avec scores\par
+\f2\u9989?\f0  "Voir l'offre originale" ouvre l'URL correcte\par
+\f2\u9989?\f0  "Laisser Searcher postuler" sauvegarde en base\par
+\f2\u9989?\f0  R\'e9seau social : cr\'e9er, liker, commenter un post\par
+\f2\u9989?\f0  Messagerie directe fonctionne\par
+\f2\u9989?\f0  Comparateur salaires retourne des donn\'e9es r\'e9elles\par
+\f2\u9989?\f0  Param\'e8tres sauvegardent correctement\par
+\f2\u9989?\f0  Footer auto-promo sur toutes les pages\par
+\f2\u9989?\f0  Founder dashboard accessible avec le bon email\par
+\f2\u9989?\f0  FREE_MODE toggle fonctionne\par
+\f2\u9989?\f0  PWA installable sur mobile et PC\par
+\f2\u9989?\f0  Z\'e9ro fond blanc nulle part\par
+\f2\u9989?\f0  Z\'e9ro bouton cass\'e9\par
+\f2\u9989?\f0  Z\'e9ro \'e9cran vide\par
+\par
+Lance : npm run build\par
+V\'e9rifie que le build passe sans erreurs.\par
+\par
+=================================================================\par
+NOTES POUR OPENHANDS\par
+=================================================================\par
+\par
+1. Si une API retourne une erreur : afficher une card sombre avec\par
+   le message d'erreur + bouton "R\'e9essayer" \f1\emdash  jamais d'\f0\'e9cran blanc.\par
+\par
+2. Toutes les dates/heures : utiliser le fuseau horaire de l'utilisateur.\par
+\par
+3. Pour les uploads Supabase Storage, cr\'e9er les buckets :\par
+   - "documents" (priv\'e9)\par
+   - "avatars" (public)\par
+   - "cv" (priv\'e9)\par
+\par
+4. Le founder (stephanenana.pro@gmail.com) doit avoir :\par
+   - role = 'founder'\par
+   - verification_status = 'genius'\par
+   - plan = 'investor'\par
+   Ce check se fait \'e0 l'inscription dans Signup.tsx.\par
+\par
+5. Chaque action de Searcher (application, r\'e9ponse, recherche)\par
+   ins\'e8re une ligne dans searcher_logs avec auto_promo_sent = true.\par
+\par
+6. L'animation GoldDot pulse en or toujours.\par
+   Les cards ont hover: border-gold transition 200ms.\par
+\par
+7. Sur mobile : bottom tab bar avec 5 onglets principaux.\par
+   Sur desktop : left sidebar avec tous les onglets.\par
+\par
+=================================================================\par
+FIN DU PROMPT COUCHE 1\par
+=================================================================\par
+L'app est maintenant une base solide et fonctionnelle.\par
+Les 7 autres couches s'appuient sur cette fondation.\par
+Couche 2 = R\'e9seau social avanc\'e9 (groups, stories, trending)\par
+Couche 3 = Agent 24/7 automatis\'e9 (email, WhatsApp, scheduler)\par
+Couche 4 = VC tracking Orange Merchant complet\par
+Couche 5 = Stripe paiements + webhooks\par
+Couche 6 = Analytics + pr\'e9paration entretien + tracker\par
+Couche 7 = App native + Extension Chrome\par
+Couche 8 = Mod\'e8le IA propri\'e9taire\par
+=================================================================\lang12\par
+}
+ 

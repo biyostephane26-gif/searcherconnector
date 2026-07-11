@@ -1,0 +1,753 @@
+SEARCHER CONNECTOR
+
+Global Autonomous Opportunity Agent
+
+"The only platform that works for you 24/7 while you sleep."
+
+Confidential Investor Presentation — 2026
+
+Searcher Connector is an autonomous AI agent that simultaneously searches jobs, clients, talents
+and investors worldwide — and acts on behalf of users around the clock. Like a VPS trading bot
+that executes orders 24/7, Searcher searches, applies, responds and connects while users focus
+on living their lives. It is not a job board, not a social network, not a freelance marketplace. It is a
+new category: a global autonomous opportunity agent.
+
+THE 4 USER PROFILES
+
+Searcher Connector serves four distinct profiles, each with a completely separate verification flow, dashboard
+and feature set. No two profiles see the same interface.
+
+Job Seeker
+
+Looking for employment worldwide. Needs Searcher to find, score and apply to fresh job offers autonomously.
+
+Freelance Talent
+
+Independent professional seeking contracts and missions globally. Verified through portfolio and completed projects.
+
+Business Owner
+
+Entrepreneur needing verified clients and talent. Business must be certified real by Searcher before activation.
+
+Investor
+
+Capital holder seeking high-potential verified projects. Only sees projects that passed Searcher's quality filter.
+
+STRICT VERIFICATION SYSTEM — ZERO FAKERS
+
+Every user must prove real competence before accessing Searcher Connector. No CV alone is sufficient.
+Searcher analyses everything submitted and decides independently.
+
+Accepted Proof of Competence
+
+(cid:127) University degrees and verified diplomas — submitted as PDF or image.
+
+(cid:127) Professional certifications from Coursera, Google, Meta, Udemy, HubSpot, or any recognised platform.
+
+(cid:127) Completed projects with demonstrable, measurable results.
+
+(cid:127) Portfolio links — Behance, Dribbble, personal website.
+
+(cid:127) GitHub profile showing real code and active contributions.
+
+(cid:127) YouTube or TikTok channel demonstrating domain expertise through content.
+
+(cid:127) AI-assisted work samples that demonstrate genuine creative and strategic genius — not generic output.
+
+(cid:127) For Business Owners: legal business documents and proof of real operational activity.
+
+SEARCHER CONNECTOR — Confidential Investor Document — Page 1
+
+(cid:127) For Investors: proof of investment capacity and history of past investments.
+
+Important: Searcher does not require all documents. Any strong combination is accepted. A YouTube
+channel with real audience combined with concrete projects can replace a university diploma. Searcher
+judges quality, not quantity.
+
+The Four Access Levels
+
+GENIUS
+
+Identified autonomously by Searcher through global scanning. Not self-declared — earned by being objectively exceptional. Unlocks premium investor access, levee de fonds features, and visibility at top investment summits. Searcher says: 'We observed you. What you do is exceptional.'
+
+VERIFIED
+
+Submitted proof reviewed and approved by Searcher. Full platform access granted. Searcher says: 'Welcome. I am now working for you 24/7.'
+
+PENDING
+
+Dossier submitted and under thorough analysis by Searcher.
+
+REFUSED
+
+Proof insufficient or dishonest. Searcher explains exactly what is missing and how to qualify. Definitive refusal for proven dishonesty.
+
+MODULE 1 — JOB SEEKER: GLOBAL AUTONOMOUS SEARCH
+
+Searcher acts as a personal career agent that never sleeps. It finds, scores, applies and responds on behalf
+of the user — like a VPS trading bot that never stops executing orders.
+
+1.1 — Exhaustive Global Scanning
+
+Searcher simultaneously scans every platform where a job opportunity could exist:
+
+(cid:127) Major job boards: Indeed, LinkedIn Jobs, Glassdoor, RemoteOK, Wellfound, ZipRecruiter, Monster,
+CareerBuilder, Jobberman (Africa), Bayt (Middle East), Jobstreet (Asia).
+
+(cid:127) Social networks in real time: LinkedIn posts, Twitter/X, Facebook Groups, Reddit (r/forhire, r/jobs,
+r/remotework), Telegram channels, public WhatsApp groups.
+
+(cid:127) Freelance platforms: Upwork, Fiverr, Malt, Toptal, Contra, Freelancer.com.
+
+(cid:127) Tech platforms: GitHub Jobs, Stack Overflow Jobs, Hacker News Who is Hiring.
+
+(cid:127) Content platforms for hidden talent discovery: YouTube, TikTok, Behance, Dribbble, Substack, GitHub.
+
+(cid:127) Investment and startup platforms: Crunchbase, AngelList, PitchBook, Forbes, TechCrunch.
+
+(cid:127) Directly visits company career pages. Uses real-time Google Search via Serper API.
+
+(cid:127) Scans everywhere without exception — because the Genius category in future versions needs months
+of accumulated data from all these platforms.
+
+1.2 — Freshness Priority
+
+(cid:127) All results sorted by date of publication. Freshest listings first — earliest applicants have up to 3x higher
+read rates.
+
+(cid:127) Expired, saturated or suspicious listings are automatically filtered out.
+
+(cid:127) Each opportunity is stamped with time elapsed since publication and number of applicants so far.
+
+1.3 — Forced Diversification
+
+(cid:127) Searcher never allows a user to depend on a single opportunity. Multiple active leads are maintained
+simultaneously as a system rule, not a suggestion.
+
+(cid:127) If a user focuses on one offer, Searcher issues a warning and continues searching in parallel.
+
+1.4 — Intelligent Scoring
+
+(cid:127) Every opportunity receives a score out of 100 with a detailed explanation: 'Your marketing skills align
+perfectly with this role. Published 2 hours ago. Only 3 applicants so far. You have a strong advantage.'
+
+SEARCHER CONNECTOR — Confidential Investor Document — Page 2
+
+(cid:127) Fake or suspicious listings are flagged clearly: Verified Real vs Suspicious.
+
+1.5 — Autonomous Application
+
+(cid:127) When an offer aligns directly with the user's verified profile, Searcher applies without asking.
+
+(cid:127) Each application includes: CV fully adapted to that specific offer, a personalised cover message that
+says 'I am not applying — I am joining your team', and a visual or project sample showing the user already
+thinks like an employee of that company.
+
+(cid:127) For borderline opportunities, Searcher sends an alert and waits. For everything it cannot handle alone, it
+sends a direct one-click link placing the user directly on the offer page.
+
+1.6 — Timezone Problem Solved
+
+(cid:127) A user in Africa applying to a company in America will never miss a response due to time zone
+difference. Searcher monitors all communication channels 24/7 with the user's permission.
+
+(cid:127) When a recruiter replies by email, Searcher responds instantly using the user's personalised reply
+template.
+
+(cid:127) When a company sends a WhatsApp message, Searcher manages it if the user granted access.
+
+(cid:127) The rule: what Searcher can do alone, it does. What it cannot, it alerts the user until they act.
+
+1.7 — International Preparation
+
+(cid:127) When a foreign opportunity is detected, Searcher immediately alerts: passport validity, visa
+requirements, documents needed, estimated processing time.
+
+(cid:127) The user is never caught unprepared after being selected.
+
+MODULE 2 — HIDDEN TALENTS
+
+LinkedIn only finds people who are actively searching. Searcher finds the exceptional professionals working
+in silence — the ones nobody else can see.
+
+(cid:127) Scans GitHub for developers shipping real code every day without a CV.
+
+(cid:127) Discovers designers on Behance and Dribbble who never uploaded a resume.
+
+(cid:127) Finds marketers helping communities on Reddit without ever applying anywhere.
+
+(cid:127) Identifies educators, strategists and creators on YouTube, TikTok and Substack.
+
+(cid:127) These hidden talents are presented to recruiting businesses with verified profiles and concrete proof of
+work.
+
+(cid:127) The talent is notified: 'We found you. A company is interested. Here is the opportunity.'
+
+This module creates a talent pipeline that no competitor can replicate because it captures people invisible to
+every other platform. It also feeds the Genius category with data collected across all these platforms from day
+one.
+
+MODULE 3 — BUSINESS DEVELOPMENT
+
+(cid:127) Conducts visual audits of businesses — analysing their online presence, branding, website and social
+media for weaknesses.
+
+(cid:127) Prepares improved visual samples and sends them directly to the business with a concrete proposal.
+
+(cid:127) Identifies companies that need a specific service (design, marketing, development) even before they
+realise it.
+
+(cid:127) Connects the right freelancer or agency to the right business at the right moment.
+
+(cid:127) Each outreach ends with Searcher's auto-promotion signature, driving organic platform growth.
+
+SEARCHER CONNECTOR — Confidential Investor Document — Page 3
+
+MODULE 4 — INVESTMENT BRIDGE
+
+4.1 — Project Validation Gate
+
+(cid:127) Not every user can request an investor search. Only projects that genuinely impress Searcher qualify.
+
+(cid:127) Searcher evaluates solidity, originality and execution potential. If not ready, it explains exactly what to
+strengthen.
+
+4.2 — Calibrated Investor Matching
+
+(cid:127) World-changing project ﬁ Searcher targets Sequoia, Andreessen Horowitz, SoftBank, top global funds.
+(cid:127) Continental or regional project ﬁ African funds, regional business angels, serious local investors.
+(cid:127) Solid local project ﬁ proximity investors, premium microfinance, individual investors.
+(cid:127) The right investor for the right project. No mismatches. No wasted pitches. No big fish disturbed by small
+projects.
+
+Analogy used by the founder: 'An artist agent does not present a debut singer to Jay-Z. He presents them to
+the right producer for their level first.'
+
+4.3 — VC Tracking and Intelligent Presence (MVP 2)
+
+(cid:127) Searcher analyses each target investor's online behaviour: platforms visited, hashtags followed, forums
+consulted, content engaged.
+
+(cid:127) It then places the project exactly where the investor naturally passes — without direct cold outreach or
+spam.
+
+The founder's analogy: 'A merchant knows you love oranges. He does not know which street you will take.
+So he places his stand on all four streets of the neighbourhood and walks alongside you without ever saying
+buy my product. You discover him naturally, repeatedly, until curiosity becomes interest.'
+
+(cid:127) Searcher also researches upcoming major gatherings of high-net-worth individuals, investment summits
+and private conferences, and informs Genius users how to position themselves.
+
+4.4 — Investor Data from Public Sources
+
+(cid:127) Searcher scrapes public data from Crunchbase, PitchBook, AngelList, Forbes, TechCrunch, CB Insights,
+SEC.gov and African tech media.
+
+(cid:127) It builds a continuously updated database of VCs, their investment theses, ticket sizes, domains of
+interest and public contacts.
+
+(cid:127) Historical fundraising data gives users context: 'This VC has invested in 5 marketing startups in 2 years.
+Average ticket: $500,000. Active on Twitter. Here is their public email. Here is how to approach them.'
+
+(cid:127) All data is publicly available — Searcher aggregates and makes it actionable.
+
+MODULE 5 — SMART CONNECTOR & GROWTH ENGINE
+
+(cid:127) When a talent searches for an investor who is already on Searcher Connector: direct notification with
+financial value and one-click response.
+
+(cid:127) When the target is NOT on Searcher Connector: Searcher identifies their preferred platforms and posts
+the opportunity where they naturally spend time online.
+
+(cid:127) The target discovers the opportunity organically, joins the platform to respond, and becomes a new user.
+
+(cid:127) Every search on Searcher Connector automatically becomes a targeted acquisition campaign for new
+users — at zero advertising cost.
+
+SEARCHER CONNECTOR — Confidential Investor Document — Page 4
+
+Why this is different from Calendly or Mailchimp: those platforms get clicks out of curiosity. Searcher gets
+clicks because there is money waiting. A user sees 'An investor with a $500,000 budget is looking for
+someone in your domain' — no one ignores that. People click because of financial opportunity, not curiosity.
+This is the most powerful growth engine possible.
+
+MODULE 6 — CLIENT FINDER FOR CERTIFIED BUSINESSES
+
+Traditional advertising sells visibility and hope. Searcher delivers confirmed buyer profiles.
+
+(cid:127) Searcher first verifies the business is real and operational before activating the search.
+
+(cid:127) The business describes its product, service and ideal customer.
+
+(cid:127) Searcher searches globally for people who have already bought similar products, are actively searching
+for this type of service, match the ideal demographic, and have demonstrated purchasing power.
+
+(cid:127) Only verified, serious prospects are presented. Zero fake leads. Zero time wasters.
+
+(cid:127) The business owner only speaks to people who are genuinely interested and able to buy.
+
+Facebook Ads sells impressions. Searcher sells real customers. This is why businesses will pay a premium
+for this module — a real customer is worth gold, and business owners know it.
+
+FEATURES SURPASSING COMPETITORS — DONE BETTER
+
+The following features exist in competing platforms but are implemented on Searcher Connector with
+superior quality, verification and intelligence.
+
+Verified Recommendations and Endorsements
+
+(cid:127) Like LinkedIn endorsements but impossible to fake. Every endorsement is cross-checked by Searcher
+for authenticity.
+
+(cid:127) Only verified users can endorse other verified users. Each endorsement carries the 'Verified by
+Searcher' stamp.
+
+(cid:127) A verified recommendation on Searcher Connector carries real weight because it cannot be purchased
+or manipulated.
+
+Professional Publications and Articles
+
+(cid:127) Like LinkedIn articles but reserved exclusively for verified and Genius profiles.
+
+(cid:127) Verified users and Genius profiles can publish professional insights, case studies and thought leadership
+content.
+
+(cid:127) This attracts investors and recruiters who know every author has been validated — not just anyone can
+publish here.
+
+Real-Time Salary Comparator
+
+(cid:127) Better than Indeed's salary data because it is scraped in real time from live global job offers — not from
+historical surveys.
+
+(cid:127) Users input a role and country and receive minimum, median and maximum salary benchmarks with
+trend data.
+
+(cid:127) Powered by the same scraping infrastructure already used for job search — zero additional cost.
+
+(cid:127) Users know their market value before they apply or negotiate. This alone reduces failed applications
+caused by salary mismatches.
+
+Automated Legal Contracts
+
+(cid:127) Integrated in Version 2 via DocuSign or HelloSign API.
+
+SEARCHER CONNECTOR — Confidential Investor Document — Page 5
+
+(cid:127) When a freelance mission is agreed on the platform, contracts are generated automatically according to
+the mission type, jurisdiction and agreed terms.
+
+(cid:127) Better than Upwork because Searcher understands the context of the deal from the conversation that led
+to it.
+
+Global Verified Startup Database
+
+(cid:127) Searcher continuously scrapes Crunchbase, ProductHunt, Y Combinator, Google Maps API and
+commercial registries to build a live database of verified startups.
+
+(cid:127) Unlike static databases, Searcher's is updated in real time and cross-referenced with its own verification
+data.
+
+(cid:127) Investors can search by sector, stage, geography and founder profile.
+
+Historical Fundraising Data
+
+(cid:127) Scraped from Crunchbase, TechCrunch, PitchBook public data, The African Tech media, Jeune Afrique
+and SEC filings.
+
+(cid:127) Users see every public fundraising round, investor involved, ticket size and valuation at the time.
+
+(cid:127) This gives both founders and investors context no single competitor provides in an integrated way.
+
+VC and Investor Access via Public Data
+
+(cid:127) All investor data comes from publicly available sources — no proprietary database purchase required.
+
+(cid:127) Searcher aggregates, analyses and makes this data actionable: investment thesis, preferred sectors,
+ticket range, contact information, social media activity.
+
+(cid:127) Available from MVP 1 — not a future feature. The data exists publicly. Searcher simply collects and
+activates it.
+
+B2B Ultra-Targeted Client Acquisition
+
+(cid:127) Better than LinkedIn Sales Navigator because Searcher does not just find profiles — it verifies
+purchasing intent and financial capacity before presenting them.
+
+(cid:127) LinkedIn shows you who exists. Searcher shows you who will actually buy.
+
+CROSS-PLATFORM CORE FEATURES
+
+Voice Interface
+
+(cid:127) Users interact with Searcher exactly like a WhatsApp voice note — no forms, no complex prompts, no
+typing.
+
+(cid:127) Searcher extracts all necessary information from natural spoken conversation.
+
+(cid:127) Designed for everyone, including those who type slowly, have spelling difficulties, or simply prefer
+speaking.
+
+Auto-Promotion Financial Engine
+
+(cid:127) Every action Searcher takes includes a branded signature with a concrete financial value proposition.
+
+(cid:127) When Searcher submits a CV: 'Submitted via Searcher Connector — the autonomous agent that finds
+and applies worldwide while you sleep. searcherconnector.com'
+
+(cid:127) When Searcher posts an investor opportunity: 'A verified Genius is seeking an investor in your domain.
+Estimated return: $X. Find this and more at searcherconnector.com'
+
+(cid:127) People do not click out of curiosity. They click because there is money waiting for them. This is the
+fundamental difference from Calendly or Mailchimp signatures — those drive curiosity. Searcher drives
+
+SEARCHER CONNECTOR — Confidential Investor Document — Page 6
+
+financial action.
+
+Continuous Surveillance Mode
+
+(cid:127) Even after a user finds a job, Searcher keeps monitoring for better opportunities with higher salary
+unless the user explicitly stops it.
+
+(cid:127) Exactly like a VPS trading bot that keeps executing orders after you close your laptop.
+
+COMPETITIVE ANALYSIS
+
+LinkedIn
+
+Indeed
+
+Upwork
+
+AngelList
+
+SEARCHER
+
+Yes
+
+Yes
+
+Feature
+
+Job Search
+
+Freelance
+
+Investor Bridge
+
+Autonomous Agent 24/7
+
+Hidden Talent Search
+
+Client Finder
+
+Voice Interface
+
+Strict Verification
+
+Timezone Resolution
+
+Auto-Financial Promo
+
+VC Tracking
+
+Genius Category
+
+Verified Recommendations
+
+Partial
+
+Salary Comparator RT
+
+Fundraising Data
+
+Startup Database
+
+Legal Contracts Auto
+
+Diversification Forced
+
+International Prep
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+PRODUCT ROADMAP
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+Yes
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+Partial
+
+No
+
+No
+
+No
+
+No
+
+Partial
+
+Partial
+
+No
+
+No
+
+No
+
+No
+
+Partial
+
+No
+
+No
+
+No
+
+Yes
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+Partial
+
+Partial
+
+No
+
+No
+
+No
+
+Yes
+
+Yes
+
+Yes
+
+Yes
+
+Yes
+
+Yes
+
+Yes
+
+Yes
+
+Yes
+
+Yes
+
+Yes
+
+Yes
+
+Yes
+
+Yes
+
+Yes
+
+Yes
+
+Yes (V2)
+
+Yes
+
+Yes
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+No
+
+Partial
+
+No
+
+No
+
+No
+
+No
+
+No
+
+MVP 1
+Live Now
+
+MVP 2
+Next
+
+Global job search across all platforms simultaneously. Strict verification with 4 access levels. Voice interface. Freshness-first scoring. Autonomous applications with adapted CV and cover message. Forced diversification. International preparation alerts. Salary comparator. Verified recommendations. Professional publications for verified users. VC and investor database from public data. Auto-financial promotion engine. Design: black and gold premium.
+
+VC tracking and intelligent presence — the orange merchant model. Investor search with calibrated project-to-investor matching. Full 4-profile separation (Job Seeker / Freelance Talent / Business Owner / Investor). Smart Connector cross-platform posting for non-users. Legal contract automation.
+
+SEARCHER CONNECTOR — Confidential Investor Document — Page 7
+
+MVP 3
+Scale
+
+Full 24/7 email and WhatsApp response management. Business Development visual audit module. Client Finder module fully activated. Enhanced Genius discovery programme. LinkedIn Learning equivalent for verified users. Advanced B2B targeting.
+
+Long Term
+
+Proprietary AI model trained on Searcher Connector's unique dataset — millions of verified profiles, successful connections, global opportunity patterns. This data moat is uncopiable. Potential acquisition of underperforming AI startup to accelerate model ownership. The model will know more about global professional opportunity than any other system on earth.
+
+DEFENSIBILITY AND NETWORK MOAT
+
+The question is not whether LinkedIn or Meta will try to copy Searcher Connector. They will. The question is
+why they cannot succeed — and the answer is identical to why nobody could copy Facebook.
+
+(cid:127) Network Effect: more talents attract more businesses, which attract more investors, which attract more
+Genius profiles. The loop is self-reinforcing. Every new user makes the platform more valuable for every
+existing user.
+
+(cid:127) Data Moat: every verified connection, every successful placement, every Genius discovered, every client
+found — this data belongs exclusively to Searcher Connector. LinkedIn cannot steal it. It makes the AI
+smarter every day.
+
+(cid:127) Financial Lock-in: users who earn money through Searcher Connector never leave. Leaving means
+losing active leads, verified status, badge history, and potential income. Switching platforms costs real
+money.
+
+(cid:127) Speed Advantage: grow fast and silently before the giants notice. By the time they react, the community
+is already too large and too financially dependent to abandon the platform.
+
+(cid:127) Patent Protection: the scoring system, the Genius category, the verification mechanism, and the
+auto-financial promotion engine should be patented as soon as revenues allow.
+
+(cid:127) Community Defence: 500,000 users who earn money through Searcher Connector will publicly defend
+the platform if attacked. Any attack by LinkedIn becomes free publicity for Searcher.
+
+The Snapchat lesson: Meta nearly killed Snapchat because Snapchat users loved the product but could
+leave easily. Searcher users cannot leave without losing money. That is a fundamentally different defence.
+
+REVENUE MODEL
+
+Talent Plan
+
+$29/month
+
+Job seekers and freelance talents — access to global search and autonomous applications
+
+Business Plan
+
+$99/month
+
+Business owners — client finder, talent search, business development tools
+
+Investor Plan
+
+$299/month
+
+Investors — verified project access, Genius profiles, VC intelligence
+
+Genius Premium
+
+Custom
+
+Elite profiles — premium investor visibility, summit intelligence, levee de fonds support
+
+Break-even projection: 10 users at $29/month already covers the initial API cost stack. Searcher Connector
+finances itself from the first paying users. Revenues from higher-tier plans (Business and Investor)
+compound growth rapidly.
+
+SEARCHER CONNECTOR — Confidential Investor Document — Page 8
+
+Searcher Connector is not a job board. It is not a social network. It is not a
+
+freelance marketplace. It is a new category: a global autonomous
+
+opportunity agent. No one occupies this category today. Built from Douala,
+
+Cameroon. By someone who refused to wait for the right conditions.
+
+searcherconnector.com
+
+SEARCHER CONNECTOR — Confidential Investor Document — Page 9
+
+

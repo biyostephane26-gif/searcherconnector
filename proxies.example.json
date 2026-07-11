@@ -1,0 +1,17 @@
+// Exemple de proxies.json — remplacez par vos vrais proxies
+[
+  {
+    "id": "proxy-1",
+    "host": "192.168.1.100",
+    "port": 8080,
+    "protocol": "http"
+  },
+  {
+    "id": "proxy-2",
+    "host": "104.23.56.78",
+    "port": 3128,
+    "protocol": "https",
+    "username": "user",
+    "password": "pass"
+  }
+]

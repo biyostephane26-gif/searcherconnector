@@ -1,0 +1,250 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "refresh": "Refresh",
+    "back": "Back",
+    "next": "Next",
+    "send": "Send",
+    "upload": "Upload",
+    "download": "Download",
+    "confirm": "Confirm",
+    "error": "Error",
+    "success": "Success"
+  },
+  "nav": {
+    "home": "Home",
+    "opportunities": "Opportunities",
+    "agent": "Agent Searcher",
+    "opportunityCreator": "Create Offer",
+    "cowork": "Cowork",
+    "interviews": "Interviews",
+    "social": "Social",
+    "articles": "Articles",
+    "groups": "Communities",
+    "messages": "Messages",
+    "salary": "Salaries",
+    "profile": "Profile",
+    "settings": "Settings",
+    "pricing": "Pricing",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "agentActive": "Agent active 24/7",
+    "opportunitiesFound": "Opportunities found",
+    "applicationsSubmitted": "Applications submitted",
+    "avgMatchScore": "Average match score",
+    "launchScan": "Launch global scan",
+    "recentOpportunities": "Recent opportunities",
+    "viewAll": "View all",
+    "noOpportunities": "No opportunities. Launch a scan to start."
+  },
+  "opportunities": {
+    "title": "Opportunity Explorer",
+    "filters": {
+      "all": "All",
+      "fresh": "Fresh (<24h)",
+      "applied": "Applied",
+      "pending": "Pending"
+    },
+    "matchScore": "Match",
+    "source": "Source",
+    "postedAgo": "Posted {{hours}}h ago",
+    "applicants": "{{count}} applicants",
+    "apply": "Apply",
+    "applied": "Application sent",
+    "unlockPremium": "Unlock with Premium",
+    "premiumOnly": "Premium Only",
+    "scaiAnalysis": "SCAI Analysis",
+    "readinessScore": "Readiness score",
+    "applyManually": "I'll apply myself"
+  },
+  "scai": {
+    "title": "Agent Searcher",
+    "greeting": "Hello! I'm SCAI, your personal career assistant.",
+    "placeholder": "Ask me a question or tell me to find opportunities...",
+    "voice": "Use voice",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "{{count}} voice credits left",
+    "thinking": "Thinking...",
+    "scanning": "Scanning the web for you...",
+    "analyzing": "Analyzing opportunities...",
+    "applying": "Sending your application..."
+  },
+  "profile": {
+    "title": "Professional Profile",
+    "completion": "Profile completion",
+    "level": "Level",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Mid",
+      "senior": "Senior",
+      "expert": "Expert"
+    },
+    "progression": "{{count}} missions away from {{level}}",
+    "maxLevel": "Max level reached",
+    "verification": {
+      "pending": "Pending",
+      "verified": "Verified",
+      "genius": "Genius",
+      "refused": "Refused"
+    },
+    "editProfile": "Edit profile",
+    "uploadAvatar": "Change photo",
+    "personalInfo": "Personal information",
+    "skills": "Skills",
+    "experience": "Experience",
+    "portfolio": "Portfolio",
+    "documents": "Documents"
+  },
+  "pricing": {
+    "title": "Plans & Pricing",
+    "monthly": "per month",
+    "currentPlan": "Current plan",
+    "upgrade": "Upgrade to {{plan}}",
+    "features": "Features",
+    "free": {
+      "name": "Free",
+      "features": [
+        "RSS feeds + free APIs",
+        "10 personalized missions per scan",
+        "6 free + 4 premium locked missions",
+        "Generic notifications",
+        "2 manual scans/day max",
+        "SCAI Voice unavailable"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "All free + premium API sources",
+        "Unlimited missions",
+        "Targeted notifications",
+        "10 scans/day",
+        "60 voice credits/month",
+        "PDF generation: CV + Cover letter"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "All sources (LinkedIn, Upwork...)",
+        "Priority on fresh missions",
+        "Real-time notifications <10 applicants",
+        "Unlimited scans",
+        "300 voice credits/month",
+        "All PDFs",
+        "Interview simulation",
+        "Portfolio Analyzer"
+      ]
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "notifications": "Notifications",
+    "emailNotifications": "Email notifications",
+    "pushNotifications": "Push notifications",
+    "privacy": "Privacy",
+    "security": "Security",
+    "account": "Account",
+    "deleteAccount": "Delete account",
+    "changePassword": "Change password",
+    "twoFactor": "Two-factor authentication"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "noNotifications": "No notifications",
+    "types": {
+      "opportunity": "New opportunity",
+      "application": "Application updated",
+      "message": "New message",
+      "system": "System notification",
+      "plan": "Plan activated"
+    },
+    "filters": {
+      "all": "All",
+      "unread": "Unread",
+      "opportunities": "Opportunities",
+      "system": "System"
+    }
+  },
+  "applications": {
+    "title": "My Applications",
+    "status": {
+      "applied": "Applied",
+      "viewed": "Viewed",
+      "interview": "Interview",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "noApplications": "No applications yet",
+    "viewDetails": "View details",
+    "withdrawApplication": "Withdraw application"
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "forgotPassword": "Forgot password?",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account yet?",
+    "loginWithGoogle": "Continue with Google",
+    "loginWithGithub": "Continue with GitHub",
+    "acceptTerms": "I accept the terms of service",
+    "waitlist": "Join waitlist"
+  },
+  "errors": {
+    "generic": "An error occurred",
+    "networkError": "Connection error",
+    "unauthorized": "Unauthorized",
+    "notFound": "Not found",
+    "validation": "Invalid data",
+    "tryAgain": "Try again"
+  },
+  "social": {
+    "post": "Post",
+    "comment": "Comment",
+    "like": "Like",
+    "share": "Share",
+    "newPost": "New post",
+    "whatOnYourMind": "What's new in your career?",
+    "professionalContent": "Professional content only",
+    "rejectedContent": "This content doesn't meet SC professional standards"
+  },
+  "cowork": {
+    "title": "Cowork Space",
+    "createSpace": "Create space",
+    "joinSpace": "Join",
+    "mySpaces": "My spaces",
+    "findCollaborators": "Find collaborators",
+    "premiumFeature": "Premium Feature"
+  },
+  "founder": {
+    "title": "Founder Dashboard",
+    "monitoring": "Monitoring",
+    "telemetry": "MongoDB/Sources",
+    "scans": "Scans & Logs",
+    "users": "Users",
+    "conversations": "Conversations",
+    "revenue": "Revenue",
+    "activatePlan": "Activate plan",
+    "changeStatus": "Change status",
+    "addTokens": "Add tokens",
+    "testEmail": "Test Email",
+    "scanToggle": "Toggle Scan"
+  }
+}

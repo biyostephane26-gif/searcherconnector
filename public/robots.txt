@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+Allow: /pricing
+Allow: /guide
+Allow: /terms
+Allow: /privacy
+Allow: /support
+
+# Protéger les routes sensibles
+Disallow: /founder
+Disallow: /dashboard
+Disallow: /agent
+Disallow: /settings
+Disallow: /profile
+Disallow: /api/
+Disallow: /onboarding
+Disallow: /status
+Disallow: /applications
+
+Sitemap: https://searcherconnector.com/sitemap.xml

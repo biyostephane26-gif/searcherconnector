@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Mode sombre (défaut) ─────────────────────────────────── */
+:root {
+  --bg-primary:    #0A0A0A;
+  --bg-secondary:  #111111;
+  --bg-card:       #0D0D0D;
+  --bg-border:     #1A1A1A;
+  --bg-border-2:   #2a2a2a;
+  --text-primary:  #ffffff;
+  --text-secondary:#9ca3af;
+  --text-muted:    #6b7280;
+  --gold:          #D4AF37;
+  --gold-light:    #F5E6A3;
+}
+
+/* ── Mode clair ───────────────────────────────────────────── */
+html.light-mode {
+  --bg-primary:    #ffffff;
+  --bg-secondary:  #f8f9fa;
+  --bg-card:       #ffffff;
+  --bg-border:     #e9ecef;
+  --bg-border-2:   #dee2e6;
+  --text-primary:  #212529;
+  --text-secondary:#495057;
+  --text-muted:    #6c757d;
+  --gold:          #d4af37;
+  --gold-light:    #f5e6a3;
+}
+
+/* Light mode overrides — composants clés */
+html.light-mode body                                   { background-color: var(--bg-primary); color: var(--text-primary); }
+html.light-mode .bg-\[\#0A0A0A\]                      { background-color: var(--bg-primary) !important; }
+html.light-mode .bg-\[\#0D0D0D\]                      { background-color: var(--bg-card) !important; }
+html.light-mode .bg-\[\#111111\]                       { background-color: var(--bg-secondary) !important; }
+html.light-mode .bg-\[\#1A1A1A\]                      { background-color: var(--bg-border) !important; }
+html.light-mode .border-\[\#1A1A1A\]                  { border-color: var(--bg-border) !important; }
+html.light-mode .border-\[\#2a2a2a\]                  { border-color: var(--bg-border-2) !important; }
+html.light-mode .text-white                            { color: var(--text-primary) !important; }
+html.light-mode .text-gray-400                         { color: var(--text-secondary) !important; }
+html.light-mode .text-gray-500                         { color: var(--text-muted) !important; }
+html.light-mode .text-gray-600, 
+html.light-mode .text-gray-700                         { color: var(--text-muted) !important; }
+html.light-mode .text-\[\#D4AF37\]                    { color: var(--gold) !important; }
+html.light-mode .bg-\[\#D4AF37\]                      { background-color: var(--gold) !important; }
+html.light-mode nav                                    { background-color: rgba(255,255,255,0.95) !important; border-color: var(--bg-border) !important; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+html.light-mode aside                                  { background-color: var(--bg-card) !important; border-color: var(--bg-border) !important; box-shadow: 1px 0 3px rgba(0,0,0,0.05); }
+html.light-mode .bg-\[\#1A1500\]                      { background-color: #fef9e7 !important; }
+html.light-mode .border-\[\#D4AF37\]\/30              { border-color: rgba(212,175,55,0.3) !important; }
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  /* Force la scrollbar toujours visible pour éviter que la navbar cache le contenu */
+  overflow-y: scroll;
+  min-height: 100vh;
+  /* Padding top pour TOUTES les pages = hauteur navbar (64px) */
+  padding-top: 64px;
+}
+
+/* Scrollbar stylée dorée */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+  border-left: 1px solid var(--bg-border);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #D4AF37 0%, #B8962D 100%);
+  border-radius: 6px;
+  border: 2px solid var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #F5E6A3 0%, #D4AF37 100%);
+}
+
+/* Pour Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #D4AF37 var(--bg-primary);
+}
+
+.glow-gold {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+@keyframes progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.animate-progress {
+  animation: progress linear forwards;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin 3s linear infinite;
+}
+
+.text-gradient-gold {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#D4AF37] via-[#F5E6A3] to-[#D4AF37];
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
