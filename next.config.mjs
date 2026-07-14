@@ -7,6 +7,12 @@ const __dirname = path.dirname(__filename);
 
 const nextConfig = {
   reactStrictMode: true,
+  output: 'standalone',
+  experimental: {
+    outputFileTracingIncludes: {
+      '/api/**': ['./node_modules/**'],
+    },
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
