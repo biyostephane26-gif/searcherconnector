@@ -31,7 +31,7 @@ jobs:
       #   run: npx tsc --noEmit --skipLibCheck
       #   continue-on-error: false
 
-      - name: 🏗️ Build Next.js
+            - name: 🏗️ Build Next.js
         run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -39,8 +39,12 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           MONGODB_DB_NAME: ${{ secrets.MONGODB_DB_NAME }}
+          UPSTASH_REDIS_URL: ${{ secrets.UPSTASH_REDIS_URL }}
+          UPSTASH_REDIS_TOKEN: ${{ secrets.UPSTASH_REDIS_TOKEN }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           SKIP_ENV_VALIDATION: true
           NODE_ENV: production
+
 
   # ────────────────────────────────────────────────────
   # JOB 2: Déployer sur Vercel (seulement si build OK)
