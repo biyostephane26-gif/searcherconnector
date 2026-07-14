@@ -46,6 +46,9 @@ jobs:
           UPSTASH_REDIS_TOKEN: ${{ secrets.UPSTASH_REDIS_TOKEN }}
           # Email
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          # Stripe
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          NEXT_PUBLIC_STRIPE_PUBLIC_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLIC_KEY }}
           # Build config
           SKIP_ENV_VALIDATION: true
           NODE_ENV: production
