@@ -3,6 +3,8 @@
 // Suggère des collaborateurs compatibles selon domaine/skills
 // =================================================================
 
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 

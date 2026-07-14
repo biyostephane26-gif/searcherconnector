@@ -3,6 +3,8 @@
 // Stats réelles depuis Supabase cache_opportunities et scraper_sessions
 // =================================================================
 
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 

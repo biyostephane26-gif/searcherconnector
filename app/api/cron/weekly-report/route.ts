@@ -4,6 +4,8 @@
 // Envoie stats + insights + gap free vs premium
 // =================================================================
 
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendWeeklyReport } from '../../../../src/lib/email'
