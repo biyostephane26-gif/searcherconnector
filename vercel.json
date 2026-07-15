@@ -1,8 +1,13 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/weekly-report",
-      "schedule": "0 9 * * 1"
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 60
     }
-  ]
+  },
+  "build": {
+    "env": {
+      "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "1",
+      "PUPPETEER_SKIP_DOWNLOAD": "1"
+    }
+  }
 }
