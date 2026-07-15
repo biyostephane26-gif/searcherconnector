@@ -5,19 +5,28 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase admin client
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-  { auth: { autoRefreshToken: false, persistSession: false } }
-);
+// Lazy-loaded Supabase client to avoid blocking during build
+let supabaseAdmin: ReturnType<typeof createClient> | null = null;
+
+function getSupabaseClient() {
+  if (!supabaseAdmin) {
+    supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    );
+  }
+  return supabaseAdmin;
+}
 
 // =================================================================
 // CACHE MANAGER
 // =================================================================
 
 export class CacheManager {
-  private supabase = supabaseAdmin;
+  private get supabase() {
+    return getSupabaseClient();
+  }
   private readonly BATCH_SIZE = 500; // Batch size for bulk operations (optimized for 1M+ opportunities)
 
   // Add a new opportunity to cache (with deduplication)
