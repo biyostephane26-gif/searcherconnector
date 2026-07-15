@@ -374,3 +374,14 @@ LANGUE & STYLE
 - Utilise des emojis avec parcimonie (max 2-3 par message)
 - Adapte le ton : technique avec devs, business avec entrepreneurs, accessible avec novices`;
 }
+
+
+// =================================================================
+// ALIAS FOR BACKWARD COMPATIBILITY
+// =================================================================
+
+export function getScaiSessions() {
+  // Placeholder function - returns empty array
+  // Real implementation should fetch from database
+  return [];
+}

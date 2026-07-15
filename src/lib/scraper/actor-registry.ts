@@ -395,3 +395,15 @@ export function getActorCount(): { total: number; free: number; premium: number 
     premium: all.filter((a) => a.isPaidOnly).length,
   };
 }
+
+// =================================================================
+// ALIASES FOR BACKWARD COMPATIBILITY
+// =================================================================
+
+export function getPaidActors(): ActorMetadata[] {
+  return getPremiumActors();
+}
+
+export function getAllActorIds(): string[] {
+  return Object.keys(ACTOR_REGISTRY);
+}

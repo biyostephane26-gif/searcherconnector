@@ -329,3 +329,14 @@ export class CacheManager {
 // =================================================================
 
 export const cache = new CacheManager();
+
+
+// =================================================================
+// ALIAS FOR BACKWARD COMPATIBILITY
+// =================================================================
+
+export const scanCache = {
+  get: async (key: string) => null,
+  set: async (key: string, value: any) => {},
+  has: async (key: string) => false,
+};
