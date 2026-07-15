@@ -22,10 +22,13 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Skip static generation for routes that freeze during build
+  // Skip ALL static generation to prevent build freeze
   generateBuildId: async () => {
     return 'build-' + Date.now()
   },
+  // Force all routes to be dynamic
+  skipMiddlewareUrlNormalize: true,
+  skipTrailingSlashRedirect: true,
   images: {
 
     remotePatterns: [
