@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "読み込み中...",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "close": "閉じる",
+    "search": "検索",
+    "filter": "絞り込み",
+    "refresh": "更新",
+    "back": "戻る",
+    "next": "次へ",
+    "send": "送信",
+    "upload": "アップロード",
+    "download": "ダウンロード",
+    "confirm": "確認",
+    "error": "エラー",
+    "success": "成功"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "ホーム",
+    "opportunities": "求人・案件",
+    "agent": "Searcherエージェント",
+    "opportunityCreator": "オファーを作成",
+    "cowork": "Cowork",
+    "interviews": "面接",
+    "social": "コミュニティ",
+    "articles": "記事",
+    "groups": "グループ",
+    "messages": "メッセージ",
+    "salary": "給与",
+    "profile": "プロフィール",
+    "settings": "設定",
+    "pricing": "料金",
+    "logout": "ログアウト"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "ダッシュボード",
+    "agentActive": "エージェントは24時間365日稼働中",
+    "opportunitiesFound": "見つかった案件",
+    "applicationsSubmitted": "送信した応募",
+    "avgMatchScore": "平均マッチスコア",
+    "launchScan": "グローバル検索を開始",
+    "recentOpportunities": "最新の案件",
+    "viewAll": "すべて表示",
+    "noOpportunities": "案件がありません。検索を開始してください。"
+  },
+  "opportunities": {
+    "title": "案件エクスプローラー",
+    "filters": {
+      "all": "すべて",
+      "fresh": "新着（24時間以内）",
+      "applied": "応募済み",
+      "pending": "保留中"
+    },
+    "matchScore": "マッチ度",
+    "source": "ソース",
+    "postedAgo": "{{hours}}時間前に投稿",
+    "applicants": "応募者 {{count}} 人",
+    "apply": "応募する",
+    "applied": "応募を送信しました",
+    "unlockPremium": "Premiumでロック解除",
+    "premiumOnly": "Premium限定",
+    "scaiAnalysis": "SCAI分析",
+    "readinessScore": "準備度スコア",
+    "applyManually": "自分で応募する"
+  },
+  "scai": {
+    "title": "Searcherエージェント",
+    "greeting": "こんにちは！私はSCAI、あなた専属のキャリアアシスタントです。",
+    "placeholder": "質問するか、案件を探すよう頼んでください...",
+    "voice": "音声を使う",
+    "voicePremium": "SCAI Voice（Premium）",
+    "voiceCredits": "残り{{count}}回分の音声クレジット",
+    "thinking": "考え中...",
+    "scanning": "あなたのためにウェブを検索中...",
+    "analyzing": "案件を分析中...",
+    "applying": "応募を送信中..."
+  },
+  "profile": {
+    "title": "プロフェッショナルプロフィール",
+    "completion": "プロフィール完成度",
+    "level": "レベル",
+    "levels": {
+      "junior": "ジュニア",
+      "mid": "ミドル",
+      "senior": "シニア",
+      "expert": "エキスパート"
+    },
+    "progression": "{{level}}まであと{{count}}件のプロジェクト",
+    "maxLevel": "最高レベルに到達",
+    "verification": {
+      "pending": "審査中",
+      "verified": "認証済み",
+      "genius": "Genius",
+      "refused": "却下"
+    },
+    "editProfile": "プロフィールを編集",
+    "uploadAvatar": "写真を変更",
+    "personalInfo": "個人情報",
+    "skills": "スキル",
+    "experience": "経験",
+    "portfolio": "ポートフォリオ",
+    "documents": "書類"
+  },
+  "pricing": {
+    "title": "プランと料金",
+    "monthly": "月額",
+    "currentPlan": "現在のプラン",
+    "upgrade": "{{plan}}にアップグレード",
+    "features": "機能",
+    "free": {
+      "name": "無料",
+      "features": [
+        "RSSフィード + 無料API",
+        "検索ごとに10件の個別提案",
+        "無料6件 + プレミアムロック4件",
+        "一般的な通知",
+        "1日最大2回の手動検索",
+        "SCAI Voiceは利用不可"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "すべての無料ソース + プレミアムAPI",
+        "無制限の案件",
+        "ターゲット通知",
+        "1日10回の検索",
+        "月60回の音声クレジット",
+        "PDF作成：履歴書＋志望動機書"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "すべてのソース（LinkedIn、Upworkなど）",
+        "新着案件の優先表示",
+        "応募者10人未満のリアルタイム通知",
+        "無制限の検索",
+        "月300回の音声クレジット",
+        "すべてのPDF",
+        "模擬面接",
+        "ポートフォリオ分析"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "設定",
+    "language": "言語",
+    "theme": "テーマ",
+    "lightMode": "ライトモード",
+    "darkMode": "ダークモード",
+    "notifications": "通知",
+    "emailNotifications": "メール通知",
+    "pushNotifications": "プッシュ通知",
+    "privacy": "プライバシー",
+    "security": "セキュリティ",
+    "account": "アカウント",
+    "deleteAccount": "アカウントを削除",
+    "changePassword": "パスワードを変更",
+    "twoFactor": "二段階認証"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "通知",
+    "markAllRead": "すべて既読にする",
+    "noNotifications": "通知はありません",
+    "types": {
+      "opportunity": "新しい案件",
+      "application": "応募状況の更新",
+      "message": "新しいメッセージ",
+      "system": "システム通知",
+      "plan": "プランが有効化されました"
+    },
+    "filters": {
+      "all": "すべて",
+      "unread": "未読",
+      "opportunities": "案件",
+      "system": "システム"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "応募一覧",
+    "status": {
+      "applied": "応募済み",
+      "viewed": "閲覧済み",
+      "interview": "面接",
+      "accepted": "採用",
+      "rejected": "不採用"
+    },
+    "noApplications": "まだ応募がありません",
+    "viewDetails": "詳細を見る",
+    "withdrawApplication": "応募を取り下げる"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "ログイン",
+    "signup": "新規登録",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "confirmPassword": "パスワードを確認",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "alreadyHaveAccount": "すでにアカウントをお持ちですか？",
+    "dontHaveAccount": "アカウントをお持ちでない方",
+    "loginWithGoogle": "Googleで続ける",
+    "loginWithGithub": "GitHubで続ける",
+    "acceptTerms": "利用規約に同意します",
+    "waitlist": "ウェイトリストに登録"
+  },
+  "errors": {
+    "generic": "エラーが発生しました",
+    "networkError": "接続エラー",
+    "unauthorized": "権限がありません",
+    "notFound": "見つかりません",
+    "validation": "無効なデータです",
+    "tryAgain": "もう一度お試しください"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "投稿する",
+    "comment": "コメントする",
+    "like": "いいね",
+    "share": "シェア",
+    "newPost": "新しい投稿",
+    "whatOnYourMind": "キャリアに関する近況は？",
+    "professionalContent": "プロフェッショナルな内容のみ",
+    "rejectedContent": "このコンテンツはSCのプロフェッショナル基準を満たしていません"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Coworkスペース",
+    "createSpace": "スペースを作成",
+    "joinSpace": "参加する",
+    "mySpaces": "自分のスペース",
+    "findCollaborators": "コラボレーターを探す",
+    "premiumFeature": "プレミアム機能"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "創業者ダッシュボード",
+    "monitoring": "モニタリング",
+    "telemetry": "MongoDB/データソース",
+    "scans": "検索とログ",
+    "users": "ユーザー",
+    "conversations": "会話",
+    "revenue": "収益",
+    "activatePlan": "プランを有効化",
+    "changeStatus": "ステータスを変更",
+    "addTokens": "トークンを追加",
+    "testEmail": "メールをテスト",
+    "scanToggle": "検索のオン/オフ"
   }
 }

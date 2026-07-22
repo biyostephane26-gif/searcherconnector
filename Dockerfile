@@ -28,5 +28,5 @@ RUN npm run build || true
 # Expose port
 EXPOSE 3000
 
-# Start app
-CMD ["npm", "start"]
+# Start app (serveur Next.js + scheduler de scan automatique, même conteneur)
+CMD ["npm", "run", "start:all"]

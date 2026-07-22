@@ -10,6 +10,7 @@ type Profile = {
   email: string
   bio?: string
   domain?: string
+  domains?: string[]
   country?: string
   city?: string
   profile_type?: string
@@ -18,6 +19,8 @@ type Profile = {
   linkedin_url?: string
   avatar_url?: string
   salary_min?: number
+  salary_max?: number
+  currency?: string
   profile_completion?: number
   verification_status?: string
   plan?: string
@@ -26,6 +29,18 @@ type Profile = {
   updated_at?: string
   refusal_reason?: string
   skills?: string[]
+  search_preferences?: { scai_learning?: boolean; [key: string]: any }
+  referral_code?: string
+  referred_by?: string
+  missions_completed?: number
+  free_mode?: boolean
+  surveillance_active?: boolean
+  salary_alert_threshold?: number
+  stripe_customer_id?: string
+  stripe_subscription_id?: string
+  plan_expires_at?: string
+  whatsapp_number?: string
+  response_template?: string
 }
 
 type AuthContextType = {
@@ -102,27 +117,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    // `loading` (authLoading côté consommateurs comme FounderGate/isFounder)
+    // ne doit passer à false qu'UNE FOIS le profil réellement chargé — sinon
+    // tout garde qui attend "authLoading === false" avant de juger juge sur
+    // un `profile` encore null et redirige à tort (ex: un vrai founder
+    // éjecté de /founder parce que fetchProfile() n'avait pas fini).
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
       setSession(newSession)
       setUser(newSession?.user ?? null)
-      
+
       if (newSession?.user) {
-        fetchProfile(newSession.user.id)
+        await fetchProfile(newSession.user.id)
       } else {
         setProfile(null)
       }
-      
+
       setLoading(false)
     })
 
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+    supabase.auth.getSession().then(async ({ data: { session: currentSession } }) => {
       setSession(currentSession)
       setUser(currentSession?.user ?? null)
-      
+
       if (currentSession?.user) {
-        fetchProfile(currentSession.user.id)
+        await fetchProfile(currentSession.user.id)
       }
-      
+
       setLoading(false)
     })
 

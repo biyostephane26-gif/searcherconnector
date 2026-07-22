@@ -14,6 +14,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendApplicationConfirmation } from '../../../src/lib/email'
 import { callGeminiDirect } from '../../../src/lib/scaiUtils'
+import { checkRateLimit } from '../../../src/lib/rateLimiter'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,7 +22,9 @@ const supabase = createClient(
 )
 
 // Signature officielle Searcher Connector
-const SIGNATURE = `\n\n---\n✉ Candidature envoyée via Searcher Connector\nsearcherconnector.com — L'agent IA qui travaille pour vous 24h/24\n*Ce message a été généré et envoyé par SCAI, l'IA de Searcher Connector, sur autorisation de l'utilisateur.*`
+// Discrète et professionnelle — ce message part vers un recruteur/employeur
+// réel. Pas de redondance "via X powered by Y" : un seul mention, sobre.
+const SIGNATURE = `\n\n---\nPowered by Searcher Connector · SCAI\nsearcherconnector.com`
 
 async function generateApplicationMessage(profile: any, opportunity: any): Promise<string> {
   // Template de secours — toujours disponible même si l'IA échoue
@@ -31,6 +34,8 @@ J'ai pris connaissance de votre offre "${opportunity.title}" et elle correspond 
 
 Fort de mon expérience dans ce domaine, je suis convaincu de pouvoir apporter une réelle valeur ajoutée à votre projet.
 ${profile.portfolio_url ? `\nMon portfolio : ${profile.portfolio_url}` : ''}${profile.github_url ? `\nGitHub : ${profile.github_url}` : ''}${profile.linkedin_url ? `\nLinkedIn : ${profile.linkedin_url}` : ''}
+
+Contact : ${profile.email}${profile.whatsapp_number ? ` · WhatsApp : ${profile.whatsapp_number}` : ''}
 
 Je reste disponible pour un échange.
 
@@ -45,12 +50,13 @@ PROFIL DU CANDIDAT :
 - Pays : ${profile.country}
 - Bio : ${(profile.bio || '').slice(0, 200)}
 ${profile.portfolio_url ? `- Portfolio : ${profile.portfolio_url}` : ''}${profile.github_url ? `\n- GitHub : ${profile.github_url}` : ''}${profile.linkedin_url ? `\n- LinkedIn : ${profile.linkedin_url}` : ''}
+- Contact : ${profile.email}${profile.whatsapp_number ? ` (WhatsApp : ${profile.whatsapp_number})` : ''}
 
 OPPORTUNITÉ :
 - Titre : ${opportunity.title}
 - Entreprise : ${opportunity.company || 'Non précisée'}
 - Description : ${(opportunity.snippet || opportunity.match_reason || '').slice(0, 200)}
-
+${profile.response_template ? `\nSTYLE DU CANDIDAT — exemple d'un message que lui-même a déjà écrit. Imite son ton, son registre et ses tournures de phrase, ne le recopie pas mot pour mot :\n"""\n${profile.response_template.slice(0, 500)}\n"""\n` : ''}
 RÈGLES : message direct 80-150 mots, accroche sur l'opportunité, 1-2 compétences clés, appel à l'action. Pas de "Bonjour je me présente". Pas de signature (ajoutée automatiquement). Langue : français sauf si opportunité en anglais.
 
 Génère UNIQUEMENT le corps du message.`
@@ -98,6 +104,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'userId et opportunityId requis' }, { status: 400 })
     }
 
+    // Anti-abus : 30 préparations de candidature / heure max par utilisateur
+    if (!checkRateLimit(`auto-apply:${userId}`, 30, 3600_000)) {
+      return NextResponse.json({ error: 'Trop de candidatures préparées cette heure. Réessaie plus tard.' }, { status: 429 })
+    }
+
     // ── Récupérer le profil et l'opportunité ──────────────────
     const [profileRes, oppRes] = await Promise.all([
       supabase.from('users_profiles').select('*').eq('id', userId).single(),
@@ -128,75 +139,74 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Générer le message ────────────────────────────────────
-    const message      = await generateApplicationMessage(profile, opportunity)
-    const fullMessage  = message + SIGNATURE
+    const message = await generateApplicationMessage(profile, opportunity)
+    // On ne compte pas sur le LLM pour respecter la consigne "inclue le
+    // contact" — on l'ajoute nous-mêmes s'il n'y est pas déjà.
+    const contactLine = `Contact : ${profile.email}${profile.whatsapp_number ? ` · WhatsApp : ${profile.whatsapp_number}` : ''}`
+    const messageWithContact = message.includes(profile.email) ? message : `${message}\n\n${contactLine}`
+    const fullMessage  = messageWithContact + SIGNATURE
     const subject      = `Candidature — ${opportunity.title}${opportunity.company ? ' chez ' + opportunity.company : ''}`
     const appliedAt    = new Date().toISOString()
 
-    // ── Sauvegarder dans applications_sent ───────────────────
+    // ── Sauvegarder dans applications_sent (colonnes réelles) ──
     let applicationId: string | null = null
     try {
       const { data: application, error: saveErr } = await supabase
         .from('applications_sent')
         .insert({
-          user_id:          userId,
-          opportunity_id:   opportunityId,
-          title:            opportunity.title,
-          company:          opportunity.company || '',
-          original_url:     opportunity.original_url || opportunity.link || '',
-          message_sent:     fullMessage,
-          subject:          subject,
-          status:           'sent',
-          channel:          sendVia || 'scai_auto',
-          auto_applied_by:  'SCAI',
-          applied_at:       appliedAt,
-          score_at_apply:   opportunity.score,
+          user_id:        userId,
+          opportunity_id: opportunityId,
+          job_title:      opportunity.title,
+          company:        opportunity.company || '',
+          cover_message:  fullMessage,
+          applied_at:     appliedAt,
+          response_status: 'waiting',
         })
         .select('id')
         .single()
 
-      if (saveErr) {
-        // Table peut ne pas exister encore — continuer quand même
-        if (!saveErr.message?.includes('does not exist') && !saveErr.code?.includes('42P01')) {
-          throw saveErr
-        }
-        console.warn('applications_sent table missing — continuing without save')
-      } else {
-        applicationId = application?.id || null
-      }
+      if (saveErr) throw saveErr
+      applicationId = application?.id || null
     } catch (saveErr: any) {
-      // Non-bloquant si la table n'existe pas encore
+      // Non-bloquant — l'essentiel (message généré, opportunité mise à jour,
+      // notification, email) doit continuer même si cette table pose souci.
       console.warn('applications_sent save failed:', saveErr?.message)
     }
 
     // ── Mettre à jour le statut de l'opportunité ─────────────
-    await supabase
+    // 'ready_to_send' — SCAI a rédigé le message mais ne l'a envoyé à
+    // personne (aucun canal de livraison réel vers l'employeur n'existe
+    // pour la découverte web). Distinct de 'auto_applied' qui reste
+    // réservé aux envois réels via Cowork (email/WhatsApp effectivement
+    // délivrés). Voir couche notif ci-dessous pour l'action utilisateur.
+    const { error: updateErr } = await supabase
       .from('opportunities')
-      .update({
-        status:     'auto_applied',
-        applied_at: appliedAt,
-      })
+      .update({ status: 'ready_to_send' })
       .eq('id', opportunityId)
+    if (updateErr) console.warn('opportunity status update failed:', updateErr.message)
 
-    // ── Log dans agent_actions ────────────────────────────────
-    await supabase.from('agent_actions').insert({
-      user_id:        userId,
-      action_type:    'auto_apply',
-      result:         `SCAI a postulé pour "${opportunity.title}"${opportunity.company ? ' chez ' + opportunity.company : ''}`,
-      success:        true,
-      auto_promo_sent: true,
-      execution_ms:   0,
+    // ── Log dans agent_actions (colonnes réelles) ─────────────
+    const { error: actionErr } = await supabase.from('agent_actions').insert({
+      user_id:      userId,
+      action_type:  'auto_apply',
+      opportunity_id: opportunityId,
+      result:       `SCAI a préparé une candidature pour "${opportunity.title}"${opportunity.company ? ' chez ' + opportunity.company : ''}`,
+      success:      true,
+      execution_ms: 0,
     })
+    if (actionErr) console.warn('agent_actions log failed:', actionErr.message)
 
-    // ── Notification à l'utilisateur ─────────────────────────
-    await supabase.from('notifications').insert({
-      user_id:  userId,
-      type:     'application',
-      title:    `⚡ SCAI a postulé pour toi`,
-      message:  `Candidature envoyée pour "${opportunity.title}"${opportunity.company ? ' chez ' + opportunity.company : ''}.`,
-      is_read:  false,
-      data:     JSON.stringify({ application_id: applicationId, opportunity_id: opportunityId }),
+    // ── Notification à l'utilisateur (colonnes réelles) ───────
+    const { error: notifErr } = await supabase.from('notifications').insert({
+      user_id:      userId,
+      type:         'application',
+      title:        `📝 SCAI a préparé ta candidature`,
+      message:      `Message prêt pour "${opportunity.title}"${opportunity.company ? ' chez ' + opportunity.company : ''}. Relis-le et envoie-le en un clic.`,
+      is_read:      false,
+      action_url:   applicationId ? `/applications/${applicationId}` : (opportunity.original_url || null),
+      action_label: 'Relire et envoyer',
     })
+    if (notifErr) console.warn('notification insert failed:', notifErr.message)
 
     // ── Email de confirmation ─────────────────────────────────
     if (profile.email) {

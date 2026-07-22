@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Ń gbé wọlé...",
+    "save": "Fi pamọ́",
+    "cancel": "Fagilé",
+    "delete": "Paarẹ́",
+    "edit": "Ṣàtúnṣe",
+    "close": "Ti",
+    "search": "Wá",
+    "filter": "Ṣàyẹ̀wò",
+    "refresh": "Sọ di tuntun",
+    "back": "Padà",
+    "next": "Tókàn",
+    "send": "Fi ranṣẹ́",
+    "upload": "Gbé sókè",
+    "download": "Gbé wọlé",
+    "confirm": "Jẹ́rìí sí",
+    "error": "Àṣìṣe",
+    "success": "Àṣeyọrí"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Ilé",
+    "opportunities": "Àǹfààní",
+    "agent": "Aṣojú Searcher",
+    "opportunityCreator": "Ṣẹ̀dá Ìfilọ́lẹ̀",
+    "cowork": "Cowork",
+    "interviews": "Ìfọ̀rọ̀wánilẹ́nuwò",
+    "social": "Àwùjọ",
+    "articles": "Àwọn Àpilẹ̀kọ",
+    "groups": "Àwọn Ẹgbẹ́",
+    "messages": "Àwọn Ìránṣẹ́",
+    "salary": "Owó Oṣù",
+    "profile": "Àkọsílẹ̀",
+    "settings": "Ìtòlẹ́sẹẹsẹ",
+    "pricing": "Owó",
+    "logout": "Jáde"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Pátákó Ìdarí",
+    "agentActive": "Aṣojú ń ṣiṣẹ́ wákàtí 24/7",
+    "opportunitiesFound": "Àǹfààní tí a rí",
+    "applicationsSubmitted": "Àwọn ìwé ìbéèrè tí a fi ránṣẹ́",
+    "avgMatchScore": "Àpapọ̀ ìwọ̀n ìbámu",
+    "launchScan": "Bẹ̀rẹ̀ ìwádìí àgbáyé",
+    "recentOpportunities": "Àǹfààní tuntun",
+    "viewAll": "Wo gbogbo rẹ̀",
+    "noOpportunities": "Kò sí àǹfààní. Bẹ̀rẹ̀ ìwádìí kan láti bẹ̀rẹ̀."
+  },
+  "opportunities": {
+    "title": "Aṣàwárí Àǹfààní",
+    "filters": {
+      "all": "Gbogbo rẹ̀",
+      "fresh": "Tuntun (<wákàtí 24)",
+      "applied": "A ti fi ìbéèrè ránṣẹ́",
+      "pending": "Ó ń dúró"
+    },
+    "matchScore": "Ìbámu",
+    "source": "Orísun",
+    "postedAgo": "A tẹ̀ ẹ́ sílẹ̀ ní wákàtí {{hours}} sẹ́yìn",
+    "applicants": "Olùbéèrè {{count}}",
+    "apply": "Bèèrè",
+    "applied": "A ti fi ìbéèrè ránṣẹ́",
+    "unlockPremium": "Ṣí i pẹ̀lú Premium",
+    "premiumOnly": "Premium Nìkan",
+    "scaiAnalysis": "Ìtúpalẹ̀ SCAI",
+    "readinessScore": "Ìwọ̀n ìmúrasílẹ̀",
+    "applyManually": "Èmi fúnra mi yóò bèèrè"
+  },
+  "scai": {
+    "title": "Aṣojú Searcher",
+    "greeting": "Bawo! Èmi ni SCAI, olùrànlọ́wọ́ iṣẹ́ rẹ tìkọ̀ọ̀kan.",
+    "placeholder": "Bi mi léèrè kan tàbí kí n wá àǹfààní fún ọ...",
+    "voice": "Lo ohùn",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "Kírẹ́dítì ohùn {{count}} kù",
+    "thinking": "Mo ń ronú...",
+    "scanning": "Mo ń wá ayélujára fún ọ...",
+    "analyzing": "Mo ń ṣàyẹ̀wò àwọn àǹfààní...",
+    "applying": "Mo ń fi ìbéèrè rẹ ránṣẹ́..."
+  },
+  "profile": {
+    "title": "Àkọsílẹ̀ Iṣẹ́",
+    "completion": "Ìparí àkọsílẹ̀",
+    "level": "Ìpele",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Àárín",
+      "senior": "Senior",
+      "expert": "Akọ́ṣẹ́mọṣẹ́"
+    },
+    "progression": "Iṣẹ́ {{count}} kù kí o tó dé ìpele {{level}}",
+    "maxLevel": "O ti dé ìpele tó ga jùlọ",
+    "verification": {
+      "pending": "Ó ń dúró",
+      "verified": "A ti fọwọ́sí i",
+      "genius": "Genius",
+      "refused": "A kọ̀"
+    },
+    "editProfile": "Ṣàtúnṣe àkọsílẹ̀",
+    "uploadAvatar": "Yí àwòrán padà",
+    "personalInfo": "Ìwífún ẹnìkọ̀ọ̀kan",
+    "skills": "Ọgbọ́n",
+    "experience": "Ìrírí",
+    "portfolio": "Àwọn iṣẹ́ tí a ti ṣe",
+    "documents": "Àwọn Ìwé"
+  },
+  "pricing": {
+    "title": "Àwọn Ètò àti Owó",
+    "monthly": "lóṣooṣù",
+    "currentPlan": "Ètò tí ó wà lọ́wọ́",
+    "upgrade": "Gbé sókè sí {{plan}}",
+    "features": "Àwọn ẹ̀yà",
+    "free": {
+      "name": "Ọ̀fẹ́",
+      "features": [
+        "Àwọn RSS + API ọ̀fẹ́",
+        "Àǹfààní 10 tí a ṣe fún ọ ní ìwádìí kọ̀ọ̀kan",
+        "6 ọ̀fẹ́ + 4 Premium tí a ti tì",
+        "Ìkéde gbogbogbò",
+        "Ìwádìí ọwọ́ 2 ní ọjọ́ kan",
+        "SCAI Voice kò sí"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Gbogbo orísun ọ̀fẹ́ + API Premium",
+        "Àǹfààní láìlopin",
+        "Ìkéde tí a fojú sí",
+        "Ìwádìí 10 lójúmọ́",
+        "Kírẹ́dítì ohùn 60 lóṣooṣù",
+        "Ṣíṣe PDF: Àkọsílẹ̀-iṣẹ́ + Lẹ́tà ìbéèrè"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Gbogbo orísun (LinkedIn, Upwork...)",
+        "Àyè àkọ́kọ́ fún àǹfààní tuntun",
+        "Ìkéde àsìkò-gidi nígbà tí olùbéèrè kéré sí 10",
+        "Ìwádìí láìlopin",
+        "Kírẹ́dítì ohùn 300 lóṣooṣù",
+        "Gbogbo PDF",
+        "Àdánwò ìfọ̀rọ̀wánilẹ́nuwò",
+        "Ìtúpalẹ̀ àwọn iṣẹ́ tí a ti ṣe"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Ìtòlẹ́sẹẹsẹ",
+    "language": "Èdè",
+    "theme": "Àwòrán",
+    "lightMode": "Ipò ìmọ́lẹ̀",
+    "darkMode": "Ipò òkùnkùn",
+    "notifications": "Ìkéde",
+    "emailNotifications": "Ìkéde ímeèlì",
+    "pushNotifications": "Ìkéde tí ó ń wọlé",
+    "privacy": "Ìpamọ́ra",
+    "security": "Ààbò",
+    "account": "Àkáǹtì",
+    "deleteAccount": "Paarẹ́ àkáǹtì",
+    "changePassword": "Yí ọ̀rọ̀ìpamọ́ padà",
+    "twoFactor": "Ìdánimọ̀ ìlọ́po méjì"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Ìkéde",
+    "markAllRead": "Sàmì sí gbogbo rẹ̀ bí a ti kà",
+    "noNotifications": "Kò sí ìkéde",
+    "types": {
+      "opportunity": "Àǹfààní tuntun",
+      "application": "Ìbéèrè ti di tuntun",
+      "message": "Ìránṣẹ́ tuntun",
+      "system": "Ìkéde ẹ̀rọ",
+      "plan": "A ti mú ètò ṣiṣẹ́"
+    },
+    "filters": {
+      "all": "Gbogbo rẹ̀",
+      "unread": "Tí a kò kà",
+      "opportunities": "Àǹfààní",
+      "system": "Ẹ̀rọ"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Àwọn Ìbéèrè Mi",
+    "status": {
+      "applied": "A ti fi ránṣẹ́",
+      "viewed": "A ti wò ó",
+      "interview": "Ìfọ̀rọ̀wánilẹ́nuwò",
+      "accepted": "A ti gbà",
+      "rejected": "A ti kọ̀"
+    },
+    "noApplications": "Kò sí ìbéèrè kankan síbẹ̀",
+    "viewDetails": "Wo àlàyé",
+    "withdrawApplication": "Yọ ìbéèrè kúrò"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Wọlé",
+    "signup": "Forúkọsílẹ̀",
+    "email": "Ímeèlì",
+    "password": "Ọ̀rọ̀ìpamọ́",
+    "confirmPassword": "Jẹ́rìí ọ̀rọ̀ìpamọ́",
+    "forgotPassword": "Ṣé o gbàgbé ọ̀rọ̀ìpamọ́?",
+    "alreadyHaveAccount": "Ṣé o ti ní àkáǹtì?",
+    "dontHaveAccount": "Ṣé o kò tíì ní àkáǹtì?",
+    "loginWithGoogle": "Tẹ̀síwájú pẹ̀lú Google",
+    "loginWithGithub": "Tẹ̀síwájú pẹ̀lú GitHub",
+    "acceptTerms": "Mo gbà pẹ̀lú àwọn òfin lílo",
+    "waitlist": "Darapọ̀ mọ́ àtòjọ ìdúró"
+  },
+  "errors": {
+    "generic": "Àṣìṣe kan ṣẹlẹ̀",
+    "networkError": "Àṣìṣe ìsopọ̀",
+    "unauthorized": "Kò gbà láàyè",
+    "notFound": "A kò rí i",
+    "validation": "Dátà tí kò tọ́",
+    "tryAgain": "Gbìyànjú lẹ́ẹ̀kan sí i"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Fi ránṣẹ́",
+    "comment": "Fi àsọyé",
+    "like": "Fẹ́ràn",
+    "share": "Pín",
+    "newPost": "Ìfiránṣẹ́ tuntun",
+    "whatOnYourMind": "Kí ni tuntun nínú iṣẹ́ rẹ?",
+    "professionalContent": "Àkóónú iṣẹ́ nìkan",
+    "rejectedContent": "Àkóónú yìí kò bá àwọn ìlànà iṣẹ́ SC mu"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Àyè Cowork",
+    "createSpace": "Ṣẹ̀dá àyè",
+    "joinSpace": "Darapọ̀ mọ́",
+    "mySpaces": "Àwọn àyè mi",
+    "findCollaborators": "Wá àwọn alábàáṣiṣẹ́pọ̀",
+    "premiumFeature": "Ẹ̀yà Premium"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Pátákó Olùdásílẹ̀",
+    "monitoring": "Àbójútó",
+    "telemetry": "MongoDB/Àwọn orísun",
+    "scans": "Ìwádìí àti Àkọsílẹ̀",
+    "users": "Àwọn olùmúlò",
+    "conversations": "Àwọn ìjíròrò",
+    "revenue": "Owó tí ń wọlé",
+    "activatePlan": "Mú ètò ṣiṣẹ́",
+    "changeStatus": "Yí ipò padà",
+    "addTokens": "Fi tòkìnì kún un",
+    "testEmail": "Dán ímeèlì wò",
+    "scanToggle": "Tan/pa ìwádìí"
   }
 }

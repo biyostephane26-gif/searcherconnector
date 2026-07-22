@@ -206,19 +206,21 @@ export function genererSystemPrompt(userId: string, userProfile: any = {}) {
   const verif       = userProfile.verification_status || 'pending';
   const bio         = userProfile.bio          || null;
   const portfolio   = userProfile.portfolio_url || userProfile.github_url || userProfile.linkedin_url || null;
-  const isPaid      = ['talent', 'business', 'investor'].includes(plan);
+  // Le fondateur n'a aucune restriction, quel que soit son `plan` en base.
+  const isPaid      = estProprietaire || ['starter', 'pro', 'enterprise'].includes(plan);
 
   const missingFields: string[] = [];
   if (!domain)      missingFields.push('domaine / compétences');
   if (!country)     missingFields.push('pays');
-  if (!profileType) missingFields.push('type de profil (emploi/freelance/investisseur/business)');
+  if (!profileType) missingFields.push('type de profil (emploi/freelance)');
   const profilComplet = missingFields.length === 0;
 
-  const scanFrequency = isPaid
-    ? plan === 'investor' ? 'scan automatique toutes les heures'
-      : plan === 'business' ? 'scan automatique toutes les 2h'
-      : 'scan automatique toutes les 4h'
-    : '1 scan automatique par jour (à 9h) + 3 scans manuels max';
+  const scanFrequency = estProprietaire
+    ? 'scan automatique toutes les heures (accès fondateur, illimité)'
+    : isPaid
+      ? plan === 'pro' ? 'scan automatique toutes les heures'
+        : 'scan automatique toutes les 4h'
+      : '1 scan automatique par jour (à 9h) + 3 scans manuels max';
 
   const ligneIdentite = estProprietaire
     ? `⚡ ACCÈS FONDATEUR — Biyo Stéphane, créateur de Searcher Connector. Niveau d'accès maximal. Tu lui dois ta franchise absolue et une collaboration stratégique de haut niveau.`
@@ -376,12 +378,3 @@ LANGUE & STYLE
 }
 
 
-// =================================================================
-// ALIAS FOR BACKWARD COMPATIBILITY
-// =================================================================
-
-export function getScaiSessions() {
-  // Placeholder function - returns empty array
-  // Real implementation should fetch from database
-  return [];
-}

@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "لوڈ ہو رہا ہے...",
+    "save": "محفوظ کریں",
+    "cancel": "منسوخ کریں",
+    "delete": "حذف کریں",
+    "edit": "ترمیم کریں",
+    "close": "بند کریں",
+    "search": "تلاش کریں",
+    "filter": "فلٹر کریں",
+    "refresh": "تازہ کریں",
+    "back": "واپس",
+    "next": "اگلا",
+    "send": "بھیجیں",
+    "upload": "اپ لوڈ کریں",
+    "download": "ڈاؤن لوڈ کریں",
+    "confirm": "تصدیق کریں",
+    "error": "خرابی",
+    "success": "کامیابی"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "ہوم",
+    "opportunities": "مواقع",
+    "agent": "Searcher ایجنٹ",
+    "opportunityCreator": "پیشکش بنائیں",
+    "cowork": "Cowork",
+    "interviews": "انٹرویوز",
+    "social": "کمیونٹی",
+    "articles": "مضامین",
+    "groups": "گروپس",
+    "messages": "پیغامات",
+    "salary": "تنخواہیں",
+    "profile": "پروفائل",
+    "settings": "ترتیبات",
+    "pricing": "قیمتیں",
+    "logout": "لاگ آؤٹ"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "ڈیش بورڈ",
+    "agentActive": "ایجنٹ 24/7 فعال ہے",
+    "opportunitiesFound": "ملے ہوئے مواقع",
+    "applicationsSubmitted": "بھیجی گئی درخواستیں",
+    "avgMatchScore": "اوسط مماثلت اسکور",
+    "launchScan": "عالمی تلاش شروع کریں",
+    "recentOpportunities": "حالیہ مواقع",
+    "viewAll": "سب دیکھیں",
+    "noOpportunities": "کوئی موقع نہیں۔ شروع کرنے کے لیے تلاش شروع کریں۔"
+  },
+  "opportunities": {
+    "title": "مواقع کی تلاش",
+    "filters": {
+      "all": "تمام",
+      "fresh": "تازہ (<24گھ)",
+      "applied": "درخواست دی گئی",
+      "pending": "زیر التوا"
+    },
+    "matchScore": "مماثلت",
+    "source": "ذریعہ",
+    "postedAgo": "{{hours}} گھنٹے پہلے شائع ہوا",
+    "applicants": "{{count}} درخواست دہندگان",
+    "apply": "درخواست دیں",
+    "applied": "درخواست بھیج دی گئی",
+    "unlockPremium": "Premium کے ساتھ کھولیں",
+    "premiumOnly": "صرف Premium",
+    "scaiAnalysis": "SCAI تجزیہ",
+    "readinessScore": "تیاری کا اسکور",
+    "applyManually": "میں خود درخواست دوں گا"
+  },
+  "scai": {
+    "title": "Searcher ایجنٹ",
+    "greeting": "ہیلو! میں SCAI ہوں، آپ کا ذاتی کیریئر معاون۔",
+    "placeholder": "مجھ سے سوال پوچھیں یا مواقع تلاش کرنے کو کہیں...",
+    "voice": "آواز استعمال کریں",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "{{count}} صوتی کریڈٹس باقی",
+    "thinking": "سوچ رہا ہوں...",
+    "scanning": "آپ کے لیے ویب تلاش کر رہا ہوں...",
+    "analyzing": "مواقع کا تجزیہ کر رہا ہوں...",
+    "applying": "آپ کی درخواست بھیج رہا ہوں..."
+  },
+  "profile": {
+    "title": "پیشہ ورانہ پروفائل",
+    "completion": "پروفائل کی تکمیل",
+    "level": "سطح",
+    "levels": {
+      "junior": "جونیئر",
+      "mid": "درمیانہ",
+      "senior": "سینیئر",
+      "expert": "ماہر"
+    },
+    "progression": "{{level}} تک پہنچنے کے لیے {{count}} پراجیکٹس باقی ہیں",
+    "maxLevel": "زیادہ سے زیادہ سطح حاصل ہو گئی",
+    "verification": {
+      "pending": "زیر التوا",
+      "verified": "تصدیق شدہ",
+      "genius": "Genius",
+      "refused": "مسترد"
+    },
+    "editProfile": "پروفائل میں ترمیم کریں",
+    "uploadAvatar": "تصویر تبدیل کریں",
+    "personalInfo": "ذاتی معلومات",
+    "skills": "مہارتیں",
+    "experience": "تجربہ",
+    "portfolio": "پورٹ فولیو",
+    "documents": "دستاویزات"
+  },
+  "pricing": {
+    "title": "پلانز اور قیمتیں",
+    "monthly": "فی مہینہ",
+    "currentPlan": "موجودہ پلان",
+    "upgrade": "{{plan}} میں اپ گریڈ کریں",
+    "features": "خصوصیات",
+    "free": {
+      "name": "مفت",
+      "features": [
+        "RSS فیڈز + مفت APIs",
+        "فی تلاش 10 ذاتی مواقع",
+        "6 مفت + 4 مقفل Premium مواقع",
+        "عمومی اطلاعات",
+        "زیادہ سے زیادہ 2 دستی تلاش/دن",
+        "SCAI Voice دستیاب نہیں"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "تمام مفت ذرائع + Premium APIs",
+        "لامحدود مواقع",
+        "ہدفی اطلاعات",
+        "10 تلاش/دن",
+        "60 صوتی کریڈٹس/ماہ",
+        "PDF تخلیق: ریزیومے + کور لیٹر"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "تمام ذرائع (LinkedIn, Upwork...)",
+        "نئے مواقع پر ترجیح",
+        "<10 درخواست دہندگان پر ریئل ٹائم اطلاعات",
+        "لامحدود تلاش",
+        "300 صوتی کریڈٹس/ماہ",
+        "تمام PDFs",
+        "انٹرویو سمولیشن",
+        "پورٹ فولیو تجزیہ کار"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "ترتیبات",
+    "language": "زبان",
+    "theme": "تھیم",
+    "lightMode": "لائٹ موڈ",
+    "darkMode": "ڈارک موڈ",
+    "notifications": "اطلاعات",
+    "emailNotifications": "ای میل اطلاعات",
+    "pushNotifications": "پش اطلاعات",
+    "privacy": "رازداری",
+    "security": "سیکیورٹی",
+    "account": "اکاؤنٹ",
+    "deleteAccount": "اکاؤنٹ حذف کریں",
+    "changePassword": "پاس ورڈ تبدیل کریں",
+    "twoFactor": "دو مرحلہ توثیق"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "اطلاعات",
+    "markAllRead": "سب کو پڑھا ہوا نشان زد کریں",
+    "noNotifications": "کوئی اطلاع نہیں",
+    "types": {
+      "opportunity": "نیا موقع",
+      "application": "درخواست اپ ڈیٹ",
+      "message": "نیا پیغام",
+      "system": "سسٹم اطلاع",
+      "plan": "پلان فعال کر دیا گیا"
+    },
+    "filters": {
+      "all": "تمام",
+      "unread": "غیر پڑھا",
+      "opportunities": "مواقع",
+      "system": "سسٹم"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "میری درخواستیں",
+    "status": {
+      "applied": "درخواست دی گئی",
+      "viewed": "دیکھا گیا",
+      "interview": "انٹرویو",
+      "accepted": "قبول شدہ",
+      "rejected": "مسترد"
+    },
+    "noApplications": "ابھی تک کوئی درخواست نہیں",
+    "viewDetails": "تفصیلات دیکھیں",
+    "withdrawApplication": "درخواست واپس لیں"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "لاگ ان",
+    "signup": "سائن اپ",
+    "email": "ای میل",
+    "password": "پاس ورڈ",
+    "confirmPassword": "پاس ورڈ کی تصدیق کریں",
+    "forgotPassword": "پاس ورڈ بھول گئے؟",
+    "alreadyHaveAccount": "پہلے سے اکاؤنٹ ہے؟",
+    "dontHaveAccount": "ابھی اکاؤنٹ نہیں ہے؟",
+    "loginWithGoogle": "Google کے ساتھ جاری رکھیں",
+    "loginWithGithub": "GitHub کے ساتھ جاری رکھیں",
+    "acceptTerms": "میں استعمال کی شرائط قبول کرتا ہوں",
+    "waitlist": "انتظار کی فہرست میں شامل ہوں"
+  },
+  "errors": {
+    "generic": "ایک خرابی پیش آئی",
+    "networkError": "کنکشن کی خرابی",
+    "unauthorized": "غیر مجاز",
+    "notFound": "نہیں ملا",
+    "validation": "غلط ڈیٹا",
+    "tryAgain": "دوبارہ کوشش کریں"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "پوسٹ کریں",
+    "comment": "تبصرہ کریں",
+    "like": "پسند",
+    "share": "شیئر کریں",
+    "newPost": "نئی پوسٹ",
+    "whatOnYourMind": "آپ کے کیریئر میں کیا نیا ہے؟",
+    "professionalContent": "صرف پیشہ ورانہ مواد",
+    "rejectedContent": "یہ مواد SC کے پیشہ ورانہ معیارات پر پورا نہیں اترتا"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Cowork اسپیس",
+    "createSpace": "اسپیس بنائیں",
+    "joinSpace": "شامل ہوں",
+    "mySpaces": "میری اسپیسز",
+    "findCollaborators": "معاونین تلاش کریں",
+    "premiumFeature": "Premium خصوصیت"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "بانی ڈیش بورڈ",
+    "monitoring": "نگرانی",
+    "telemetry": "MongoDB/ذرائع",
+    "scans": "تلاشیں اور لاگز",
+    "users": "صارفین",
+    "conversations": "گفتگو",
+    "revenue": "آمدنی",
+    "activatePlan": "پلان فعال کریں",
+    "changeStatus": "حیثیت تبدیل کریں",
+    "addTokens": "ٹوکنز شامل کریں",
+    "testEmail": "ای میل ٹیسٹ کریں",
+    "scanToggle": "تلاش آن/آف کریں"
   }
 }

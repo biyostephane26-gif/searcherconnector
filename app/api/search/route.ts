@@ -94,7 +94,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Serper API Key missing' }, { status: 500 });
     }
 
-    let results = [];
+    let results: any[] = [];
 
     switch (type) {
       case 'jobs': {

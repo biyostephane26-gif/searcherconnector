@@ -1,18 +1,30 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { getScaiSessions, fetchGroqWithRotation, genererSystemPrompt } from '../../../lib/scaiUtils';
+import { fetchGroqWithRotation, genererSystemPrompt } from '../../../lib/scaiUtils';
+import { getScaiSessions } from '../../../lib/mongo';
 
 // Configuration des clients
 const genAI = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
-const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 const ELEVENLABS_VOICE_ID = process.env.ELEVENLABS_VOICE_ID || 'pNInz6obpgDQGcFmaJgB'; // Default: Rachel
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
+
+// Clés en rotation — l'env réel n'a QUE des clés numérotées
+// (GROQ_API_KEY_1..10, ELEVENLABS_KEY_1..10). L'ancien code lisait
+// GROQ_API_KEY / ELEVENLABS_API_KEY (inexistantes) : STT et TTS
+// échouaient systématiquement avec "not configured".
+const GROQ_KEYS = [
+  process.env.GROQ_API_KEY,
+  ...Array.from({ length: 10 }, (_, i) => process.env[`GROQ_API_KEY_${i + 1}`]),
+].filter(Boolean) as string[];
+const ELEVENLABS_KEYS = [
+  process.env.ELEVENLABS_API_KEY,
+  ...Array.from({ length: 10 }, (_, i) => process.env[`ELEVENLABS_KEY_${i + 1}`]),
+].filter(Boolean) as string[];
 
 type VoiceResponse = {
   success: boolean;
   text?: string;
   audioUrl?: string;
-  audioBuffer?: Buffer;
+  audioBuffer?: string; // base64 — un Buffer ne peut pas traverser JSON tel quel
   response?: string;
   suggest_scan?: boolean;
   scan_params?: any;
@@ -53,7 +65,9 @@ export default async function handler(
       const audioBuffer = await textToSpeech(req.body.text);
       res.setHeader('Content-Type', 'audio/mpeg');
       res.setHeader('Content-Disposition', 'attachment; filename="scai-voice.mp3"');
-      return res.status(200).send(audioBuffer);
+      // .send() attend VoiceResponse ici à cause du typage générique de la
+      // réponse — mais ce mode renvoie du binaire brut, pas du JSON.
+      return (res as NextApiResponse).status(200).send(audioBuffer);
     }
 
     // Mode 3: FULL PIPELINE (STT → LLM → TTS)
@@ -120,8 +134,8 @@ export default async function handler(
 // SPEECH-TO-TEXT (Whisper via Groq)
 // ──────────────────────────────────────────────────────────────
 async function transcribeAudio(audioData: any): Promise<string> {
-  if (!GROQ_API_KEY) {
-    throw new Error('GROQ_API_KEY not configured');
+  if (GROQ_KEYS.length === 0) {
+    throw new Error('Aucune clé Groq configurée (GROQ_API_KEY_1..10)');
   }
 
   // Handle both base64 and File/Blob
@@ -134,64 +148,78 @@ async function transcribeAudio(audioData: any): Promise<string> {
     audioBlob = audioData as Blob;
   }
 
-  const formData = new FormData();
-  formData.append('file', audioBlob, 'audio.webm');
-  formData.append('model', 'whisper-large-v3-turbo');
-  formData.append('language', 'fr'); // French by default, can be auto-detected
+  // Rotation sur les clés : si l'une est à court de quota (429) ou invalide,
+  // on tente la suivante au lieu d'échouer directement.
+  let lastError = '';
+  for (const key of GROQ_KEYS) {
+    const formData = new FormData();
+    formData.append('file', audioBlob, 'audio.webm');
+    formData.append('model', 'whisper-large-v3-turbo');
+    // Pas de paramètre "language" forcé — Whisper détecte automatiquement
+    // parmi ~99 langues. Avant, tout était transcrit comme si c'était du
+    // français, ce qui cassait la reconnaissance pour toute autre langue.
 
-  const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${GROQ_API_KEY}`,
-    },
-    body: formData
-  });
+    const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${key}`,
+      },
+      body: formData
+    });
 
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`STT failed: ${response.status} ${errText}`);
+    if (response.ok) {
+      const data = await response.json();
+      return data.text;
+    }
+    lastError = `${response.status} ${await response.text()}`;
+    // 401/403/429 → clé morte ou saturée, essayer la suivante ; autre
+    // statut (ex. 400 audio invalide) → inutile de retenter
+    if (![401, 403, 429].includes(response.status)) break;
   }
-
-  const data = await response.json();
-  return data.text;
+  throw new Error(`STT failed: ${lastError}`);
 }
 
 // ──────────────────────────────────────────────────────────────
 // TEXT-TO-SPEECH (ElevenLabs)
 // ──────────────────────────────────────────────────────────────
 async function textToSpeech(text: string): Promise<Buffer> {
-  if (!ELEVENLABS_API_KEY) {
-    throw new Error('ELEVENLABS_API_KEY not configured');
+  if (ELEVENLABS_KEYS.length === 0) {
+    throw new Error('Aucune clé ElevenLabs configurée (ELEVENLABS_KEY_1..10)');
   }
 
-  const response = await fetch(
-    `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'xi-api-key': ELEVENLABS_API_KEY,
-      },
-      body: JSON.stringify({
-        text: text.slice(0, 500), // Limit to prevent very long audio
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75,
-          style: 0.0,
-          use_speaker_boost: true
-        }
-      })
+  // Rotation sur les clés — chaque compte gratuit ElevenLabs a son propre
+  // quota mensuel de caractères ; on passe à la suivante quand l'une est vide.
+  let lastError = '';
+  for (const key of ELEVENLABS_KEYS) {
+    const response = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'xi-api-key': key,
+        },
+        body: JSON.stringify({
+          text: text.slice(0, 500), // Limit to prevent very long audio
+          model_id: 'eleven_multilingual_v2',
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.75,
+            style: 0.0,
+            use_speaker_boost: true
+          }
+        })
+      }
+    );
+
+    if (response.ok) {
+      const arrayBuffer = await response.arrayBuffer();
+      return Buffer.from(arrayBuffer);
     }
-  );
-
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`TTS failed: ${response.status} ${errText}`);
+    lastError = `${response.status} ${await response.text()}`;
+    if (![401, 403, 429].includes(response.status)) break;
   }
-
-  const arrayBuffer = await response.arrayBuffer();
-  return Buffer.from(arrayBuffer);
+  throw new Error(`TTS failed: ${lastError}`);
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -201,8 +229,11 @@ async function processChat(userId: string, message: string, userProfile: any = {
   const idPropre = userId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
   const sessionsCollection = await getScaiSessions();
 
+  // Toggle "Mémoire des conversations" (Settings) — désactivé = éphémère
+  const learningEnabled = userProfile?.search_preferences?.scai_learning !== false;
+
   // 1. RÉCUPÉRATION : Chercher le document de l'utilisateur
-  let doc = await sessionsCollection.findOne({ userId: idPropre });
+  const doc = learningEnabled ? await sessionsCollection.findOne({ userId: idPropre }) : null;
   let messages = doc && doc.messages ? doc.messages : (doc && doc.historique ? doc.historique : []);
 
   if (messages.length === 0 || messages[0].role !== 'system') {
@@ -253,7 +284,7 @@ async function processChat(userId: string, message: string, userProfile: any = {
 
   messages.push({ role: 'assistant', content: reponseNettoyee });
 
-  await sessionsCollection.updateOne(
+  if (learningEnabled) await sessionsCollection.updateOne(
     { userId: idPropre },
     {
       $set: {

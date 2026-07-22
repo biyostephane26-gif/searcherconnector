@@ -50,41 +50,15 @@ export default function CreatePostBox({ onPostCreated, groupId }: CreatePostBoxP
 setPublishing(true)
 
     try {
-      // 1. MODÉRATION AUTOMATIQUE PAR SCAI
-      const moderationRes = await fetch('/api/social/moderate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content: content.trim(),
-          mediaType,
-          userId: user.id
-        })
-      })
-
-      if (!moderationRes.ok) {
-        alert('Erreur lors de la modération. Réessaye.')
-        setPublishing(false)
-        return
-      }
-
-      const { moderation } = await moderationRes.json()
-
-      // Si le contenu est rejeté, informer l'utilisateur
-      if (!moderation.approved) {
-        alert(`❌ Publication refusée par SCAI\n\n${moderation.reason || 'Ce contenu ne correspond pas aux standards professionnels de Searcher Connector.'}\n\nSearcher Connector est un réseau professionnel. Partage des opportunités, insights, réussites et collaborations.`)
-        setPublishing(false)
-        return
-      }
-
-      // 2. UPLOAD MÉDIA SI PRÉSENT
-      let mediaUrl = null
+      // 1. UPLOAD MÉDIA SI PRÉSENT
+      let mediaUrl: string | null = null
       if (mediaFile) {
         const path = `posts/${user.id}/${Date.now()}-${mediaFile.name}`
-        
+
         const { error: uploadError } = await supabase.storage
           .from('DOCUMENTS')
           .upload(path, mediaFile)
-        
+
         if (uploadError) {
           console.error("Upload error:", uploadError)
           alert(`Erreur d'upload: ${uploadError.message}`)
@@ -96,37 +70,39 @@ setPublishing(true)
         }
       }
 
-      // 3. CRÉER LE POST
-      const table = groupId ? 'group_posts' : 'posts'
-      const insertData: any = {
-        author_id: user.id,
-        content: content.trim(),
-        image_url: mediaUrl,
-        media_type: mediaType,
-        moderation_score: moderation.confidence,
-        moderation_category: moderation.category
+      // 2. CRÉER LE POST — la modération SCAI est appliquée côté serveur
+      // (voir /api/social/posts) : impossible à contourner depuis le client.
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch('/api/social/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({
+          content: content.trim(),
+          mediaUrl,
+          mediaType,
+          postType,
+          groupId,
+          isGeniusPost: profile?.verification_status === 'genius',
+        }),
+      })
+      const result = await res.json()
+
+      if (!res.ok) {
+        if (result.error === 'moderation_rejected') {
+          alert(`❌ Publication refusée par SCAI\n\n${result.moderation?.reason || 'Ce contenu ne correspond pas aux standards professionnels de Searcher Connector.'}\n\nSearcher Connector est un réseau professionnel. Partage des opportunités, insights, réussites et collaborations.`)
+        } else {
+          alert(`Erreur de publication: ${result.error || 'Erreur inconnue'}`)
+        }
+        setPublishing(false)
+        return
       }
 
-      if (groupId) {
-        insertData.group_id = groupId
-      } else {
-        insertData.post_type = postType
-        insertData.is_genius_post = profile?.verification_status === 'genius'
-      }
+      const postData = result.post
 
-      const { data: postData, error } = await supabase
-        .from(table)
-        .insert(insertData)
-        .select()
-        .single()
-
-      if (error) {
-        console.error("Supabase insert error:", error)
-        alert(`Erreur de publication: ${error.message}`)
-        throw error
-      }
-
-      // 4. TRAITER LES HASHTAGS
+      // 3. TRAITER LES HASHTAGS
       if (postData) {
         const tags = extractHashtags(content)
         for (const tag of tags) {
@@ -143,7 +119,7 @@ setPublishing(true)
           }
         }
       }
-      
+
       setContent('')
       setMediaFile(null)
       setMediaPreview(null)

@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "טוען...",
+    "save": "שמור",
+    "cancel": "ביטול",
+    "delete": "מחק",
+    "edit": "ערוך",
+    "close": "סגור",
+    "search": "חיפוש",
+    "filter": "סינון",
+    "refresh": "רענון",
+    "back": "חזרה",
+    "next": "הבא",
+    "send": "שלח",
+    "upload": "העלאה",
+    "download": "הורדה",
+    "confirm": "אישור",
+    "error": "שגיאה",
+    "success": "הצלחה"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "בית",
+    "opportunities": "הזדמנויות",
+    "agent": "סוכן Searcher",
+    "opportunityCreator": "יצירת הצעה",
+    "cowork": "Cowork",
+    "interviews": "ראיונות",
+    "social": "קהילה",
+    "articles": "מאמרים",
+    "groups": "קבוצות",
+    "messages": "הודעות",
+    "salary": "שכר",
+    "profile": "פרופיל",
+    "settings": "הגדרות",
+    "pricing": "תמחור",
+    "logout": "התנתקות"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "לוח בקרה",
+    "agentActive": "הסוכן פעיל 24/7",
+    "opportunitiesFound": "הזדמנויות שנמצאו",
+    "applicationsSubmitted": "מועמדויות שנשלחו",
+    "avgMatchScore": "ציון התאמה ממוצע",
+    "launchScan": "הפעל סריקה גלובלית",
+    "recentOpportunities": "הזדמנויות אחרונות",
+    "viewAll": "הצג הכול",
+    "noOpportunities": "אין הזדמנויות. הפעל סריקה כדי להתחיל."
+  },
+  "opportunities": {
+    "title": "סייר הזדמנויות",
+    "filters": {
+      "all": "הכול",
+      "fresh": "חדשות (<24 שעות)",
+      "applied": "הוגשה מועמדות",
+      "pending": "ממתין"
+    },
+    "matchScore": "התאמה",
+    "source": "מקור",
+    "postedAgo": "פורסם לפני {{hours}} שעות",
+    "applicants": "{{count}} מועמדים",
+    "apply": "הגש מועמדות",
+    "applied": "המועמדות נשלחה",
+    "unlockPremium": "פתח עם Premium",
+    "premiumOnly": "Premium בלבד",
+    "scaiAnalysis": "ניתוח SCAI",
+    "readinessScore": "ציון מוכנות",
+    "applyManually": "אגיש בעצמי"
+  },
+  "scai": {
+    "title": "סוכן Searcher",
+    "greeting": "שלום! אני SCAI, עוזר הקריירה האישי שלך.",
+    "placeholder": "שאל אותי שאלה או בקש ממני לחפש הזדמנויות...",
+    "voice": "שימוש בקול",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "נותרו {{count}} קרדיטים קוליים",
+    "thinking": "חושב...",
+    "scanning": "מחפש עבורך ברשת...",
+    "analyzing": "מנתח את ההזדמנויות...",
+    "applying": "שולח את המועמדות שלך..."
+  },
+  "profile": {
+    "title": "פרופיל מקצועי",
+    "completion": "השלמת הפרופיל",
+    "level": "רמה",
+    "levels": {
+      "junior": "ג'וניור",
+      "mid": "ביניים",
+      "senior": "סניור",
+      "expert": "מומחה"
+    },
+    "progression": "נותרו {{count}} משימות עד לרמת {{level}}",
+    "maxLevel": "הרמה המקסימלית הושגה",
+    "verification": {
+      "pending": "ממתין",
+      "verified": "מאומת",
+      "genius": "Genius",
+      "refused": "נדחה"
+    },
+    "editProfile": "עריכת פרופיל",
+    "uploadAvatar": "שינוי תמונה",
+    "personalInfo": "פרטים אישיים",
+    "skills": "כישורים",
+    "experience": "ניסיון",
+    "portfolio": "תיק עבודות",
+    "documents": "מסמכים"
+  },
+  "pricing": {
+    "title": "תוכניות ומחירים",
+    "monthly": "לחודש",
+    "currentPlan": "התוכנית הנוכחית",
+    "upgrade": "שדרג ל-{{plan}}",
+    "features": "תכונות",
+    "free": {
+      "name": "חינם",
+      "features": [
+        "פידי RSS + ממשקי API חינמיים",
+        "10 משימות מותאמות אישית לכל סריקה",
+        "6 משימות חינמיות + 4 נעולות בפרימיום",
+        "התראות כלליות",
+        "עד 2 סריקות ידניות ביום",
+        "SCAI Voice אינו זמין"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "כל המקורות החינמיים + ממשקי API פרימיום",
+        "משימות ללא הגבלה",
+        "התראות ממוקדות",
+        "10 סריקות ביום",
+        "60 קרדיטים קוליים בחודש",
+        "יצירת PDF: קורות חיים + מכתב מקדים"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "כל המקורות (LinkedIn, Upwork...)",
+        "עדיפות במשימות חדשות",
+        "התראות בזמן אמת עם פחות מ-10 מועמדים",
+        "סריקות ללא הגבלה",
+        "300 קרדיטים קוליים בחודש",
+        "כל קבצי ה-PDF",
+        "סימולציית ראיון",
+        "ניתוח תיק עבודות"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "הגדרות",
+    "language": "שפה",
+    "theme": "ערכת נושא",
+    "lightMode": "מצב בהיר",
+    "darkMode": "מצב כהה",
+    "notifications": "התראות",
+    "emailNotifications": "התראות אימייל",
+    "pushNotifications": "התראות דחיפה",
+    "privacy": "פרטיות",
+    "security": "אבטחה",
+    "account": "חשבון",
+    "deleteAccount": "מחיקת חשבון",
+    "changePassword": "שינוי סיסמה",
+    "twoFactor": "אימות דו-שלבי"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "התראות",
+    "markAllRead": "סמן הכול כנקרא",
+    "noNotifications": "אין התראות",
+    "types": {
+      "opportunity": "הזדמנות חדשה",
+      "application": "עדכון מועמדות",
+      "message": "הודעה חדשה",
+      "system": "התראת מערכת",
+      "plan": "התוכנית הופעלה"
+    },
+    "filters": {
+      "all": "הכול",
+      "unread": "לא נקראו",
+      "opportunities": "הזדמנויות",
+      "system": "מערכת"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "המועמדויות שלי",
+    "status": {
+      "applied": "נשלחה",
+      "viewed": "נצפתה",
+      "interview": "ראיון",
+      "accepted": "התקבלה",
+      "rejected": "נדחתה"
+    },
+    "noApplications": "אין עדיין מועמדויות",
+    "viewDetails": "צפייה בפרטים",
+    "withdrawApplication": "משיכת המועמדות"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "התחברות",
+    "signup": "הרשמה",
+    "email": "אימייל",
+    "password": "סיסמה",
+    "confirmPassword": "אימות סיסמה",
+    "forgotPassword": "שכחת סיסמה?",
+    "alreadyHaveAccount": "כבר יש לך חשבון?",
+    "dontHaveAccount": "עדיין אין לך חשבון?",
+    "loginWithGoogle": "המשך עם Google",
+    "loginWithGithub": "המשך עם GitHub",
+    "acceptTerms": "אני מקבל/ת את תנאי השימוש",
+    "waitlist": "הצטרפות לרשימת ההמתנה"
+  },
+  "errors": {
+    "generic": "אירעה שגיאה",
+    "networkError": "שגיאת חיבור",
+    "unauthorized": "לא מורשה",
+    "notFound": "לא נמצא",
+    "validation": "נתונים לא תקינים",
+    "tryAgain": "נסה שוב"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "פרסום",
+    "comment": "תגובה",
+    "like": "לייק",
+    "share": "שיתוף",
+    "newPost": "פוסט חדש",
+    "whatOnYourMind": "מה חדש בקריירה שלך?",
+    "professionalContent": "תוכן מקצועי בלבד",
+    "rejectedContent": "התוכן הזה לא עומד בסטנדרטים המקצועיים של SC"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "מרחב Cowork",
+    "createSpace": "יצירת מרחב",
+    "joinSpace": "הצטרפות",
+    "mySpaces": "המרחבים שלי",
+    "findCollaborators": "חיפוש שותפים",
+    "premiumFeature": "תכונת Premium"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "לוח בקרה למייסד",
+    "monitoring": "ניטור",
+    "telemetry": "MongoDB/מקורות",
+    "scans": "סריקות ולוגים",
+    "users": "משתמשים",
+    "conversations": "שיחות",
+    "revenue": "הכנסות",
+    "activatePlan": "הפעלת תוכנית",
+    "changeStatus": "שינוי סטטוס",
+    "addTokens": "הוספת טוקנים",
+    "testEmail": "בדיקת אימייל",
+    "scanToggle": "הפעלה/כיבוי סריקה"
   }
 }

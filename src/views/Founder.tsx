@@ -93,7 +93,7 @@ const TABS = [
 ]
 
 export default function Founder() {
-  const { profile, user } = useAuth()
+  const { profile, user, loading: authLoading } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [tab, setTab] = useState(searchParams?.get('tab') || 'monitor')
@@ -128,9 +128,10 @@ export default function Founder() {
   const isFounder = FOUNDER_EMAILS.includes((profile?.email || '').toLowerCase()) || profile?.role === 'founder'
 
   useEffect(() => {
+    if (authLoading) return // attendre que le profil soit chargé avant de juger
     if (!isFounder) { router.replace('/dashboard'); return }
     loadTab(tab)
-  }, [tab, isFounder])
+  }, [tab, isFounder, authLoading])
 
   const loadTab = async (t: string) => {
     setLoading(true)
@@ -346,6 +347,7 @@ export default function Founder() {
     critical: 'text-red-500 bg-red-500/20 font-bold',
   }[s] || 'text-gray-400 bg-gray-400/10')
 
+  if (authLoading) return null
   if (!isFounder) return null
 
   return (

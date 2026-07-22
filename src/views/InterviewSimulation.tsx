@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 import { useVoiceInput } from '../hooks/useVoiceInput'
 import Card from '../components/ui/Card'
 import GoldButton from '../components/ui/GoldButton'
@@ -86,6 +87,16 @@ const SAMPLE_QUESTIONS: Question[] = [
 
 export default function InterviewSimulation() {
   const { user, profile } = useAuth()
+
+  // voice_credits vit dans user_voice_credits, pas sur le profil — sans ça,
+  // la vérification ci-dessous était toujours "insuffisant", même pour un
+  // compte avec des crédits, et SCAI Voice ne parlait jamais.
+  const [voiceCredits, setVoiceCredits] = useState(0)
+  useEffect(() => {
+    if (!user) return
+    supabase.from('user_voice_credits').select('credits_remaining').eq('user_id', user.id).single()
+      .then(({ data }) => setVoiceCredits(data?.credits_remaining || 0))
+  }, [user])
   const [isActive, setIsActive] = useState(false)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [responses, setResponses] = useState<Array<{question: string, answer: string, duration: number, feedback?: any}>>([])
@@ -111,7 +122,7 @@ export default function InterviewSimulation() {
 
   // Fonction pour que SCAI pose la question vocalement
   const speakQuestion = async (questionText: string) => {
-    if (!profile?.voice_credits || profile.voice_credits <= 0) {
+    if (profile?.role !== 'founder' && voiceCredits <= 0) {
       alert('⚠️ Crédits vocaux insuffisants. Passe à un plan premium pour utiliser SCAI Voice.')
       return
     }

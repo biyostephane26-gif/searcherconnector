@@ -16,6 +16,48 @@ const FROM_EMAIL  = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
 const FROM_NAME   = 'Searcher Connector'
 const APP_URL     = process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.com'
 
+// ── Gmail SMTP — solution gratuite en attendant un domaine vérifié ──
+// Resend en mode sandbox ne peut envoyer qu'à l'adresse du compte lui-même.
+// Tant qu'aucun domaine n'est vérifié sur Resend, Gmail prend le relais
+// automatiquement — en rotation sur plusieurs comptes pour multiplier le
+// volume gratuit (chaque compte Gmail personnel a sa propre limite/jour).
+const GMAIL_ACCOUNTS: Array<{ user: string; pass: string }> = Array.from({ length: 10 }, (_, i) => ({
+  user: process.env[`GMAIL_USER_${i + 1}`] || '',
+  pass: process.env[`GMAIL_APP_PASSWORD_${i + 1}`] || '',
+})).filter(a => a.user && a.pass)
+
+const HAS_GMAIL_FALLBACK = GMAIL_ACCOUNTS.length > 0
+
+const _gmailTransporters = new Map<string, any>()
+let _gmailRotationIndex = 0
+
+async function getGmailTransporter(account: { user: string; pass: string }) {
+  if (_gmailTransporters.has(account.user)) return _gmailTransporters.get(account.user)
+  const nodemailer = await import('nodemailer')
+  const transporter = nodemailer.default.createTransport({
+    service: 'gmail',
+    auth: { user: account.user, pass: account.pass },
+  })
+  _gmailTransporters.set(account.user, transporter)
+  return transporter
+}
+
+async function sendViaGmail(to: string, subject: string, html: string): Promise<boolean> {
+  if (!HAS_GMAIL_FALLBACK) return false
+  // Rotation round-robin — répartit l'envoi sur les 10 comptes pour rester
+  // sous la limite quotidienne de chacun.
+  const account = GMAIL_ACCOUNTS[_gmailRotationIndex % GMAIL_ACCOUNTS.length]
+  _gmailRotationIndex++
+  try {
+    const transporter = await getGmailTransporter(account)
+    await transporter.sendMail({ from: `${FROM_NAME} <${account.user}>`, to, subject, html })
+    return true
+  } catch (e: any) {
+    console.warn(`[Email] Échec envoi Gmail (${account.user}):`, e?.message)
+    return false
+  }
+}
+
 // Couleurs Searcher
 const GOLD   = '#D4AF37'
 const BLACK  = '#0A0A0A'
@@ -71,35 +113,74 @@ ${previewText ? `<div style="display:none;max-height:0;overflow:hidden;">${previ
 </html>`
 }
 
-// ── Envoi via Resend ──────────────────────────────────────────────
-export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
-  if (!RESEND_KEY) {
-    // Resend pas configuré — log silencieux en production
-    if (process.env.NODE_ENV === 'development') {
-      console.info(`[Email non envoyé - Resend non configuré]\nTo: ${to}\nSubject: ${subject}`)
-    }
+// ── Plafond quotidien réel — protège contre tout bug d'envoi en boucle ──
+// À 1000+ utilisateurs, un déclencheur mal contrôlé peut faire flaguer les
+// comptes Gmail ou griller le quota Resend en quelques minutes. Ce plafond
+// s'applique quel que soit le déclencheur (alerte, rapport, confirmation...),
+// donc il protège même contre des bugs futurs, pas seulement ceux d'aujourd'hui.
+const MAX_PER_RECIPIENT_PER_DAY = parseInt(process.env.EMAIL_MAX_PER_RECIPIENT_PER_DAY || '5', 10)
+const MAX_GLOBAL_PER_DAY        = parseInt(process.env.EMAIL_MAX_GLOBAL_PER_DAY || '3000', 10)
+
+let _currentDay = new Date().toISOString().slice(0, 10)
+let _globalCountToday = 0
+const _perRecipientCountToday = new Map<string, number>()
+
+function resetCountersIfNewDay() {
+  const today = new Date().toISOString().slice(0, 10)
+  if (today !== _currentDay) {
+    _currentDay = today
+    _globalCountToday = 0
+    _perRecipientCountToday.clear()
+  }
+}
+
+function canSendAndRecord(to: string): boolean {
+  resetCountersIfNewDay()
+  if (_globalCountToday >= MAX_GLOBAL_PER_DAY) {
+    console.warn(`[Email] Plafond GLOBAL quotidien atteint (${MAX_GLOBAL_PER_DAY}) — envoi bloqué vers ${to}`)
     return false
+  }
+  const recipientCount = _perRecipientCountToday.get(to) || 0
+  if (recipientCount >= MAX_PER_RECIPIENT_PER_DAY) {
+    console.warn(`[Email] Plafond par destinataire atteint (${MAX_PER_RECIPIENT_PER_DAY}/jour) pour ${to}`)
+    return false
+  }
+  _globalCountToday++
+  _perRecipientCountToday.set(to, recipientCount + 1)
+  return true
+}
+
+// ── Envoi via Resend, avec repli automatique sur Gmail ────────────
+export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
+  if (!canSendAndRecord(to)) return false
+
+  if (RESEND_KEY) {
+    try {
+      const r = await fetch('https://api.resend.com/emails', {
+        method:  'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_KEY}`,
+          'Content-Type':  'application/json',
+        },
+        body: JSON.stringify({
+          from:    `${FROM_NAME} <${FROM_EMAIL}>`,
+          to:      [to],
+          subject,
+          html,
+        }),
+        signal: AbortSignal.timeout(10000),
+      })
+      if (r.ok) return true
+      // Resend a refusé (ex: sandbox — domaine non vérifié) → tente Gmail
+    } catch { /* tente Gmail */ }
   }
 
-  try {
-    const r = await fetch('https://api.resend.com/emails', {
-      method:  'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_KEY}`,
-        'Content-Type':  'application/json',
-      },
-      body: JSON.stringify({
-        from:    `${FROM_NAME} <${FROM_EMAIL}>`,
-        to:      [to],
-        subject,
-        html,
-      }),
-      signal: AbortSignal.timeout(10000),
-    })
-    return r.ok
-  } catch {
-    return false
+  if (HAS_GMAIL_FALLBACK) return sendViaGmail(to, subject, html)
+
+  if (process.env.NODE_ENV === 'development') {
+    console.info(`[Email non envoyé - aucun expéditeur configuré]\nTo: ${to}\nSubject: ${subject}`)
   }
+  return false
 }
 
 // =================================================================
@@ -137,25 +218,26 @@ export async function sendPaymentConfirmation(params: {
       </div>
 
       <p class="text">Ce que tu débloque avec le plan <strong style="color:#fff;">${planLabel}</strong> :</p>
-      ${params.plan === 'talent' ? `
+      ${params.plan === 'starter' ? `
         <ul style="color:#AAAAAA;font-size:14px;line-height:2;padding-left:20px;">
-          <li>✅ Scan automatique toutes les 4 heures</li>
-          <li>✅ 100+ opportunités par scan</li>
-          <li>✅ Auto-candidature par SCAI</li>
-          <li>✅ Badge Vérifié sur ton profil</li>
+          <li>✅ Sources premium en plus des gratuites</li>
+          <li>✅ Toutes les missions sans limite</li>
+          <li>✅ 10 scans manuels/jour</li>
+          <li>✅ 60 crédits vocaux SCAI/mois</li>
+          <li>✅ Génération PDF : CV + lettre de motivation</li>
         </ul>
-      ` : params.plan === 'business' ? `
+      ` : params.plan === 'pro' ? `
         <ul style="color:#AAAAAA;font-size:14px;line-height:2;padding-left:20px;">
-          <li>✅ Tout le plan Talent</li>
-          <li>✅ Scan toutes les 2 heures</li>
-          <li>✅ Opportunity Creator + Find Worker</li>
-          <li>✅ Cowork inbox Gmail + WhatsApp</li>
+          <li>✅ Toutes les sources, y compris LinkedIn/Upwork</li>
+          <li>✅ Priorité sur les missions les plus fraîches</li>
+          <li>✅ Scans manuels illimités</li>
+          <li>✅ 300 crédits vocaux SCAI/mois</li>
+          <li>✅ Simulation d'entretien avec SCAI</li>
         </ul>
       ` : `
         <ul style="color:#AAAAAA;font-size:14px;line-height:2;padding-left:20px;">
-          <li>✅ Tout le plan Business</li>
-          <li>✅ Scan toutes les heures</li>
-          <li>✅ Matching investisseurs VC</li>
+          <li>✅ Tout le plan Pro</li>
+          <li>✅ Accès prioritaire aux nouvelles fonctionnalités</li>
           <li>✅ Support direct fondateur</li>
         </ul>
       `}
@@ -235,7 +317,7 @@ export async function sendMessageAlert(params: {
   return sendEmail(params.to, `${channelIcon} Message de ${params.from} — action requise`, html)
 }
 
-// ── 4. Candidature envoyée par SCAI ──────────────────────────────
+// ── 4. Candidature préparée par SCAI (prête à envoyer) ────────────
 export async function sendApplicationConfirmation(params: {
   to:          string
   name:        string
@@ -246,10 +328,10 @@ export async function sendApplicationConfirmation(params: {
 }) {
   const html = baseTemplate(`
     <div class="content">
-      <div class="badge">🤖 SCAI a agi pour toi</div>
-      <h1 class="title" style="margin-top:16px;">Candidature envoyée automatiquement</h1>
+      <div class="badge">📝 SCAI a préparé ta candidature</div>
+      <h1 class="title" style="margin-top:16px;">Candidature prête à envoyer</h1>
       <p class="text">Bonjour ${params.name},</p>
-      <p class="text">SCAI a soumis une candidature en ton nom pour une opportunité à score élevé :</p>
+      <p class="text">SCAI a rédigé un message personnalisé pour une opportunité à score élevé. Il ne reste plus qu'à l'envoyer :</p>
 
       <div class="highlight">
         <p style="font-size:16px;font-weight:700;color:#FFFFFF;">${params.jobTitle}</p>
@@ -257,14 +339,14 @@ export async function sendApplicationConfirmation(params: {
         <p style="margin-top:8px;"><span class="score-big" style="font-size:28px;">${params.score}</span><span style="color:#AAAAAA;font-size:12px;"> /100</span></p>
       </div>
 
-      <p class="text">SCAI a rédigé un message personnalisé en incluant ta signature Searcher Connector. Tu peux voir exactement ce qui a été envoyé :</p>
-      <a href="${params.viewUrl}" class="btn">Voir la candidature →</a>
+      <p class="text">Relis le message avec ta signature Searcher Connector et envoie-le en un clic :</p>
+      <a href="${params.viewUrl}" class="btn">Relire et envoyer →</a>
 
       <p class="meta" style="margin-top:16px;">Si tu n'avais pas autorisé cette action, baisse ton seuil d'auto-apply dans Paramètres.</p>
     </div>
-  `, `SCAI a postulé pour ${params.jobTitle} — score ${params.score}/100`)
+  `, `Candidature prête pour ${params.jobTitle} — score ${params.score}/100`)
 
-  return sendEmail(params.to, `🤖 SCAI a postulé pour "${params.jobTitle}" — Searcher Connector`, html)
+  return sendEmail(params.to, `📝 Candidature prête pour "${params.jobTitle}" — Searcher Connector`, html)
 }
 
 // ── 5. Scan terminé — résumé ──────────────────────────────────────

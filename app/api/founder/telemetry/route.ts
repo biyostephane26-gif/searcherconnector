@@ -10,7 +10,10 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  // Next.js met en cache les fetch() des route handlers — sans no-store,
+  // le dashboard fondateur affichait des stats vieilles de plusieurs jours.
+  { global: { fetch: (url: any, init: any) => fetch(url, { ...init, cache: 'no-store' }) } }
 )
 
 export async function GET(req: NextRequest) {
@@ -22,9 +25,11 @@ export async function GET(req: NextRequest) {
     }
 
     // Récupérer toutes les opportunités depuis le cache
-    const { data: opportunities, error: oppError } = await supabase
+    // (count exact séparé : Supabase plafonne à 1000 lignes par requête,
+    // donc data.length sous-estimait le total dès que le cache dépassait 1000)
+    const { data: opportunities, error: oppError, count: totalOppCount } = await supabase
       .from('cache_opportunities')
-      .select('source, created_at, is_paid')
+      .select('source_platform, created_at, source_type', { count: 'exact' })
       .order('created_at', { ascending: false })
       .limit(10000)
 
@@ -55,7 +60,7 @@ export async function GET(req: NextRequest) {
     const last7d = now - 7 * 24 * 60 * 60 * 1000
 
     opportunities?.forEach((opp: any) => {
-      const source = opp.source || 'unknown'
+      const source = opp.source_platform || 'unknown'
       const createdTime = new Date(opp.created_at).getTime()
 
       if (!sourceStats[source]) {
@@ -64,7 +69,7 @@ export async function GET(req: NextRequest) {
           totalOpportunities: 0,
           last24h: 0,
           lastSeen: opp.created_at,
-          isPaid: opp.is_paid || false,
+          isPaid: opp.source_type === 'premium',
           status: 'active',
           errorCount: 0
         }
@@ -108,7 +113,7 @@ export async function GET(req: NextRequest) {
     const recentSessions = sessions?.slice(0, 20) || []
     const successfulScans = sessions?.filter(s => s.status === 'completed').length || 0
     const failedScans = sessions?.filter(s => s.status === 'failed').length || 0
-    const totalOpportunitiesFound = opportunities?.length || 0
+    const totalOpportunitiesFound = totalOppCount ?? (opportunities?.length || 0)
 
     // Opportunités par jour (derniers 7 jours)
     const opportunitiesByDay: Record<string, number> = {}

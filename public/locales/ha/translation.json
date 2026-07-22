@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Ana loda...",
+    "save": "Ajiye",
+    "cancel": "Soke",
+    "delete": "Share",
+    "edit": "Gyara",
+    "close": "Rufe",
+    "search": "Bincike",
+    "filter": "Tace",
+    "refresh": "Sabunta",
+    "back": "Baya",
+    "next": "Gaba",
+    "send": "Aika",
+    "upload": "Loda",
+    "download": "Sauke",
+    "confirm": "Tabbatar",
+    "error": "Kuskure",
+    "success": "Nasara"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Gida",
+    "opportunities": "Damammaki",
+    "agent": "Wakilin Searcher",
+    "opportunityCreator": "Ƙirƙiri Tayi",
+    "cowork": "Cowork",
+    "interviews": "Tambayoyi",
+    "social": "Al'umma",
+    "articles": "Labarai",
+    "groups": "Ƙungiyoyi",
+    "messages": "Saƙonni",
+    "salary": "Albashi",
+    "profile": "Bayani",
+    "settings": "Saituna",
+    "pricing": "Farashi",
+    "logout": "Fita"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Dashboard",
+    "agentActive": "Wakili yana aiki awa 24/7",
+    "opportunitiesFound": "Damammakin da aka samo",
+    "applicationsSubmitted": "Aikace-aikacen da aka aika",
+    "avgMatchScore": "Matsakaicin makin dacewa",
+    "launchScan": "Fara bincike na duniya",
+    "recentOpportunities": "Damammaki na kwanan nan",
+    "viewAll": "Duba duka",
+    "noOpportunities": "Babu dama. Fara bincike don farawa."
+  },
+  "opportunities": {
+    "title": "Binciken Dama",
+    "filters": {
+      "all": "Duka",
+      "fresh": "Sabo (<24h)",
+      "applied": "An nemi",
+      "pending": "Ana jira"
+    },
+    "matchScore": "Dacewa",
+    "source": "Tushe",
+    "postedAgo": "An buga tun awa {{hours}} da suka wuce",
+    "applicants": "Masu nema {{count}}",
+    "apply": "Nema",
+    "applied": "An aika neman",
+    "unlockPremium": "Buɗe da Premium",
+    "premiumOnly": "Premium Kawai",
+    "scaiAnalysis": "Bincike na SCAI",
+    "readinessScore": "Makin shirye-shirye",
+    "applyManually": "Zan nema da kaina"
+  },
+  "scai": {
+    "title": "Wakilin Searcher",
+    "greeting": "Sannu! Ni ne SCAI, mataimakinka na sirri na sana'a.",
+    "placeholder": "Ka yi min tambaya ko ka roƙe ni in nemo dama...",
+    "voice": "Yi amfani da murya",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "Kuɗin murya {{count}} sun rage",
+    "thinking": "Ina tunani...",
+    "scanning": "Ina bincike a yanar gizo saboda kai...",
+    "analyzing": "Ina nazarin damammaki...",
+    "applying": "Ina aika neman naka..."
+  },
+  "profile": {
+    "title": "Bayanin Sana'a",
+    "completion": "Cikar bayani",
+    "level": "Matsayi",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Matsakaici",
+      "senior": "Senior",
+      "expert": "Ƙwararre"
+    },
+    "progression": "Ayyuka {{count}} sun rage zuwa matsayin {{level}}",
+    "maxLevel": "An kai matsayi mafi girma",
+    "verification": {
+      "pending": "Ana jira",
+      "verified": "An tabbatar",
+      "genius": "Genius",
+      "refused": "An ƙi"
+    },
+    "editProfile": "Gyara bayani",
+    "uploadAvatar": "Canza hoto",
+    "personalInfo": "Bayanan sirri",
+    "skills": "Ƙwarewa",
+    "experience": "Ƙwarewar aiki",
+    "portfolio": "Ayyukan da aka yi",
+    "documents": "Takardu"
+  },
+  "pricing": {
+    "title": "Tsare-tsare da Farashi",
+    "monthly": "kowane wata",
+    "currentPlan": "Tsarin yanzu",
+    "upgrade": "Haɓaka zuwa {{plan}}",
+    "features": "Fasali",
+    "free": {
+      "name": "Kyauta",
+      "features": [
+        "RSS feeds + APIs kyauta",
+        "Damammaki 10 na musamman a kowane bincike",
+        "6 kyauta + 4 an kulle na premium",
+        "Sanarwa na gaba ɗaya",
+        "Bincike da hannu 2 kawai a rana",
+        "SCAI Voice ba ya samuwa"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Duk tushen kyauta + APIs na premium",
+        "Damammaki marasa iyaka",
+        "Sanarwar da aka yi niyya",
+        "Bincike 10 a rana",
+        "Kuɗin murya 60 a wata",
+        "Ƙirƙirar PDF: CV + Wasiƙar nema"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Dukan tushe (LinkedIn, Upwork...)",
+        "Fifiko akan sabbin damammaki",
+        "Sanarwa nan take idan masu nema sun ƙasa da 10",
+        "Bincike marasa iyaka",
+        "Kuɗin murya 300 a wata",
+        "Dukan PDF",
+        "Kwaikwayon tambayoyi",
+        "Nazarin ayyukan da aka yi"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Saituna",
+    "language": "Harshe",
+    "theme": "Jigo",
+    "lightMode": "Yanayin haske",
+    "darkMode": "Yanayin duhu",
+    "notifications": "Sanarwa",
+    "emailNotifications": "Sanarwar imel",
+    "pushNotifications": "Sanarwar tura",
+    "privacy": "Sirri",
+    "security": "Tsaro",
+    "account": "Asusu",
+    "deleteAccount": "Share asusu",
+    "changePassword": "Canza kalmar sirri",
+    "twoFactor": "Tabbatarwa mataki-biyu"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Sanarwa",
+    "markAllRead": "Yi alama duka kamar an karanta",
+    "noNotifications": "Babu sanarwa",
+    "types": {
+      "opportunity": "Sabon dama",
+      "application": "An sabunta nema",
+      "message": "Sabon saƙo",
+      "system": "Sanarwar tsarin",
+      "plan": "An kunna tsari"
+    },
+    "filters": {
+      "all": "Duka",
+      "unread": "Ba a karanta ba",
+      "opportunities": "Damammaki",
+      "system": "Tsarin"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Aikace-aikacena",
+    "status": {
+      "applied": "An aika",
+      "viewed": "An duba",
+      "interview": "Tambayoyi",
+      "accepted": "An yarda",
+      "rejected": "An ƙi"
+    },
+    "noApplications": "Babu aikace-aikace tukuna",
+    "viewDetails": "Duba cikakkun bayanai",
+    "withdrawApplication": "Janye nema"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Shiga",
+    "signup": "Yi rajista",
+    "email": "Imel",
+    "password": "Kalmar sirri",
+    "confirmPassword": "Tabbatar da kalmar sirri",
+    "forgotPassword": "Ka manta kalmar sirri?",
+    "alreadyHaveAccount": "Kana da asusu tuni?",
+    "dontHaveAccount": "Ba ka da asusu tukuna?",
+    "loginWithGoogle": "Ci gaba da Google",
+    "loginWithGithub": "Ci gaba da GitHub",
+    "acceptTerms": "Na yarda da sharuɗɗan amfani",
+    "waitlist": "Shiga jerin jira"
+  },
+  "errors": {
+    "generic": "An sami kuskure",
+    "networkError": "Kuskuren haɗi",
+    "unauthorized": "Ba a ba da izini ba",
+    "notFound": "Ba a samo ba",
+    "validation": "Bayanai marasa inganci",
+    "tryAgain": "Sake gwadawa"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Buga",
+    "comment": "Yi tsokaci",
+    "like": "So",
+    "share": "Raba",
+    "newPost": "Sabon rubutu",
+    "whatOnYourMind": "Me sabo a sana'arka?",
+    "professionalContent": "Abun ciki na sana'a kawai",
+    "rejectedContent": "Wannan abun ciki bai cika ka'idojin sana'a na SC ba"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Sararin Cowork",
+    "createSpace": "Ƙirƙiri sarari",
+    "joinSpace": "Shiga",
+    "mySpaces": "Sarare na",
+    "findCollaborators": "Nemo abokan aiki",
+    "premiumFeature": "Fasalin Premium"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Dashboard na Wanda ya kafa",
+    "monitoring": "Sa ido",
+    "telemetry": "MongoDB/Tushe",
+    "scans": "Bincike da Rajista",
+    "users": "Masu amfani",
+    "conversations": "Tattaunawa",
+    "revenue": "Kuɗin shiga",
+    "activatePlan": "Kunna tsari",
+    "changeStatus": "Canza matsayi",
+    "addTokens": "Ƙara alamomi",
+    "testEmail": "Gwada Imel",
+    "scanToggle": "Kunna/kashe bincike"
   }
 }

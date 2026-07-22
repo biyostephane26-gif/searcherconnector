@@ -274,7 +274,7 @@ export default function AppGuide() {
               <span className="text-[#D4AF37]">Connector</span>
             </h1>
             <p className="text-xl text-gray-400 max-w-lg mx-auto leading-relaxed">
-              L'agent IA qui travaille pour toi 24h/24 — emploi, freelance, investissement, recrutement.
+              L'agent IA qui travaille pour toi 24h/24 — emploi, freelance.
             </p>
 
             {/* Visuels stats */}

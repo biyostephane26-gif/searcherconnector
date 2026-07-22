@@ -67,7 +67,7 @@ export default function Navbar() {
             <div className="flex items-center gap-4">
               <div className="hidden md:flex items-center gap-3">
                 <span className="text-sm font-bold text-white">{profile?.full_name}</span>
-                <Badge status={profile?.verification_status || 'pending'} />
+                <Badge status={(profile?.verification_status || 'pending') as any} />
               </div>
               <NotificationBell />
               

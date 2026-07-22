@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 import GoldButton from '../components/ui/GoldButton'
 import Card from '../components/ui/Card'
 import { Clock, CheckCircle, Diamond, XCircle, ArrowRight, RefreshCcw, AlertTriangle } from 'lucide-react'
@@ -53,12 +54,7 @@ export default function Status() {
     const timer = setTimeout(async () => {
       try {
         // Obtenir userId depuis Supabase auth directement
-        const { createClient } = await import('@supabase/supabase-js')
-        const sb = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        )
-        const { data: { session } } = await sb.auth.getSession()
+        const { data: { session } } = await supabase.auth.getSession()
         if (!session?.user?.id) return
         await fetch(`${window.location.origin}/api/verify-profile`, {
           method: 'POST',

@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <div className="text-[#D4AF37] font-black tracking-tighter text-lg mb-3">SEARCHER</div>
             <p className="text-gray-600 text-xs leading-relaxed">
-              L'agent IA qui travaille pour vous 24h/24 — emploi, freelance, investissement.
+              L'agent IA qui travaille pour vous 24h/24 — emploi, freelance.
             </p>
           </div>
           <div>

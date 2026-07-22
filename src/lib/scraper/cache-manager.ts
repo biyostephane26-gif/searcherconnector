@@ -3,12 +3,15 @@
 // =================================================================
 // Uses Supabase PostgreSQL for centralized cache pool
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 // Lazy-loaded Supabase client to avoid blocking during build
-let supabaseAdmin: ReturnType<typeof createClient> | null = null;
+// Typé `any` explicitement : sans schéma Database généré, le générique par
+// défaut de supabase-js résout en `never` sur toutes les requêtes ici,
+// ce qui masquait les vraies erreurs sous ~16 faux positifs de typage.
+let supabaseAdmin: SupabaseClient<any, any, any> | null = null;
 
-function getSupabaseClient() {
+function getSupabaseClient(): SupabaseClient<any, any, any> {
   if (!supabaseAdmin) {
     supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -84,8 +87,8 @@ export class CacheManager {
     published_at?: Date;
     applicants_count?: number;
   }>) {
-    const results = [];
-    const errors = [];
+    const results: any[] = [];
+    const errors: any[] = [];
 
     // Process in batches to avoid timeouts and optimize performance
     for (let i = 0; i < opportunities.length; i += this.BATCH_SIZE) {
@@ -194,8 +197,17 @@ export class CacheManager {
       query = query.eq('source_type', sourceType);
     }
 
+    // PostgREST n'accepte pas de sous-requête SQL brute dans .not('id','in',...) —
+    // il faut d'abord récupérer la liste réelle d'IDs, puis filtrer dessus.
     if (excludeSeenByUserId) {
-      query = query.not('id', 'in', `(select cache_opportunity_id from user_seen_opportunities where user_id = '${excludeSeenByUserId}')`);
+      const { data: seen } = await this.supabase
+        .from('user_seen_opportunities')
+        .select('cache_opportunity_id')
+        .eq('user_id', excludeSeenByUserId);
+      const seenIds = (seen || []).map((s: any) => s.cache_opportunity_id).filter(Boolean);
+      if (seenIds.length > 0) {
+        query = query.not('id', 'in', `(${seenIds.join(',')})`);
+      }
     }
 
     const { data, error } = await query;
@@ -314,11 +326,16 @@ export class CacheManager {
   }
 
   async useVoiceCredits(userId: string, amount: number) {
+    // Supabase n'accepte pas de fonction comme valeur dans .update() — il faut
+    // lire le solde actuel puis écrire la nouvelle valeur (pas atomique, mais
+    // correct — l'ancien code ne faisait littéralement rien, la fonction
+    // n'était jamais exécutée par PostgREST).
+    const current = await this.getVoiceCredits(userId);
     const { data, error } = await this.supabase
       .from('user_voice_credits')
       .update({
-        credits_remaining: (data) => data.credits_remaining - amount,
-        total_credits_used: (data) => data.total_credits_used + amount,
+        credits_remaining: Math.max(0, (current?.credits_remaining || 0) - amount),
+        total_credits_used: (current?.total_credits_used || 0) + amount,
       })
       .eq('user_id', userId)
       .select()

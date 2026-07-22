@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Naglo-load...",
+    "save": "I-save",
+    "cancel": "Kanselahin",
+    "delete": "Tanggalin",
+    "edit": "I-edit",
+    "close": "Isara",
+    "search": "Maghanap",
+    "filter": "I-filter",
+    "refresh": "I-refresh",
+    "back": "Bumalik",
+    "next": "Susunod",
+    "send": "Ipadala",
+    "upload": "I-upload",
+    "download": "I-download",
+    "confirm": "Kumpirmahin",
+    "error": "Error",
+    "success": "Tagumpay"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Home",
+    "opportunities": "Mga Oportunidad",
+    "agent": "Searcher Agent",
+    "opportunityCreator": "Gumawa ng Alok",
+    "cowork": "Cowork",
+    "interviews": "Mga Interbyu",
+    "social": "Komunidad",
+    "articles": "Mga Artikulo",
+    "groups": "Mga Grupo",
+    "messages": "Mga Mensahe",
+    "salary": "Sahod",
+    "profile": "Profile",
+    "settings": "Mga Setting",
+    "pricing": "Presyo",
+    "logout": "Mag-logout"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Dashboard",
+    "agentActive": "Aktibo ang Agent 24/7",
+    "opportunitiesFound": "Natagpuang mga oportunidad",
+    "applicationsSubmitted": "Naipadalang mga aplikasyon",
+    "avgMatchScore": "Karaniwang match score",
+    "launchScan": "Simulan ang global na paghahanap",
+    "recentOpportunities": "Mga bagong oportunidad",
+    "viewAll": "Tingnan lahat",
+    "noOpportunities": "Walang oportunidad. Magsimula ng paghahanap para makapagsimula."
+  },
+  "opportunities": {
+    "title": "Explorer ng Oportunidad",
+    "filters": {
+      "all": "Lahat",
+      "fresh": "Bago (<24h)",
+      "applied": "Nag-apply na",
+      "pending": "Naghihintay"
+    },
+    "matchScore": "Pagtutugma",
+    "source": "Pinagmulan",
+    "postedAgo": "Na-post {{hours}}h ang nakalipas",
+    "applicants": "{{count}} aplikante",
+    "apply": "Mag-apply",
+    "applied": "Naipadala na ang aplikasyon",
+    "unlockPremium": "I-unlock gamit ang Premium",
+    "premiumOnly": "Premium Lang",
+    "scaiAnalysis": "Pagsusuri ng SCAI",
+    "readinessScore": "Readiness score",
+    "applyManually": "Mag-a-apply ako mismo"
+  },
+  "scai": {
+    "title": "Searcher Agent",
+    "greeting": "Kumusta! Ako si SCAI, ang iyong personal na career assistant.",
+    "placeholder": "Magtanong sa akin o pahanapin ako ng mga oportunidad...",
+    "voice": "Gamitin ang boses",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "{{count}} voice credits na lang ang natitira",
+    "thinking": "Nag-iisip ako...",
+    "scanning": "Hinahanap ko ang web para sa iyo...",
+    "analyzing": "Sinusuri ko ang mga oportunidad...",
+    "applying": "Ipinapadala ko ang iyong aplikasyon..."
+  },
+  "profile": {
+    "title": "Propesyonal na Profile",
+    "completion": "Pagkumpleto ng profile",
+    "level": "Antas",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Katamtaman",
+      "senior": "Senior",
+      "expert": "Eksperto"
+    },
+    "progression": "{{count}} proyekto na lang para maabot ang {{level}}",
+    "maxLevel": "Naabot na ang pinakamataas na antas",
+    "verification": {
+      "pending": "Naghihintay",
+      "verified": "Na-verify",
+      "genius": "Genius",
+      "refused": "Tinanggihan"
+    },
+    "editProfile": "I-edit ang profile",
+    "uploadAvatar": "Palitan ang larawan",
+    "personalInfo": "Personal na impormasyon",
+    "skills": "Mga Kasanayan",
+    "experience": "Karanasan",
+    "portfolio": "Portfolio",
+    "documents": "Mga Dokumento"
+  },
+  "pricing": {
+    "title": "Mga Plano at Presyo",
+    "monthly": "bawat buwan",
+    "currentPlan": "Kasalukuyang plano",
+    "upgrade": "I-upgrade sa {{plan}}",
+    "features": "Mga Feature",
+    "free": {
+      "name": "Libre",
+      "features": [
+        "RSS feeds + libreng API",
+        "10 personalized na oportunidad kada paghahanap",
+        "6 libre + 4 naka-lock na premium na oportunidad",
+        "Pangkalahatang mga abiso",
+        "Max 2 manual na paghahanap/araw",
+        "Hindi available ang SCAI Voice"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Lahat ng libreng pinagmulan + premium API",
+        "Walang limitasyon na oportunidad",
+        "Naka-target na mga abiso",
+        "10 paghahanap/araw",
+        "60 voice credits/buwan",
+        "Paggawa ng PDF: CV + cover letter"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Lahat ng pinagmulan (LinkedIn, Upwork...)",
+        "Prayoridad sa mga bagong oportunidad",
+        "Real-time na abiso kapag <10 aplikante",
+        "Walang limitasyong paghahanap",
+        "300 voice credits/buwan",
+        "Lahat ng PDF",
+        "Simulation ng interbyu",
+        "Portfolio Analyzer"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Mga Setting",
+    "language": "Wika",
+    "theme": "Tema",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "notifications": "Mga Abiso",
+    "emailNotifications": "Mga abiso sa email",
+    "pushNotifications": "Mga push notification",
+    "privacy": "Privacy",
+    "security": "Seguridad",
+    "account": "Account",
+    "deleteAccount": "Tanggalin ang account",
+    "changePassword": "Palitan ang password",
+    "twoFactor": "Two-factor authentication"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Mga Abiso",
+    "markAllRead": "Markahan lahat bilang nabasa na",
+    "noNotifications": "Walang abiso",
+    "types": {
+      "opportunity": "Bagong oportunidad",
+      "application": "Na-update na aplikasyon",
+      "message": "Bagong mensahe",
+      "system": "Abiso ng sistema",
+      "plan": "Na-activate ang plano"
+    },
+    "filters": {
+      "all": "Lahat",
+      "unread": "Hindi pa nababasa",
+      "opportunities": "Mga Oportunidad",
+      "system": "Sistema"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Aking mga Aplikasyon",
+    "status": {
+      "applied": "Nag-apply na",
+      "viewed": "Nabasa na",
+      "interview": "Interbyu",
+      "accepted": "Tinanggap",
+      "rejected": "Tinanggihan"
+    },
+    "noApplications": "Wala pang aplikasyon",
+    "viewDetails": "Tingnan ang detalye",
+    "withdrawApplication": "I-withdraw ang aplikasyon"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Mag-login",
+    "signup": "Mag-sign up",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Kumpirmahin ang password",
+    "forgotPassword": "Nakalimutan ang password?",
+    "alreadyHaveAccount": "May account ka na ba?",
+    "dontHaveAccount": "Wala ka pang account?",
+    "loginWithGoogle": "Magpatuloy gamit ang Google",
+    "loginWithGithub": "Magpatuloy gamit ang GitHub",
+    "acceptTerms": "Tinatanggap ko ang mga tuntunin ng paggamit",
+    "waitlist": "Sumali sa waitlist"
+  },
+  "errors": {
+    "generic": "May naganap na error",
+    "networkError": "Error sa koneksyon",
+    "unauthorized": "Hindi awtorisado",
+    "notFound": "Hindi nahanap",
+    "validation": "Hindi wastong data",
+    "tryAgain": "Subukan ulit"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "I-post",
+    "comment": "Magkomento",
+    "like": "Gusto",
+    "share": "Ibahagi",
+    "newPost": "Bagong post",
+    "whatOnYourMind": "Ano ang bago sa iyong karera?",
+    "professionalContent": "Propesyonal na content lang",
+    "rejectedContent": "Ang content na ito ay hindi sumusunod sa propesyonal na pamantayan ng SC"
   },
   "cowork": {
     "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "createSpace": "Gumawa ng space",
+    "joinSpace": "Sumali",
+    "mySpaces": "Aking mga space",
+    "findCollaborators": "Maghanap ng kolaborador",
+    "premiumFeature": "Premium Feature"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Dashboard ng Founder",
+    "monitoring": "Pagmomonitor",
+    "telemetry": "MongoDB/Mga Pinagmulan",
+    "scans": "Mga Paghahanap at Log",
+    "users": "Mga User",
+    "conversations": "Mga Usapan",
+    "revenue": "Kita",
+    "activatePlan": "I-activate ang plano",
+    "changeStatus": "Palitan ang status",
+    "addTokens": "Magdagdag ng token",
+    "testEmail": "I-test ang Email",
+    "scanToggle": "I-on/off ang paghahanap"
   }
 }

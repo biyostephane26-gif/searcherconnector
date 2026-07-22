@@ -511,7 +511,7 @@ Respond ONLY in JSON: {"is_opportunity": true, "title": "Role", "company": "Comp
       case 'email-draft': {
         const { recruiterMessage, userTemplate, userName } = payload;
         const prompt = `Write a professional email response. Recruiter message: "${recruiterMessage}", User style: "${userTemplate}", User name: ${userName}
-End with: "Sent via Searcher Connector — searcherconnector.com"
+End with: "Powered by Searcher Connector · SCAI"
 Keep it under 150 words. No subject line needed.`;
 
         return NextResponse.json({ draft: await generateWithFallback(prompt) });

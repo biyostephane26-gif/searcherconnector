@@ -37,7 +37,16 @@ export async function GET(req: NextRequest) {
 
       if (userId && plan) {
         // Activer le plan immédiatement
-        await supabase.from('users_profiles').update({ plan }).eq('id', userId)
+        const { error: planError } = await supabase.from('users_profiles').update({ plan }).eq('id', userId)
+        if (planError) {
+          fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/monitoring`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'system_error', source: 'flutterwave_webhook', severity: 'critical',
+              message: `Paiement Flutterwave confirmé (réf ${txRef}, plan ${plan}, user ${userId}) mais activation du plan échouée: ${planError.message}`,
+            }),
+          }).catch(() => {})
+        }
 
         await supabase.from('payment_attempts').update({
           status:       'completed',
@@ -102,7 +111,16 @@ export async function POST(req: NextRequest) {
       const plan   = meta?.plan || txRef?.split('_')[1]
 
       if (userId && plan) {
-        await supabase.from('users_profiles').update({ plan }).eq('id', userId)
+        const { error: planError } = await supabase.from('users_profiles').update({ plan }).eq('id', userId)
+        if (planError) {
+          fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/monitoring`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'system_error', source: 'flutterwave_webhook', severity: 'critical',
+              message: `Paiement Flutterwave confirmé (réf ${txRef}, plan ${plan}, user ${userId}) mais activation du plan échouée: ${planError.message}`,
+            }),
+          }).catch(() => {})
+        }
         await supabase.from('payment_attempts').update({
           status: 'completed',
           activated_at: new Date().toISOString(),
@@ -119,7 +137,14 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ received: true })
-  } catch {
+  } catch (error: any) {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/monitoring`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'system_error', source: 'flutterwave_webhook', severity: 'critical',
+        message: `Webhook Flutterwave POST: exception non gérée: ${error.message}`,
+      }),
+    }).catch(() => {})
     return NextResponse.json({ received: true })
   }
 }

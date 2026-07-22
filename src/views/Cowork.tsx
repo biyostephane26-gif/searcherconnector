@@ -7,6 +7,7 @@ import Navbar from '../components/layout/Navbar'
 import Card from '../components/ui/Card'
 import GoldButton from '../components/ui/GoldButton'
 import { Mail, MessageSquare, Send, Clock, CheckCircle, XCircle, AlertCircle, ExternalLink, Loader2, Inbox, RefreshCw, Lock, Users, Sparkles, Award, TrendingUp, BriefcaseIcon } from 'lucide-react'
+import { generateEmailDraft } from '../lib/gemini'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   sent:              { label: 'Envoyé',          color: 'text-gray-400' },
@@ -24,6 +25,7 @@ export default function Cowork() {
   const [selectedMsg, setSelectedMsg] = useState<any>(null)
   const [replyText, setReplyText] = useState('')
   const [sending, setSending] = useState(false)
+  const [draftingReply, setDraftingReply] = useState(false)
   const [tab, setTab] = useState<'all' | 'email' | 'whatsapp'>('all')
   const [copied, setCopied] = useState(false)
   const [phoneInput, setPhoneInput] = useState('')
@@ -34,9 +36,9 @@ export default function Cowork() {
   const [loadingSuggestions, setLoadingSuggestions] = useState(false)
   const [viewMode, setViewMode] = useState<'inbox' | 'matches'>('inbox')
   
-  // Paywall pour free users
-  const isFree = !profile?.plan || profile.plan === 'free'
-  const [showPaywall, setShowPaywall] = useState(isFree)
+  // Paywall pour free users (le fondateur n'a aucune restriction)
+  const isFree = profile?.role !== 'founder' && (!profile?.plan || profile.plan === 'free')
+  const [showPaywall, setShowPaywall] = useState(false)
 
   const loadInbox = async () => {
     if (!user) return
@@ -61,10 +63,17 @@ export default function Cowork() {
     setLoadingSuggestions(false)
   }
 
-  useEffect(() => { 
+  useEffect(() => {
     loadInbox()
     if (profile) loadSuggestions()
   }, [user, profile])
+
+  // Afficher le paywall seulement une fois le profil chargé et confirmé free
+  // (avant, il s'affichait pendant le chargement car profile était null →
+  // même le fondateur et les payants voyaient l'écran Premium par erreur)
+  useEffect(() => {
+    if (profile) setShowPaywall(isFree)
+  }, [profile, isFree])
 
   const handleReply = async () => {
     if (!replyText.trim() || !selectedMsg || !user) return
@@ -89,6 +98,20 @@ export default function Cowork() {
       await loadInbox()
     } catch (_) {}
     setSending(false)
+  }
+
+  const handleDraftReply = async () => {
+    if (!selectedMsg || draftingReply) return
+    setDraftingReply(true)
+    try {
+      const draft = await generateEmailDraft(
+        selectedMsg.preview || selectedMsg.subject || '',
+        profile?.response_template || '',
+        profile?.full_name || ''
+      )
+      if (draft) setReplyText(draft)
+    } catch (_) {}
+    setDraftingReply(false)
   }
 
   // Envoyer via WhatsApp normal (lien wa.me)
@@ -237,9 +260,17 @@ export default function Cowork() {
                   </p>
                 )}
               </div>
-              <button onClick={loadInbox} className="p-2 text-gray-600 hover:text-[#D4AF37] transition-colors">
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              </button>
+              <div className="flex items-center gap-2">
+                <a
+                  href={user ? `/api/oauth/gmail/connect?userId=${user.id}` : '#'}
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 border border-[#2a2a2a] rounded-lg text-[11px] font-bold text-gray-400 hover:text-[#D4AF37] hover:border-[#D4AF37]/40 transition-colors"
+                >
+                  <Mail className="w-3 h-3" /> Connecter Gmail
+                </a>
+                <button onClick={loadInbox} className="p-2 text-gray-600 hover:text-[#D4AF37] transition-colors">
+                  <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
             </div>
 
             {/* Filtres */}
@@ -385,6 +416,15 @@ export default function Cowork() {
                     />
                   </div>
 
+                  <button
+                    onClick={handleDraftReply}
+                    disabled={draftingReply}
+                    className="flex items-center gap-1.5 mb-3 px-4 py-2 border border-[#D4AF37]/30 text-[#D4AF37] rounded-xl text-xs font-bold hover:bg-[#D4AF37]/10 disabled:opacity-50 transition-colors"
+                  >
+                    {draftingReply ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                    {draftingReply ? 'SCAI rédige...' : 'Rédiger avec SCAI'}
+                  </button>
+
                   {/* 3 boutons d'envoi */}
                   <div className="flex gap-2 flex-wrap">
                     {/* Gmail */}
@@ -432,7 +472,7 @@ export default function Cowork() {
                     {/* Copier le message */}
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(replyText + '\n\n---\nEnvoyé via Searcher Connector — searcherconnector.com')
+                        navigator.clipboard.writeText(replyText + '\n\n---\nPowered by Searcher Connector · SCAI\nsearcherconnector.com')
                         setCopied(true)
                         setTimeout(() => setCopied(false), 2500)
                       }}
@@ -443,7 +483,7 @@ export default function Cowork() {
                   </div>
 
                   <p className="text-[10px] text-gray-700 mt-2">
-                    Signature : "Envoyé via Searcher Connector — searcherconnector.com"
+                    Signature : "Powered by Searcher Connector · SCAI"
                   </p>
                 </div>
               </div>

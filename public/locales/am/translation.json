@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "በመጫን ላይ...",
+    "save": "አስቀምጥ",
+    "cancel": "ሰርዝ",
+    "delete": "ሰርዝ",
+    "edit": "አርትዕ",
+    "close": "ዝጋ",
+    "search": "ፈልግ",
+    "filter": "አጣራ",
+    "refresh": "አድስ",
+    "back": "ተመለስ",
+    "next": "ቀጣይ",
+    "send": "ላክ",
+    "upload": "ስቀል",
+    "download": "አውርድ",
+    "confirm": "አረጋግጥ",
+    "error": "ስህተት",
+    "success": "ተሳክቷል"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "መነሻ",
+    "opportunities": "እድሎች",
+    "agent": "የ Searcher ወኪል",
+    "opportunityCreator": "ቅናሽ ፍጠር",
+    "cowork": "Cowork",
+    "interviews": "ቃለ መጠይቆች",
+    "social": "ማህበረሰብ",
+    "articles": "ጽሁፎች",
+    "groups": "ቡድኖች",
+    "messages": "መልዕክቶች",
+    "salary": "ደሞዝ",
+    "profile": "መገለጫ",
+    "settings": "ቅንብሮች",
+    "pricing": "ዋጋ",
+    "logout": "ውጣ"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "ዳሽቦርድ",
+    "agentActive": "ወኪሉ 24/7 ንቁ ነው",
+    "opportunitiesFound": "የተገኙ እድሎች",
+    "applicationsSubmitted": "የተላኩ ማመልከቻዎች",
+    "avgMatchScore": "አማካይ የግጥሚያ ውጤት",
+    "launchScan": "አለምአቀፍ ፍለጋ ጀምር",
+    "recentOpportunities": "የቅርብ ጊዜ እድሎች",
+    "viewAll": "ሁሉንም ይመልከቱ",
+    "noOpportunities": "ምንም እድል የለም። ለመጀመር ፍለጋ ጀምር።"
+  },
+  "opportunities": {
+    "title": "የእድል አሳሽ",
+    "filters": {
+      "all": "ሁሉም",
+      "fresh": "አዲስ (<24ሰ)",
+      "applied": "ማመልከቻ ገብቷል",
+      "pending": "በመጠባበቅ ላይ"
+    },
+    "matchScore": "ግጥሚያ",
+    "source": "ምንጭ",
+    "postedAgo": "ከ{{hours}} ሰዓት በፊት ተለጠፈ",
+    "applicants": "{{count}} አመልካቾች",
+    "apply": "አመልክት",
+    "applied": "ማመልከቻ ተልኳል",
+    "unlockPremium": "በ Premium ክፈት",
+    "premiumOnly": "Premium ብቻ",
+    "scaiAnalysis": "የ SCAI ትንተና",
+    "readinessScore": "የዝግጁነት ውጤት",
+    "applyManually": "እኔ ራሴ አመለክታለሁ"
+  },
+  "scai": {
+    "title": "የ Searcher ወኪል",
+    "greeting": "ሰላም! እኔ SCAI ነኝ፣ የግል የስራ ረዳትህ።",
+    "placeholder": "ጥያቄ ጠይቀኝ ወይም እድሎችን እንድፈልግ ጠይቀኝ...",
+    "voice": "ድምጽ ተጠቀም",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "{{count}} የድምጽ ክሬዲቶች ቀርተዋል",
+    "thinking": "እያሰብኩ ነው...",
+    "scanning": "ለአንተ ድህረ ገጹን እየፈለግኩ ነው...",
+    "analyzing": "እድሎችን እየተነተንኩ ነው...",
+    "applying": "ማመልከቻህን እየላክኩ ነው..."
+  },
+  "profile": {
+    "title": "ሙያዊ መገለጫ",
+    "completion": "የመገለጫ ማጠናቀቅ",
+    "level": "ደረጃ",
+    "levels": {
+      "junior": "ጀማሪ",
+      "mid": "መካከለኛ",
+      "senior": "ከፍተኛ",
+      "expert": "ባለሙያ"
+    },
+    "progression": "ወደ {{level}} ደረጃ ለመድረስ {{count}} ፕሮጀክቶች ቀርተዋል",
+    "maxLevel": "ከፍተኛው ደረጃ ላይ ደርሷል",
+    "verification": {
+      "pending": "በመጠባበቅ ላይ",
+      "verified": "ተረጋግጧል",
+      "genius": "Genius",
+      "refused": "ውድቅ ተደርጓል"
+    },
+    "editProfile": "መገለጫ አርትዕ",
+    "uploadAvatar": "ፎቶ ቀይር",
+    "personalInfo": "የግል መረጃ",
+    "skills": "ክህሎቶች",
+    "experience": "ልምድ",
+    "portfolio": "ፖርትፎሊዮ",
+    "documents": "ሰነዶች"
+  },
+  "pricing": {
+    "title": "እቅዶች እና ዋጋዎች",
+    "monthly": "በወር",
+    "currentPlan": "የአሁኑ እቅድ",
+    "upgrade": "ወደ {{plan}} አሻሽል",
+    "features": "ባህሪያት",
+    "free": {
+      "name": "ነጻ",
+      "features": [
+        "የ RSS ምንጮች + ነጻ APIዎች",
+        "በእያንዳንዱ ፍለጋ 10 የተበጁ እድሎች",
+        "6 ነጻ + 4 የተቆለፉ Premium እድሎች",
+        "አጠቃላይ ማሳወቂያዎች",
+        "በቀን ቢበዛ 2 በእጅ ፍለጋዎች",
+        "SCAI Voice አይገኝም"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "ሁሉም ነጻ ምንጮች + Premium APIዎች",
+        "ያልተገደበ እድሎች",
+        "የተመረጡ ማሳወቂያዎች",
+        "10 ፍለጋዎች/ቀን",
+        "60 የድምጽ ክሬዲቶች/ወር",
+        "PDF ማመንጨት፦ ሲቪ + የማመልከቻ ደብዳቤ"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "ሁሉም ምንጮች (LinkedIn, Upwork...)",
+        "ለአዳዲስ እድሎች ቅድሚያ",
+        "ከ10 በታች አመልካቾች ሲኖሩ ቅጽበታዊ ማሳወቂያዎች",
+        "ያልተገደበ ፍለጋዎች",
+        "300 የድምጽ ክሬዲቶች/ወር",
+        "ሁሉም PDFዎች",
+        "የቃለ መጠይቅ ልምምድ",
+        "የፖርትፎሊዮ ትንተና"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "ቅንብሮች",
+    "language": "ቋንቋ",
+    "theme": "ገጽታ",
+    "lightMode": "ብሩህ ሁነታ",
+    "darkMode": "ጨለማ ሁነታ",
+    "notifications": "ማሳወቂያዎች",
+    "emailNotifications": "የኢሜይል ማሳወቂያዎች",
+    "pushNotifications": "የፑሽ ማሳወቂያዎች",
+    "privacy": "ግላዊነት",
+    "security": "ደህንነት",
+    "account": "አካውንት",
+    "deleteAccount": "አካውንት ሰርዝ",
+    "changePassword": "የይለፍ ቃል ቀይር",
+    "twoFactor": "ባለ ሁለት ደረጃ ማረጋገጫ"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "ማሳወቂያዎች",
+    "markAllRead": "ሁሉንም እንደተነበበ ምልክት አድርግ",
+    "noNotifications": "ምንም ማሳወቂያ የለም",
+    "types": {
+      "opportunity": "አዲስ እድል",
+      "application": "ማመልከቻ ተዘምኗል",
+      "message": "አዲስ መልዕክት",
+      "system": "የስርዓት ማሳወቂያ",
+      "plan": "እቅድ ነቅቷል"
+    },
+    "filters": {
+      "all": "ሁሉም",
+      "unread": "ያልተነበቡ",
+      "opportunities": "እድሎች",
+      "system": "ስርዓት"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "ማመልከቻዎቼ",
+    "status": {
+      "applied": "ተልኳል",
+      "viewed": "ታይቷል",
+      "interview": "ቃለ መጠይቅ",
+      "accepted": "ተቀባይነት አግኝቷል",
+      "rejected": "ውድቅ ተደርጓል"
+    },
+    "noApplications": "እስካሁን ምንም ማመልከቻ የለም",
+    "viewDetails": "ዝርዝሮችን ይመልከቱ",
+    "withdrawApplication": "ማመልከቻ ይቀልብሱ"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "ግባ",
+    "signup": "ተመዝገብ",
+    "email": "ኢሜይል",
+    "password": "የይለፍ ቃል",
+    "confirmPassword": "የይለፍ ቃል አረጋግጥ",
+    "forgotPassword": "የይለፍ ቃል ረስተዋል?",
+    "alreadyHaveAccount": "አስቀድሞ አካውንት አለዎት?",
+    "dontHaveAccount": "እስካሁን አካውንት የለዎትም?",
+    "loginWithGoogle": "በ Google ይቀጥሉ",
+    "loginWithGithub": "በ GitHub ይቀጥሉ",
+    "acceptTerms": "የአጠቃቀም ውሎችን እቀበላለሁ",
+    "waitlist": "የመጠባበቂያ ዝርዝር ይቀላቀሉ"
+  },
+  "errors": {
+    "generic": "ስህተት ተከስቷል",
+    "networkError": "የግንኙነት ስህተት",
+    "unauthorized": "ያልተፈቀደ",
+    "notFound": "አልተገኘም",
+    "validation": "ልክ ያልሆነ መረጃ",
+    "tryAgain": "እንደገና ይሞክሩ"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "ለጥፍ",
+    "comment": "አስተያየት ስጥ",
+    "like": "ውደድ",
+    "share": "አጋራ",
+    "newPost": "አዲስ ልጥፍ",
+    "whatOnYourMind": "በስራህ ላይ ምን አዲስ ነገር አለ?",
+    "professionalContent": "ሙያዊ ይዘት ብቻ",
+    "rejectedContent": "ይህ ይዘት የ SC ሙያዊ ደረጃዎችን አያሟላም"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "የ Cowork ቦታ",
+    "createSpace": "ቦታ ፍጠር",
+    "joinSpace": "ተቀላቀል",
+    "mySpaces": "የእኔ ቦታዎች",
+    "findCollaborators": "አጋሮችን ፈልግ",
+    "premiumFeature": "የ Premium ባህሪ"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "የመስራች ዳሽቦርድ",
+    "monitoring": "ክትትል",
+    "telemetry": "MongoDB/ምንጮች",
+    "scans": "ፍለጋዎች እና ምዝገባዎች",
+    "users": "ተጠቃሚዎች",
+    "conversations": "ውይይቶች",
+    "revenue": "ገቢ",
+    "activatePlan": "እቅድ አንቃ",
+    "changeStatus": "ሁኔታ ቀይር",
+    "addTokens": "ቶከኖች ጨምር",
+    "testEmail": "ኢሜይል ሞክር",
+    "scanToggle": "ፍለጋ አብራ/አጥፋ"
   }
 }

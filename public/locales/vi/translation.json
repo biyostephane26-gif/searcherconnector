@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Đang tải...",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "close": "Đóng",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "refresh": "Làm mới",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "send": "Gửi",
+    "upload": "Tải lên",
+    "download": "Tải xuống",
+    "confirm": "Xác nhận",
+    "error": "Lỗi",
+    "success": "Thành công"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Trang chủ",
+    "opportunities": "Cơ hội",
+    "agent": "Trợ lý Searcher",
+    "opportunityCreator": "Tạo tin tuyển dụng",
+    "cowork": "Cowork",
+    "interviews": "Phỏng vấn",
+    "social": "Cộng đồng",
+    "articles": "Bài viết",
+    "groups": "Nhóm",
+    "messages": "Tin nhắn",
+    "salary": "Lương",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt",
+    "pricing": "Bảng giá",
+    "logout": "Đăng xuất"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Bảng điều khiển",
+    "agentActive": "Trợ lý hoạt động 24/7",
+    "opportunitiesFound": "Cơ hội đã tìm thấy",
+    "applicationsSubmitted": "Đơn ứng tuyển đã gửi",
+    "avgMatchScore": "Điểm phù hợp trung bình",
+    "launchScan": "Bắt đầu tìm kiếm toàn cầu",
+    "recentOpportunities": "Cơ hội gần đây",
+    "viewAll": "Xem tất cả",
+    "noOpportunities": "Không có cơ hội nào. Hãy bắt đầu tìm kiếm."
+  },
+  "opportunities": {
+    "title": "Khám phá cơ hội",
+    "filters": {
+      "all": "Tất cả",
+      "fresh": "Mới (<24 giờ)",
+      "applied": "Đã ứng tuyển",
+      "pending": "Đang chờ"
+    },
+    "matchScore": "Độ phù hợp",
+    "source": "Nguồn",
+    "postedAgo": "Đăng {{hours}} giờ trước",
+    "applicants": "{{count}} ứng viên",
+    "apply": "Ứng tuyển",
+    "applied": "Đã gửi đơn ứng tuyển",
+    "unlockPremium": "Mở khóa với Premium",
+    "premiumOnly": "Chỉ dành cho Premium",
+    "scaiAnalysis": "Phân tích SCAI",
+    "readinessScore": "Điểm sẵn sàng",
+    "applyManually": "Tôi sẽ tự ứng tuyển"
+  },
+  "scai": {
+    "title": "Trợ lý Searcher",
+    "greeting": "Xin chào! Tôi là SCAI, trợ lý sự nghiệp cá nhân của bạn.",
+    "placeholder": "Hỏi tôi một câu hoặc yêu cầu tôi tìm cơ hội...",
+    "voice": "Sử dụng giọng nói",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "Còn lại {{count}} lượt sử dụng giọng nói",
+    "thinking": "Đang suy nghĩ...",
+    "scanning": "Đang tìm kiếm trên web cho bạn...",
+    "analyzing": "Đang phân tích các cơ hội...",
+    "applying": "Đang gửi đơn ứng tuyển của bạn..."
+  },
+  "profile": {
+    "title": "Hồ sơ nghề nghiệp",
+    "completion": "Mức độ hoàn thiện hồ sơ",
+    "level": "Cấp độ",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Trung cấp",
+      "senior": "Senior",
+      "expert": "Chuyên gia"
+    },
+    "progression": "Còn {{count}} dự án nữa để đạt cấp {{level}}",
+    "maxLevel": "Đã đạt cấp độ tối đa",
+    "verification": {
+      "pending": "Đang chờ",
+      "verified": "Đã xác minh",
+      "genius": "Genius",
+      "refused": "Bị từ chối"
+    },
+    "editProfile": "Chỉnh sửa hồ sơ",
+    "uploadAvatar": "Đổi ảnh",
+    "personalInfo": "Thông tin cá nhân",
+    "skills": "Kỹ năng",
+    "experience": "Kinh nghiệm",
+    "portfolio": "Portfolio",
+    "documents": "Tài liệu"
+  },
+  "pricing": {
+    "title": "Gói và Giá",
+    "monthly": "mỗi tháng",
+    "currentPlan": "Gói hiện tại",
+    "upgrade": "Nâng cấp lên {{plan}}",
+    "features": "Tính năng",
+    "free": {
+      "name": "Miễn phí",
+      "features": [
+        "Nguồn RSS + API miễn phí",
+        "10 cơ hội cá nhân hóa mỗi lần tìm kiếm",
+        "6 cơ hội miễn phí + 4 cơ hội premium bị khóa",
+        "Thông báo chung",
+        "Tối đa 2 lần tìm kiếm thủ công/ngày",
+        "SCAI Voice không khả dụng"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Tất cả nguồn miễn phí + API premium",
+        "Cơ hội không giới hạn",
+        "Thông báo có mục tiêu",
+        "10 lượt tìm kiếm/ngày",
+        "60 lượt giọng nói/tháng",
+        "Tạo PDF: CV + thư xin việc"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Tất cả nguồn (LinkedIn, Upwork...)",
+        "Ưu tiên cơ hội mới",
+        "Thông báo thời gian thực khi <10 ứng viên",
+        "Tìm kiếm không giới hạn",
+        "300 lượt giọng nói/tháng",
+        "Tất cả PDF",
+        "Mô phỏng phỏng vấn",
+        "Phân tích Portfolio"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Cài đặt",
+    "language": "Ngôn ngữ",
+    "theme": "Giao diện",
+    "lightMode": "Chế độ sáng",
+    "darkMode": "Chế độ tối",
+    "notifications": "Thông báo",
+    "emailNotifications": "Thông báo qua email",
+    "pushNotifications": "Thông báo đẩy",
+    "privacy": "Quyền riêng tư",
+    "security": "Bảo mật",
+    "account": "Tài khoản",
+    "deleteAccount": "Xóa tài khoản",
+    "changePassword": "Đổi mật khẩu",
+    "twoFactor": "Xác thực hai yếu tố"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Thông báo",
+    "markAllRead": "Đánh dấu tất cả đã đọc",
+    "noNotifications": "Không có thông báo",
+    "types": {
+      "opportunity": "Cơ hội mới",
+      "application": "Cập nhật đơn ứng tuyển",
+      "message": "Tin nhắn mới",
+      "system": "Thông báo hệ thống",
+      "plan": "Gói đã được kích hoạt"
+    },
+    "filters": {
+      "all": "Tất cả",
+      "unread": "Chưa đọc",
+      "opportunities": "Cơ hội",
+      "system": "Hệ thống"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Đơn ứng tuyển của tôi",
+    "status": {
+      "applied": "Đã ứng tuyển",
+      "viewed": "Đã xem",
+      "interview": "Phỏng vấn",
+      "accepted": "Được chấp nhận",
+      "rejected": "Bị từ chối"
+    },
+    "noApplications": "Chưa có đơn ứng tuyển nào",
+    "viewDetails": "Xem chi tiết",
+    "withdrawApplication": "Rút đơn ứng tuyển"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Đăng nhập",
+    "signup": "Đăng ký",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "forgotPassword": "Quên mật khẩu?",
+    "alreadyHaveAccount": "Đã có tài khoản?",
+    "dontHaveAccount": "Chưa có tài khoản?",
+    "loginWithGoogle": "Tiếp tục với Google",
+    "loginWithGithub": "Tiếp tục với GitHub",
+    "acceptTerms": "Tôi chấp nhận điều khoản sử dụng",
+    "waitlist": "Tham gia danh sách chờ"
+  },
+  "errors": {
+    "generic": "Đã xảy ra lỗi",
+    "networkError": "Lỗi kết nối",
+    "unauthorized": "Không được phép",
+    "notFound": "Không tìm thấy",
+    "validation": "Dữ liệu không hợp lệ",
+    "tryAgain": "Thử lại"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Đăng bài",
+    "comment": "Bình luận",
+    "like": "Thích",
+    "share": "Chia sẻ",
+    "newPost": "Bài đăng mới",
+    "whatOnYourMind": "Có gì mới trong sự nghiệp của bạn?",
+    "professionalContent": "Chỉ nội dung chuyên nghiệp",
+    "rejectedContent": "Nội dung này không đáp ứng tiêu chuẩn chuyên nghiệp của SC"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Không gian Cowork",
+    "createSpace": "Tạo không gian",
+    "joinSpace": "Tham gia",
+    "mySpaces": "Không gian của tôi",
+    "findCollaborators": "Tìm cộng tác viên",
+    "premiumFeature": "Tính năng Premium"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Bảng điều khiển nhà sáng lập",
+    "monitoring": "Giám sát",
+    "telemetry": "MongoDB/Nguồn",
+    "scans": "Tìm kiếm & Nhật ký",
+    "users": "Người dùng",
+    "conversations": "Cuộc trò chuyện",
+    "revenue": "Doanh thu",
+    "activatePlan": "Kích hoạt gói",
+    "changeStatus": "Thay đổi trạng thái",
+    "addTokens": "Thêm token",
+    "testEmail": "Kiểm tra email",
+    "scanToggle": "Bật/tắt tìm kiếm"
   }
 }

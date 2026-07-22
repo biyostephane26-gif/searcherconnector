@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Inapakia...",
+    "save": "Hifadhi",
+    "cancel": "Ghairi",
+    "delete": "Futa",
+    "edit": "Hariri",
+    "close": "Funga",
+    "search": "Tafuta",
+    "filter": "Chuja",
+    "refresh": "Onyesha upya",
+    "back": "Rudi",
+    "next": "Ifuatayo",
+    "send": "Tuma",
+    "upload": "Pakia",
+    "download": "Pakua",
+    "confirm": "Thibitisha",
+    "error": "Hitilafu",
+    "success": "Imefanikiwa"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Nyumbani",
+    "opportunities": "Fursa",
+    "agent": "Wakala wa Searcher",
+    "opportunityCreator": "Unda Nafasi",
+    "cowork": "Cowork",
+    "interviews": "Mahojiano",
+    "social": "Jamii",
+    "articles": "Makala",
+    "groups": "Vikundi",
+    "messages": "Ujumbe",
+    "salary": "Mishahara",
+    "profile": "Wasifu",
+    "settings": "Mipangilio",
+    "pricing": "Bei",
+    "logout": "Toka"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Dashibodi",
+    "agentActive": "Wakala anafanya kazi masaa 24/7",
+    "opportunitiesFound": "Fursa zilizopatikana",
+    "applicationsSubmitted": "Maombi yaliyotumwa",
+    "avgMatchScore": "Wastani wa alama za ulinganifu",
+    "launchScan": "Anzisha utafutaji wa kimataifa",
+    "recentOpportunities": "Fursa za hivi karibuni",
+    "viewAll": "Ona zote",
+    "noOpportunities": "Hakuna fursa. Anzisha utafutaji ili kuanza."
+  },
+  "opportunities": {
+    "title": "Kivinjari cha Fursa",
+    "filters": {
+      "all": "Zote",
+      "fresh": "Mpya (<24h)",
+      "applied": "Umeomba",
+      "pending": "Inasubiri"
+    },
+    "matchScore": "Ulinganifu",
+    "source": "Chanzo",
+    "postedAgo": "Ilichapishwa masaa {{hours}} yaliyopita",
+    "applicants": "Waombaji {{count}}",
+    "apply": "Omba",
+    "applied": "Ombi limetumwa",
+    "unlockPremium": "Fungua na Premium",
+    "premiumOnly": "Premium Pekee",
+    "scaiAnalysis": "Uchambuzi wa SCAI",
+    "readinessScore": "Alama za utayari",
+    "applyManually": "Nitaomba mwenyewe"
+  },
+  "scai": {
+    "title": "Wakala wa Searcher",
+    "greeting": "Habari! Mimi ni SCAI, msaidizi wako binafsi wa kazi.",
+    "placeholder": "Niulize swali au niombe nitafute fursa...",
+    "voice": "Tumia sauti",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "Salio la sauti {{count}} zimebaki",
+    "thinking": "Ninafikiri...",
+    "scanning": "Ninatafuta mtandaoni kwa ajili yako...",
+    "analyzing": "Ninachambua fursa...",
+    "applying": "Ninatuma ombi lako..."
+  },
+  "profile": {
+    "title": "Wasifu wa Kitaaluma",
+    "completion": "Ukamilifu wa wasifu",
+    "level": "Kiwango",
+    "levels": {
+      "junior": "Mwanzo",
+      "mid": "Kati",
+      "senior": "Mkuu",
+      "expert": "Mtaalamu"
+    },
+    "progression": "Miradi {{count}} imebaki kufikia kiwango cha {{level}}",
+    "maxLevel": "Umefikia kiwango cha juu zaidi",
+    "verification": {
+      "pending": "Inasubiri",
+      "verified": "Imethibitishwa",
+      "genius": "Genius",
+      "refused": "Imekataliwa"
+    },
+    "editProfile": "Hariri wasifu",
+    "uploadAvatar": "Badilisha picha",
+    "personalInfo": "Taarifa binafsi",
+    "skills": "Ujuzi",
+    "experience": "Uzoefu",
+    "portfolio": "Kazi zilizofanywa",
+    "documents": "Nyaraka"
+  },
+  "pricing": {
+    "title": "Mipango na Bei",
+    "monthly": "kwa mwezi",
+    "currentPlan": "Mpango wa sasa",
+    "upgrade": "Boresha hadi {{plan}}",
+    "features": "Vipengele",
+    "free": {
+      "name": "Bure",
+      "features": [
+        "Mifumo ya RSS + API za bure",
+        "Fursa 10 zilizobinafsishwa kwa kila utafutaji",
+        "Fursa 6 za bure + 4 za premium zilizofungwa",
+        "Arifa za jumla",
+        "Utafutaji wa mkono 2 kwa siku kiwango cha juu",
+        "SCAI Voice haipatikani"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Vyanzo vyote vya bure + API za premium",
+        "Fursa zisizo na kikomo",
+        "Arifa zilizolengwa",
+        "Utafutaji 10 kwa siku",
+        "Salio la sauti 60 kwa mwezi",
+        "Utengenezaji wa PDF: Wasifu + Barua ya maombi"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Vyanzo vyote (LinkedIn, Upwork...)",
+        "Kipaumbele kwa fursa mpya",
+        "Arifa za wakati halisi kwa waombaji chini ya 10",
+        "Utafutaji usio na kikomo",
+        "Salio la sauti 300 kwa mwezi",
+        "PDF zote",
+        "Uigaji wa mahojiano",
+        "Uchambuzi wa kazi zilizofanywa"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Mipangilio",
+    "language": "Lugha",
+    "theme": "Mandhari",
+    "lightMode": "Hali angavu",
+    "darkMode": "Hali ya giza",
+    "notifications": "Arifa",
+    "emailNotifications": "Arifa za barua pepe",
+    "pushNotifications": "Arifa za haraka",
+    "privacy": "Faragha",
+    "security": "Usalama",
+    "account": "Akaunti",
+    "deleteAccount": "Futa akaunti",
+    "changePassword": "Badilisha nenosiri",
+    "twoFactor": "Uthibitishaji wa hatua mbili"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Arifa",
+    "markAllRead": "Weka alama zote kama zimesomwa",
+    "noNotifications": "Hakuna arifa",
+    "types": {
+      "opportunity": "Fursa mpya",
+      "application": "Ombi limesasishwa",
+      "message": "Ujumbe mpya",
+      "system": "Arifa ya mfumo",
+      "plan": "Mpango umeamilishwa"
+    },
+    "filters": {
+      "all": "Zote",
+      "unread": "Ambazo hazijasomwa",
+      "opportunities": "Fursa",
+      "system": "Mfumo"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Maombi Yangu",
+    "status": {
+      "applied": "Limetumwa",
+      "viewed": "Limetazamwa",
+      "interview": "Mahojiano",
+      "accepted": "Limekubaliwa",
+      "rejected": "Limekataliwa"
+    },
+    "noApplications": "Hakuna maombi bado",
+    "viewDetails": "Ona maelezo",
+    "withdrawApplication": "Ondoa ombi"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Ingia",
+    "signup": "Jisajili",
+    "email": "Barua pepe",
+    "password": "Nenosiri",
+    "confirmPassword": "Thibitisha nenosiri",
+    "forgotPassword": "Umesahau nenosiri?",
+    "alreadyHaveAccount": "Tayari una akaunti?",
+    "dontHaveAccount": "Huna akaunti bado?",
+    "loginWithGoogle": "Endelea na Google",
+    "loginWithGithub": "Endelea na GitHub",
+    "acceptTerms": "Ninakubali masharti ya matumizi",
+    "waitlist": "Jiunge na orodha ya wasubiri"
+  },
+  "errors": {
+    "generic": "Hitilafu imetokea",
+    "networkError": "Hitilafu ya muunganisho",
+    "unauthorized": "Hairuhusiwi",
+    "notFound": "Haikupatikana",
+    "validation": "Data batili",
+    "tryAgain": "Jaribu tena"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Chapisha",
+    "comment": "Toa maoni",
+    "like": "Penda",
+    "share": "Shiriki",
+    "newPost": "Chapisho jipya",
+    "whatOnYourMind": "Kuna nini kipya katika kazi yako?",
+    "professionalContent": "Maudhui ya kitaaluma pekee",
+    "rejectedContent": "Maudhui haya hayakidhi viwango vya kitaaluma vya SC"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Nafasi ya Cowork",
+    "createSpace": "Unda nafasi",
+    "joinSpace": "Jiunge",
+    "mySpaces": "Nafasi zangu",
+    "findCollaborators": "Tafuta washirika",
+    "premiumFeature": "Kipengele cha Premium"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Dashibodi ya Mwanzilishi",
+    "monitoring": "Ufuatiliaji",
+    "telemetry": "MongoDB/Vyanzo",
+    "scans": "Utafutaji na Kumbukumbu",
+    "users": "Watumiaji",
+    "conversations": "Mazungumzo",
+    "revenue": "Mapato",
+    "activatePlan": "Amilisha mpango",
+    "changeStatus": "Badilisha hali",
+    "addTokens": "Ongeza tokeni",
+    "testEmail": "Jaribu Barua pepe",
+    "scanToggle": "Washa/zima utafutaji"
   }
 }

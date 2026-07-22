@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getScaiSessions } from '../../../lib/mongo';
 import { fetchGroqWithRotation, genererSystemPrompt } from '../../../lib/scaiUtils';
+import { checkRateLimit } from '../../../lib/rateLimiter';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -13,12 +14,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: "userId et message sont requis." });
     }
 
+    // Anti-spam : 20 messages / minute max par utilisateur (protège les clés Groq/Gemini)
+    if (!checkRateLimit(`scai-chat:${userId}`, 20, 60_000)) {
+      return res.status(429).json({ error: 'Trop de messages envoyés. Attends quelques secondes.' });
+    }
+
     const idPropre = userId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
     const sessionsCollection = await getScaiSessions();
 
+    // Toggle "Apprentissage SCAI" (Settings) — désactivé = conversation
+    // éphémère, pas d'historique chargé ni sauvegardé (confidentialité réelle).
+    const learningEnabled = userProfile?.search_preferences?.scai_learning !== false;
+
     // 1. RÉCUPÉRATION : Chercher le document de l'utilisateur
-    let doc = await sessionsCollection.findOne({ userId: idPropre });
-    
+    const doc = learningEnabled ? await sessionsCollection.findOne({ userId: idPropre }) : null;
+
     // Récupérer le tableau 'messages' (ou 'historique' pour rétrocompatibilité), sinon initialiser à vide
     let messages = doc && doc.messages ? doc.messages : (doc && doc.historique ? doc.historique : []);
 
@@ -122,19 +132,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // 6. SAUVEGARDE GLOBALE — historique PERMANENT, jamais effacé
     // On garde TOUT l'historique — pas de limite de taille
     // L'utilisateur peut retrouver ses conversations les plus anciennes
-    await sessionsCollection.updateOne(
-      { userId: idPropre },
-      { 
-        $set: { 
-          messages: messages,
-          derniereVue: new Date().toISOString(),
-          // Méta pour le monitoring
-          lastActive: new Date().toISOString(),
-          messageCount: messages.filter((m: any) => m.role !== 'system').length,
-        } 
-      },
-      { upsert: true }
-    );
+    // (sauf si l'utilisateur a désactivé "Apprentissage SCAI" dans Settings)
+    if (learningEnabled) {
+      await sessionsCollection.updateOne(
+        { userId: idPropre },
+        {
+          $set: {
+            messages: messages,
+            derniereVue: new Date().toISOString(),
+            // Méta pour le monitoring
+            lastActive: new Date().toISOString(),
+            messageCount: messages.filter((m: any) => m.role !== 'system').length,
+          }
+        },
+        { upsert: true }
+      );
+    }
 
     return res.status(200).json({ 
       success: true, 

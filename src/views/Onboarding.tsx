@@ -43,6 +43,9 @@ export default function Onboarding() {
   const [formData, setFormData] = useState({
     fullName: profile?.full_name || '',
     domain: profile?.domain || '',
+    // Jusqu'à 3 domaines — `domain` (singulier) reste synchronisé sur
+    // domains[0] pour tout le code existant qui ne lit que le premier.
+    domains: (profile?.domains && profile.domains.length ? profile.domains : profile?.domain ? [profile.domain] : []) as string[],
     experienceLevel: '',
     jobTypes: [] as string[],
     salaryMin: profile?.salary_min || 0,
@@ -76,6 +79,7 @@ export default function Onboarding() {
       ...prev,
       fullName: profile.full_name || '',
       domain: profile.domain || '',
+      domains: (profile.domains && profile.domains.length ? profile.domains : profile.domain ? [profile.domain] : []) as string[],
       salaryMin: profile.salary_min || 0,
       salaryMax: profile.salary_max || 0,
       currency: profile.currency || 'USD',
@@ -93,6 +97,7 @@ export default function Onboarding() {
         full_name: formData.fullName || user?.email?.split('@')[0] || 'User',
         email: user?.email,
         domain: formData.domain,
+        domains: formData.domains,
         salary_min: formData.salaryMin,
         salary_max: formData.salaryMax,
         currency: formData.currency,
@@ -163,10 +168,20 @@ export default function Onboarding() {
   const handleSubmit = async () => {
     setLoading(true)
     try {
+      // Les freelances renseignent des compétences (étape 1) et jamais la
+      // grille de catégories — sans ce repli, `domain`/`domains` restaient
+      // vides et aucun matching avec le cache n'était jamais possible.
+      const domains = profileType === 'freelance' && formData.domains.length === 0
+        ? formData.skills.slice(0, 3)
+        : formData.domains
+      const domain = domains[0] || formData.domain
+
       // Mettre à jour le profil
       await supabase.from('users_profiles').update({
         full_name:        formData.fullName,
-        domain:           formData.domain,
+        domain,
+        domains,
+        skills:           formData.skills,
         salary_min:       formData.salaryMin,
         salary_max:       formData.salaryMax,
         currency:         formData.currency,
@@ -176,6 +191,14 @@ export default function Onboarding() {
         cv_url:           formData.cvUrl,
         profile_completion: 100
       }).eq('id', user?.id)
+
+      // Évaluation du niveau de compétence (junior/mid/senior/expert) —
+      // asynchrone, ne bloque jamais l'onboarding
+      fetch(`${window.location.origin}/api/profile/assess-skill-level`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user?.id }),
+      }).catch(() => {})
 
       // Vérification IA asynchrone (ne pas attendre)
       let verificationStatus = 'pending'
@@ -200,12 +223,14 @@ export default function Onboarding() {
       }).eq('id', user?.id)
 
       // Configurer le scan automatique
+      // (.catch() n'existe pas sur ce query builder avant .then()/await —
+      // ça levait une vraie TypeError à l'exécution, jamais juste ignoré)
       supabase.from('agent_schedules').upsert({
         user_id:              user?.id,
         scan_frequency_hours: 6,
         auto_apply_threshold: 85,
         timezone:             Intl.DateTimeFormat().resolvedOptions().timeZone
-      }).catch(() => {})
+      }).then(() => {}, () => {})
 
       // 🚀 LANCER LE PREMIER SCAN AUTOMATIQUEMENT
       // Délai de 5s pour laisser le temps au profil de se synchroniser
@@ -216,7 +241,7 @@ export default function Onboarding() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               userId: user?.id,
-              domain: formData.domain,
+              domain,
               isFirstScan: true
             })
           })
@@ -256,30 +281,41 @@ export default function Onboarding() {
         return (
           <div className="space-y-8">
             <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Quel est ton domaine principal ?</h2>
-              <p className="text-gray-400">Sélectionne la catégorie qui correspond le mieux à ton profil.</p>
+              <h2 className="text-3xl font-bold mb-4">Quels sont tes domaines ?</h2>
+              <p className="text-gray-400">Choisis jusqu'à 3 catégories — SCAI cherchera des opportunités dans chacune.</p>
             </div>
-            
+
             <Card className="p-6">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {CATEGORIES.map(category => (
-                  <button
-                    key={category}
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, domain: category }))}
-                    className={`p-4 rounded-xl border text-left transition-all ${
-                      formData.domain === category
-                        ? 'border-[#D4AF37] bg-[#1A1500] text-[#D4AF37]'
-                        : 'border-[#2a2a2a] bg-[#111] hover:border-[#D4AF37]/50'
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
+                {CATEGORIES.map(category => {
+                  const selected = formData.domains.includes(category)
+                  const atMax = formData.domains.length >= 3 && !selected
+                  return (
+                    <button
+                      key={category}
+                      type="button"
+                      disabled={atMax}
+                      onClick={() => setFormData(prev => {
+                        const domains = selected
+                          ? prev.domains.filter(d => d !== category)
+                          : prev.domains.length < 3 ? [...prev.domains, category] : prev.domains
+                        return { ...prev, domains, domain: domains[0] || '' }
+                      })}
+                      className={`p-4 rounded-xl border text-left transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
+                        selected
+                          ? 'border-[#D4AF37] bg-[#1A1500] text-[#D4AF37]'
+                          : 'border-[#2a2a2a] bg-[#111] hover:border-[#D4AF37]/50'
+                      }`}
+                    >
+                      {category}
+                    </button>
+                  )
+                })}
               </div>
+              <p className="text-xs text-gray-600 mt-4">{formData.domains.length}/3 sélectionnés</p>
             </Card>
-            
-            <GoldButton onClick={handleNext} fullWidth disabled={!formData.domain} loading={loading}>
+
+            <GoldButton onClick={handleNext} fullWidth disabled={formData.domains.length === 0} loading={loading}>
               Continue <ArrowRight className="w-4 h-4" />
             </GoldButton>
           </div>

@@ -15,7 +15,9 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-const SIGNATURE = '\n\n---\nEnvoyé via Searcher Connector — searcherconnector.com\nL\'agent qui travaille pour vous 24h/24';
+// Discrète et professionnelle — ce message part vers un recruteur/contact
+// réel, pas vers l'utilisateur. Voir la même règle dans auto-apply/route.ts.
+const SIGNATURE = '\n\n---\nPowered by Searcher Connector · SCAI\nsearcherconnector.com';
 
 // ── Envoi Gmail via OAuth ─────────────────────────────────────────
 async function sendGmail(to: string, subject: string, body: string, accessToken: string): Promise<boolean> {
@@ -124,6 +126,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         opportunity_id: opportunity_id || null,
         from_email:     profile.email || '',
         from_name:      profile.full_name || '',
+        to_email:       to || '',
         direction:      'outgoing',
         body_preview:   message.slice(0, 200),
         full_body:      message + SIGNATURE,

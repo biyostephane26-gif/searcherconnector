@@ -9,7 +9,7 @@ import GoldButton from '../components/ui/GoldButton'
 import Card from '../components/ui/Card'
 import { Shield, Mail, Lock, ArrowRight, Eye, EyeOff, CheckCircle } from 'lucide-react'
 
-type SignupProfileType = 'job_seeker' | 'freelance' | 'business' | 'investor'
+type SignupProfileType = 'job_seeker' | 'freelance'
 
 export default function Signup() {
   const searchParams  = useSearchParams()
@@ -25,8 +25,7 @@ export default function Signup() {
 
   const rawProfileType = searchParams?.get('type')
   const profileType: SignupProfileType =
-    rawProfileType === 'freelance' || rawProfileType === 'business' || rawProfileType === 'investor'
-      ? rawProfileType : 'job_seeker'
+    rawProfileType === 'freelance' ? rawProfileType : 'job_seeker'
 
   const FOUNDER_EMAILS = [
     'biyostephane26@gmail.com',
@@ -67,7 +66,7 @@ export default function Signup() {
           profile_type:        profileType,
           role:                isFounder ? 'founder' : 'user',
           verification_status: isFounder ? 'genius'  : 'pending',
-          plan:                isFounder ? 'investor' : 'free',
+          plan:                isFounder ? 'pro' : 'free',
           profile_completion:  0,
         }, { onConflict: 'id', ignoreDuplicates: false })
 
@@ -142,9 +141,7 @@ export default function Signup() {
             <p className="text-xs text-gray-600">Vérifie aussi tes spams si tu ne vois pas l'email.</p>
             <button
               onClick={async () => {
-                const { createClient } = await import('@supabase/supabase-js')
-                const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
-                await sb.auth.resend({ type: 'signup', email })
+                await supabase.auth.resend({ type: 'signup', email })
                 // feedback visuel simple sans alert
                 const btn = document.activeElement as HTMLButtonElement
                 if (btn) { btn.textContent = '✓ Email renvoyé !'; btn.disabled = true }

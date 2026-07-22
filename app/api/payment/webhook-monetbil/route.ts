@@ -1,6 +1,7 @@
 // Webhook Monetbil — activation automatique après confirmation MTN/Orange
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { sendPaymentConfirmation } from '../../../../src/lib/email'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,7 +21,16 @@ export async function POST(req: NextRequest) {
       const userId = parts[2]
 
       if (userId && plan) {
-        await supabase.from('users_profiles').update({ plan }).eq('id', userId)
+        const { error: planError } = await supabase.from('users_profiles').update({ plan }).eq('id', userId)
+        if (planError) {
+          fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/monitoring`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'system_error', source: 'monetbil_webhook', severity: 'critical',
+              message: `Paiement Monetbil confirmé (réf ${paymentRef}, plan ${plan}, user ${userId}) mais activation du plan échouée: ${planError.message}`,
+            }),
+          }).catch(() => {})
+        }
         await supabase.from('payment_attempts').update({
           status:       'completed',
           activated_at: new Date().toISOString(),
@@ -33,10 +43,26 @@ export async function POST(req: NextRequest) {
           message:  `Paiement Mobile Money confirmé. Ton plan est actif.`,
           is_read:  false,
         })
+
+        const { data: profile } = await supabase
+          .from('users_profiles').select('email, full_name').eq('id', userId).single()
+        if (profile?.email) {
+          sendPaymentConfirmation({
+            to: profile.email, name: profile.full_name || 'Cher utilisateur',
+            plan, amount: '', currency: 'XAF', paymentRef, method: 'monetbil',
+          }).catch(() => {})
+        }
       }
     }
     return NextResponse.json({ received: true })
-  } catch {
+  } catch (error: any) {
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/monitoring`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'system_error', source: 'monetbil_webhook', severity: 'critical',
+        message: `Webhook Monetbil: exception non gérée: ${error.message}`,
+      }),
+    }).catch(() => {})
     return NextResponse.json({ received: true })
   }
 }

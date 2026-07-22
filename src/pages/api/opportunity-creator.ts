@@ -138,7 +138,7 @@ GÉNÈRE un message d'approche court et percutant :
 - Mentionne 1 problème précis que tu as identifié
 - Propose une solution concrète
 - Inclus : "J'ai préparé un audit rapide de votre présence digitale."
-- Termine par : "Disponible sur WhatsApp ou par email. — Envoyé via Searcher Connector"
+- Termine par : "Disponible sur WhatsApp ou par email.\n\nPowered by Searcher Connector · SCAI"
 - Ton : humain, pas robotique. Pas de "je vous contacte pour vous proposer mes services"
 
 Langue : français.`;

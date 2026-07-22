@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
+import { sendPaymentConfirmation } from '../../../../src/lib/email';
 
 export async function POST(req: Request) {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
@@ -38,17 +39,42 @@ export async function POST(req: Request) {
       }
 
       const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
-      // Mettre à jour le profil de l'utilisateur dans Supabase
-      const { error } = await supabaseAdmin
+      // Mettre à jour le PLAN de l'utilisateur (bug corrigé : ça écrivait dans
+      // profile_type — qui devrait rester 'job_seeker'/'freelance' — au lieu
+      // de la colonne plan. Les paiements Stripe ne débloquaient donc jamais
+      // le compte payant.)
+      const { data: updated, error } = await supabaseAdmin
         .from('users_profiles')
-        .update({ 
-          profile_type: planName.toLowerCase(),
-          verification_status: 'verified' // Par défaut quand on paye
+        .update({
+          plan: planName.toLowerCase(),
+          verification_status: 'verified', // Par défaut quand on paye
         })
-        .eq('id', userId);
+        .eq('id', userId)
+        .select('email, full_name')
+        .single();
 
       if (error) {
         console.error('Error updating profile:', error);
+        // Paiement Stripe encaissé mais plan non activé — alerte critique,
+        // le fondateur doit intervenir manuellement (voir dashboard /founder).
+        fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/monitoring`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'system_error', source: 'stripe_webhook', severity: 'critical',
+            message: `Paiement Stripe reçu (session ${session.id}, plan ${planName}, user ${userId}) mais activation du plan échouée: ${error.message}`,
+          }),
+        }).catch(() => {})
+      } else if (updated?.email) {
+        const amount = session.amount_total ? (session.amount_total / 100).toFixed(2) : '0'
+        sendPaymentConfirmation({
+          to:         updated.email,
+          name:       updated.full_name || '',
+          plan:       planName,
+          amount,
+          currency:   (session.currency || 'usd').toUpperCase(),
+          paymentRef: session.id,
+          method:     'stripe',
+        }).catch(() => {})
       }
     }
   }

@@ -2,7 +2,6 @@
 
 import { chromium } from 'playwright-extra';
 import stealth from 'puppeteer-extra-plugin-stealth';
-import { executablePath } from 'playwright';
 
 chromium.use(stealth());
 
@@ -157,7 +156,7 @@ export async function launchUltraBrowser(options: { headless?: boolean; proxy?: 
   
   const browser = await chromium.launch({
     headless: options.headless ?? true,
-    executablePath: executablePath(),
+    executablePath: chromium.executablePath(),
     args: [
       '--disable-blink-features=AutomationControlled',
       '--disable-infobars',
@@ -179,7 +178,7 @@ export async function launchUltraBrowser(options: { headless?: boolean; proxy?: 
     geolocation: fingerprint.geolocation,
     javaScriptEnabled: true,
     acceptDownloads: false,
-    colorScheme: fingerprint.colorScheme,
+    colorScheme: fingerprint.colorScheme as 'light' | 'dark',
     extraHTTPHeaders: {
       'Accept-Language': `${fingerprint.language},fr;q=0.9,en;q=0.8`,
       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',

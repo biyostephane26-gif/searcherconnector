@@ -30,25 +30,74 @@ html.light-mode {
   --gold-light:    #f5e6a3;
 }
 
-/* Light mode overrides — composants clés */
+/* Light mode overrides — composants clés
+   Liste élargie à partir d'un comptage réel des classes Tailwind à valeur
+   arbitraire utilisées dans le code (`grep` sur bg/border/text-[#...]) —
+   avant, seules ~13 classes exactes étaient couvertes alors que le code
+   en utilise des dizaines (y compris des variantes de CASSE différentes :
+   #1A1A1A ≠ #1a1a1a en tant que nom de classe littéral, et chaque variante
+   d'opacité comme /20 /30 /50 est aussi une classe séparée). Résultat
+   avant ce correctif : une partie de l'interface passait en clair, le
+   reste restait sombre — d'où l'aspect "bizarre" signalé. */
 html.light-mode body                                   { background-color: var(--bg-primary); color: var(--text-primary); }
+
+/* Fonds sombres → clairs (toutes casses + variantes) */
 html.light-mode .bg-\[\#0A0A0A\]                      { background-color: var(--bg-primary) !important; }
+html.light-mode .bg-\[\#0A0A0A\]\/50                  { background-color: color-mix(in srgb, var(--bg-primary) 50%, transparent) !important; }
+html.light-mode .bg-\[\#0A0A0A\]\/80                  { background-color: color-mix(in srgb, var(--bg-primary) 80%, transparent) !important; }
 html.light-mode .bg-\[\#0D0D0D\]                      { background-color: var(--bg-card) !important; }
+html.light-mode .bg-\[\#0f0f0f\]                       { background-color: var(--bg-card) !important; }
 html.light-mode .bg-\[\#111111\]                       { background-color: var(--bg-secondary) !important; }
-html.light-mode .bg-\[\#1A1A1A\]                      { background-color: var(--bg-border) !important; }
+html.light-mode .bg-\[\#111111\]\/30                  { background-color: color-mix(in srgb, var(--bg-secondary) 30%, transparent) !important; }
+html.light-mode .bg-\[\#111\]                          { background-color: var(--bg-secondary) !important; }
+html.light-mode .bg-\[\#1A1A1A\],
+html.light-mode .bg-\[\#1a1a1a\],
+html.light-mode .bg-\[\#2A2A2A\],
+html.light-mode .bg-\[\#2a2a2a\]                       { background-color: var(--bg-border) !important; }
+
+/* Bordures sombres → claires (toutes casses + variantes) */
 html.light-mode .border-\[\#1A1A1A\]                  { border-color: var(--bg-border) !important; }
-html.light-mode .border-\[\#2a2a2a\]                  { border-color: var(--bg-border-2) !important; }
+html.light-mode .border-\[\#2a2a2a\],
+html.light-mode .border-\[\#2A2A2A\]                  { border-color: var(--bg-border-2) !important; }
+html.light-mode .border-\[\#222222\]                  { border-color: var(--bg-border-2) !important; }
+html.light-mode .border-\[\#444\]                      { border-color: var(--bg-border-2) !important; }
+html.light-mode .border-\[\#0A0A0A\]                  { border-color: var(--bg-border) !important; }
+
+/* Textes clairs (blanc/gris) → foncés en mode clair */
 html.light-mode .text-white                            { color: var(--text-primary) !important; }
 html.light-mode .text-gray-400                         { color: var(--text-secondary) !important; }
 html.light-mode .text-gray-500                         { color: var(--text-muted) !important; }
-html.light-mode .text-gray-600, 
+html.light-mode .text-gray-600,
 html.light-mode .text-gray-700                         { color: var(--text-muted) !important; }
+html.light-mode .text-\[\#444444\],
+html.light-mode .text-\[\#888888\],
+html.light-mode .text-\[\#333333\]                    { color: var(--text-muted) !important; }
+
+/* Accent doré — reste doré dans les deux thèmes, juste la variable qui change */
 html.light-mode .text-\[\#D4AF37\]                    { color: var(--gold) !important; }
+html.light-mode .text-\[\#D4AF37\]\/40,
+html.light-mode .text-\[\#D4AF37\]\/50,
+html.light-mode .text-\[\#D4AF37\]\/60,
+html.light-mode .text-\[\#D4AF37\]\/80                { color: var(--gold) !important; }
 html.light-mode .bg-\[\#D4AF37\]                      { background-color: var(--gold) !important; }
+html.light-mode .bg-\[\#D4AF37\]\/10,
+html.light-mode .bg-\[\#D4AF37\]\/20                  { background-color: rgba(212,175,55,0.12) !important; }
+html.light-mode .border-\[\#D4AF37\]                  { border-color: var(--gold) !important; }
+html.light-mode .border-\[\#D4AF37\]\/20,
+html.light-mode .border-\[\#D4AF37\]\/30,
+html.light-mode .border-\[\#D4AF37\]\/40,
+html.light-mode .border-\[\#D4AF37\]\/50              { border-color: rgba(212,175,55,0.35) !important; }
+/* Texte foncé sur fond doré (boutons) : contraste déjà correct, inchangé */
+html.light-mode .text-\[\#0A0A0A\]                    { color: #0A0A0A !important; }
+html.light-mode .bg-\[\#F5E6A3\],
+html.light-mode .text-\[\#F5E6A3\],
+html.light-mode .bg-\[\#B8962D\]                       { background-color: #f5e6a3; }
+
+html.light-mode .bg-\[\#1A1500\]                      { background-color: #fef9e7 !important; }
+html.light-mode .bg-\[\#1A1500\]\/20                  { background-color: rgba(254,249,231,0.6) !important; }
+
 html.light-mode nav                                    { background-color: rgba(255,255,255,0.95) !important; border-color: var(--bg-border) !important; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
 html.light-mode aside                                  { background-color: var(--bg-card) !important; border-color: var(--bg-border) !important; box-shadow: 1px 0 3px rgba(0,0,0,0.05); }
-html.light-mode .bg-\[\#1A1500\]                      { background-color: #fef9e7 !important; }
-html.light-mode .border-\[\#D4AF37\]\/30              { border-color: rgba(212,175,55,0.3) !important; }
 
 body {
   background-color: var(--bg-primary);

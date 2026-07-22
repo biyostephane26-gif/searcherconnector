@@ -178,7 +178,7 @@ Réponds UNIQUEMENT en JSON valide, une seule ligne :
                : status === 'refused'  ? reason
                : 'Complète ton profil pour finaliser.',
       is_read:  false,
-    }).catch(() => {})
+    }).then(() => {}, () => {})
 
     return NextResponse.json({ status, reason })
 

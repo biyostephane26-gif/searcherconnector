@@ -37,7 +37,7 @@ export default function StoryCreator({ onClose, onCreated }: StoryCreatorProps) 
     if (!user || (!content && !mediaFile)) return;
     setLoading(true);
     try {
-      let mediaUrl = null;
+      let mediaUrl: string | null = null;
       if (mediaFile) {
         const path = `stories/${user.id}/${Date.now()}-${mediaFile.name}`;
         const { error: uploadError } = await supabase.storage

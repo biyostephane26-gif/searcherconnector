@@ -8,8 +8,9 @@ import GoldButton from '../components/ui/GoldButton';
 import Card from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import { supabase } from '../lib/supabase';
-import { 
-  Camera, MapPin, Briefcase, Calendar, Link as LinkIcon, 
+import { getDomainIcon } from '../lib/domainIcon';
+import {
+  Camera, MapPin, Briefcase, Calendar, Link as LinkIcon,
   Settings, Edit3, Check, X, Loader2, Globe, Github, Twitter,
   FileText, Shield, ExternalLink, User, Code, PieChart, TrendingUp,
   CheckCircle2, AlertCircle, Upload, Award
@@ -298,6 +299,9 @@ export default function Profile() {
   // Charte visuelle selon le type de profil
   const theme = PROFILE_THEME[profile?.profile_type || 'freelance'] || PROFILE_THEME.freelance
   const ThemeIcon = theme.icon
+  // Icône représentative du métier (mécanicien → clé/marteau, designer →
+  // palette, etc.) — affichée en filigrane sur la bannière du profil.
+  const DomainIcon = getDomainIcon(profile?.domain, (profile as any)?.domains)
 
   // Relancer la vérification manuellement
   const handleReVerify = async () => {
@@ -435,7 +439,16 @@ export default function Profile() {
 
         <div className="flex-1 overflow-y-auto">
           {/* ── Hero / Header Section — couleur selon le type de profil ── */}
-          <div className={`relative h-56 bg-gradient-to-r ${theme.gradient} border-b border-[#1A1A1A] overflow-hidden`}>
+          <div className={`relative h-64 bg-gradient-to-r ${theme.gradient} border-b border-[#1A1A1A] overflow-hidden`}>
+            {/* Icône du métier en filigrane — purement décoratif, ne capte
+                jamais le clic (pointer-events-none) et reste sous le reste
+                du contenu (z-0) pour ne jamais gêner la lecture. */}
+            <DomainIcon
+              className="absolute -right-6 -top-6 text-white/5 pointer-events-none select-none z-0"
+              size={220}
+              strokeWidth={1}
+              aria-hidden="true"
+            />
             {/* Badge type de profil en haut à droite */}
             <div className="absolute top-4 right-6">
               <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest ${theme.badgeBg}`}>
@@ -443,8 +456,9 @@ export default function Profile() {
                 {theme.label}
               </span>
             </div>
-            {/* Description du type */}
-            <div className="absolute bottom-20 left-48 hidden md:block">
+            {/* Description du type — ancrée en haut, loin du bloc avatar/nom qui
+                déborde par le bas (évite le chevauchement/troncature signalés) */}
+            <div className="absolute top-16 left-10 right-6 max-w-md hidden md:block">
               <p className={`text-xs font-medium ${theme.accentText} opacity-70`}>{theme.description}</p>
             </div>
             <div className="absolute -bottom-16 left-10 flex items-end gap-6">
@@ -480,7 +494,7 @@ export default function Profile() {
                       profile?.full_name
                     )}
                   </h1>
-                  <Badge status={profile?.verification_status || 'pending'} />
+                  <Badge status={(profile?.verification_status || 'pending') as any} />
                   {/* Badge Niveau Professionnel */}
                   <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getProfessionalLevel(profile?.missions_completed || 0).color}`}>
                     <Award size={11} />
@@ -492,15 +506,22 @@ export default function Profile() {
                 </p>
                 {/* Progression Niveau */}
                 <div className="mt-3 w-full max-w-md">
-                  <p className="text-[10px] text-gray-500 mb-1">{getNextLevelProgress(profile?.missions_completed || 0).label}</p>
-                  {getNextLevelProgress(profile?.missions_completed || 0).next && (
-                    <div className="h-1.5 bg-[#1A1A1A] rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-[#D4AF37] transition-all duration-500"
-                        style={{ width: `${(getNextLevelProgress(profile?.missions_completed || 0).current / getNextLevelProgress(profile?.missions_completed || 0).next) * 100}%` }}
-                      />
-                    </div>
-                  )}
+                  {(() => {
+                    const levelProgress = getNextLevelProgress(profile?.missions_completed || 0)
+                    return (
+                      <>
+                        <p className="text-[10px] text-gray-500 mb-1">{levelProgress.label}</p>
+                        {levelProgress.next && (
+                          <div className="h-1.5 bg-[#1A1A1A] rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-[#D4AF37] transition-all duration-500"
+                              style={{ width: `${(levelProgress.current / levelProgress.next) * 100}%` }}
+                            />
+                          </div>
+                        )}
+                      </>
+                    )
+                  })()}
                 </div>
               </div>
             </div>
@@ -592,18 +613,21 @@ export default function Profile() {
                 <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em] mb-4">Compétences Clés</h3>
                 <Card className="p-6">
                   <div className="flex flex-wrap gap-2">
-                    {/* Skills depuis le profil ou depuis le domaine */}
-                    {(profile?.skills && Array.isArray(profile.skills) && profile.skills.length > 0
-                      ? profile.skills
-                      : profile?.domain
-                        ? profile.domain.split(/[,\/\s]+/).filter(Boolean).slice(0, 8)
-                        : []
-                    ).map((skill: string) => (
-                      <span key={skill} className="px-3 py-1 bg-[#1A1A1A] border border-[#2a2a2a] rounded-lg text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                        {skill}
+                    {/* Compétences réelles si renseignées ; sinon le métier
+                        tel quel (jamais découpé mot par mot — ça produisait
+                        des tags absurdes comme "ET" pour "... et designer") */}
+                    {profile?.skills && Array.isArray(profile.skills) && profile.skills.length > 0 ? (
+                      profile.skills.map((skill: string) => (
+                        <span key={skill} className="px-3 py-1 bg-[#1A1A1A] border border-[#2a2a2a] rounded-lg text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                          {skill}
+                        </span>
+                      ))
+                    ) : profile?.domain ? (
+                      <span className="px-3 py-1 bg-[#1A1A1A] border border-[#2a2a2a] rounded-lg text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                        {profile.domain}
                       </span>
-                    ))}
-                    {!profile?.skills && !profile?.domain && (
+                    ) : null}
+                    {!(profile?.skills && profile.skills.length > 0) && (
                       <button onClick={() => router.push('/settings')} className="text-xs text-gray-600 hover:text-[#D4AF37]">
                         Ajoute tes compétences dans les paramètres →
                       </button>

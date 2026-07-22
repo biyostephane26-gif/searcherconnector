@@ -1,6 +1,10 @@
 -- Migration: Système de tracking des candidatures avec statuts
 -- Date: 2026-07-04
 
+-- Colonne manquante référencée par le trigger plus bas — sans elle,
+-- le passage au statut 'accepted' fait planter le trigger (BEFORE UPDATE).
+ALTER TABLE users_profiles ADD COLUMN IF NOT EXISTS missions_completed INTEGER DEFAULT 0;
+
 -- Table pour tracker l'évolution des candidatures
 CREATE TABLE IF NOT EXISTS applications_tracking (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

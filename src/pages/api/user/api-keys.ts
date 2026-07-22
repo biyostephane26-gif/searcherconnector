@@ -4,13 +4,24 @@
 // Endpoints pour les utilisateurs (créer, lister, révoquer clés API)
 
 import { NextApiRequest, NextApiResponse } from 'next';
+import { createClient } from '@supabase/supabase-js';
 import { createApiKey, getUserApiKeys, revokeApiKey } from '../../../lib/api-keys';
-import { getServerSession } from 'next-auth/react'; // Tu devras ajuster avec ton auth système
 
-// Note : Remplace la vérification de session par la tienne (Supabase, NextAuth, etc.)
+// Authentification réelle via le token Supabase envoyé en Authorization —
+// avant, cette route acceptait n'importe quel appel comme 'demo-user-id',
+// sans jamais vérifier qui appelait (et importait next-auth, jamais installé).
 async function getCurrentUserId(req: NextApiRequest): Promise<string | null> {
-  // Pour l'exemple :
-  return 'demo-user-id';
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
+  if (!token) return null;
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data.user) return null;
+  return data.user.id;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

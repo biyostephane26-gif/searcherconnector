@@ -7,11 +7,13 @@ const __dirname = path.dirname(__filename);
 
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
+  // Pas de output:'standalone' — le Dockerfile fait `npm ci` (node_modules
+  // complet) puis `next start` directement, jamais `node .next/standalone/
+  // server.js`. Le mode standalone + le outputFileTracingIncludes qui
+  // forçait TOUT node_modules dans le trace de CHAQUE route API (des
+  // dizaines) faisaient exploser la mémoire pendant "Collecting build
+  // traces" (JavaScript heap out of memory) pour un résultat jamais utilisé.
   experimental: {
-    outputFileTracingIncludes: {
-      '/api/**': ['./node_modules/**'],
-    },
     serverActions: {
       bodySizeLimit: '2mb',
     },

@@ -1,8 +1,10 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '../../contexts/AuthContext'
+import { supabase } from '../../lib/supabase'
 import { Home, Briefcase, Users, MessageSquare, DollarSign, User, Settings, Sparkles, Shield, BookOpen, PlusCircle, Building2, Mic } from 'lucide-react'
 
 // Fonction pour calculer le niveau professionnel
@@ -23,9 +25,18 @@ const getNextLevelProgress = (missionsCount: number = 0) => {
 
 export default function Sidebar() {
   const pathname = usePathname()
-  const { profile } = useAuth()
+  const { profile, user } = useAuth()
   const level = getProfessionalLevel(profile?.missions_completed || 0)
   const nextProgress = getNextLevelProgress(profile?.missions_completed || 0)
+
+  // voice_credits n'existe pas sur le profil — vit dans user_voice_credits.
+  // Affichait toujours "0 crédits" sur toutes les pages avant ce correctif.
+  const [voiceCredits, setVoiceCredits] = useState(0)
+  useEffect(() => {
+    if (!user) return
+    supabase.from('user_voice_credits').select('credits_remaining').eq('user_id', user.id).single()
+      .then(({ data }) => setVoiceCredits(data?.credits_remaining || 0))
+  }, [user])
 
   const menuItems = [
     { icon: <Home className="w-5 h-5" />, label: 'Accueil', path: '/dashboard' },
@@ -132,7 +143,7 @@ export default function Sidebar() {
               </div>
               <div className="flex items-baseline gap-1">
                 <span className="text-2xl font-bold text-white">
-                  {profile?.voice_credits || 0}
+                  {voiceCredits}
                 </span>
                 <span className="text-xs text-gray-500">crédits</span>
               </div>

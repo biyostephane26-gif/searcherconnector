@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Laden...",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "close": "Sluiten",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "refresh": "Vernieuwen",
+    "back": "Terug",
+    "next": "Volgende",
+    "send": "Verzenden",
+    "upload": "Uploaden",
+    "download": "Downloaden",
+    "confirm": "Bevestigen",
+    "error": "Fout",
+    "success": "Gelukt"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Home",
+    "opportunities": "Kansen",
+    "agent": "Searcher-agent",
+    "opportunityCreator": "Aanbod maken",
+    "cowork": "Cowork",
+    "interviews": "Sollicitatiegesprekken",
+    "social": "Sociaal",
+    "articles": "Artikelen",
+    "groups": "Communities",
+    "messages": "Berichten",
+    "salary": "Salarissen",
+    "profile": "Profiel",
+    "settings": "Instellingen",
+    "pricing": "Prijzen",
+    "logout": "Uitloggen"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Dashboard",
+    "agentActive": "Agent 24/7 actief",
+    "opportunitiesFound": "Gevonden kansen",
+    "applicationsSubmitted": "Verzonden sollicitaties",
+    "avgMatchScore": "Gemiddelde matchscore",
+    "launchScan": "Wereldwijde scan starten",
+    "recentOpportunities": "Recente kansen",
+    "viewAll": "Alles bekijken",
+    "noOpportunities": "Geen kansen. Start een scan om te beginnen."
+  },
+  "opportunities": {
+    "title": "Kansen-verkenner",
+    "filters": {
+      "all": "Alle",
+      "fresh": "Nieuw (<24u)",
+      "applied": "Gesolliciteerd",
+      "pending": "In afwachting"
+    },
+    "matchScore": "Match",
+    "source": "Bron",
+    "postedAgo": "{{hours}}u geleden geplaatst",
+    "applicants": "{{count}} sollicitanten",
+    "apply": "Solliciteren",
+    "applied": "Sollicitatie verzonden",
+    "unlockPremium": "Ontgrendel met Premium",
+    "premiumOnly": "Alleen Premium",
+    "scaiAnalysis": "SCAI-analyse",
+    "readinessScore": "Gereedheidsscore",
+    "applyManually": "Ik solliciteer zelf"
+  },
+  "scai": {
+    "title": "Searcher-agent",
+    "greeting": "Hallo! Ik ben SCAI, je persoonlijke carrière-assistent.",
+    "placeholder": "Stel me een vraag of vraag me om kansen te zoeken...",
+    "voice": "Stem gebruiken",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "{{count}} stemcredits over",
+    "thinking": "Ik denk na...",
+    "scanning": "Ik doorzoek het web voor je...",
+    "analyzing": "Ik analyseer de kansen...",
+    "applying": "Ik verstuur je sollicitatie..."
+  },
+  "profile": {
+    "title": "Professioneel profiel",
+    "completion": "Profiel voltooid",
+    "level": "Niveau",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Medior",
+      "senior": "Senior",
+      "expert": "Expert"
+    },
+    "progression": "Nog {{count}} opdrachten tot {{level}}",
+    "maxLevel": "Maximaal niveau bereikt",
+    "verification": {
+      "pending": "In afwachting",
+      "verified": "Geverifieerd",
+      "genius": "Genius",
+      "refused": "Afgewezen"
+    },
+    "editProfile": "Profiel bewerken",
+    "uploadAvatar": "Foto wijzigen",
+    "personalInfo": "Persoonlijke gegevens",
+    "skills": "Vaardigheden",
+    "experience": "Ervaring",
+    "portfolio": "Portfolio",
+    "documents": "Documenten"
+  },
+  "pricing": {
+    "title": "Plannen & Prijzen",
+    "monthly": "per maand",
+    "currentPlan": "Huidig plan",
+    "upgrade": "Upgraden naar {{plan}}",
+    "features": "Functies",
+    "free": {
+      "name": "Gratis",
+      "features": [
+        "RSS-feeds + gratis API's",
+        "10 gepersonaliseerde opdrachten per scan",
+        "6 gratis + 4 vergrendelde premium-opdrachten",
+        "Algemene meldingen",
+        "Max. 2 handmatige scans/dag",
+        "SCAI Voice niet beschikbaar"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Alle gratis bronnen + premium API's",
+        "Onbeperkte opdrachten",
+        "Gerichte meldingen",
+        "10 scans/dag",
+        "60 stemcredits/maand",
+        "PDF-generatie: cv + motivatiebrief"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Alle bronnen (LinkedIn, Upwork...)",
+        "Voorrang bij nieuwe opdrachten",
+        "Realtime meldingen bij <10 sollicitanten",
+        "Onbeperkte scans",
+        "300 stemcredits/maand",
+        "Alle pdf's",
+        "Sollicitatiegesprek-simulatie",
+        "Portfolio-analyse"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Instellingen",
+    "language": "Taal",
+    "theme": "Thema",
+    "lightMode": "Lichte modus",
+    "darkMode": "Donkere modus",
+    "notifications": "Meldingen",
+    "emailNotifications": "E-mailmeldingen",
+    "pushNotifications": "Pushmeldingen",
+    "privacy": "Privacy",
+    "security": "Beveiliging",
+    "account": "Account",
+    "deleteAccount": "Account verwijderen",
+    "changePassword": "Wachtwoord wijzigen",
+    "twoFactor": "Tweefactorauthenticatie"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Meldingen",
+    "markAllRead": "Alles als gelezen markeren",
+    "noNotifications": "Geen meldingen",
+    "types": {
+      "opportunity": "Nieuwe kans",
+      "application": "Sollicitatie bijgewerkt",
+      "message": "Nieuw bericht",
+      "system": "Systeemmelding",
+      "plan": "Plan geactiveerd"
+    },
+    "filters": {
+      "all": "Alle",
+      "unread": "Ongelezen",
+      "opportunities": "Kansen",
+      "system": "Systeem"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Mijn Sollicitaties",
+    "status": {
+      "applied": "Gesolliciteerd",
+      "viewed": "Bekeken",
+      "interview": "Gesprek",
+      "accepted": "Geaccepteerd",
+      "rejected": "Afgewezen"
+    },
+    "noApplications": "Nog geen sollicitaties",
+    "viewDetails": "Details bekijken",
+    "withdrawApplication": "Sollicitatie intrekken"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Inloggen",
+    "signup": "Registreren",
+    "email": "E-mail",
+    "password": "Wachtwoord",
+    "confirmPassword": "Bevestig wachtwoord",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "alreadyHaveAccount": "Al een account?",
+    "dontHaveAccount": "Nog geen account?",
+    "loginWithGoogle": "Doorgaan met Google",
+    "loginWithGithub": "Doorgaan met GitHub",
+    "acceptTerms": "Ik accepteer de gebruiksvoorwaarden",
+    "waitlist": "Wachtlijst"
+  },
+  "errors": {
+    "generic": "Er is een fout opgetreden",
+    "networkError": "Verbindingsfout",
+    "unauthorized": "Niet geautoriseerd",
+    "notFound": "Niet gevonden",
+    "validation": "Ongeldige gegevens",
+    "tryAgain": "Opnieuw proberen"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Plaatsen",
+    "comment": "Reageren",
+    "like": "Vind ik leuk",
+    "share": "Delen",
+    "newPost": "Nieuw bericht",
+    "whatOnYourMind": "Wat is er nieuw in je carrière?",
+    "professionalContent": "Alleen professionele inhoud",
+    "rejectedContent": "Deze inhoud voldoet niet aan de professionele normen van SC"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Cowork-ruimte",
+    "createSpace": "Ruimte maken",
+    "joinSpace": "Deelnemen",
+    "mySpaces": "Mijn ruimtes",
+    "findCollaborators": "Medewerkers vinden",
+    "premiumFeature": "Premium-functie"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Oprichter-dashboard",
+    "monitoring": "Monitoring",
+    "telemetry": "MongoDB/Bronnen",
+    "scans": "Scans & logs",
+    "users": "Gebruikers",
+    "conversations": "Gesprekken",
+    "revenue": "Inkomsten",
+    "activatePlan": "Plan activeren",
+    "changeStatus": "Status wijzigen",
+    "addTokens": "Tokens toevoegen",
+    "testEmail": "E-mail testen",
+    "scanToggle": "Scan aan/uit"
   }
 }

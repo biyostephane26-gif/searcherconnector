@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Iyalayisha...",
+    "save": "Londoloza",
+    "cancel": "Khansela",
+    "delete": "Susa",
+    "edit": "Hlela",
+    "close": "Vala",
+    "search": "Sesha",
+    "filter": "Hlunga",
+    "refresh": "Vuselela",
+    "back": "Emuva",
+    "next": "Okulandelayo",
+    "send": "Thumela",
+    "upload": "Layisha",
+    "download": "Dawuniloda",
+    "confirm": "Qinisekisa",
+    "error": "Iphutha",
+    "success": "Impumelelo"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Ikhaya",
+    "opportunities": "Amathuba",
+    "agent": "I-ejenti ye-Searcher",
+    "opportunityCreator": "Dala Umnikelo",
+    "cowork": "Cowork",
+    "interviews": "Ama-inthaviyu",
+    "social": "Umphakathi",
+    "articles": "Izihloko",
+    "groups": "Amaqembu",
+    "messages": "Imilayezo",
+    "salary": "Amaholo",
+    "profile": "Iphrofayela",
+    "settings": "Izilungiselelo",
+    "pricing": "Amanani",
+    "logout": "Phuma"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Ideshibhodi",
+    "agentActive": "I-ejenti isebenza amahora angu-24/7",
+    "opportunitiesFound": "Amathuba atholiwe",
+    "applicationsSubmitted": "Izicelo ezithunyelwe",
+    "avgMatchScore": "Isikolo esimaphakathi sokufaneleka",
+    "launchScan": "Qala ukusesha komhlaba wonke",
+    "recentOpportunities": "Amathuba akamuva",
+    "viewAll": "Buka konke",
+    "noOpportunities": "Awekho amathuba. Qala ukusesha ukuze uqale."
+  },
+  "opportunities": {
+    "title": "Isishuncushunci Samathuba",
+    "filters": {
+      "all": "Konke",
+      "fresh": "Kusha (<24h)",
+      "applied": "Kufakiwe isicelo",
+      "pending": "Kusalindwe"
+    },
+    "matchScore": "Ukufaneleka",
+    "source": "Umthombo",
+    "postedAgo": "Kuthunyelwe emahoreni angu-{{hours}} edlule",
+    "applicants": "Abafake izicelo abangu-{{count}}",
+    "apply": "Faka isicelo",
+    "applied": "Isicelo sithunyelwe",
+    "unlockPremium": "Vula nge-Premium",
+    "premiumOnly": "I-Premium Kuphela",
+    "scaiAnalysis": "Ukuhlaziywa kwe-SCAI",
+    "readinessScore": "Isikolo sokulungela",
+    "applyManually": "Ngizofaka isicelo mina ngokwami"
+  },
+  "scai": {
+    "title": "I-ejenti ye-Searcher",
+    "greeting": "Sawubona! Ngingu-SCAI, umsizi wakho womsebenzi.",
+    "placeholder": "Ngibuze umbuzo noma ungicele ngifune amathuba...",
+    "voice": "Sebenzisa izwi",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "Kusele amakhredithi ezwi angu-{{count}}",
+    "thinking": "Ngiyacabanga...",
+    "scanning": "Ngisesha iwebhu ngenxa yakho...",
+    "analyzing": "Ngihlaziya amathuba...",
+    "applying": "Ngithumela isicelo sakho..."
+  },
+  "profile": {
+    "title": "Iphrofayela Yomsebenzi",
+    "completion": "Ukuphelela kwephrofayela",
+    "level": "Izinga",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Maphakathi",
+      "senior": "Senior",
+      "expert": "Ochwepheshe"
+    },
+    "progression": "Kusele amaphrojekthi angu-{{count}} ukufinyelela ku-{{level}}",
+    "maxLevel": "Kufinyelelwe izinga eliphakeme kakhulu",
+    "verification": {
+      "pending": "Kusalindwe",
+      "verified": "Kuqinisekisiwe",
+      "genius": "Genius",
+      "refused": "Kwenqatshelwe"
+    },
+    "editProfile": "Hlela iphrofayela",
+    "uploadAvatar": "Shintsha isithombe",
+    "personalInfo": "Ulwazi lomuntu siqu",
+    "skills": "Amakhono",
+    "experience": "Ulwazi",
+    "portfolio": "Iphothifoliyo",
+    "documents": "Amadokhumenti"
+  },
+  "pricing": {
+    "title": "Amasu Namanani",
+    "monthly": "ngenyanga",
+    "currentPlan": "Isu samanje",
+    "upgrade": "Thuthukisela ku-{{plan}}",
+    "features": "Izici",
+    "free": {
+      "name": "Mahhala",
+      "features": [
+        "Ama-RSS + ama-API amahhala",
+        "Amathuba angu-10 aqondene nawe ku-scan ngayinye",
+        "6 amahhala + 4 e-premium avaliwe",
+        "Izaziso ezijwayelekile",
+        "Ukusesha ngesandla okungu-2 ngosuku",
+        "I-SCAI Voice ayitholakali"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Yonke imithombo yamahhala + ama-API e-premium",
+        "Amathuba angenamkhawulo",
+        "Izaziso ezigxile",
+        "Ukusesha okungu-10 ngosuku",
+        "Amakhredithi ezwi angu-60 ngenyanga",
+        "Ukudalwa kwe-PDF: I-CV + incwadi yesicelo"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Yonke imithombo (LinkedIn, Upwork...)",
+        "Okuqala kumathuba amasha",
+        "Izaziso zesikhathi sangempela lapho abafake izicelo bengaphansi kuka-10",
+        "Ukusesha okungenamkhawulo",
+        "Amakhredithi ezwi angu-300 ngenyanga",
+        "Wonke ama-PDF",
+        "Ukulingisa i-inthaviyu",
+        "Ukuhlaziya iphothifoliyo"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Izilungiselelo",
+    "language": "Ulimi",
+    "theme": "Itimu",
+    "lightMode": "Imodi ekhanyayo",
+    "darkMode": "Imodi emnyama",
+    "notifications": "Izaziso",
+    "emailNotifications": "Izaziso ze-imeyili",
+    "pushNotifications": "Izaziso ezidonsayo",
+    "privacy": "Ubumfihlo",
+    "security": "Ukuphepha",
+    "account": "I-akhawunti",
+    "deleteAccount": "Susa i-akhawunti",
+    "changePassword": "Shintsha iphasiwedi",
+    "twoFactor": "Ukuqinisekiswa okuphindwe kabili"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Izaziso",
+    "markAllRead": "Phawula konke njengokufundiwe",
+    "noNotifications": "Azikho izaziso",
+    "types": {
+      "opportunity": "Ithuba elisha",
+      "application": "Isicelo sibuyekeziwe",
+      "message": "Umlayezo omusha",
+      "system": "Isaziso sesistimu",
+      "plan": "Isu selivuselelwe"
+    },
+    "filters": {
+      "all": "Konke",
+      "unread": "Okungakafundwa",
+      "opportunities": "Amathuba",
+      "system": "Isistimu"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Izicelo Zami",
+    "status": {
+      "applied": "Kuthunyelwe",
+      "viewed": "Kubukiwe",
+      "interview": "I-inthaviyu",
+      "accepted": "Kwamukelwe",
+      "rejected": "Kwenqatshelwe"
+    },
+    "noApplications": "Azikho izicelo okwamanje",
+    "viewDetails": "Buka imininingwane",
+    "withdrawApplication": "Hoxisa isicelo"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Ngena",
+    "signup": "Bhalisa",
+    "email": "I-imeyili",
+    "password": "Iphasiwedi",
+    "confirmPassword": "Qinisekisa iphasiwedi",
+    "forgotPassword": "Ukhohlwe iphasiwedi?",
+    "alreadyHaveAccount": "Usunayo i-akhawunti?",
+    "dontHaveAccount": "Awukabi na-akhawunti?",
+    "loginWithGoogle": "Qhubeka nge-Google",
+    "loginWithGithub": "Qhubeka nge-GitHub",
+    "acceptTerms": "Ngiyayamukela imigomo yokusetshenziswa",
+    "waitlist": "Joyina uhlu lokulinda"
+  },
+  "errors": {
+    "generic": "Kwenzeke iphutha",
+    "networkError": "Iphutha lokuxhumana",
+    "unauthorized": "Akugunyaziwe",
+    "notFound": "Akutholakalanga",
+    "validation": "Idatha engavumelekile",
+    "tryAgain": "Zama futhi"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Thumela",
+    "comment": "Phawula",
+    "like": "Thanda",
+    "share": "Yabelana",
+    "newPost": "Okuthunyelwe okusha",
+    "whatOnYourMind": "Yini entsha emsebenzini wakho?",
+    "professionalContent": "Okuqukethwe kobuchwepheshe kuphela",
+    "rejectedContent": "Lokhu okuqukethwe akuhambisani nezindinganiso zobuchwepheshe ze-SC"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Isikhala se-Cowork",
+    "createSpace": "Dala isikhala",
+    "joinSpace": "Joyina",
+    "mySpaces": "Izikhala zami",
+    "findCollaborators": "Thola ababambisene",
+    "premiumFeature": "Isici se-Premium"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Ideshibhodi Yomsunguli",
+    "monitoring": "Ukuqapha",
+    "telemetry": "MongoDB/Imithombo",
+    "scans": "Ukusesha Namalogi",
+    "users": "Abasebenzisi",
+    "conversations": "Izingxoxo",
+    "revenue": "Imali engenayo",
+    "activatePlan": "Vuselela isu",
+    "changeStatus": "Shintsha isimo",
+    "addTokens": "Engeza amathokheni",
+    "testEmail": "Hlola i-imeyili",
+    "scanToggle": "Vula/vala ukusesha"
   }
 }

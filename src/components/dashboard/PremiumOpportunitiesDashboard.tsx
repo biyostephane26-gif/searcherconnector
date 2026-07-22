@@ -45,7 +45,6 @@ export default function PremiumOpportunitiesDashboard() {
   const [pipelines, setPipelines] = useState<SkillPipeline[]>([])
   const [totalMatching, setTotalMatching] = useState(0)
   const [activeTab, setActiveTab] = useState<string | null>(null)
-  const [autoApplying, setAutoApplying] = useState(false)
 
   const isPremium = profile?.plan === 'pro' || profile?.plan === 'enterprise' || profile?.verification_status === 'genius'
 
@@ -54,37 +53,41 @@ export default function PremiumOpportunitiesDashboard() {
   }, [user])
 
   const fetchOpportunities = async () => {
+    if (!user) { setLoading(false); return }
     setLoading(true)
     try {
-      const { data: cachedOpps } = await supabase
-        .from('cache_opportunities')
+      // Données réelles et personnalisées uniquement — plus jamais de
+      // données fictives en repli. On lit la table `opportunities`
+      // (déjà matchée + scorée pour cet utilisateur par cache-scan/
+      // matchAndNotify), pas le cache brut global.
+      const { data: realOpps } = await supabase
+        .from('opportunities')
         .select('*')
-        .eq('is_expired', false)
-        .order('freshness_score', { ascending: false })
-        .limit(1000)
+        .eq('user_id', user.id)
+        .order('score', { ascending: false })
+        .limit(300)
 
-      const mockOpps = generateMockOpportunities()
-      const allOpps = (cachedOpps?.length || 0) > 0 ? cachedOpps : mockOpps
+      const allOpps = (realOpps || []) as Opportunity[]
 
-      const scored = allOpps.map(opp => ({
+      // Verrouillage freemium déterministe (même règle que la page
+      // Opportunités : 10 accessibles pour les comptes gratuits) — plus
+      // de Math.random().
+      const scored = allOpps.map((opp, i) => ({
         ...opp,
-        match_score: calculateMatchScore(opp, profile),
-        is_locked: !isPremium && Math.random() > 0.3
-      })) as Opportunity[]
-
-      scored.sort((a, b) => (b.match_score || 0) - (a.match_score || 0))
+        match_score: opp.score,
+        is_locked: !isPremium && i >= 10,
+      }))
 
       setOpportunities(scored)
-
       setTop10(scored.filter(opp => (opp.match_score || 0) >= 90).slice(0, 10))
 
       const skills = extractSkills(scored)
-      const skillPipelines = skills.map(skill => ({
-        skill,
-        opportunities: scored.filter(opp => 
+      const skillPipelines = skills.map(skill => {
+        const opps = scored.filter(opp =>
           opp.skills?.includes(skill) || opp.title?.toLowerCase().includes(skill.toLowerCase())
         ).slice(0, 100)
-      })).filter(p => p.opportunities.length > 0)
+        return { skill, count: opps.length, opportunities: opps }
+      }).filter(p => p.opportunities.length > 0)
       setPipelines(skillPipelines)
 
       setTotalMatching(scored.length)
@@ -93,25 +96,6 @@ export default function PremiumOpportunitiesDashboard() {
     } finally {
       setLoading(false)
     }
-  }
-
-  const calculateMatchScore = (opp: any, userProfile: any) => {
-    let score = 50
-
-    if (userProfile?.domain && opp.title?.toLowerCase().includes(userProfile.domain.toLowerCase())) score += 20
-    if (userProfile?.domain && opp.description?.toLowerCase().includes(userProfile.domain.toLowerCase())) score += 10
-    
-    if (userProfile?.country && opp.location?.toLowerCase().includes(userProfile.country.toLowerCase())) score += 10
-    
-    if (userProfile?.salary_min && opp.salary_min >= userProfile.salary_min) score += 10
-    
-    if (opp.published_at) {
-      const hours = (Date.now() - new Date(opp.published_at).getTime()) / 3600000
-      if (hours < 2) score += 20
-      else if (hours < 24) score += 10
-    }
-
-    return Math.min(100, Math.max(0, score))
   }
 
   const extractSkills = (opps: Opportunity[]) => {
@@ -130,35 +114,11 @@ export default function PremiumOpportunitiesDashboard() {
     return Array.from(skills).slice(0, 6)
   }
 
-  const generateMockOpportunities = (): Opportunity[] => {
-    const companies = ['TechCorp', 'StartupXYZ', 'GlobalInnovate', 'AfricanTech', 'RemoteFirst', 'DigitalNomads']
-    const roles = ['Senior Developer', 'UI/UX Designer', 'Full Stack Engineer', 'Data Scientist', 'Product Manager', 'AI Researcher', 'Backend Developer', 'Frontend Developer', 'DevOps Engineer', 'Mobile Developer']
-    const locations = ['Remote', 'Paris', 'Dakar', 'Lagos', 'Nairobi', 'London', 'New York']
-
-    return Array.from({ length: 1000 }, (_, i) => ({
-      id: `opp-${i}`,
-      title: `${roles[i % roles.length]} ${Math.random() > 0.5 ? '' : '(Remote)'}`,
-      company: companies[i % companies.length],
-      location: locations[i % locations.length],
-      salary: `${40000 + i * 50}`,
-      salary_min: 40000 + i * 50,
-      salary_max: 80000 + i * 100,
-      description: 'Great opportunity for skilled professionals. Join our innovative team working on cutting-edge projects.',
-      original_url: `https://example.com/job/${i}`,
-      source_platform: ['LinkedIn', 'Indeed', 'WeWorkRemotely', 'RemoteOK'][i % 4],
-      applicants_count: Math.floor(Math.random() * 20),
-      published_at: new Date(Date.now() - Math.random() * 7 * 24 * 3600000).toISOString(),
-      category: ['Development', 'Design', 'Data', 'Management'][i % 4],
-      skills: ['React', 'Node.js', 'Python', 'Design', 'UI/UX', 'Data', 'AI', 'JavaScript'].slice(0, Math.floor(Math.random() * 4) + 1)
-    }))
-  }
-
-  const handleAutoApply = async () => {
-    setAutoApplying(true)
-    setTimeout(() => {
-      setAutoApplying(false)
-      alert('SCAI a commencé à postuler automatiquement !')
-    }, 2000)
+  // "Confier l'océan à SCAI" — l'auto-apply réel se fait opportunité par
+  // opportunité via /api/auto-apply (voir Opportunities.tsx). Pas de faux
+  // succès instantané ici : on renvoie vers la page où l'action est réelle.
+  const handleAutoApply = () => {
+    router.push('/opportunities?filter=pending')
   }
 
   if (loading) {
@@ -192,7 +152,6 @@ export default function PremiumOpportunitiesDashboard() {
             {isPremium ? (
               <GoldButton
                 onClick={handleAutoApply}
-                loading={autoApplying}
                 size="lg"
                 className="text-base"
               >
@@ -206,7 +165,7 @@ export default function PremiumOpportunitiesDashboard() {
                 className="text-base"
               >
                 <Unlock className="w-5 h-5 mr-2" />
-                Débloquer {Math.max(0, totalMatching - 300)} opportunités
+                Débloquer {Math.max(0, totalMatching - 10)} opportunités
               </GoldButton>
             )}
           </div>

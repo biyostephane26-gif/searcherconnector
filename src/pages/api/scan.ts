@@ -37,6 +37,9 @@ import { createClient } from '@supabase/supabase-js';
 import { MongoClient } from 'mongodb';
 import { fetchAllSources } from '../../lib/scraper/generators';
 import { cache } from '../../lib/scraper/cache-manager';
+import { matchCategories, matchCategoriesForUser } from '../../lib/scraper/categories';
+import { detectRequiredLevel, computeLevelMatch } from '../../lib/scraper/skill-matching';
+import { checkRateLimit } from '../../lib/rateLimiter';
 import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
 
@@ -995,6 +998,12 @@ function scoreLocally(items: any[], profile: any, isPaid: boolean): any[] {
     ];
     if (highValueSources.some(s=>src.includes(s))) score += 18;
 
+    // Niveau de compétence requis vs niveau réel de l'utilisateur (évalué
+    // par IA, voir skill-matching.ts) — même logique que cache-scan/route.ts
+    const requiredLevel = detectRequiredLevel(r.title || '', r.snippet || '');
+    const levelMatch = computeLevelMatch(profile.skill_level, requiredLevel);
+    score += levelMatch.boost;
+
     score = Math.max(0, Math.min(100, score));
     if (score < minScore) return null;
 
@@ -1014,6 +1023,8 @@ function scoreLocally(items: any[], profile: any, isPaid: boolean): any[] {
       currency:        'USD',
       hours_ago:       ah||24,
       applicants_count: r.applicants_count, // Stocke le nb de candidats !
+      required_level:  requiredLevel,
+      recommended:     levelMatch.recommended,
     };
   }).filter(Boolean).sort((a:any,b:any)=>b.score-a.score);
 }
@@ -1077,7 +1088,7 @@ async function orchestrate(
   // --- POUR TOUS LES PROFILS : SOURCES 100% GRATUITES ---
   universalCalls.push(safe('DuckDuckGo', () => duckduckgoSearch(`${term} ${isFreelance ? 'freelance hiring' : isInvestor ? 'startup funding' : isBusiness ? 'B2B client' : 'job opportunity'} ${zone === 'local' ? country : ''}`), log));
   universalCalls.push(safe('GitHub',     () => fetchGitHub(term), log));
-  universalCalls.push(safe('Massive-Sources', () => fetchAllSources(term, log), log));
+  universalCalls.push(safe('Massive-Sources', () => fetchAllSources(term, log, isPaid), log));
 
   // ── SOURCES JOB SEEKER (emploi salarié) ───────────────────────
   // Job boards, ATS, Adzuna, Remotive, Arbeitnow, Himalayas
@@ -1177,7 +1188,7 @@ async function orchestrate(
   const needLevel3 = isPaid; // Seuls les payants ont droit au niveau 3
   
   if (needLevel3) {
-    const hasScrapers = SCRAPINGBEE_KEY || ZENROWS_KEY || APIFY_KEY;
+    const hasScrapers = SCRAPINGBEE_KEYS.length > 0 || ZENROWS_KEYS.length > 0 || APIFY_KEY;
     if (hasScrapers) {
       log.push(`\n💰 NIVEAU 3 — Scrapers humanistes failover (Plan payant actif)`);
 
@@ -1288,8 +1299,29 @@ const MAX_CONCURRENT_SCANS = 3;
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
 
+  const { userId, zone = 'continental', has_budget = false } = req.body;
+  if (!userId) return res.status(400).json({ error: 'userId requis' });
+
+  // ── Le fondateur n'a aucune restriction (maintenance, quotas, rate
+  // limit) — vérifié en premier pour pouvoir bypasser tout le reste. ──
+  const { data: roleCheck } = await supabaseAdmin
+    .from('users_profiles').select('role').eq('id', userId).single();
+  const callerIsFounder = roleCheck?.role === 'founder';
+
+  // ── Mode maintenance (Founder dashboard) ────────────────────────
+  if (!callerIsFounder) {
+    const { data: maintenanceSetting } = await supabaseAdmin
+      .from('app_settings').select('value').eq('key', 'MAINTENANCE_MODE').single();
+    if (maintenanceSetting?.value === 'true') {
+      return res.status(503).json({
+        error: 'Searcher Connector est en maintenance. Réessaie dans quelques minutes.',
+        maintenance: true,
+      });
+    }
+  }
+
   // ── Rate limiting ─────────────────────────────────────────────
-  if (_activeScans >= MAX_CONCURRENT_SCANS) {
+  if (!callerIsFounder && _activeScans >= MAX_CONCURRENT_SCANS) {
     return res.status(429).json({
       error: 'Le moteur est occupé avec d\'autres scans. Réessaie dans 30 secondes.',
       retry_after: 30,
@@ -1300,8 +1332,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   _activeScans++;
   const releaseSlot = () => { _activeScans = Math.max(0, _activeScans - 1); };
 
-  const { userId, zone = 'continental', has_budget = false } = req.body;
-  if (!userId) { releaseSlot(); return res.status(400).json({ error: 'userId requis' }); }
+  // Anti-rafale : 5 requêtes/minute max par utilisateur (le quota journalier
+  // ci-dessous protège le volume, ceci protège contre le flood/double-clic)
+  if (!callerIsFounder && !checkRateLimit(`scan:${userId}`, 5, 60_000)) {
+    releaseSlot();
+    return res.status(429).json({ error: 'Trop de scans lancés d\'un coup. Attends une minute.' });
+  }
 
   const authHeader = req.headers.authorization;
   const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
@@ -1329,24 +1365,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const country:     string = profile.country || 'Cameroun';
     const plan:        string = profile.plan    || 'free';
 
+    // ── Scan gratuit / payant activable depuis le dashboard Founder ──
+    // (le fondateur bypass ce toggle — il doit pouvoir tester même
+    // quand les scans sont désactivés pour tout le monde)
+    if (!callerIsFounder) {
+      const scanToggleKey = plan === 'free' ? 'FREE_SCAN_ENABLED' : 'PAID_SCAN_ENABLED';
+      const { data: scanToggle } = await supabaseAdmin
+        .from('app_settings').select('value').eq('key', scanToggleKey).single();
+      if (scanToggle?.value === 'false') {
+        releaseSlot();
+        return res.status(503).json({ error: 'Les scans sont temporairement désactivés pour ton plan. Réessaie plus tard.' });
+      }
+    }
+
     if (!profile.domain || !profile.country)
       return res.status(400).json({ error: 'Complète ton domaine et ton pays dans les paramètres avant le scan.' });
 
-    // Plan payant → accès complet automatique
-    const isPaid         = ['talent', 'business', 'investor'].includes(plan);
+    // Plan payant → accès complet automatique. Le fondateur (role==='founder')
+    // n'a aucune restriction quel que soit son `plan` en base.
+    const isFounder       = profile.role === 'founder';
+    const isPaid          = isFounder || ['starter', 'pro', 'enterprise'].includes(plan);
     // Budget : confirmé par SCAI OU plan payant OU stocké dans le profil
     const hasBudgetEff   = has_budget === true || has_budget === 'true' || isPaid
                         || (profile.search_preferences as any)?.has_budget === true;
 
     // ── Quota quotidien par plan ────────────────────────────────
-    // Gratuit  : 1 scan/jour
-    // Talent   : 5 scans/jour
-    // Business : 10 scans/jour
-    // Investor : 20 scans/jour (+ accès sources payantes)
+    // Gratuit : 1 scan/jour · Starter : 10 scans/jour · Pro : illimité
+    // (voir Pricing.tsx) — le fondateur n'a pas de limite.
     const DAILY_QUOTAS: Record<string, number> = {
-      free: 1, talent: 5, business: 10, investor: 20
+      free: 1, starter: 10, pro: 9999, enterprise: 9999
     }
-    const dailyLimit = DAILY_QUOTAS[plan] || 1
+    const dailyLimit = isFounder ? 9999 : (DAILY_QUOTAS[plan] || 1)
     try {
       const today = new Date().toISOString().split('T')[0]
       const { count: scansToday } = await supabaseAdmin
@@ -1370,16 +1419,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     log.push(`🚀 SCAN v6.1 | ${profile.full_name} | ${profileType} | zone: ${zone} | budget: ${hasBudgetEff} | plan: ${plan}`);
 
     // ── Try Cache Pool First ─────────────────────────────────────
-    const categories = [profileType === 'freelance' ? 'freelance' : 'job'];
+    // Catégories du cache partagé pertinentes pour les domaines de
+    // l'utilisateur (jusqu'à 3), alimenté par le scan de fond —
+    // scheduler.js → /api/cache-scan
+    const categories = matchCategoriesForUser(profile.domains, domain, profileType);
     try {
-      const cachedOpportunities = await cache.getOpportunities({
+      const cachedOpportunities = (await cache.getOpportunities({
         categories,
         sourceType: isPaid ? undefined : 'free',
         excludeSeenByUserId: userId,
         limit: isPaid ? 200 : 100
-      });
+      })) as any[];
       
-      if (cachedOpportunities && cachedOpportunities.length > 0) {
+      // Seuil bas volontairement (le cache démarre vide) — à remonter vers ~100
+      // une fois le scheduler tourné assez longtemps pour densifier chaque catégorie.
+      const MIN_CACHE_RESULTS = 20;
+      if (cachedOpportunities && cachedOpportunities.length >= MIN_CACHE_RESULTS) {
         log.push(`⚡ [CACHE POOL HIT] ${cachedOpportunities.length} opportunités depuis le Cache Pool Intelligent`);
         
         // Convert to the format expected by the rest of the code
@@ -1411,28 +1466,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // ── Sauvegarde Supabase ───────────────────────────────────────
         if (scored.length > 0) {
-          const { error: insertErr } = await dbClient.from('opportunities').insert(
-            scored.map((o: any) => ({
-              user_id:         userId,
-              title:           o.title,
-              company:         o.company || '',
-              location:        o.location || '',
-              country:         o.country || country,
-              score:           o.score,
-              match_reason:    o.match_reason || '',
-              source_platform: o.source_platform || 'web',
-              original_url:    o.original_url || '',
-              is_foreign:      false,
-              is_suspicious:   false,
-              hours_ago:       o.hours_ago || 0,
-              salary_min:      0,
-              salary_max:      0,
-              currency:        'USD',
-              status:          'found',
-              profile_type:    profileType, // Segmenter par profil
-              created_at:      new Date().toISOString(),
-            }))
-          );
+          const rows = scored.map((o: any) => ({
+            user_id:         userId,
+            title:           o.title,
+            company:         o.company || '',
+            location:        o.location || '',
+            country:         o.country || country,
+            score:           o.score,
+            match_reason:    o.match_reason || '',
+            source_platform: o.source_platform || 'web',
+            original_url:    o.original_url || '',
+            is_foreign:      false,
+            is_suspicious:   false,
+            hours_ago:       o.hours_ago || 0,
+            salary_min:      0,
+            salary_max:      0,
+            currency:        'USD',
+            status:          'found',
+            required_level:  o.required_level || null,
+            recommended:     !!o.recommended,
+            created_at:      new Date().toISOString(),
+          }));
+          let { error: insertErr } = await dbClient.from('opportunities').insert(rows);
+          // required_level/recommended n'existent que si la migration
+          // add_skill_level_matching.sql est appliquée — retry sans ces
+          // champs plutôt que de perdre TOUT le résultat du scan.
+          if (insertErr && /required_level|recommended/.test(insertErr.message)) {
+            const stripped = rows.map(({ required_level, recommended, ...rest }: any) => rest);
+            ({ error: insertErr } = await dbClient.from('opportunities').insert(stripped));
+          }
           if (insertErr) log.push(`⚠️ Insert Supabase: ${insertErr.message}`);
         }
 
@@ -1473,7 +1535,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const topScore   = scored[0]?.score || 0
         const freshCount = scored.filter((o:any) => o.hours_ago < 24).length
         const careerMessage = getCareerMessage(scored.length, lockedCount, profileType, topScore, freshCount)
-        
+        // Pas d'email ici : l'utilisateur vient de déclencher ce scan lui-même,
+        // il voit le résultat à l'écran instantanément. La notification in-app
+        // (ci-dessus) suffit — un email par scan exploserait le volume à l'échelle
+        // (1000+ utilisateurs pouvant scanner plusieurs fois/jour).
+
         log.push(`🎉 SCAN v6.1 TERMINÉ (CACHE POOL) | found:${scored.length} | visible:${visible.length} | locked:${lockedCount} | ${((Date.now()-startedAt)/1000).toFixed(1)}s`);
         
         return res.status(200).json({
@@ -1526,7 +1592,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // ── Nettoyer les anciennes opportunités (non-bloquant) ────────
-    dbClient.from('opportunities').delete().eq('user_id', userId).then(() => {}).catch(() => {});
+    dbClient.from('opportunities').delete().eq('user_id', userId).then(() => {}, () => {});
 
     // ── Cache MongoDB EQUILIBRÉ : Fraîcheur + économie ────────
     // Pour plans gratuits: 1H DE CACHE (suffisamment frais pour les devs !)
@@ -1581,28 +1647,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // ── Sauvegarde Supabase ───────────────────────────────────────
     if (scored.length > 0) {
-      const { error: insertErr } = await dbClient.from('opportunities').insert(
-        scored.map((o: any) => ({
-          user_id:         userId,
-          title:           o.title,
-          company:         o.company || '',
-          location:        o.location || '',
-          country:         o.country || country,
-          score:           o.score,
-          match_reason:    o.match_reason || '',
-          source_platform: o.source_platform || 'web',
-          original_url:    o.original_url || '',
-          is_foreign:      false,
-          is_suspicious:   false,
-          hours_ago:       o.hours_ago || 0,
-          salary_min:      0,
-          salary_max:      0,
-          currency:        'USD',
-          status:          'found',
-          profile_type:    profileType, // Segmenter par profil
-          created_at:      new Date().toISOString(),
-        }))
-      );
+      const rows = scored.map((o: any) => ({
+        user_id:         userId,
+        title:           o.title,
+        company:         o.company || '',
+        location:        o.location || '',
+        country:         o.country || country,
+        score:           o.score,
+        match_reason:    o.match_reason || '',
+        source_platform: o.source_platform || 'web',
+        original_url:    o.original_url || '',
+        is_foreign:      false,
+        is_suspicious:   false,
+        hours_ago:       o.hours_ago || 0,
+        salary_min:      0,
+        salary_max:      0,
+        currency:        'USD',
+        status:          'found',
+        required_level:  o.required_level || null,
+        recommended:     !!o.recommended,
+        created_at:      new Date().toISOString(),
+      }));
+      let { error: insertErr } = await dbClient.from('opportunities').insert(rows);
+      // Fallback si la migration add_skill_level_matching.sql n'est pas
+      // encore appliquée (colonnes absentes) — ne jamais perdre le scan.
+      if (insertErr && /required_level|recommended/.test(insertErr.message)) {
+        const stripped = rows.map(({ required_level, recommended, ...rest }: any) => rest);
+        ({ error: insertErr } = await dbClient.from('opportunities').insert(stripped));
+      }
       if (insertErr) log.push(`⚠️ Insert Supabase: ${insertErr.message}`);
     }
 
@@ -1694,6 +1766,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const careerMessage = getCareerMessage(scored.length, lockedCount, profileType, topScore, freshCount)
+    // Pas d'email ici non plus — même raison que le chemin Cache Pool ci-dessus.
 
     // ── Log interne (pas en console prod) ────────────────────────
     log.push(`🎉 SCAN v6.1 TERMINÉ | found:${scored.length} | visible:${visible.length} | locked:${lockedCount} | ${((Date.now()-startedAt)/1000).toFixed(1)}s`);

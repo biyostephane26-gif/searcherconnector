@@ -4,7 +4,13 @@
 // Ces fonctions génériques traitent TOUTES nos 300+ sources,
 // filtrent les résultats à < 24h, et évitent les blocages !
 
-import { JOB_BOARDS, ATS_COMPANIES, FREELANCE_PLATFORMS, TECH_RSS_FEEDS, SOCIAL_COMMUNITIES } from './massive-sources';
+import {
+  JOB_BOARDS, ATS_COMPANIES, FREELANCE_PLATFORMS, TECH_RSS_FEEDS, SOCIAL_COMMUNITIES,
+  NICHE_PLATFORMS, AI_TECH_PLATFORMS, GLOBAL_FREELANCE, INTERNSHIP_JUNIOR,
+  REMOTE_EXCLUSIVE, EXECUTIVE_CAREERS, INDUSTRY_SPECIALIZED,
+} from './massive-sources';
+
+type SourceEntry = { name: string; type: string; url: string; isPaidOnly: boolean };
 
 // 🚦 Rate Limiting par domaine pour éviter les blocages
 const lastRequestPerDomain = new Map<string, number>();
@@ -54,22 +60,39 @@ function isDateFreshEnough(dateStr: string | number | Date, maxHours: number = 2
 }
 
 // =================================================================
+// CACHE DE RÉPONSE BRUTE — par URL seule (pas par URL+mot-clé)
+// =================================================================
+// Une même source (RSS/API) est appelée UNE SEULE FOIS par cycle de scan
+// même si on la interroge pour 14 métiers différents : on met en cache
+// la réponse brute (10 min, aligné sur la cadence du palier le plus
+// rapide) et on refiltre en mémoire pour chaque catégorie — zéro appel
+// réseau supplémentaire.
+const rawResponseCacheTTLMs = 10 * 60 * 1000;
+const rawResponseCache = new Map<string, { at: number; data: any }>();
+
+async function fetchRawCached(url: string, kind: 'json' | 'text'): Promise<any> {
+  const cached = rawResponseCache.get(url);
+  if (cached && Date.now() - cached.at < rawResponseCacheTTLMs) return cached.data;
+
+  const domain = getDomainFromUrl(url);
+  await rateLimitForDomain(domain);
+  const r = await fetch(url, {
+    headers: { 'User-Agent': randomUserAgent(), Accept: kind === 'json' ? 'application/json' : 'application/rss+xml,application/xml' },
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const data = kind === 'json' ? await r.json() : await r.text();
+  rawResponseCache.set(url, { at: Date.now(), data });
+  return data;
+}
+
+// =================================================================
 // GÉNÉRATEUR 1 — TRAITEMENT DES APIs GÉNÉRIQUES
 // =================================================================
 export async function fetchGenericAPI(url: string, keyword: string, isPaidOnly: boolean = false): Promise<any[]> {
   try {
-    const domain = getDomainFromUrl(url);
-    await rateLimitForDomain(domain);
-    
-    const r = await fetch(url, {
-      headers: { 'User-Agent': randomUserAgent(), 'Accept': 'application/json' },
-      signal: AbortSignal.timeout(10000)
-    });
-    if (!r.ok) return [];
-    const data = await r.json();
-    
+    const data = await fetchRawCached(url, 'json');
     const results = parseGenericAPIData(data, keyword, isPaidOnly);
-    
     // 🚨 FILTRER TEMPS RÉEL : GARDER SEULEMENT < 24h !
     return results.filter(item => isDateFreshEnough(item.date));
   } catch (e) {
@@ -91,14 +114,19 @@ function parseGenericAPIData(data: any, keyword: string, isPaidOnly: boolean): a
 
   for (const arr of possibleArrays) {
     if (Array.isArray(arr) && arr.length > 0) {
-      for (const item of arr.slice(0, 20)) {
+      // 200 (pas 20) : la réponse est maintenant mise en cache par URL,
+      // donc regarder plus d'items ne coûte rien en réseau — important
+      // puisqu'une même réponse est refiltrée pour 14 métiers différents.
+      for (const item of arr.slice(0, 200)) {
         const title = item.title || item.jobTitle || item.name || '';
         const company = item.company || item.companyName || item.employer || '';
         const location = item.location || item.city || '';
         const link = item.link || item.url || item.applicationLink || item.redirect_url || '';
         const snippet = item.snippet || item.description || item.summary || item.body || title;
         const date = item.date || item.created_at || item.publishedAt || item.created || item.pubDate || item.published_date || '';
-        
+        const applicantsRaw = item.applicants_count ?? item.applicantsCount ?? item.num_applicants ?? item.applicants;
+        const applicants_count = typeof applicantsRaw === 'number' ? applicantsRaw : undefined;
+
         // Filtrer par keyword
         const haystack = `${title} ${snippet} ${company}`.toLowerCase();
         if (haystack.includes(kw)) {
@@ -109,6 +137,7 @@ function parseGenericAPIData(data: any, keyword: string, isPaidOnly: boolean): a
             link: String(link),
             snippet: String(snippet).replace(/<[^>]+>/g, '').slice(0, 300),
             date,
+            applicants_count,
             source: 'generic-api',
             isPremium: isPaidOnly
           });
@@ -125,18 +154,8 @@ function parseGenericAPIData(data: any, keyword: string, isPaidOnly: boolean): a
 // =================================================================
 export async function fetchGenericRSS(url: string, keyword: string, isPaidOnly: boolean = false): Promise<any[]> {
   try {
-    const domain = getDomainFromUrl(url);
-    await rateLimitForDomain(domain);
-    
-    const r = await fetch(url, {
-      headers: { 'User-Agent': randomUserAgent(), 'Accept': 'application/rss+xml,application/xml' },
-      signal: AbortSignal.timeout(10000)
-    });
-    if (!r.ok) return [];
-    const text = await r.text();
-    
+    const text = await fetchRawCached(url, 'text');
     const results = parseGenericRSS(text, keyword, url, isPaidOnly);
-    
     // 🚨 FILTRER TEMPS RÉEL : GARDER SEULEMENT < 24h !
     return results.filter(item => isDateFreshEnough(item.date));
   } catch (e) {
@@ -153,7 +172,7 @@ function parseGenericRSS(xmlText: string, keyword: string, sourceUrl: string, is
   const items = xmlText.match(/<item[^>]*>([\s\S]*?)<\/item>/gi) || 
                 xmlText.match(/<entry[^>]*>([\s\S]*?)<\/entry>/gi) || [];
   
-  for (const item of items.slice(0, 20)) {
+  for (const item of items.slice(0, 200)) {
     const title = (item.match(/<title[^>]*>([\s\S]*?)<\/title>/)?.[1] || '').replace(/<!\[CDATA\[|\]\]>/g, '');
     const link = (item.match(/<link[^>]*>([\s\S]*?)<\/link>/)?.[1] || 
                   item.match(/<link[^>]+href=["']([^"']+)["']/)?.[1] || '').replace(/<!\[CDATA\[|\]\]>/g, '');
@@ -185,56 +204,85 @@ function parseGenericRSS(xmlText: string, keyword: string, sourceUrl: string, is
 // =================================================================
 // GÉNÉRATEUR 3 — TRAITEMENT DES ATS (Greenhouse, Lever, etc.)
 // =================================================================
+// Construit la vraie URL d'API à partir du slug vérifié (pas dérivé
+// d'une page marketing — voir le commentaire sur ATS_COMPANIES dans
+// massive-sources.ts pour l'historique du bug que ça corrige).
+function atsApiUrl(ats: string, slug: string): string | null {
+  switch (ats) {
+    case 'greenhouse': return `https://boards-api.greenhouse.io/v1/boards/${slug}/jobs`
+    case 'lever':       return `https://api.lever.co/v0/postings/${slug}?mode=json`
+    case 'ashby':       return `https://api.ashbyhq.com/posting-api/job-board/${slug}`
+    case 'workable':    return `https://apply.workable.com/api/v1/widget/accounts/${slug}`
+    default:            return null
+  }
+}
+
+// Chaque ATS a un format de réponse différent — normalisé ici en une
+// liste unique {title, location, link, description, date}.
+function normalizeAtsJobs(ats: string, data: any): Array<{ title: string; location: string; link: string; description: string; date: string }> {
+  if (ats === 'greenhouse') {
+    return (data.jobs || []).map((j: any) => ({
+      title: j.title || '', location: j.location?.name || '',
+      link: j.absolute_url || '', description: j.content || '', date: j.updated_at || '',
+    }))
+  }
+  if (ats === 'lever') {
+    return (Array.isArray(data) ? data : []).map((j: any) => ({
+      title: j.text || '', location: j.categories?.location || '',
+      link: j.hostedUrl || '', description: j.descriptionPlain || j.description || '', date: j.createdAt || '',
+    }))
+  }
+  if (ats === 'ashby') {
+    return (data.jobs || []).map((j: any) => ({
+      title: j.title || '', location: j.location || '',
+      link: j.jobUrl || '', description: j.descriptionPlain || '', date: j.publishedAt || '',
+    }))
+  }
+  if (ats === 'workable') {
+    return (data.jobs || []).map((j: any) => ({
+      title: j.title || '', location: [j.city, j.country].filter(Boolean).join(', '),
+      link: j.url || j.shortlink || '', description: j.department || '', date: j.published_on || '',
+    }))
+  }
+  return []
+}
+
 export async function fetchATS(company: any, keyword: string): Promise<any[]> {
-  const { name, ats, url } = company;
+  const { name, ats, slug } = company
   try {
-    const domain = getDomainFromUrl(url);
-    await rateLimitForDomain(domain);
-    
-    let apiUrl = '';
-    if (ats === 'greenhouse') {
-      const slug = url.split('/').pop() || name.toLowerCase().replace(/\s+/g, '-');
-      apiUrl = `https://boards-api.greenhouse.io/v1/boards/${slug}/jobs`;
-    } else if (ats === 'lever') {
-      const slug = url.split('/').pop() || name.toLowerCase().replace(/\s+/g, '-');
-      apiUrl = `https://api.lever.co/v0/postings/${slug}?mode=json`;
-    } else {
-      return [];
-    }
+    const apiUrl = atsApiUrl(ats, slug)
+    if (!apiUrl) return []
+
+    const domain = getDomainFromUrl(apiUrl)
+    await rateLimitForDomain(domain)
 
     const r = await fetch(apiUrl, {
       headers: { 'User-Agent': randomUserAgent() },
       signal: AbortSignal.timeout(10000)
     });
     if (!r.ok) return [];
-    
+
     const data = await r.json();
     const results: any[] = [];
     const kw = keyword.toLowerCase();
-    
-    const jobs = data.jobs || data || [];
+
+    const jobs = normalizeAtsJobs(ats, data)
     for (const job of jobs.slice(0, 20)) {
-      const title = job.title || job.text || '';
-      const location = job.location?.name || job.location || '';
-      const link = job.absolute_url || job.hostedUrl || job.url || url;
-      const description = job.description || job.content || '';
-      const date = job.updated_at || job.createdAt || '';
-      
-      const haystack = `${title} ${description}`.toLowerCase();
+      const haystack = `${job.title} ${job.description}`.toLowerCase();
       if (haystack.includes(kw)) {
         results.push({
-          title: String(title).slice(0, 200),
+          title: String(job.title).slice(0, 200),
           company: name,
-          location: String(location),
-          link: String(link),
-          snippet: String(description).replace(/<[^>]+>/g, '').slice(0, 300),
-          date,
+          location: String(job.location),
+          link: String(job.link),
+          snippet: String(job.description).replace(/<[^>]+>/g, '').slice(0, 300),
+          date: job.date,
           source: `${ats}-${name}`,
           isPremium: false // All ATS are free
         });
       }
     }
-    
+
     // 🚨 FILTRER TEMPS RÉEL : GARDER SEULEMENT < 24h !
     return results.filter(item => isDateFreshEnough(item.date));
   } catch (e) {
@@ -244,61 +292,141 @@ export async function fetchATS(company: any, keyword: string): Promise<any[]> {
 }
 
 // =================================================================
-// GÉNÉRATEUR 4 — FONCTION PRINCIPALE QUI LANCE TOUT !
+// RECHERCHE "site:" — pour les sources sans API/RSS exploitable
+// (la grande majorité des ~2000 sources : pages carrière, plateformes
+// fermées, réseaux sociaux...). On s'appuie sur Serper (déjà utilisé
+// ailleurs dans le moteur) pour interroger Google scopé au domaine —
+// ça marche même si l'URL exacte enregistrée pour la source est fausse,
+// tant que le domaine lui-même est réel.
 // =================================================================
-export async function fetchAllSources(keyword: string, log: string[]): Promise<any[]> {
-  const allResults: any[] = [];
-  const concurrencyLimit = 5; // 5 requêtes en même temps max, pour éviter de surcharger
+const SERPER_KEY = process.env.SERPER_API_KEY || '';
 
-  log.push('🔍 Début du scan des 200+ sources (temps réel, < 24h)');
+function hostnameOf(url: string): string {
+  try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; }
+}
 
-  // --- 1. Job Boards API (TOUS !) ---
-  log.push('📋 Traitement des Job Boards API...');
-  const apiJobBoards = JOB_BOARDS.filter(j => j.type === 'api');
-  const apiJobResults = await Promise.all(
-    apiJobBoards.map(board => fetchGenericAPI(board.url, keyword))
-  );
-  allResults.push(...apiJobResults.flat());
+async function siteScopedSearch(domain: string, keyword: string): Promise<any[]> {
+  if (!SERPER_KEY || !domain) return [];
+  try {
+    const r = await fetch('https://google.serper.dev/search', {
+      method: 'POST',
+      headers: { 'X-API-KEY': SERPER_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ q: `site:${domain} ${keyword}`, num: 5, tbs: 'qdr:w' }),
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!r.ok) return [];
+    const data = await r.json();
+    return ((data.organic || []) as any[]).map((x: any) => ({
+      title: x.title, company: '', location: '', link: x.link,
+      snippet: x.snippet || '', date: x.date || '', source: `site:${domain}`, isPremium: false,
+    }));
+  } catch { return []; }
+}
 
-  // --- 2. Job Boards RSS (TOUS !) ---
-  log.push('📰 Traitement des Job Boards RSS...');
-  const rssJobBoards = JOB_BOARDS.filter(j => j.type === 'rss');
-  const rssJobResults = await Promise.all(
-    rssJobBoards.map(board => fetchGenericRSS(board.url, keyword))
-  );
-  allResults.push(...rssJobResults.flat());
+// =================================================================
+// Cache mémoire léger par source — évite de re-hit la même source
+// à chaque scan répété dans une courte fenêtre (protège le budget API)
+// =================================================================
+const sourceCacheTTLMs = 6 * 60 * 60 * 1000; // 6h
+const sourceCache = new Map<string, { at: number; results: any[] }>();
 
-  // --- 3. ATS (TOUS !) ---
-  log.push('🏢 Traitement des ATS...');
-  const atsResults = await Promise.all(
-    ATS_COMPANIES.map(company => fetchATS(company, keyword))
-  );
-  allResults.push(...atsResults.flat());
+function cacheKey(url: string, keyword: string): string { return `${url}::${keyword.toLowerCase()}`; }
 
-  // --- 4. Tech RSS Feeds (TOUS !) ---
-  log.push('💻 Traitement des RSS Tech...');
-  const techRssResults = await Promise.all(
-    TECH_RSS_FEEDS.map(feed => fetchGenericRSS(feed.url, keyword))
-  );
-  allResults.push(...techRssResults.flat());
+async function withSourceCache(url: string, keyword: string, fn: () => Promise<any[]>): Promise<any[]> {
+  const key = cacheKey(url, keyword);
+  const cached = sourceCache.get(key);
+  if (cached && Date.now() - cached.at < sourceCacheTTLMs) return cached.results;
+  const results = await fn();
+  sourceCache.set(key, { at: Date.now(), results });
+  return results;
+}
 
-  // --- 5. Freelance Platforms (API/RSS si disponibles) ---
-  log.push('💼 Traitement des Plateformes Freelance...');
-  const freelanceApi = FREELANCE_PLATFORMS.filter(f => f.type === 'api');
-  const freelanceResults = await Promise.all(
-    freelanceApi.map(platform => fetchGenericAPI(platform.url, keyword))
-  );
-  allResults.push(...freelanceResults.flat());
+// Batch executor — respecte une limite de concurrence réelle
+async function runInBatches<T>(items: T[], limit: number, worker: (item: T) => Promise<any[]>): Promise<any[]> {
+  const out: any[] = [];
+  for (let i = 0; i < items.length; i += limit) {
+    const chunk = items.slice(i, i + limit);
+    const results = await Promise.all(chunk.map(item => worker(item).catch(() => [])));
+    out.push(...results.flat());
+  }
+  return out;
+}
 
-  // --- 6. Social Communities (RSS/API si disponibles) ---
-  log.push('👥 Traitement des Réseaux Sociaux & Communautés...');
-  // Pour les communautés, on peut utiliser les APIs/RSS des subreddits etc.
-  const socialResults = await Promise.all(
-    SOCIAL_COMMUNITIES.slice(0, 10).map(comm => fetchGenericRSS(comm.url, keyword))
-  );
-  allResults.push(...socialResults.flat());
+// Exécute une source selon son type (api/rss → vrai fetch, browser/autre → site:)
+async function executeSource(source: SourceEntry, keyword: string): Promise<any[]> {
+  return withSourceCache(source.url, keyword, async () => {
+    if (source.type === 'api') return fetchGenericAPI(source.url, keyword, source.isPaidOnly);
+    if (source.type === 'rss') return fetchGenericRSS(source.url, keyword, source.isPaidOnly);
+    // 'browser' ou tout autre type sans parseur direct → recherche site-scoped
+    return siteScopedSearch(hostnameOf(source.url), keyword);
+  });
+}
 
-  log.push(`✅ Scan terminé ! ${allResults.length} opportunités fraîches (< 24h) trouvées`);
+// Choisit un sous-ensemble rotatif d'une liste (couverture complète sur plusieurs scans)
+function rotatingSlice<T>(items: T[], count: number): T[] {
+  if (items.length <= count) return items;
+  const offset = Math.floor(Date.now() / sourceCacheTTLMs) % items.length; // change toutes les 6h
+  const rotated = [...items.slice(offset), ...items.slice(0, offset)];
+  return rotated.slice(0, count);
+}
+
+// =================================================================
+// GÉNÉRATEUR 4 — FONCTION PRINCIPALE QUI LANCE TOUT !
+// Couvre les 12 catégories (~2000 sources), avec :
+//  - filtrage réel gratuit/payant (isPaidOnly vs isPaid)
+//  - rotation par lot pour ne jamais tout interroger d'un coup
+//  - cache 6h par source pour protéger le budget Serper
+// =================================================================
+export async function fetchAllSources(keyword: string, log: string[], isPaid: boolean = false): Promise<any[]> {
+  // Quota par scan — free: prudent, paid: plus large. Ajustable sans risque
+  // pour le budget puisque chaque source est cachée 6h.
+  const BATCH_SIZE = isPaid ? 150 : 40;
+
+  // `url` ici sert uniquement de clé de cache/dédup — l'URL réelle interrogée
+  // est reconstruite dans fetchATS() à partir de `ats` + `slug`.
+  const atsAsSourceEntries: SourceEntry[] = ATS_COMPANIES.map(c => ({ name: c.name, type: 'ats', url: `https://${c.ats}/${c.slug}`, isPaidOnly: c.isPaidOnly }));
+
+  const allCategories: SourceEntry[] = [
+    ...(JOB_BOARDS as SourceEntry[]),
+    ...atsAsSourceEntries,
+    ...(FREELANCE_PLATFORMS as SourceEntry[]),
+    ...(TECH_RSS_FEEDS as any[]).map(f => ({ name: f.name, type: 'rss', url: f.url, isPaidOnly: f.isPaidOnly })),
+    ...(SOCIAL_COMMUNITIES as SourceEntry[]),
+    ...(NICHE_PLATFORMS as SourceEntry[]),
+    ...(AI_TECH_PLATFORMS as SourceEntry[]),
+    ...(GLOBAL_FREELANCE as SourceEntry[]),
+    ...(INTERNSHIP_JUNIOR as SourceEntry[]),
+    ...(REMOTE_EXCLUSIVE as SourceEntry[]),
+    ...(EXECUTIVE_CAREERS as SourceEntry[]),
+    ...(INDUSTRY_SPECIALIZED as SourceEntry[]),
+  ];
+
+  // ── Filtrage RÉEL gratuit / payant (absent jusqu'ici) ──────────
+  const eligible = allCategories.filter(s => isPaid || !s.isPaidOnly);
+
+  const total = allCategories.length;
+  const eligibleCount = eligible.length;
+  log.push(`🔍 Registre: ${total} sources (${allCategories.filter(s=>!s.isPaidOnly).length} gratuites / ${allCategories.filter(s=>s.isPaidOnly).length} premium)`);
+  log.push(`📋 Plan ${isPaid ? 'payant' : 'gratuit'} → ${eligibleCount} sources éligibles, ${BATCH_SIZE} interrogées ce scan (rotation 6h pour couverture complète)`);
+
+  const batch = rotatingSlice(eligible, BATCH_SIZE);
+
+  // fetchATS a une signature différente (company object) → traité à part
+  const atsBatch = batch.filter(s => s.type === 'ats');
+  const otherBatch = batch.filter(s => s.type !== 'ats');
+
+  const atsByName = new Map(ATS_COMPANIES.map(c => [c.name, c]));
+  const [atsResults, otherResults] = await Promise.all([
+    runInBatches(atsBatch, 5, s => {
+      const company = atsByName.get(s.name);
+      if (!company) return Promise.resolve([]);
+      return withSourceCache(s.url, keyword, () => fetchATS(company, keyword));
+    }),
+    runInBatches(otherBatch, 5, s => executeSource(s, keyword)),
+  ]);
+
+  const allResults = [...atsResults, ...otherResults];
+  log.push(`✅ Scan terminé ! ${allResults.length} résultats bruts sur ${batch.length} sources interrogées`);
 
   return allResults;
 }

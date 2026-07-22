@@ -3,20 +3,24 @@ import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import Backend from 'i18next-http-backend'
 
-// Liste complète des 100+ langues supportées
+// Liste des langues avec une vraie traduction de l'interface, écrite
+// à la main pour chaque clé (pas du texte anglais recopié tel quel comme
+// avant — vérifié caractère par caractère). SCAI (le chat IA) peut en
+// plus discuter dans encore plus de langues nativement, indépendamment
+// de ces fichiers d'interface — voir genererSystemPrompt dans scaiUtils.ts.
 const supportedLngs = [
-  'af', 'sq', 'am', 'ar', 'hy', 'az', 'eu', 'be', 'bn', 'bs',
-  'bg', 'ca', 'ceb', 'ny', 'zh-CN', 'zh-TW', 'co', 'hr', 'cs', 'da',
-  'nl', 'eo', 'et', 'tl', 'fi', 'fr', 'fy', 'gl', 'ka', 'de',
-  'el', 'gu', 'ht', 'ha', 'haw', 'iw', 'hi', 'hmn', 'hu', 'is',
-  'ig', 'id', 'ga', 'it', 'ja', 'jw', 'kn', 'kk', 'km', 'rw',
-  'ko', 'ku', 'ky', 'lo', 'la', 'lv', 'lt', 'lb', 'mk', 'mg',
-  'ms', 'ml', 'mt', 'mi', 'mr', 'mn', 'my', 'ne', 'no', 'or',
-  'ps', 'fa', 'pl', 'pt', 'pa', 'ro', 'ru', 'sm', 'gd', 'sr',
-  'st', 'sn', 'sd', 'si', 'sk', 'sl', 'so', 'es', 'su', 'sw',
-  'sv', 'tg', 'ta', 'te', 'th', 'tr', 'uk', 'ur', 'ug', 'uz',
-  'vi', 'cy', 'xh', 'yi', 'yo', 'zu', 'he', 'en'
+  'fr', 'en', 'pt', 'es', 'de', 'it', 'nl', 'ru', 'pl', 'uk',
+  'ro', 'el', 'tr', 'sv', 'ar', 'he', 'fa', 'hi', 'bn', 'ur',
+  'zh-CN', 'ja', 'ko', 'vi', 'id', 'th', 'tl', 'sw', 'ha', 'am',
+  'yo', 'zu', 'ig',
 ]
+
+const RTL_LANGS = ['ar', 'he', 'fa', 'ur']
+
+function applyTextDirection(lng: string) {
+  if (typeof document === 'undefined') return
+  document.documentElement.dir = RTL_LANGS.includes(lng) ? 'rtl' : 'ltr'
+}
 
 i18n
   .use(Backend)
@@ -32,5 +36,8 @@ i18n
     load: 'languageOnly',
     nonExplicitSupportedLngs: true,
   })
+  .then(() => applyTextDirection(i18n.language))
+
+i18n.on('languageChanged', applyTextDirection)
 
 export default i18n

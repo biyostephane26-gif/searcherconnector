@@ -68,8 +68,8 @@ export default function Referrals() {
         if (!ref.referred_user_id) return { ...ref, referred: null }
         
         const { data: referredProfile } = await supabase
-          .from('profiles')
-          .select('id, full_name, avatar_url, subscription_plan, created_at, verification_status')
+          .from('users_profiles')
+          .select('id, full_name, avatar_url, plan, created_at, verification_status')
           .eq('id', ref.referred_user_id)
           .single()
         
@@ -81,7 +81,7 @@ export default function Referrals() {
 
     // Calculer les stats
     const activePremium = enrichedRefs.filter(r => 
-      r.referred?.subscription_plan && r.referred.subscription_plan !== 'free'
+      r.referred?.plan && r.referred.plan !== 'free'
     ).length
 
     const daysEarned = enrichedRefs.reduce((sum, r) => sum + (r.premium_days_earned || 0), 0)
@@ -275,8 +275,8 @@ export default function Referrals() {
                     </div>
                     <div className="flex items-center gap-3 text-xs text-gray-500">
                       <span>Inscrit {new Date(ref.created_at).toLocaleDateString('fr-FR')}</span>
-                      {ref.referred?.subscription_plan !== 'free' && (
-                        <span className="text-green-400">● Plan {ref.referred.subscription_plan}</span>
+                      {ref.referred?.plan !== 'free' && (
+                        <span className="text-green-400">● Plan {ref.referred.plan}</span>
                       )}
                     </div>
                   </div>

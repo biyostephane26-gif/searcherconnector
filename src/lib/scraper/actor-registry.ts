@@ -119,7 +119,7 @@ export const ACTOR_REGISTRY: Record<string, ActorMetadata> = {
           name: company.name,
           category: "ats" as ActorCategory,
           type: "ats" as ActorType,
-          url: company.url,
+          url: `https://${company.ats}/${company.slug}`,
           ats: company.ats,
           isPaidOnly: false, // All ATS are free
           concurrencyLimit: 2,

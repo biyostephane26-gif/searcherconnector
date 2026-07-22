@@ -132,7 +132,7 @@ export async function GET(req: NextRequest) {
         }
 
         // Gap free vs premium
-        const premiumBenefits = []
+        const premiumBenefits: string[] = []
         if (user.plan === 'free') {
           premiumBenefits.push('Scans 10x plus fréquents')
           premiumBenefits.push('Accès à LinkedIn, Indeed, Glassdoor')

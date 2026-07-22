@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Se încarcă...",
+    "save": "Salvează",
+    "cancel": "Anulează",
+    "delete": "Șterge",
+    "edit": "Editează",
+    "close": "Închide",
+    "search": "Caută",
+    "filter": "Filtrează",
+    "refresh": "Reîmprospătează",
+    "back": "Înapoi",
+    "next": "Următor",
+    "send": "Trimite",
+    "upload": "Încarcă",
+    "download": "Descarcă",
+    "confirm": "Confirmă",
+    "error": "Eroare",
+    "success": "Succes"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Acasă",
+    "opportunities": "Oportunități",
+    "agent": "Agent Searcher",
+    "opportunityCreator": "Creează ofertă",
+    "cowork": "Cowork",
+    "interviews": "Interviuri",
+    "social": "Social",
+    "articles": "Articole",
+    "groups": "Comunități",
+    "messages": "Mesaje",
+    "salary": "Salarii",
+    "profile": "Profil",
+    "settings": "Setări",
+    "pricing": "Prețuri",
+    "logout": "Deconectare"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Panou de control",
+    "agentActive": "Agent activ 24/7",
+    "opportunitiesFound": "Oportunități găsite",
+    "applicationsSubmitted": "Candidaturi trimise",
+    "avgMatchScore": "Scor mediu de compatibilitate",
+    "launchScan": "Lansează o căutare globală",
+    "recentOpportunities": "Oportunități recente",
+    "viewAll": "Vezi toate",
+    "noOpportunities": "Nicio oportunitate. Lansează o căutare pentru a începe."
+  },
+  "opportunities": {
+    "title": "Explorator de oportunități",
+    "filters": {
+      "all": "Toate",
+      "fresh": "Recente (<24h)",
+      "applied": "Aplicat",
+      "pending": "În așteptare"
+    },
+    "matchScore": "Compatibilitate",
+    "source": "Sursă",
+    "postedAgo": "Publicată acum {{hours}}h",
+    "applicants": "{{count}} candidați",
+    "apply": "Aplică",
+    "applied": "Candidatură trimisă",
+    "unlockPremium": "Deblochează cu Premium",
+    "premiumOnly": "Doar Premium",
+    "scaiAnalysis": "Analiză SCAI",
+    "readinessScore": "Scor de pregătire",
+    "applyManually": "Voi aplica singur"
+  },
+  "scai": {
+    "title": "Agent Searcher",
+    "greeting": "Bună! Sunt SCAI, asistentul tău personal de carieră.",
+    "placeholder": "Pune-mi o întrebare sau cere-mi să caut oportunități...",
+    "voice": "Folosește vocea",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "{{count}} credite vocale rămase",
+    "thinking": "Mă gândesc...",
+    "scanning": "Caut pe web pentru tine...",
+    "analyzing": "Analizez oportunitățile...",
+    "applying": "Trimit candidatura ta..."
+  },
+  "profile": {
+    "title": "Profil profesional",
+    "completion": "Completare profil",
+    "level": "Nivel",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Mediu",
+      "senior": "Senior",
+      "expert": "Expert"
+    },
+    "progression": "Mai ai {{count}} misiuni până la {{level}}",
+    "maxLevel": "Nivel maxim atins",
+    "verification": {
+      "pending": "În așteptare",
+      "verified": "Verificat",
+      "genius": "Genius",
+      "refused": "Respins"
+    },
+    "editProfile": "Editează profilul",
+    "uploadAvatar": "Schimbă poza",
+    "personalInfo": "Informații personale",
+    "skills": "Competențe",
+    "experience": "Experiență",
+    "portfolio": "Portofoliu",
+    "documents": "Documente"
+  },
+  "pricing": {
+    "title": "Planuri și prețuri",
+    "monthly": "pe lună",
+    "currentPlan": "Plan curent",
+    "upgrade": "Treci la {{plan}}",
+    "features": "Funcționalități",
+    "free": {
+      "name": "Gratuit",
+      "features": [
+        "Fluxuri RSS + API-uri gratuite",
+        "10 misiuni personalizate per căutare",
+        "6 misiuni gratuite + 4 premium blocate",
+        "Notificări generice",
+        "Max. 2 căutări manuale/zi",
+        "SCAI Voice indisponibil"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Toate sursele gratuite + API-uri premium",
+        "Misiuni nelimitate",
+        "Notificări țintite",
+        "10 căutări/zi",
+        "60 credite vocale/lună",
+        "Generare PDF: CV + scrisoare de intenție"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Toate sursele (LinkedIn, Upwork...)",
+        "Prioritate pe misiuni recente",
+        "Notificări în timp real la <10 candidați",
+        "Căutări nelimitate",
+        "300 credite vocale/lună",
+        "Toate PDF-urile",
+        "Simulare interviu",
+        "Analiză portofoliu"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Setări",
+    "language": "Limbă",
+    "theme": "Temă",
+    "lightMode": "Mod luminos",
+    "darkMode": "Mod întunecat",
+    "notifications": "Notificări",
+    "emailNotifications": "Notificări email",
+    "pushNotifications": "Notificări push",
+    "privacy": "Confidențialitate",
+    "security": "Securitate",
+    "account": "Cont",
+    "deleteAccount": "Șterge contul",
+    "changePassword": "Schimbă parola",
+    "twoFactor": "Autentificare în doi pași"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Notificări",
+    "markAllRead": "Marchează toate ca citite",
+    "noNotifications": "Nicio notificare",
+    "types": {
+      "opportunity": "Oportunitate nouă",
+      "application": "Candidatură actualizată",
+      "message": "Mesaj nou",
+      "system": "Notificare de sistem",
+      "plan": "Plan activat"
+    },
+    "filters": {
+      "all": "Toate",
+      "unread": "Necitite",
+      "opportunities": "Oportunități",
+      "system": "Sistem"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Candidaturile mele",
+    "status": {
+      "applied": "Trimisă",
+      "viewed": "Vizualizată",
+      "interview": "Interviu",
+      "accepted": "Acceptată",
+      "rejected": "Respinsă"
+    },
+    "noApplications": "Nicio candidatură încă",
+    "viewDetails": "Vezi detalii",
+    "withdrawApplication": "Retrage candidatura"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Autentificare",
+    "signup": "Înregistrare",
+    "email": "Email",
+    "password": "Parolă",
+    "confirmPassword": "Confirmă parola",
+    "forgotPassword": "Ai uitat parola?",
+    "alreadyHaveAccount": "Ai deja un cont?",
+    "dontHaveAccount": "Nu ai încă un cont?",
+    "loginWithGoogle": "Continuă cu Google",
+    "loginWithGithub": "Continuă cu GitHub",
+    "acceptTerms": "Accept termenii de utilizare",
+    "waitlist": "Alătură-te listei de așteptare"
+  },
+  "errors": {
+    "generic": "A apărut o eroare",
+    "networkError": "Eroare de conexiune",
+    "unauthorized": "Neautorizat",
+    "notFound": "Negăsit",
+    "validation": "Date invalide",
+    "tryAgain": "Încearcă din nou"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Postează",
+    "comment": "Comentează",
+    "like": "Apreciază",
+    "share": "Distribuie",
+    "newPost": "Postare nouă",
+    "whatOnYourMind": "Ce e nou în cariera ta?",
+    "professionalContent": "Doar conținut profesional",
+    "rejectedContent": "Acest conținut nu respectă standardele profesionale SC"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Spațiu Cowork",
+    "createSpace": "Creează spațiu",
+    "joinSpace": "Alătură-te",
+    "mySpaces": "Spațiile mele",
+    "findCollaborators": "Găsește colaboratori",
+    "premiumFeature": "Funcție Premium"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Panou fondator",
+    "monitoring": "Monitorizare",
+    "telemetry": "MongoDB/Surse",
+    "scans": "Căutări și jurnale",
+    "users": "Utilizatori",
+    "conversations": "Conversații",
+    "revenue": "Venituri",
+    "activatePlan": "Activează planul",
+    "changeStatus": "Schimbă statutul",
+    "addTokens": "Adaugă tokenuri",
+    "testEmail": "Testează Email",
+    "scanToggle": "Activează/dezactivează căutarea"
   }
 }

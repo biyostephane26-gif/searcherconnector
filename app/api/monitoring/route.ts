@@ -65,19 +65,25 @@ async function notifyFounder(event: MonitoringEvent) {
           <p style="color:#444;font-size:11px;margin-top:16px;">Searcher Connector Monitoring — ${new Date().toLocaleString('fr-FR')}</p>
         </div>
       `
-      await fetch('https://api.resend.com/emails', {
+      // from: doit rester onboarding@resend.dev tant qu'aucun domaine n'est
+      // vérifié sur Resend (sandbox) — un from custom (ex: monitoring@…)
+      // est rejeté par l'API et l'alerte partait silencieusement dans le vide.
+      const resendRes = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
           'Content-Type':  'application/json',
         },
         body: JSON.stringify({
-          from:    'monitoring@searcherconnector.com',
+          from:    process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
           to:      [FOUNDER_EMAIL],
           subject: `[SEARCHER ALERT] ${title}`,
           html:    emailHtml,
         }),
-      }).catch(() => {})
+      }).catch(() => null)
+      if (!resendRes?.ok) {
+        console.error('[monitoring] Échec envoi email fondateur:', resendRes ? await resendRes.text() : 'fetch failed')
+      }
     }
   }
 

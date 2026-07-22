@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Φόρτωση...",
+    "save": "Αποθήκευση",
+    "cancel": "Ακύρωση",
+    "delete": "Διαγραφή",
+    "edit": "Επεξεργασία",
+    "close": "Κλείσιμο",
+    "search": "Αναζήτηση",
+    "filter": "Φιλτράρισμα",
+    "refresh": "Ανανέωση",
+    "back": "Πίσω",
+    "next": "Επόμενο",
+    "send": "Αποστολή",
+    "upload": "Μεταφόρτωση",
+    "download": "Λήψη",
+    "confirm": "Επιβεβαίωση",
+    "error": "Σφάλμα",
+    "success": "Επιτυχία"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Αρχική",
+    "opportunities": "Ευκαιρίες",
+    "agent": "Πράκτορας Searcher",
+    "opportunityCreator": "Δημιουργία προσφοράς",
+    "cowork": "Cowork",
+    "interviews": "Συνεντεύξεις",
+    "social": "Κοινότητα",
+    "articles": "Άρθρα",
+    "groups": "Ομάδες",
+    "messages": "Μηνύματα",
+    "salary": "Μισθοί",
+    "profile": "Προφίλ",
+    "settings": "Ρυθμίσεις",
+    "pricing": "Τιμές",
+    "logout": "Αποσύνδεση"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Πίνακας ελέγχου",
+    "agentActive": "Ενεργός πράκτορας 24/7",
+    "opportunitiesFound": "Ευκαιρίες που βρέθηκαν",
+    "applicationsSubmitted": "Υποβληθείσες αιτήσεις",
+    "avgMatchScore": "Μέσος βαθμός συμβατότητας",
+    "launchScan": "Έναρξη γενικής αναζήτησης",
+    "recentOpportunities": "Πρόσφατες ευκαιρίες",
+    "viewAll": "Προβολή όλων",
+    "noOpportunities": "Καμία ευκαιρία. Ξεκίνησε μια αναζήτηση για να αρχίσεις."
+  },
+  "opportunities": {
+    "title": "Εξερεύνηση ευκαιριών",
+    "filters": {
+      "all": "Όλες",
+      "fresh": "Πρόσφατες (<24ω)",
+      "applied": "Έγινε αίτηση",
+      "pending": "Σε αναμονή"
+    },
+    "matchScore": "Συμβατότητα",
+    "source": "Πηγή",
+    "postedAgo": "Δημοσιεύτηκε πριν από {{hours}}ω",
+    "applicants": "{{count}} υποψήφιοι",
+    "apply": "Αίτηση",
+    "applied": "Η αίτηση εστάλη",
+    "unlockPremium": "Ξεκλείδωμα με Premium",
+    "premiumOnly": "Μόνο Premium",
+    "scaiAnalysis": "Ανάλυση SCAI",
+    "readinessScore": "Βαθμός ετοιμότητας",
+    "applyManually": "Θα κάνω μόνος/η μου αίτηση"
+  },
+  "scai": {
+    "title": "Πράκτορας Searcher",
+    "greeting": "Γεια! Είμαι ο SCAI, ο προσωπικός σου βοηθός σταδιοδρομίας.",
+    "placeholder": "Κάνε μου μια ερώτηση ή ζήτησέ μου να βρω ευκαιρίες...",
+    "voice": "Χρήση φωνής",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "{{count}} φωνητικές πιστώσεις απομένουν",
+    "thinking": "Σκέφτομαι...",
+    "scanning": "Ψάχνω το διαδίκτυο για σένα...",
+    "analyzing": "Αναλύω τις ευκαιρίες...",
+    "applying": "Στέλνω την αίτησή σου..."
+  },
+  "profile": {
+    "title": "Επαγγελματικό προφίλ",
+    "completion": "Ολοκλήρωση προφίλ",
+    "level": "Επίπεδο",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Ενδιάμεσο",
+      "senior": "Senior",
+      "expert": "Ειδικός"
+    },
+    "progression": "Απομένουν {{count}} έργα για να φτάσεις στο {{level}}",
+    "maxLevel": "Επιτεύχθηκε το μέγιστο επίπεδο",
+    "verification": {
+      "pending": "Σε αναμονή",
+      "verified": "Επαληθευμένο",
+      "genius": "Genius",
+      "refused": "Απορρίφθηκε"
+    },
+    "editProfile": "Επεξεργασία προφίλ",
+    "uploadAvatar": "Αλλαγή φωτογραφίας",
+    "personalInfo": "Προσωπικές πληροφορίες",
+    "skills": "Δεξιότητες",
+    "experience": "Εμπειρία",
+    "portfolio": "Portfolio",
+    "documents": "Έγγραφα"
+  },
+  "pricing": {
+    "title": "Πλάνα & Τιμές",
+    "monthly": "μηνιαίως",
+    "currentPlan": "Τρέχον πλάνο",
+    "upgrade": "Αναβάθμιση σε {{plan}}",
+    "features": "Δυνατότητες",
+    "free": {
+      "name": "Δωρεάν",
+      "features": [
+        "Ροές RSS + δωρεάν API",
+        "10 εξατομικευμένες ευκαιρίες ανά αναζήτηση",
+        "6 δωρεάν + 4 κλειδωμένες premium ευκαιρίες",
+        "Γενικές ειδοποιήσεις",
+        "Έως 2 χειροκίνητες αναζητήσεις/ημέρα",
+        "Το SCAI Voice δεν είναι διαθέσιμο"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Όλες οι δωρεάν πηγές + premium API",
+        "Απεριόριστες ευκαιρίες",
+        "Στοχευμένες ειδοποιήσεις",
+        "10 αναζητήσεις/ημέρα",
+        "60 φωνητικές πιστώσεις/μήνα",
+        "Δημιουργία PDF: Βιογραφικό + Συνοδευτική επιστολή"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Όλες οι πηγές (LinkedIn, Upwork...)",
+        "Προτεραιότητα σε νέες ευκαιρίες",
+        "Ειδοποιήσεις σε πραγματικό χρόνο με <10 υποψηφίους",
+        "Απεριόριστες αναζητήσεις",
+        "300 φωνητικές πιστώσεις/μήνα",
+        "Όλα τα PDF",
+        "Προσομοίωση συνέντευξης",
+        "Ανάλυση Portfolio"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Ρυθμίσεις",
+    "language": "Γλώσσα",
+    "theme": "Θέμα",
+    "lightMode": "Φωτεινή λειτουργία",
+    "darkMode": "Σκοτεινή λειτουργία",
+    "notifications": "Ειδοποιήσεις",
+    "emailNotifications": "Ειδοποιήσεις email",
+    "pushNotifications": "Ειδοποιήσεις push",
+    "privacy": "Απόρρητο",
+    "security": "Ασφάλεια",
+    "account": "Λογαριασμός",
+    "deleteAccount": "Διαγραφή λογαριασμού",
+    "changePassword": "Αλλαγή κωδικού",
+    "twoFactor": "Έλεγχος ταυτότητας δύο παραγόντων"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Ειδοποιήσεις",
+    "markAllRead": "Σήμανση όλων ως αναγνωσμένα",
+    "noNotifications": "Καμία ειδοποίηση",
+    "types": {
+      "opportunity": "Νέα ευκαιρία",
+      "application": "Ενημέρωση αίτησης",
+      "message": "Νέο μήνυμα",
+      "system": "Ειδοποίηση συστήματος",
+      "plan": "Το πλάνο ενεργοποιήθηκε"
+    },
+    "filters": {
+      "all": "Όλες",
+      "unread": "Μη αναγνωσμένα",
+      "opportunities": "Ευκαιρίες",
+      "system": "Σύστημα"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Οι αιτήσεις μου",
+    "status": {
+      "applied": "Στάλθηκε",
+      "viewed": "Προβλήθηκε",
+      "interview": "Συνέντευξη",
+      "accepted": "Έγινε αποδεκτή",
+      "rejected": "Απορρίφθηκε"
+    },
+    "noApplications": "Καμία αίτηση ακόμα",
+    "viewDetails": "Προβολή λεπτομερειών",
+    "withdrawApplication": "Ανάκληση αίτησης"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Σύνδεση",
+    "signup": "Εγγραφή",
+    "email": "Email",
+    "password": "Κωδικός πρόσβασης",
+    "confirmPassword": "Επιβεβαίωση κωδικού",
+    "forgotPassword": "Ξέχασες τον κωδικό;",
+    "alreadyHaveAccount": "Έχεις ήδη λογαριασμό;",
+    "dontHaveAccount": "Δεν έχεις λογαριασμό ακόμα;",
+    "loginWithGoogle": "Συνέχεια με Google",
+    "loginWithGithub": "Συνέχεια με GitHub",
+    "acceptTerms": "Αποδέχομαι τους όρους χρήσης",
+    "waitlist": "Εγγραφή στη λίστα αναμονής"
+  },
+  "errors": {
+    "generic": "Παρουσιάστηκε σφάλμα",
+    "networkError": "Σφάλμα σύνδεσης",
+    "unauthorized": "Μη εξουσιοδοτημένο",
+    "notFound": "Δεν βρέθηκε",
+    "validation": "Μη έγκυρα δεδομένα",
+    "tryAgain": "Δοκίμασε ξανά"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Δημοσίευση",
+    "comment": "Σχόλιο",
+    "like": "Μου αρέσει",
+    "share": "Κοινοποίηση",
+    "newPost": "Νέα δημοσίευση",
+    "whatOnYourMind": "Τι νέο υπάρχει στην καριέρα σου;",
+    "professionalContent": "Μόνο επαγγελματικό περιεχόμενο",
+    "rejectedContent": "Αυτό το περιεχόμενο δεν πληροί τα επαγγελματικά πρότυπα του SC"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Χώρος Cowork",
+    "createSpace": "Δημιουργία χώρου",
+    "joinSpace": "Συμμετοχή",
+    "mySpaces": "Οι χώροι μου",
+    "findCollaborators": "Εύρεση συνεργατών",
+    "premiumFeature": "Λειτουργία Premium"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Πίνακας ιδρυτή",
+    "monitoring": "Παρακολούθηση",
+    "telemetry": "MongoDB/Πηγές",
+    "scans": "Αναζητήσεις & Καταγραφές",
+    "users": "Χρήστες",
+    "conversations": "Συνομιλίες",
+    "revenue": "Έσοδα",
+    "activatePlan": "Ενεργοποίηση πλάνου",
+    "changeStatus": "Αλλαγή κατάστασης",
+    "addTokens": "Προσθήκη tokens",
+    "testEmail": "Δοκιμή Email",
+    "scanToggle": "Ενεργοποίηση/απενεργοποίηση αναζήτησης"
   }
 }

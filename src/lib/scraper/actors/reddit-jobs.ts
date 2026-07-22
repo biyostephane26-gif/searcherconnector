@@ -15,7 +15,7 @@ export async function scrapeRedditJobs(keyword: string) {
     for (const post of posts.slice(0, 15)) {
       try {
         const title = await post.$eval('.title', el => el.textContent?.trim());
-        const url = await post.$eval('.title a', el => el.href);
+        const url = await post.$eval('.title a', el => (el as HTMLAnchorElement).href);
         const subreddit = await post.$eval('.subreddit', el => el.textContent?.trim());
         const date = await post.$eval('.time', el => el.getAttribute('datetime'));
 

@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Memuat...",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "delete": "Hapus",
+    "edit": "Edit",
+    "close": "Tutup",
+    "search": "Cari",
+    "filter": "Filter",
+    "refresh": "Segarkan",
+    "back": "Kembali",
+    "next": "Berikutnya",
+    "send": "Kirim",
+    "upload": "Unggah",
+    "download": "Unduh",
+    "confirm": "Konfirmasi",
+    "error": "Kesalahan",
+    "success": "Berhasil"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Beranda",
+    "opportunities": "Peluang",
+    "agent": "Agen Searcher",
+    "opportunityCreator": "Buat Penawaran",
+    "cowork": "Cowork",
+    "interviews": "Wawancara",
+    "social": "Komunitas",
+    "articles": "Artikel",
+    "groups": "Grup",
+    "messages": "Pesan",
+    "salary": "Gaji",
+    "profile": "Profil",
+    "settings": "Pengaturan",
+    "pricing": "Harga",
+    "logout": "Keluar"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Dasbor",
+    "agentActive": "Agen aktif 24/7",
+    "opportunitiesFound": "Peluang ditemukan",
+    "applicationsSubmitted": "Lamaran terkirim",
+    "avgMatchScore": "Skor kecocokan rata-rata",
+    "launchScan": "Mulai pemindaian global",
+    "recentOpportunities": "Peluang terbaru",
+    "viewAll": "Lihat semua",
+    "noOpportunities": "Tidak ada peluang. Mulai pemindaian untuk memulai."
+  },
+  "opportunities": {
+    "title": "Jelajahi Peluang",
+    "filters": {
+      "all": "Semua",
+      "fresh": "Terbaru (<24 jam)",
+      "applied": "Sudah melamar",
+      "pending": "Menunggu"
+    },
+    "matchScore": "Kecocokan",
+    "source": "Sumber",
+    "postedAgo": "Diposting {{hours}} jam lalu",
+    "applicants": "{{count}} pelamar",
+    "apply": "Lamar",
+    "applied": "Lamaran terkirim",
+    "unlockPremium": "Buka dengan Premium",
+    "premiumOnly": "Khusus Premium",
+    "scaiAnalysis": "Analisis SCAI",
+    "readinessScore": "Skor kesiapan",
+    "applyManually": "Saya akan melamar sendiri"
+  },
+  "scai": {
+    "title": "Agen Searcher",
+    "greeting": "Halo! Saya SCAI, asisten karier pribadi Anda.",
+    "placeholder": "Ajukan pertanyaan atau minta saya mencari peluang...",
+    "voice": "Gunakan suara",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "Sisa {{count}} kredit suara",
+    "thinking": "Sedang berpikir...",
+    "scanning": "Menjelajahi web untuk Anda...",
+    "analyzing": "Menganalisis peluang...",
+    "applying": "Mengirim lamaran Anda..."
+  },
+  "profile": {
+    "title": "Profil Profesional",
+    "completion": "Kelengkapan profil",
+    "level": "Level",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Menengah",
+      "senior": "Senior",
+      "expert": "Ahli"
+    },
+    "progression": "{{count}} proyek lagi menuju level {{level}}",
+    "maxLevel": "Level maksimum tercapai",
+    "verification": {
+      "pending": "Menunggu",
+      "verified": "Terverifikasi",
+      "genius": "Genius",
+      "refused": "Ditolak"
+    },
+    "editProfile": "Edit profil",
+    "uploadAvatar": "Ganti foto",
+    "personalInfo": "Informasi pribadi",
+    "skills": "Keahlian",
+    "experience": "Pengalaman",
+    "portfolio": "Portofolio",
+    "documents": "Dokumen"
+  },
+  "pricing": {
+    "title": "Paket & Harga",
+    "monthly": "per bulan",
+    "currentPlan": "Paket saat ini",
+    "upgrade": "Tingkatkan ke {{plan}}",
+    "features": "Fitur",
+    "free": {
+      "name": "Gratis",
+      "features": [
+        "Feed RSS + API gratis",
+        "10 peluang personal per pemindaian",
+        "6 peluang gratis + 4 premium terkunci",
+        "Notifikasi umum",
+        "Maks. 2 pemindaian manual/hari",
+        "SCAI Voice tidak tersedia"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Semua sumber gratis + API premium",
+        "Peluang tanpa batas",
+        "Notifikasi bertarget",
+        "10 pemindaian/hari",
+        "60 kredit suara/bulan",
+        "Pembuatan PDF: CV + surat lamaran"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Semua sumber (LinkedIn, Upwork...)",
+        "Prioritas untuk peluang baru",
+        "Notifikasi real-time untuk <10 pelamar",
+        "Pemindaian tanpa batas",
+        "300 kredit suara/bulan",
+        "Semua PDF",
+        "Simulasi wawancara",
+        "Analisis Portofolio"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Pengaturan",
+    "language": "Bahasa",
+    "theme": "Tema",
+    "lightMode": "Mode terang",
+    "darkMode": "Mode gelap",
+    "notifications": "Notifikasi",
+    "emailNotifications": "Notifikasi email",
+    "pushNotifications": "Notifikasi push",
+    "privacy": "Privasi",
+    "security": "Keamanan",
+    "account": "Akun",
+    "deleteAccount": "Hapus akun",
+    "changePassword": "Ubah kata sandi",
+    "twoFactor": "Autentikasi dua faktor"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Notifikasi",
+    "markAllRead": "Tandai semua sebagai dibaca",
+    "noNotifications": "Tidak ada notifikasi",
+    "types": {
+      "opportunity": "Peluang baru",
+      "application": "Pembaruan lamaran",
+      "message": "Pesan baru",
+      "system": "Notifikasi sistem",
+      "plan": "Paket diaktifkan"
+    },
+    "filters": {
+      "all": "Semua",
+      "unread": "Belum dibaca",
+      "opportunities": "Peluang",
+      "system": "Sistem"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Lamaran Saya",
+    "status": {
+      "applied": "Terkirim",
+      "viewed": "Dilihat",
+      "interview": "Wawancara",
+      "accepted": "Diterima",
+      "rejected": "Ditolak"
+    },
+    "noApplications": "Belum ada lamaran",
+    "viewDetails": "Lihat detail",
+    "withdrawApplication": "Tarik lamaran"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Masuk",
+    "signup": "Daftar",
+    "email": "Email",
+    "password": "Kata sandi",
+    "confirmPassword": "Konfirmasi kata sandi",
+    "forgotPassword": "Lupa kata sandi?",
+    "alreadyHaveAccount": "Sudah punya akun?",
+    "dontHaveAccount": "Belum punya akun?",
+    "loginWithGoogle": "Lanjutkan dengan Google",
+    "loginWithGithub": "Lanjutkan dengan GitHub",
+    "acceptTerms": "Saya menyetujui ketentuan penggunaan",
+    "waitlist": "Bergabung dengan daftar tunggu"
+  },
+  "errors": {
+    "generic": "Terjadi kesalahan",
+    "networkError": "Kesalahan koneksi",
+    "unauthorized": "Tidak diizinkan",
+    "notFound": "Tidak ditemukan",
+    "validation": "Data tidak valid",
+    "tryAgain": "Coba lagi"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Posting",
+    "comment": "Komentar",
+    "like": "Suka",
+    "share": "Bagikan",
+    "newPost": "Postingan baru",
+    "whatOnYourMind": "Apa yang baru dalam kariermu?",
+    "professionalContent": "Hanya konten profesional",
+    "rejectedContent": "Konten ini tidak memenuhi standar profesional SC"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Ruang Cowork",
+    "createSpace": "Buat ruang",
+    "joinSpace": "Gabung",
+    "mySpaces": "Ruang saya",
+    "findCollaborators": "Cari kolaborator",
+    "premiumFeature": "Fitur Premium"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Dasbor Pendiri",
+    "monitoring": "Pemantauan",
+    "telemetry": "MongoDB/Sumber",
+    "scans": "Pemindaian & Log",
+    "users": "Pengguna",
+    "conversations": "Percakapan",
+    "revenue": "Pendapatan",
+    "activatePlan": "Aktifkan paket",
+    "changeStatus": "Ubah status",
+    "addTokens": "Tambah token",
+    "testEmail": "Uji Email",
+    "scanToggle": "Aktifkan/nonaktifkan pemindaian"
   }
 }

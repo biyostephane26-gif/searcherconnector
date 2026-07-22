@@ -78,7 +78,7 @@ export default function About() {
               { icon: <Zap className="w-5 h-5 text-[#D4AF37]" />, title: 'Agent autonome', desc: 'SCAI ne dort pas. Il scanne, score et sauvegarde pendant que tu travailles, dors ou apprends.' },
               { icon: <Globe className="w-5 h-5 text-[#D4AF37]" />, title: 'Couverture mondiale', desc: 'Job boards, plateformes freelance, réseaux sociaux, ATS d\'entreprises — tout en un seul endroit.' },
               { icon: <Shield className="w-5 h-5 text-[#D4AF37]" />, title: 'Zéro faux lead', desc: 'Chaque opportunité est scorée de 0 à 100 selon ton profil exact. Plus de bruit, juste le signal.' },
-              { icon: <Users className="w-5 h-5 text-[#D4AF37]" />, title: 'Pour tout le monde', desc: 'Emploi, freelance, investissement, recrutement — une seule plateforme pour tous les profils professionnels.' },
+              { icon: <Users className="w-5 h-5 text-[#D4AF37]" />, title: 'Pour tout le monde', desc: 'Emploi et freelance — une seule plateforme, quel que soit ton métier.' },
             ].map((item, i) => (
               <div key={i} className="bg-[#111111] border border-[#1A1A1A] rounded-2xl p-6 hover:border-[#D4AF37]/20 transition-colors">
                 <div className="mb-3">{item.icon}</div>

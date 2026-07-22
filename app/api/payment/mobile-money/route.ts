@@ -20,16 +20,14 @@ const supabase = createClient(
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.com'
 
-// Prix par plan
+// Prix par plan — doit rester synchronisé avec PLANS dans src/views/Pricing.tsx
 const PLAN_PRICES_XAF: Record<string, number> = {
-  talent:   15000,  // ~24.99 USD
-  business: 29500,  // ~49 USD
-  investor: 59500,  // ~99 USD
+  starter: 11500,  // ~19 USD
+  pro:     29500,  // ~49 USD
 }
 const PLAN_PRICES_USD: Record<string, number> = {
-  talent:   24.99,
-  business: 49,
-  investor: 99,
+  starter: 19,
+  pro:     49,
 }
 
 // ── Activer le plan automatiquement ──────────────────────────────
@@ -242,7 +240,8 @@ export async function POST(req: NextRequest) {
         title:   `💰 Nouveau paiement à traiter — Plan ${plan}`,
         message: `Utilisateur ${userId.slice(0, 8)} demande le plan ${plan} (${amountXAF.toLocaleString()} XAF). Phone: ${phone || 'non fourni'}. Réf: ${paymentRef}`,
         is_read: false,
-        data:    JSON.stringify({ userId, plan, paymentRef }),
+        action_url:   '/founder',
+        action_label: 'Activer le plan',
       })
     }
 

@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "加载中...",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "close": "关闭",
+    "search": "搜索",
+    "filter": "筛选",
+    "refresh": "刷新",
+    "back": "返回",
+    "next": "下一步",
+    "send": "发送",
+    "upload": "上传",
+    "download": "下载",
+    "confirm": "确认",
+    "error": "错误",
+    "success": "成功"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "首页",
+    "opportunities": "机会",
+    "agent": "Searcher 智能助理",
+    "opportunityCreator": "创建职位",
+    "cowork": "协作空间",
+    "interviews": "面试",
+    "social": "社区",
+    "articles": "文章",
+    "groups": "群组",
+    "messages": "消息",
+    "salary": "薪资",
+    "profile": "个人资料",
+    "settings": "设置",
+    "pricing": "价格",
+    "logout": "退出登录"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "仪表盘",
+    "agentActive": "智能助理 24/7 全天候在线",
+    "opportunitiesFound": "已发现的机会",
+    "applicationsSubmitted": "已提交的申请",
+    "avgMatchScore": "平均匹配分数",
+    "launchScan": "启动全局扫描",
+    "recentOpportunities": "最新机会",
+    "viewAll": "查看全部",
+    "noOpportunities": "暂无机会。启动一次扫描开始使用。"
+  },
+  "opportunities": {
+    "title": "机会浏览",
+    "filters": {
+      "all": "全部",
+      "fresh": "最新（<24小时）",
+      "applied": "已申请",
+      "pending": "待处理"
+    },
+    "matchScore": "匹配度",
+    "source": "来源",
+    "postedAgo": "{{hours}}小时前发布",
+    "applicants": "{{count}} 位申请者",
+    "apply": "申请",
+    "applied": "申请已发送",
+    "unlockPremium": "使用 Premium 解锁",
+    "premiumOnly": "仅限 Premium",
+    "scaiAnalysis": "SCAI 分析",
+    "readinessScore": "准备度评分",
+    "applyManually": "我自己申请"
+  },
+  "scai": {
+    "title": "Searcher 智能助理",
+    "greeting": "你好！我是 SCAI，你的专属职业助理。",
+    "placeholder": "向我提问，或让我帮你寻找机会...",
+    "voice": "使用语音",
+    "voicePremium": "SCAI Voice（Premium）",
+    "voiceCredits": "剩余 {{count}} 个语音额度",
+    "thinking": "思考中...",
+    "scanning": "正在为你搜索全网...",
+    "analyzing": "正在分析机会...",
+    "applying": "正在发送你的申请..."
+  },
+  "profile": {
+    "title": "职业档案",
+    "completion": "资料完整度",
+    "level": "等级",
+    "levels": {
+      "junior": "初级",
+      "mid": "中级",
+      "senior": "高级",
+      "expert": "专家"
+    },
+    "progression": "还差 {{count}} 个项目达到 {{level}}",
+    "maxLevel": "已达到最高等级",
+    "verification": {
+      "pending": "待审核",
+      "verified": "已认证",
+      "genius": "精英",
+      "refused": "已拒绝"
+    },
+    "editProfile": "编辑资料",
+    "uploadAvatar": "更换照片",
+    "personalInfo": "个人信息",
+    "skills": "技能",
+    "experience": "经验",
+    "portfolio": "作品集",
+    "documents": "文件"
+  },
+  "pricing": {
+    "title": "套餐与价格",
+    "monthly": "每月",
+    "currentPlan": "当前套餐",
+    "upgrade": "升级到 {{plan}}",
+    "features": "功能",
+    "free": {
+      "name": "免费版",
+      "features": [
+        "RSS 订阅 + 免费 API",
+        "每次扫描 10 个个性化机会",
+        "6 个免费 + 4 个 Premium 锁定机会",
+        "通用通知",
+        "每天最多 2 次手动扫描",
+        "SCAI Voice 不可用"
+      ]
+    },
+    "starter": {
+      "name": "入门版",
+      "features": [
+        "所有免费来源 + Premium API",
+        "无限机会",
+        "定向通知",
+        "每天 10 次扫描",
+        "每月 60 个语音额度",
+        "PDF 生成：简历 + 求职信"
+      ]
+    },
+    "pro": {
+      "name": "专业版",
+      "features": [
+        "所有来源（LinkedIn、Upwork...）",
+        "新机会优先展示",
+        "申请人少于 10 时实时通知",
+        "无限扫描",
+        "每月 300 个语音额度",
+        "所有 PDF",
+        "模拟面试",
+        "作品集分析"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "设置",
+    "language": "语言",
+    "theme": "主题",
+    "lightMode": "浅色模式",
+    "darkMode": "深色模式",
+    "notifications": "通知",
+    "emailNotifications": "邮件通知",
+    "pushNotifications": "推送通知",
+    "privacy": "隐私",
+    "security": "安全",
+    "account": "账户",
+    "deleteAccount": "删除账户",
+    "changePassword": "修改密码",
+    "twoFactor": "双重身份验证"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "通知",
+    "markAllRead": "全部标记为已读",
+    "noNotifications": "暂无通知",
+    "types": {
+      "opportunity": "新机会",
+      "application": "申请更新",
+      "message": "新消息",
+      "system": "系统通知",
+      "plan": "套餐已激活"
+    },
+    "filters": {
+      "all": "全部",
+      "unread": "未读",
+      "opportunities": "机会",
+      "system": "系统"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "我的申请",
+    "status": {
+      "applied": "已申请",
+      "viewed": "已查看",
+      "interview": "面试",
+      "accepted": "已录用",
+      "rejected": "已拒绝"
+    },
+    "noApplications": "暂无申请",
+    "viewDetails": "查看详情",
+    "withdrawApplication": "撤回申请"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "登录",
+    "signup": "注册",
+    "email": "邮箱",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "forgotPassword": "忘记密码？",
+    "alreadyHaveAccount": "已有账户？",
+    "dontHaveAccount": "还没有账户？",
+    "loginWithGoogle": "使用 Google 继续",
+    "loginWithGithub": "使用 GitHub 继续",
+    "acceptTerms": "我接受使用条款",
+    "waitlist": "加入等候名单"
+  },
+  "errors": {
+    "generic": "发生错误",
+    "networkError": "连接错误",
+    "unauthorized": "未授权",
+    "notFound": "未找到",
+    "validation": "数据无效",
+    "tryAgain": "重试"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "发布",
+    "comment": "评论",
+    "like": "点赞",
+    "share": "分享",
+    "newPost": "新帖子",
+    "whatOnYourMind": "你的职业生涯有什么新动态？",
+    "professionalContent": "仅限职业相关内容",
+    "rejectedContent": "此内容不符合 SC 的职业标准"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "协作空间",
+    "createSpace": "创建空间",
+    "joinSpace": "加入",
+    "mySpaces": "我的空间",
+    "findCollaborators": "寻找合作者",
+    "premiumFeature": "Premium 功能"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "创始人面板",
+    "monitoring": "监控",
+    "telemetry": "MongoDB/数据源",
+    "scans": "扫描与日志",
+    "users": "用户",
+    "conversations": "对话",
+    "revenue": "收入",
+    "activatePlan": "激活套餐",
+    "changeStatus": "更改状态",
+    "addTokens": "添加代币",
+    "testEmail": "测试邮件",
+    "scanToggle": "扫描开关"
   }
 }

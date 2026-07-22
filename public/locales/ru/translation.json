@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Загрузка...",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "edit": "Изменить",
+    "close": "Закрыть",
+    "search": "Поиск",
+    "filter": "Фильтр",
+    "refresh": "Обновить",
+    "back": "Назад",
+    "next": "Далее",
+    "send": "Отправить",
+    "upload": "Загрузить",
+    "download": "Скачать",
+    "confirm": "Подтвердить",
+    "error": "Ошибка",
+    "success": "Успешно"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Главная",
+    "opportunities": "Вакансии",
+    "agent": "Агент Searcher",
+    "opportunityCreator": "Создать предложение",
+    "cowork": "Cowork",
+    "interviews": "Собеседования",
+    "social": "Сообщество",
+    "articles": "Статьи",
+    "groups": "Группы",
+    "messages": "Сообщения",
+    "salary": "Зарплаты",
+    "profile": "Профиль",
+    "settings": "Настройки",
+    "pricing": "Тарифы",
+    "logout": "Выйти"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Панель управления",
+    "agentActive": "Агент активен 24/7",
+    "opportunitiesFound": "Найдено вакансий",
+    "applicationsSubmitted": "Отправлено заявок",
+    "avgMatchScore": "Средний балл соответствия",
+    "launchScan": "Запустить глобальный поиск",
+    "recentOpportunities": "Последние вакансии",
+    "viewAll": "Показать все",
+    "noOpportunities": "Нет вакансий. Запустите поиск, чтобы начать."
+  },
+  "opportunities": {
+    "title": "Обзор вакансий",
+    "filters": {
+      "all": "Все",
+      "fresh": "Свежие (<24ч)",
+      "applied": "Отклик отправлен",
+      "pending": "В ожидании"
+    },
+    "matchScore": "Соответствие",
+    "source": "Источник",
+    "postedAgo": "Опубликовано {{hours}}ч назад",
+    "applicants": "{{count}} кандидатов",
+    "apply": "Откликнуться",
+    "applied": "Отклик отправлен",
+    "unlockPremium": "Открыть с Premium",
+    "premiumOnly": "Только Premium",
+    "scaiAnalysis": "Анализ SCAI",
+    "readinessScore": "Оценка готовности",
+    "applyManually": "Я откликнусь сам"
+  },
+  "scai": {
+    "title": "Агент Searcher",
+    "greeting": "Привет! Я SCAI, твой личный карьерный помощник.",
+    "placeholder": "Задай мне вопрос или попроси найти вакансии...",
+    "voice": "Использовать голос",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "Осталось {{count}} голосовых кредитов",
+    "thinking": "Думаю...",
+    "scanning": "Ищу для тебя в интернете...",
+    "analyzing": "Анализирую вакансии...",
+    "applying": "Отправляю твою заявку..."
+  },
+  "profile": {
+    "title": "Профессиональный профиль",
+    "completion": "Заполненность профиля",
+    "level": "Уровень",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Middle",
+      "senior": "Senior",
+      "expert": "Эксперт"
+    },
+    "progression": "Осталось {{count}} проектов до уровня {{level}}",
+    "maxLevel": "Достигнут максимальный уровень",
+    "verification": {
+      "pending": "На рассмотрении",
+      "verified": "Подтверждён",
+      "genius": "Genius",
+      "refused": "Отклонён"
+    },
+    "editProfile": "Редактировать профиль",
+    "uploadAvatar": "Сменить фото",
+    "personalInfo": "Личные данные",
+    "skills": "Навыки",
+    "experience": "Опыт",
+    "portfolio": "Портфолио",
+    "documents": "Документы"
+  },
+  "pricing": {
+    "title": "Тарифы",
+    "monthly": "в месяц",
+    "currentPlan": "Текущий тариф",
+    "upgrade": "Перейти на {{plan}}",
+    "features": "Возможности",
+    "free": {
+      "name": "Бесплатный",
+      "features": [
+        "RSS-ленты + бесплатные API",
+        "10 персонализированных вакансий за поиск",
+        "6 бесплатных + 4 заблокированные premium-вакансии",
+        "Общие уведомления",
+        "Макс. 2 ручных поиска/день",
+        "SCAI Voice недоступен"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Все бесплатные источники + premium API",
+        "Неограниченное количество вакансий",
+        "Целевые уведомления",
+        "10 поисков/день",
+        "60 голосовых кредитов/месяц",
+        "Создание PDF: резюме + сопроводительное письмо"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Все источники (LinkedIn, Upwork...)",
+        "Приоритет на свежие вакансии",
+        "Уведомления в реальном времени при <10 кандидатах",
+        "Неограниченные поиски",
+        "300 голосовых кредитов/месяц",
+        "Все PDF",
+        "Симуляция собеседования",
+        "Анализ портфолио"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Настройки",
+    "language": "Язык",
+    "theme": "Тема",
+    "lightMode": "Светлый режим",
+    "darkMode": "Тёмный режим",
+    "notifications": "Уведомления",
+    "emailNotifications": "Уведомления по email",
+    "pushNotifications": "Push-уведомления",
+    "privacy": "Конфиденциальность",
+    "security": "Безопасность",
+    "account": "Аккаунт",
+    "deleteAccount": "Удалить аккаунт",
+    "changePassword": "Сменить пароль",
+    "twoFactor": "Двухфакторная аутентификация"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Уведомления",
+    "markAllRead": "Отметить все как прочитанные",
+    "noNotifications": "Нет уведомлений",
+    "types": {
+      "opportunity": "Новая вакансия",
+      "application": "Обновление заявки",
+      "message": "Новое сообщение",
+      "system": "Системное уведомление",
+      "plan": "Тариф активирован"
+    },
+    "filters": {
+      "all": "Все",
+      "unread": "Непрочитанные",
+      "opportunities": "Вакансии",
+      "system": "Система"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Мои заявки",
+    "status": {
+      "applied": "Отправлена",
+      "viewed": "Просмотрена",
+      "interview": "Собеседование",
+      "accepted": "Принята",
+      "rejected": "Отклонена"
+    },
+    "noApplications": "Пока нет заявок",
+    "viewDetails": "Подробнее",
+    "withdrawApplication": "Отозвать заявку"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Вход",
+    "signup": "Регистрация",
+    "email": "Email",
+    "password": "Пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "forgotPassword": "Забыли пароль?",
+    "alreadyHaveAccount": "Уже есть аккаунт?",
+    "dontHaveAccount": "Ещё нет аккаунта?",
+    "loginWithGoogle": "Продолжить с Google",
+    "loginWithGithub": "Продолжить с GitHub",
+    "acceptTerms": "Я принимаю условия использования",
+    "waitlist": "Присоединиться к списку ожидания"
+  },
+  "errors": {
+    "generic": "Произошла ошибка",
+    "networkError": "Ошибка соединения",
+    "unauthorized": "Не авторизован",
+    "notFound": "Не найдено",
+    "validation": "Неверные данные",
+    "tryAgain": "Повторить"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Опубликовать",
+    "comment": "Комментировать",
+    "like": "Нравится",
+    "share": "Поделиться",
+    "newPost": "Новая публикация",
+    "whatOnYourMind": "Что нового в твоей карьере?",
+    "professionalContent": "Только профессиональный контент",
+    "rejectedContent": "Этот контент не соответствует профессиональным стандартам SC"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Пространство Cowork",
+    "createSpace": "Создать пространство",
+    "joinSpace": "Присоединиться",
+    "mySpaces": "Мои пространства",
+    "findCollaborators": "Найти соавторов",
+    "premiumFeature": "Premium-функция"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Панель основателя",
+    "monitoring": "Мониторинг",
+    "telemetry": "MongoDB/Источники",
+    "scans": "Поиски и логи",
+    "users": "Пользователи",
+    "conversations": "Диалоги",
+    "revenue": "Доход",
+    "activatePlan": "Активировать тариф",
+    "changeStatus": "Изменить статус",
+    "addTokens": "Добавить токены",
+    "testEmail": "Тест Email",
+    "scanToggle": "Вкл/выкл поиск"
   }
 }

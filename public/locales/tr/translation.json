@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Yükleniyor...",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "close": "Kapat",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "refresh": "Yenile",
+    "back": "Geri",
+    "next": "İleri",
+    "send": "Gönder",
+    "upload": "Yükle",
+    "download": "İndir",
+    "confirm": "Onayla",
+    "error": "Hata",
+    "success": "Başarılı"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Ana Sayfa",
+    "opportunities": "Fırsatlar",
+    "agent": "Searcher Ajanı",
+    "opportunityCreator": "İlan Oluştur",
+    "cowork": "Cowork",
+    "interviews": "Mülakatlar",
+    "social": "Topluluk",
+    "articles": "Makaleler",
+    "groups": "Topluluklar",
+    "messages": "Mesajlar",
+    "salary": "Maaşlar",
+    "profile": "Profil",
+    "settings": "Ayarlar",
+    "pricing": "Fiyatlandırma",
+    "logout": "Çıkış yap"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Kontrol Paneli",
+    "agentActive": "Ajan 7/24 aktif",
+    "opportunitiesFound": "Bulunan fırsatlar",
+    "applicationsSubmitted": "Gönderilen başvurular",
+    "avgMatchScore": "Ortalama eşleşme puanı",
+    "launchScan": "Genel arama başlat",
+    "recentOpportunities": "Son fırsatlar",
+    "viewAll": "Tümünü gör",
+    "noOpportunities": "Fırsat yok. Başlamak için bir arama başlat."
+  },
+  "opportunities": {
+    "title": "Fırsat Keşfi",
+    "filters": {
+      "all": "Tümü",
+      "fresh": "Yeni (<24s)",
+      "applied": "Başvuruldu",
+      "pending": "Beklemede"
+    },
+    "matchScore": "Eşleşme",
+    "source": "Kaynak",
+    "postedAgo": "{{hours}}s önce yayınlandı",
+    "applicants": "{{count}} başvuran",
+    "apply": "Başvur",
+    "applied": "Başvuru gönderildi",
+    "unlockPremium": "Premium ile kilidini aç",
+    "premiumOnly": "Sadece Premium",
+    "scaiAnalysis": "SCAI Analizi",
+    "readinessScore": "Hazırlık puanı",
+    "applyManually": "Kendim başvuracağım"
+  },
+  "scai": {
+    "title": "Searcher Ajanı",
+    "greeting": "Merhaba! Ben SCAI, kişisel kariyer asistanınım.",
+    "placeholder": "Bana bir soru sor ya da fırsat aramamı iste...",
+    "voice": "Sesi kullan",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "{{count}} ses kredisi kaldı",
+    "thinking": "Düşünüyorum...",
+    "scanning": "Senin için internette arama yapıyorum...",
+    "analyzing": "Fırsatları analiz ediyorum...",
+    "applying": "Başvurunu gönderiyorum..."
+  },
+  "profile": {
+    "title": "Profesyonel Profil",
+    "completion": "Profil tamamlama",
+    "level": "Seviye",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Orta",
+      "senior": "Senior",
+      "expert": "Uzman"
+    },
+    "progression": "{{level}} seviyesine {{count}} görev kaldı",
+    "maxLevel": "Maksimum seviyeye ulaşıldı",
+    "verification": {
+      "pending": "Beklemede",
+      "verified": "Doğrulandı",
+      "genius": "Genius",
+      "refused": "Reddedildi"
+    },
+    "editProfile": "Profili düzenle",
+    "uploadAvatar": "Fotoğrafı değiştir",
+    "personalInfo": "Kişisel bilgiler",
+    "skills": "Beceriler",
+    "experience": "Deneyim",
+    "portfolio": "Portfolyo",
+    "documents": "Belgeler"
+  },
+  "pricing": {
+    "title": "Planlar ve Fiyatlar",
+    "monthly": "aylık",
+    "currentPlan": "Mevcut plan",
+    "upgrade": "{{plan}} planına geç",
+    "features": "Özellikler",
+    "free": {
+      "name": "Ücretsiz",
+      "features": [
+        "RSS akışları + ücretsiz API'ler",
+        "Aramada 10 kişiselleştirilmiş görev",
+        "6 ücretsiz + 4 kilitli premium görev",
+        "Genel bildirimler",
+        "Günde en fazla 2 manuel arama",
+        "SCAI Voice mevcut değil"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Tüm ücretsiz kaynaklar + premium API'ler",
+        "Sınırsız görev",
+        "Hedefli bildirimler",
+        "Günde 10 arama",
+        "Ayda 60 ses kredisi",
+        "PDF oluşturma: CV + Ön yazı"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Tüm kaynaklar (LinkedIn, Upwork...)",
+        "Yeni görevlerde öncelik",
+        "<10 başvuruda gerçek zamanlı bildirimler",
+        "Sınırsız arama",
+        "Ayda 300 ses kredisi",
+        "Tüm PDF'ler",
+        "Mülakat simülasyonu",
+        "Portfolyo Analizörü"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Ayarlar",
+    "language": "Dil",
+    "theme": "Tema",
+    "lightMode": "Açık mod",
+    "darkMode": "Koyu mod",
+    "notifications": "Bildirimler",
+    "emailNotifications": "E-posta bildirimleri",
+    "pushNotifications": "Anlık bildirimler",
+    "privacy": "Gizlilik",
+    "security": "Güvenlik",
+    "account": "Hesap",
+    "deleteAccount": "Hesabı sil",
+    "changePassword": "Şifreyi değiştir",
+    "twoFactor": "İki faktörlü kimlik doğrulama"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Bildirimler",
+    "markAllRead": "Tümünü okundu işaretle",
+    "noNotifications": "Bildirim yok",
+    "types": {
+      "opportunity": "Yeni fırsat",
+      "application": "Başvuru güncellendi",
+      "message": "Yeni mesaj",
+      "system": "Sistem bildirimi",
+      "plan": "Plan etkinleştirildi"
+    },
+    "filters": {
+      "all": "Tümü",
+      "unread": "Okunmamış",
+      "opportunities": "Fırsatlar",
+      "system": "Sistem"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Başvurularım",
+    "status": {
+      "applied": "Başvuruldu",
+      "viewed": "Görüntülendi",
+      "interview": "Mülakat",
+      "accepted": "Kabul edildi",
+      "rejected": "Reddedildi"
+    },
+    "noApplications": "Henüz başvuru yok",
+    "viewDetails": "Detayları gör",
+    "withdrawApplication": "Başvuruyu geri çek"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Giriş yap",
+    "signup": "Kaydol",
+    "email": "E-posta",
+    "password": "Şifre",
+    "confirmPassword": "Şifreyi onayla",
+    "forgotPassword": "Şifreni mi unuttun?",
+    "alreadyHaveAccount": "Zaten hesabın var mı?",
+    "dontHaveAccount": "Henüz hesabın yok mu?",
+    "loginWithGoogle": "Google ile devam et",
+    "loginWithGithub": "GitHub ile devam et",
+    "acceptTerms": "Kullanım koşullarını kabul ediyorum",
+    "waitlist": "Bekleme listesine katıl"
+  },
+  "errors": {
+    "generic": "Bir hata oluştu",
+    "networkError": "Bağlantı hatası",
+    "unauthorized": "Yetkisiz",
+    "notFound": "Bulunamadı",
+    "validation": "Geçersiz veri",
+    "tryAgain": "Tekrar dene"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Paylaş",
+    "comment": "Yorum yap",
+    "like": "Beğen",
+    "share": "Paylaş",
+    "newPost": "Yeni gönderi",
+    "whatOnYourMind": "Kariyerinde yeni ne var?",
+    "professionalContent": "Sadece profesyonel içerik",
+    "rejectedContent": "Bu içerik SC'nin profesyonel standartlarına uymuyor"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Cowork Alanı",
+    "createSpace": "Alan oluştur",
+    "joinSpace": "Katıl",
+    "mySpaces": "Alanlarım",
+    "findCollaborators": "İş birlikçi bul",
+    "premiumFeature": "Premium Özellik"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Kurucu Paneli",
+    "monitoring": "İzleme",
+    "telemetry": "MongoDB/Kaynaklar",
+    "scans": "Aramalar ve Kayıtlar",
+    "users": "Kullanıcılar",
+    "conversations": "Konuşmalar",
+    "revenue": "Gelir",
+    "activatePlan": "Planı etkinleştir",
+    "changeStatus": "Durumu değiştir",
+    "addTokens": "Token ekle",
+    "testEmail": "E-postayı test et",
+    "scanToggle": "Aramayı aç/kapat"
   }
 }

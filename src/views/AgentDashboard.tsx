@@ -10,6 +10,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useAgent } from '../hooks/useAgent';
 import { useAgentRealtime } from '../hooks/useAgentRealtime';
 import { useVoiceInput } from '../hooks/useVoiceInput';
+import ScaiThinkingOrb from '../components/scai/ScaiThinkingOrb';
+import VoiceWaveform from '../components/scai/VoiceWaveform';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import {
@@ -35,7 +37,9 @@ import {
   AlertTriangle,
   Globe,
   Eye,
-  Target
+  Target,
+  Radio,
+  Volume2
 } from 'lucide-react';
 
 const ACTION_ICONS: Record<string, any> = {
@@ -80,6 +84,106 @@ export default function AgentDashboard() {
   });
   const [pendingScanConfirm, setPendingScanConfirm] = useState<any>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // ── Note vocale SCAI (façon WhatsApp) — distincte du micro STT ────
+  // ci-dessus : celui-ci enregistre un vrai clip audio (maintenir
+  // appuyé), l'envoie à /api/scai/voice (STT→LLM→TTS en un appel),
+  // et joue la réponse vocale de SCAI.
+  const [isVoiceNoteRecording, setIsVoiceNoteRecording] = useState(false);
+  const [isVoiceNoteProcessing, setIsVoiceNoteProcessing] = useState(false);
+  const [isScaiSpeaking, setIsScaiSpeaking] = useState(false);
+  const [recordingStream, setRecordingStream] = useState<MediaStream | null>(null);
+  const [speakingAudioEl, setSpeakingAudioEl] = useState<HTMLAudioElement | null>(null);
+  const voiceNoteRecorderRef = useRef<MediaRecorder | null>(null);
+  const voiceNoteChunksRef = useRef<Blob[]>([]);
+  const voiceNoteStartRef = useRef<number>(0);
+
+  const startVoiceNote = async () => {
+    if (isVoiceNoteRecording || isVoiceNoteProcessing) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      voiceNoteChunksRef.current = [];
+      voiceNoteStartRef.current = Date.now();
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) voiceNoteChunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        setRecordingStream(null);
+        const duration = Date.now() - voiceNoteStartRef.current;
+        if (voiceNoteChunksRef.current.length > 0 && duration > 500) {
+          const blob = new Blob(voiceNoteChunksRef.current, { type: 'audio/webm' });
+          await sendVoiceNote(blob);
+        }
+      };
+
+      voiceNoteRecorderRef.current = recorder;
+      setRecordingStream(stream);
+      recorder.start();
+      setIsVoiceNoteRecording(true);
+    } catch (err) {
+      console.error('[SCAI Voice Note] Erreur micro:', err);
+      alert("Impossible d'accéder au micro. Vérifie les permissions du navigateur.");
+    }
+  };
+
+  const stopVoiceNote = () => {
+    if (voiceNoteRecorderRef.current && voiceNoteRecorderRef.current.state !== 'inactive') {
+      voiceNoteRecorderRef.current.stop();
+    }
+    setIsVoiceNoteRecording(false);
+  };
+
+  const sendVoiceNote = async (blob: Blob) => {
+    if (!user) return;
+    setIsVoiceNoteProcessing(true);
+    setIsProcessing(true);
+    try {
+      const reader = new FileReader();
+      const audioBase64 = await new Promise<string>((resolve) => {
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(blob);
+      });
+
+      const res = await fetch('/api/scai/voice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, userProfile: profile, audio: audioBase64, mode: 'full' }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Erreur note vocale');
+
+      if (data.text) {
+        setChatHistory(prev => [...prev, { role: 'user', content: data.text }]);
+        await saveChatMessage('user', data.text);
+      }
+      if (data.response) {
+        setChatHistory(prev => [...prev, { role: 'agent', content: data.response }]);
+        await saveChatMessage('agent', data.response);
+      }
+
+      if (data.audioBuffer) {
+        const buffer = Uint8Array.from(atob(data.audioBuffer), c => c.charCodeAt(0));
+        const audioBlob = new Blob([buffer], { type: 'audio/mpeg' });
+        const url = URL.createObjectURL(audioBlob);
+        const audio = new Audio(url);
+        audio.onplay = () => setSpeakingAudioEl(audio);
+        audio.onended = () => { setIsScaiSpeaking(false); setSpeakingAudioEl(null); };
+        audio.onerror = () => { setIsScaiSpeaking(false); setSpeakingAudioEl(null); };
+        setIsScaiSpeaking(true);
+        audio.play().catch(() => setIsScaiSpeaking(false));
+      }
+    } catch (err: any) {
+      console.error('[SCAI Voice Note] Erreur envoi:', err);
+      setChatHistory(prev => [...prev, { role: 'agent', content: "Désolé, je n'ai pas pu traiter ta note vocale. Réessaie." }]);
+    } finally {
+      setIsVoiceNoteProcessing(false);
+      setIsProcessing(false);
+    }
+  };
 
   const [showClearConfirm, setShowClearConfirm] = useState(false)
 
@@ -475,12 +579,23 @@ export default function AgentDashboard() {
                 <div className="flex justify-start">
                   <div className="bg-[#111111] border border-gray-800 text-[#D4AF37] rounded-2xl rounded-tl-none px-4 py-3 text-xs flex flex-col gap-2 shadow-lg min-w-[200px]">
                     <div className="flex items-center gap-2">
-                      <Loader2 size={14} className="animate-spin" />
-                      <span className="font-syne font-bold uppercase tracking-widest text-[9px]">SCAI réfléchit intensément...</span>
+                      <ScaiThinkingOrb size={16} />
+                      <span className="font-syne font-bold uppercase tracking-widest text-[9px]">
+                        {isVoiceNoteProcessing ? 'SCAI écoute et réfléchit...' : 'SCAI réfléchit intensément...'}
+                      </span>
                     </div>
                     <div className="h-1 w-full bg-gray-900 rounded-full overflow-hidden">
                       <div className="h-full bg-[#D4AF37] animate-[shimmer_2s_infinite] w-1/2"></div>
                     </div>
+                  </div>
+                </div>
+              )}
+              {isScaiSpeaking && (
+                <div className="flex justify-start">
+                  <div className="bg-[#111111] border border-[#D4AF37]/30 text-[#D4AF37] rounded-2xl rounded-tl-none px-4 py-3 flex items-center gap-3 shadow-lg">
+                    <Volume2 size={14} className="animate-pulse" />
+                    <VoiceWaveform source={speakingAudioEl} variant="speaking" />
+                    <span className="font-syne font-bold uppercase tracking-widest text-[9px]">SCAI parle...</span>
                   </div>
                 </div>
               )}
@@ -532,8 +647,8 @@ export default function AgentDashboard() {
               {/* Bouton SCAI Voice - SÉPARÉ */}
               <button 
                 onClick={() => {
-                  // Paywall SCAI Voice pour free users
-                  const isFree = !profile?.subscription_plan || profile.subscription_plan === 'free'
+                  // Paywall SCAI Voice pour free users (le fondateur n'a aucune restriction)
+                  const isFree = profile?.role !== 'founder' && (!profile?.plan || profile.plan === 'free')
                   if (isFree) {
                     alert('🎤 SCAI Voice est réservé aux membres Premium. Upgrade pour parler directement avec SCAI.')
                     window.location.href = '/pricing'
@@ -553,7 +668,33 @@ export default function AgentDashboard() {
                 <Mic size={18} />
               </button>
 
-              <button 
+              {/* Note vocale SCAI — maintenir appuyé façon WhatsApp */}
+              {isVoiceNoteRecording ? (
+                <div className="flex items-center gap-2 px-2">
+                  <VoiceWaveform source={recordingStream} variant="recording" />
+                  <button
+                    onMouseUp={stopVoiceNote}
+                    onMouseLeave={stopVoiceNote}
+                    onTouchEnd={stopVoiceNote}
+                    className="p-2.5 rounded-lg bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/50 transition-all"
+                    title="Relâche pour envoyer"
+                  >
+                    <Radio size={18} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onMouseDown={startVoiceNote}
+                  onTouchStart={startVoiceNote}
+                  disabled={isVoiceNoteProcessing || isProcessing}
+                  className="p-2.5 rounded-lg bg-[#1A1A1A] text-gray-400 hover:text-[#D4AF37] hover:bg-[#2A2A2A] transition-all disabled:opacity-30"
+                  title="Maintenir appuyé pour envoyer une note vocale à SCAI"
+                >
+                  <Radio size={18} />
+                </button>
+              )}
+
+              <button
                 disabled={!userInstruction.trim() || isProcessing}
                 onClick={() => handleSendMessage(userInstruction)}
                 className="p-2 bg-[#D4AF37] text-black rounded-lg disabled:opacity-50 hover:bg-[#B8962D] transition-colors"

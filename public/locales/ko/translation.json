@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "로딩 중...",
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "편집",
+    "close": "닫기",
+    "search": "검색",
+    "filter": "필터",
+    "refresh": "새로고침",
+    "back": "뒤로",
+    "next": "다음",
+    "send": "보내기",
+    "upload": "업로드",
+    "download": "다운로드",
+    "confirm": "확인",
+    "error": "오류",
+    "success": "성공"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "홈",
+    "opportunities": "기회",
+    "agent": "Searcher 에이전트",
+    "opportunityCreator": "공고 만들기",
+    "cowork": "Cowork",
+    "interviews": "면접",
+    "social": "커뮤니티",
+    "articles": "아티클",
+    "groups": "그룹",
+    "messages": "메시지",
+    "salary": "급여",
+    "profile": "프로필",
+    "settings": "설정",
+    "pricing": "요금제",
+    "logout": "로그아웃"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "대시보드",
+    "agentActive": "에이전트 24시간 활성화",
+    "opportunitiesFound": "발견된 기회",
+    "applicationsSubmitted": "제출된 지원서",
+    "avgMatchScore": "평균 매칭 점수",
+    "launchScan": "전체 검색 시작",
+    "recentOpportunities": "최근 기회",
+    "viewAll": "모두 보기",
+    "noOpportunities": "기회가 없습니다. 검색을 시작하세요."
+  },
+  "opportunities": {
+    "title": "기회 탐색기",
+    "filters": {
+      "all": "전체",
+      "fresh": "신규 (<24시간)",
+      "applied": "지원 완료",
+      "pending": "대기 중"
+    },
+    "matchScore": "매칭",
+    "source": "출처",
+    "postedAgo": "{{hours}}시간 전 게시됨",
+    "applicants": "지원자 {{count}}명",
+    "apply": "지원하기",
+    "applied": "지원서가 전송되었습니다",
+    "unlockPremium": "Premium으로 잠금 해제",
+    "premiumOnly": "Premium 전용",
+    "scaiAnalysis": "SCAI 분석",
+    "readinessScore": "준비도 점수",
+    "applyManually": "직접 지원할게요"
+  },
+  "scai": {
+    "title": "Searcher 에이전트",
+    "greeting": "안녕하세요! 저는 당신의 개인 커리어 어시스턴트 SCAI입니다.",
+    "placeholder": "질문하거나 기회를 찾아달라고 요청하세요...",
+    "voice": "음성 사용",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "음성 크레딧 {{count}}회 남음",
+    "thinking": "생각 중...",
+    "scanning": "당신을 위해 웹을 검색하고 있습니다...",
+    "analyzing": "기회를 분석하고 있습니다...",
+    "applying": "지원서를 전송하고 있습니다..."
+  },
+  "profile": {
+    "title": "전문 프로필",
+    "completion": "프로필 완성도",
+    "level": "레벨",
+    "levels": {
+      "junior": "주니어",
+      "mid": "미드레벨",
+      "senior": "시니어",
+      "expert": "전문가"
+    },
+    "progression": "{{level}}까지 {{count}}개 프로젝트 남음",
+    "maxLevel": "최고 레벨 달성",
+    "verification": {
+      "pending": "대기 중",
+      "verified": "인증됨",
+      "genius": "Genius",
+      "refused": "거절됨"
+    },
+    "editProfile": "프로필 편집",
+    "uploadAvatar": "사진 변경",
+    "personalInfo": "개인 정보",
+    "skills": "기술",
+    "experience": "경력",
+    "portfolio": "포트폴리오",
+    "documents": "문서"
+  },
+  "pricing": {
+    "title": "요금제",
+    "monthly": "월",
+    "currentPlan": "현재 요금제",
+    "upgrade": "{{plan}}으로 업그레이드",
+    "features": "기능",
+    "free": {
+      "name": "무료",
+      "features": [
+        "RSS 피드 + 무료 API",
+        "검색당 개인화된 기회 10개",
+        "무료 6개 + 잠긴 프리미엄 4개",
+        "일반 알림",
+        "하루 최대 수동 검색 2회",
+        "SCAI Voice 이용 불가"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "모든 무료 소스 + 프리미엄 API",
+        "무제한 기회",
+        "맞춤형 알림",
+        "하루 10회 검색",
+        "월 60회 음성 크레딧",
+        "PDF 생성: 이력서 + 자기소개서"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "모든 소스 (LinkedIn, Upwork...)",
+        "신규 기회 우선 노출",
+        "지원자 10명 미만 실시간 알림",
+        "무제한 검색",
+        "월 300회 음성 크레딧",
+        "모든 PDF",
+        "모의 면접",
+        "포트폴리오 분석"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "설정",
+    "language": "언어",
+    "theme": "테마",
+    "lightMode": "라이트 모드",
+    "darkMode": "다크 모드",
+    "notifications": "알림",
+    "emailNotifications": "이메일 알림",
+    "pushNotifications": "푸시 알림",
+    "privacy": "개인정보 보호",
+    "security": "보안",
+    "account": "계정",
+    "deleteAccount": "계정 삭제",
+    "changePassword": "비밀번호 변경",
+    "twoFactor": "2단계 인증"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "알림",
+    "markAllRead": "모두 읽음으로 표시",
+    "noNotifications": "알림이 없습니다",
+    "types": {
+      "opportunity": "새 기회",
+      "application": "지원 업데이트",
+      "message": "새 메시지",
+      "system": "시스템 알림",
+      "plan": "요금제 활성화됨"
+    },
+    "filters": {
+      "all": "전체",
+      "unread": "읽지 않음",
+      "opportunities": "기회",
+      "system": "시스템"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "내 지원 내역",
+    "status": {
+      "applied": "지원 완료",
+      "viewed": "열람됨",
+      "interview": "면접",
+      "accepted": "합격",
+      "rejected": "불합격"
+    },
+    "noApplications": "아직 지원 내역이 없습니다",
+    "viewDetails": "세부 정보 보기",
+    "withdrawApplication": "지원 철회"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "로그인",
+    "signup": "회원가입",
+    "email": "이메일",
+    "password": "비밀번호",
+    "confirmPassword": "비밀번호 확인",
+    "forgotPassword": "비밀번호를 잊으셨나요?",
+    "alreadyHaveAccount": "이미 계정이 있으신가요?",
+    "dontHaveAccount": "계정이 없으신가요?",
+    "loginWithGoogle": "Google로 계속하기",
+    "loginWithGithub": "GitHub로 계속하기",
+    "acceptTerms": "이용약관에 동의합니다",
+    "waitlist": "대기 명단 등록"
+  },
+  "errors": {
+    "generic": "오류가 발생했습니다",
+    "networkError": "연결 오류",
+    "unauthorized": "권한 없음",
+    "notFound": "찾을 수 없음",
+    "validation": "잘못된 데이터",
+    "tryAgain": "다시 시도"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "게시",
+    "comment": "댓글",
+    "like": "좋아요",
+    "share": "공유",
+    "newPost": "새 게시물",
+    "whatOnYourMind": "커리어에 새로운 소식이 있나요?",
+    "professionalContent": "전문적인 콘텐츠만 허용",
+    "rejectedContent": "이 콘텐츠는 SC의 전문성 기준을 충족하지 않습니다"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Cowork 공간",
+    "createSpace": "공간 만들기",
+    "joinSpace": "참여하기",
+    "mySpaces": "내 공간",
+    "findCollaborators": "협업자 찾기",
+    "premiumFeature": "프리미엄 기능"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "창업자 대시보드",
+    "monitoring": "모니터링",
+    "telemetry": "MongoDB/데이터 소스",
+    "scans": "검색 및 로그",
+    "users": "사용자",
+    "conversations": "대화",
+    "revenue": "수익",
+    "activatePlan": "요금제 활성화",
+    "changeStatus": "상태 변경",
+    "addTokens": "토큰 추가",
+    "testEmail": "이메일 테스트",
+    "scanToggle": "검색 켜기/끄기"
   }
 }

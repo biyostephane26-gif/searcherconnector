@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "লোড হচ্ছে...",
+    "save": "সংরক্ষণ করুন",
+    "cancel": "বাতিল করুন",
+    "delete": "মুছে ফেলুন",
+    "edit": "সম্পাদনা করুন",
+    "close": "বন্ধ করুন",
+    "search": "অনুসন্ধান করুন",
+    "filter": "ফিল্টার করুন",
+    "refresh": "রিফ্রেশ করুন",
+    "back": "পেছনে",
+    "next": "পরবর্তী",
+    "send": "পাঠান",
+    "upload": "আপলোড করুন",
+    "download": "ডাউনলোড করুন",
+    "confirm": "নিশ্চিত করুন",
+    "error": "ত্রুটি",
+    "success": "সফল"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "হোম",
+    "opportunities": "সুযোগসমূহ",
+    "agent": "Searcher এজেন্ট",
+    "opportunityCreator": "অফার তৈরি করুন",
+    "cowork": "Cowork",
+    "interviews": "সাক্ষাৎকার",
+    "social": "সম্প্রদায়",
+    "articles": "নিবন্ধ",
+    "groups": "গ্রুপ",
+    "messages": "বার্তা",
+    "salary": "বেতন",
+    "profile": "প্রোফাইল",
+    "settings": "সেটিংস",
+    "pricing": "মূল্য",
+    "logout": "লগআউট"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "ড্যাশবোর্ড",
+    "agentActive": "এজেন্ট ২৪/৭ সক্রিয়",
+    "opportunitiesFound": "পাওয়া সুযোগ",
+    "applicationsSubmitted": "পাঠানো আবেদন",
+    "avgMatchScore": "গড় মিল স্কোর",
+    "launchScan": "গ্লোবাল স্ক্যান শুরু করুন",
+    "recentOpportunities": "সাম্প্রতিক সুযোগ",
+    "viewAll": "সব দেখুন",
+    "noOpportunities": "কোনো সুযোগ নেই। শুরু করতে একটি স্ক্যান চালান।"
+  },
+  "opportunities": {
+    "title": "সুযোগ এক্সপ্লোরার",
+    "filters": {
+      "all": "সব",
+      "fresh": "নতুন (<২৪ঘ)",
+      "applied": "আবেদন করা হয়েছে",
+      "pending": "মুলতুবি"
+    },
+    "matchScore": "মিল",
+    "source": "উৎস",
+    "postedAgo": "{{hours}} ঘণ্টা আগে পোস্ট করা হয়েছে",
+    "applicants": "{{count}} জন আবেদনকারী",
+    "apply": "আবেদন করুন",
+    "applied": "আবেদন পাঠানো হয়েছে",
+    "unlockPremium": "Premium দিয়ে আনলক করুন",
+    "premiumOnly": "শুধুমাত্র Premium",
+    "scaiAnalysis": "SCAI বিশ্লেষণ",
+    "readinessScore": "প্রস্তুতির স্কোর",
+    "applyManually": "আমি নিজেই আবেদন করব"
+  },
+  "scai": {
+    "title": "Searcher এজেন্ট",
+    "greeting": "হ্যালো! আমি SCAI, তোমার ব্যক্তিগত ক্যারিয়ার সহায়ক।",
+    "placeholder": "আমাকে একটি প্রশ্ন জিজ্ঞাসা করো বা সুযোগ খুঁজতে বলো...",
+    "voice": "ভয়েস ব্যবহার করুন",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "{{count}} ভয়েস ক্রেডিট বাকি",
+    "thinking": "ভাবছি...",
+    "scanning": "তোমার জন্য ওয়েব খুঁজছি...",
+    "analyzing": "সুযোগগুলো বিশ্লেষণ করছি...",
+    "applying": "তোমার আবেদন পাঠাচ্ছি..."
+  },
+  "profile": {
+    "title": "পেশাদার প্রোফাইল",
+    "completion": "প্রোফাইল সম্পূর্ণতা",
+    "level": "স্তর",
+    "levels": {
+      "junior": "জুনিয়র",
+      "mid": "মধ্যম",
+      "senior": "সিনিয়র",
+      "expert": "বিশেষজ্ঞ"
+    },
+    "progression": "{{level}} স্তরে পৌঁছাতে {{count}}টি প্রজেক্ট বাকি",
+    "maxLevel": "সর্বোচ্চ স্তরে পৌঁছে গেছেন",
+    "verification": {
+      "pending": "মুলতুবি",
+      "verified": "যাচাইকৃত",
+      "genius": "Genius",
+      "refused": "প্রত্যাখ্যাত"
+    },
+    "editProfile": "প্রোফাইল সম্পাদনা করুন",
+    "uploadAvatar": "ছবি পরিবর্তন করুন",
+    "personalInfo": "ব্যক্তিগত তথ্য",
+    "skills": "দক্ষতা",
+    "experience": "অভিজ্ঞতা",
+    "portfolio": "পোর্টফোলিও",
+    "documents": "নথিপত্র"
+  },
+  "pricing": {
+    "title": "প্ল্যান এবং মূল্য",
+    "monthly": "প্রতি মাসে",
+    "currentPlan": "বর্তমান প্ল্যান",
+    "upgrade": "{{plan}}-এ আপগ্রেড করুন",
+    "features": "বৈশিষ্ট্য",
+    "free": {
+      "name": "ফ্রি",
+      "features": [
+        "RSS ফিড + ফ্রি API",
+        "প্রতি স্ক্যানে ১০টি ব্যক্তিগতকৃত সুযোগ",
+        "৬টি ফ্রি + ৪টি লক করা Premium সুযোগ",
+        "সাধারণ বিজ্ঞপ্তি",
+        "সর্বোচ্চ ২টি ম্যানুয়াল স্ক্যান/দিন",
+        "SCAI Voice পাওয়া যায় না"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "সব ফ্রি উৎস + Premium API",
+        "সীমাহীন সুযোগ",
+        "লক্ষ্যযুক্ত বিজ্ঞপ্তি",
+        "১০টি স্ক্যান/দিন",
+        "মাসে ৬০টি ভয়েস ক্রেডিট",
+        "PDF তৈরি: জীবনবৃত্তান্ত + কভার লেটার"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "সব উৎস (LinkedIn, Upwork...)",
+        "নতুন সুযোগে অগ্রাধিকার",
+        "<১০ জন আবেদনকারীতে রিয়েল-টাইম বিজ্ঞপ্তি",
+        "সীমাহীন স্ক্যান",
+        "মাসে ৩০০টি ভয়েস ক্রেডিট",
+        "সব PDF",
+        "সাক্ষাৎকার সিমুলেশন",
+        "পোর্টফোলিও বিশ্লেষক"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "সেটিংস",
+    "language": "ভাষা",
+    "theme": "থিম",
+    "lightMode": "লাইট মোড",
+    "darkMode": "ডার্ক মোড",
+    "notifications": "বিজ্ঞপ্তি",
+    "emailNotifications": "ইমেইল বিজ্ঞপ্তি",
+    "pushNotifications": "পুশ বিজ্ঞপ্তি",
+    "privacy": "গোপনীয়তা",
+    "security": "নিরাপত্তা",
+    "account": "অ্যাকাউন্ট",
+    "deleteAccount": "অ্যাকাউন্ট মুছুন",
+    "changePassword": "পাসওয়ার্ড পরিবর্তন করুন",
+    "twoFactor": "দুই-ফ্যাক্টর প্রমাণীকরণ"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "বিজ্ঞপ্তি",
+    "markAllRead": "সব পঠিত হিসেবে চিহ্নিত করুন",
+    "noNotifications": "কোনো বিজ্ঞপ্তি নেই",
+    "types": {
+      "opportunity": "নতুন সুযোগ",
+      "application": "আবেদন আপডেট হয়েছে",
+      "message": "নতুন বার্তা",
+      "system": "সিস্টেম বিজ্ঞপ্তি",
+      "plan": "প্ল্যান সক্রিয় হয়েছে"
+    },
+    "filters": {
+      "all": "সব",
+      "unread": "অপঠিত",
+      "opportunities": "সুযোগসমূহ",
+      "system": "সিস্টেম"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "আমার আবেদনসমূহ",
+    "status": {
+      "applied": "আবেদন করা হয়েছে",
+      "viewed": "দেখা হয়েছে",
+      "interview": "সাক্ষাৎকার",
+      "accepted": "গৃহীত",
+      "rejected": "প্রত্যাখ্যাত"
+    },
+    "noApplications": "এখনো কোনো আবেদন নেই",
+    "viewDetails": "বিস্তারিত দেখুন",
+    "withdrawApplication": "আবেদন প্রত্যাহার করুন"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "লগইন",
+    "signup": "সাইন আপ",
+    "email": "ইমেইল",
+    "password": "পাসওয়ার্ড",
+    "confirmPassword": "পাসওয়ার্ড নিশ্চিত করুন",
+    "forgotPassword": "পাসওয়ার্ড ভুলে গেছেন?",
+    "alreadyHaveAccount": "ইতিমধ্যে অ্যাকাউন্ট আছে?",
+    "dontHaveAccount": "এখনো অ্যাকাউন্ট নেই?",
+    "loginWithGoogle": "Google দিয়ে চালিয়ে যান",
+    "loginWithGithub": "GitHub দিয়ে চালিয়ে যান",
+    "acceptTerms": "আমি ব্যবহারের শর্তাবলী গ্রহণ করি",
+    "waitlist": "অপেক্ষমাণ তালিকায় যোগ দিন"
+  },
+  "errors": {
+    "generic": "একটি ত্রুটি ঘটেছে",
+    "networkError": "সংযোগ ত্রুটি",
+    "unauthorized": "অননুমোদিত",
+    "notFound": "পাওয়া যায়নি",
+    "validation": "অবৈধ তথ্য",
+    "tryAgain": "আবার চেষ্টা করুন"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "পোস্ট করুন",
+    "comment": "মন্তব্য করুন",
+    "like": "পছন্দ",
+    "share": "শেয়ার করুন",
+    "newPost": "নতুন পোস্ট",
+    "whatOnYourMind": "তোমার ক্যারিয়ারে নতুন কী?",
+    "professionalContent": "শুধুমাত্র পেশাদার বিষয়বস্তু",
+    "rejectedContent": "এই বিষয়বস্তু SC-এর পেশাদার মান পূরণ করে না"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Cowork স্পেস",
+    "createSpace": "স্পেস তৈরি করুন",
+    "joinSpace": "যোগ দিন",
+    "mySpaces": "আমার স্পেসসমূহ",
+    "findCollaborators": "সহযোগী খুঁজুন",
+    "premiumFeature": "Premium বৈশিষ্ট্য"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "প্রতিষ্ঠাতা ড্যাশবোর্ড",
+    "monitoring": "পর্যবেক্ষণ",
+    "telemetry": "MongoDB/উৎস",
+    "scans": "স্ক্যান এবং লগ",
+    "users": "ব্যবহারকারী",
+    "conversations": "কথোপকথন",
+    "revenue": "রাজস্ব",
+    "activatePlan": "প্ল্যান সক্রিয় করুন",
+    "changeStatus": "অবস্থা পরিবর্তন করুন",
+    "addTokens": "টোকেন যোগ করুন",
+    "testEmail": "ইমেইল পরীক্ষা করুন",
+    "scanToggle": "স্ক্যান চালু/বন্ধ করুন"
   }
 }

@@ -103,7 +103,7 @@ export function useAgent() {
         result:       `Scan terminé. ${foundCount} opportunités trouvées sur ${sc.sourcesTouched || sc.total || 0} sources.`,
         success:      true,
         execution_ms: Date.now() - startedAt,
-      }).catch(() => {});
+      }).then(() => {}, () => {});
 
       return {
         success:               true,
@@ -123,7 +123,7 @@ export function useAgent() {
       supabase.from('agent_actions').insert({
         user_id: user.id, action_type: 'search_scan',
         result: 'Scan interrompu.', success: false, error_message: errorMessage,
-      }).catch(() => {});
+      }).then(() => {}, () => {});
       return { success: false, error: errorMessage };
     } finally {
       setScanning(false);

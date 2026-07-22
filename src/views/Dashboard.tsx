@@ -18,6 +18,7 @@ import GoldDot from '../components/ui/GoldDot'
 import Badge from '../components/ui/Badge'
 import { Bell, Search, TrendingUp, UserPlus, Zap, ArrowRight, Shield } from 'lucide-react'
 import AppTour from '../components/onboarding/AppTour'
+import ScaiThinkingOrb from '../components/scai/ScaiThinkingOrb'
 
 export default function Dashboard() {
   const { profile, user } = useAuth()
@@ -29,6 +30,12 @@ export default function Dashboard() {
   const [suggestedPeople, setSuggestedPeople] = useState<any[]>([])
   const [scanError, setScanError] = useState<string | null>(null)
   const [scanSuccess, setScanSuccess] = useState<string | null>(null)
+  const [showScaiPrompt, setShowScaiPrompt] = useState(false)
+  const [scaiInput, setScaiInput] = useState('')
+  const [scaiThinking, setScaiThinking] = useState(false)
+  const [scaiMessage, setScaiMessage] = useState<string | null>(null)
+  const [scaiQuestion, setScaiQuestion] = useState<string | null>(null)
+  const [scaiHistory, setScaiHistory] = useState<Array<{ role: string; content: string }>>([])
 
   const fetchDashboardData = async () => {
     if (!user) return
@@ -81,12 +88,21 @@ export default function Dashboard() {
     fetchDashboardData()
   }, [user])
 
-  const handleGlobalSearch = async () => {
+  // Ouvre la question rapide de SCAI plutôt que de lancer le scan directement.
+  // "SCAI lance le scan après avoir pris certaines infos" — SCAI détermine la
+  // zone (local/continental/worldwide) et le mode budget à partir de ce que
+  // l'utilisateur tape, puis lance lui-même le scan avec ces valeurs.
+  const handleGlobalSearch = () => {
     if (!profile || scanning) return
     setScanError(null)
     setScanSuccess(null)
+    setScaiMessage(null)
+    setShowScaiPrompt(true)
+  }
+
+  const runScan = async (zone?: string) => {
     try {
-      const result = await launchScan()
+      const result = await launchScan(zone)
       if (!result?.success) {
         setScanError(result?.error || 'Le scan a échoué. Réessaie dans quelques secondes.')
       } else {
@@ -96,6 +112,51 @@ export default function Dashboard() {
       }
     } catch (err: any) {
       setScanError(err?.message || 'Erreur inattendue lors du scan.')
+    }
+  }
+
+  // "Lancer directement" — comportement inchangé pour qui ne veut pas parler à SCAI
+  const handleSkipScai = () => {
+    setShowScaiPrompt(false)
+    setScaiQuestion(null)
+    setScaiHistory([])
+    runScan()
+  }
+
+  // SCAI lit le message : soit il pose une vraie question de clarification
+  // (conversation à plusieurs tours, comme moi avec toi), soit il a assez
+  // d'info et décide directement de la zone + budget, puis lance le scan.
+  const handleScaiSubmit = async () => {
+    if (!user || !scaiInput.trim()) return
+    setScaiThinking(true)
+    try {
+      const res = await fetch('/api/scai/pre-scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, message: scaiInput, history: scaiHistory }),
+      })
+      const result = await res.json()
+
+      if (result?.action === 'ask') {
+        setScaiQuestion(result.question)
+        setScaiHistory(result.history || [])
+        setScaiInput('')
+        return // reste ouvert, attend la réponse de l'utilisateur
+      }
+
+      setScaiMessage(result?.message || null)
+      setShowScaiPrompt(false)
+      setScaiQuestion(null)
+      setScaiHistory([])
+      setScaiInput('')
+      await runScan(result?.zone)
+    } catch {
+      setShowScaiPrompt(false)
+      setScaiQuestion(null)
+      setScaiHistory([])
+      await runScan()
+    } finally {
+      setScaiThinking(false)
     }
   }
 
@@ -147,6 +208,60 @@ export default function Dashboard() {
               </GoldButton>
             </div>
           )}
+          {/* ── SCAI : question rapide avant de lancer le scan ── */}
+          {showScaiPrompt && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+              <Card className="w-full max-w-md p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <ScaiThinkingOrb size={20} />
+                  <p className="text-sm font-bold text-white">SCAI</p>
+                </div>
+                <p className="text-sm text-gray-400 mb-4">
+                  {scaiQuestion
+                    ? scaiQuestion
+                    : "Qu'est-ce que tu cherches précisément en ce moment ? (optionnel — je choisis la zone la plus pertinente pour toi)"}
+                </p>
+                <textarea
+                  value={scaiInput}
+                  onChange={e => setScaiInput(e.target.value)}
+                  placeholder={scaiQuestion ? "Ta réponse..." : "Ex: je veux du remote international bien payé, ou une mission locale rapide..."}
+                  className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white outline-none focus:border-[#D4AF37] mb-4"
+                  rows={3}
+                  disabled={scaiThinking}
+                  autoFocus
+                />
+                {scaiThinking && (
+                  <div className="flex flex-col gap-2 mb-4 -mt-1">
+                    <div className="flex items-center gap-2 text-[#D4AF37]">
+                      <ScaiThinkingOrb size={14} />
+                      <span className="font-syne font-bold uppercase tracking-widest text-[9px]">SCAI réfléchit intensément...</span>
+                    </div>
+                    <div className="h-1 w-full bg-gray-900 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#D4AF37] animate-[shimmer_2s_infinite] w-1/2"></div>
+                    </div>
+                  </div>
+                )}
+                <div className="flex gap-3">
+                  <GoldButton onClick={handleScaiSubmit} loading={scaiThinking} disabled={!scaiInput.trim()} className="flex-1">
+                    {scaiQuestion ? 'Répondre' : 'Envoyer à SCAI'}
+                  </GoldButton>
+                  <GoldButton variant="outlined" onClick={handleSkipScai} disabled={scaiThinking} className="flex-1">
+                    Lancer directement
+                  </GoldButton>
+                </div>
+              </Card>
+            </div>
+          )}
+
+          {/* ── Message de SCAI après sa décision ── */}
+          {scaiMessage && (
+            <div className="flex items-center gap-3 bg-[#1A1500] border border-[#D4AF37]/40 rounded-2xl px-5 py-4">
+              <ScaiThinkingOrb size={18} />
+              <p className="text-sm text-[#D4AF37]">{scaiMessage}</p>
+              <button onClick={() => setScaiMessage(null)} className="ml-auto text-gray-600 hover:text-white text-xs">✕</button>
+            </div>
+          )}
+
           {/* ── Bannière erreur scan ── */}
           {scanError && (
             <div className="flex items-start gap-3 bg-red-900/15 border border-red-700/40 rounded-2xl px-5 py-4">
@@ -327,7 +442,7 @@ export default function Dashboard() {
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#D4AF37] opacity-5 blur-3xl group-hover:opacity-10 transition-opacity" />
               <Shield className="w-10 h-10 text-[#D4AF37] mb-6" />
               <h4 className="text-xl font-bold text-white mb-2 tracking-tight">Upgrade to Genius</h4>
-              <p className="text-sm text-gray-500 mb-8 leading-relaxed">Unlock autonomous applications, direct investor matching, and salary negotiation AI.</p>
+              <p className="text-sm text-gray-500 mb-8 leading-relaxed">Débloque les candidatures autonomes, les sources premium (LinkedIn, Upwork) et l'assistant vocal SCAI.</p>
               <GoldButton fullWidth onClick={() => router.push('/pricing')}>
                 Upgrade Now
               </GoldButton>

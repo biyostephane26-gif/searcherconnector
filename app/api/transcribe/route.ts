@@ -32,19 +32,26 @@ export async function POST(req: NextRequest) {
     const fileSizeMB = audioFile.size / (1024 * 1024)
     const creditsNeeded = Math.max(1, Math.ceil(fileSizeMB * 2))
 
-    // Vérifier et décompter les crédits
-    const { data: deductResult, error: deductError } = await supabase.rpc('deduct_voice_credits', {
-      p_user_id: userId,
-      p_amount: creditsNeeded
-    })
+    // Le fondateur n'a aucune restriction — pas de décompte de crédits
+    const { data: callerProfile } = await supabase
+      .from('users_profiles').select('role').eq('id', userId).single()
+    const isFounder = callerProfile?.role === 'founder'
 
-    if (deductError || !deductResult) {
-      console.error('Erreur décompte crédits:', deductError)
-      return NextResponse.json({ 
-        error: 'Crédits vocaux insuffisants', 
-        creditsNeeded,
-        upgrade: true 
-      }, { status: 402 })
+    if (!isFounder) {
+      // Vérifier et décompter les crédits
+      const { data: deductResult, error: deductError } = await supabase.rpc('deduct_voice_credits', {
+        p_user_id: userId,
+        p_amount: creditsNeeded
+      })
+
+      if (deductError || !deductResult) {
+        console.error('Erreur décompte crédits:', deductError)
+        return NextResponse.json({
+          error: 'Crédits vocaux insuffisants',
+          creditsNeeded,
+          upgrade: true
+        }, { status: 402 })
+      }
     }
 
     // Essayer chaque clé Groq en rotation

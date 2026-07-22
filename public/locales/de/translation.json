@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Wird geladen...",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "refresh": "Aktualisieren",
+    "back": "Zurück",
+    "next": "Weiter",
+    "send": "Senden",
+    "upload": "Hochladen",
+    "download": "Herunterladen",
+    "confirm": "Bestätigen",
+    "error": "Fehler",
+    "success": "Erfolg"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Startseite",
+    "opportunities": "Chancen",
+    "agent": "Searcher-Agent",
+    "opportunityCreator": "Angebot erstellen",
+    "cowork": "Cowork",
+    "interviews": "Vorstellungsgespräche",
+    "social": "Community",
+    "articles": "Artikel",
+    "groups": "Gruppen",
+    "messages": "Nachrichten",
+    "salary": "Gehälter",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "pricing": "Preise",
+    "logout": "Abmelden"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Dashboard",
+    "agentActive": "Agent 24/7 aktiv",
+    "opportunitiesFound": "Gefundene Chancen",
+    "applicationsSubmitted": "Gesendete Bewerbungen",
+    "avgMatchScore": "Durchschnittlicher Match-Wert",
+    "launchScan": "Globalen Scan starten",
+    "recentOpportunities": "Neueste Chancen",
+    "viewAll": "Alle anzeigen",
+    "noOpportunities": "Keine Chancen. Starte einen Scan, um loszulegen."
+  },
+  "opportunities": {
+    "title": "Chancen-Explorer",
+    "filters": {
+      "all": "Alle",
+      "fresh": "Neu (<24h)",
+      "applied": "Beworben",
+      "pending": "Ausstehend"
+    },
+    "matchScore": "Übereinstimmung",
+    "source": "Quelle",
+    "postedAgo": "Vor {{hours}}h veröffentlicht",
+    "applicants": "{{count}} Bewerber",
+    "apply": "Bewerben",
+    "applied": "Bewerbung gesendet",
+    "unlockPremium": "Mit Premium freischalten",
+    "premiumOnly": "Nur Premium",
+    "scaiAnalysis": "SCAI-Analyse",
+    "readinessScore": "Bereitschafts-Score",
+    "applyManually": "Ich bewerbe mich selbst"
+  },
+  "scai": {
+    "title": "Searcher-Agent",
+    "greeting": "Hallo! Ich bin SCAI, dein persönlicher Karriereassistent.",
+    "placeholder": "Stelle mir eine Frage oder bitte mich, Chancen zu suchen...",
+    "voice": "Sprache nutzen",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "{{count}} Sprachguthaben übrig",
+    "thinking": "Ich denke nach...",
+    "scanning": "Ich durchsuche das Web für dich...",
+    "analyzing": "Ich analysiere die Chancen...",
+    "applying": "Ich sende deine Bewerbung..."
+  },
+  "profile": {
+    "title": "Berufsprofil",
+    "completion": "Profilvollständigkeit",
+    "level": "Level",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Mid",
+      "senior": "Senior",
+      "expert": "Experte"
+    },
+    "progression": "Noch {{count}} Aufträge bis {{level}}",
+    "maxLevel": "Höchstes Level erreicht",
+    "verification": {
+      "pending": "Ausstehend",
+      "verified": "Verifiziert",
+      "genius": "Genius",
+      "refused": "Abgelehnt"
+    },
+    "editProfile": "Profil bearbeiten",
+    "uploadAvatar": "Foto ändern",
+    "personalInfo": "Persönliche Angaben",
+    "skills": "Fähigkeiten",
+    "experience": "Erfahrung",
+    "portfolio": "Portfolio",
+    "documents": "Dokumente"
+  },
+  "pricing": {
+    "title": "Pläne & Preise",
+    "monthly": "pro Monat",
+    "currentPlan": "Aktueller Plan",
+    "upgrade": "Auf {{plan}} upgraden",
+    "features": "Funktionen",
+    "free": {
+      "name": "Kostenlos",
+      "features": [
+        "RSS-Feeds + kostenlose APIs",
+        "10 personalisierte Aufträge pro Scan",
+        "6 kostenlose + 4 gesperrte Premium-Aufträge",
+        "Allgemeine Benachrichtigungen",
+        "Max. 2 manuelle Scans/Tag",
+        "SCAI Voice nicht verfügbar"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Alle kostenlosen Quellen + Premium-APIs",
+        "Unbegrenzte Aufträge",
+        "Gezielte Benachrichtigungen",
+        "10 Scans/Tag",
+        "60 Sprachguthaben/Monat",
+        "PDF-Erstellung: Lebenslauf + Anschreiben"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Alle Quellen (LinkedIn, Upwork...)",
+        "Priorität bei neuen Aufträgen",
+        "Echtzeit-Benachrichtigungen bei <10 Bewerbern",
+        "Unbegrenzte Scans",
+        "300 Sprachguthaben/Monat",
+        "Alle PDFs",
+        "Interview-Simulation",
+        "Portfolio-Analyse"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "theme": "Design",
+    "lightMode": "Heller Modus",
+    "darkMode": "Dunkler Modus",
+    "notifications": "Benachrichtigungen",
+    "emailNotifications": "E-Mail-Benachrichtigungen",
+    "pushNotifications": "Push-Benachrichtigungen",
+    "privacy": "Datenschutz",
+    "security": "Sicherheit",
+    "account": "Konto",
+    "deleteAccount": "Konto löschen",
+    "changePassword": "Passwort ändern",
+    "twoFactor": "Zwei-Faktor-Authentifizierung"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Benachrichtigungen",
+    "markAllRead": "Alle als gelesen markieren",
+    "noNotifications": "Keine Benachrichtigungen",
+    "types": {
+      "opportunity": "Neue Chance",
+      "application": "Bewerbung aktualisiert",
+      "message": "Neue Nachricht",
+      "system": "Systembenachrichtigung",
+      "plan": "Plan aktiviert"
+    },
+    "filters": {
+      "all": "Alle",
+      "unread": "Ungelesen",
+      "opportunities": "Chancen",
+      "system": "System"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Meine Bewerbungen",
+    "status": {
+      "applied": "Beworben",
+      "viewed": "Angesehen",
+      "interview": "Vorstellungsgespräch",
+      "accepted": "Angenommen",
+      "rejected": "Abgelehnt"
+    },
+    "noApplications": "Noch keine Bewerbungen",
+    "viewDetails": "Details anzeigen",
+    "withdrawApplication": "Bewerbung zurückziehen"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Anmelden",
+    "signup": "Registrieren",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "forgotPassword": "Passwort vergessen?",
+    "alreadyHaveAccount": "Schon ein Konto?",
+    "dontHaveAccount": "Noch kein Konto?",
+    "loginWithGoogle": "Mit Google fortfahren",
+    "loginWithGithub": "Mit GitHub fortfahren",
+    "acceptTerms": "Ich akzeptiere die Nutzungsbedingungen",
+    "waitlist": "Warteliste beitreten"
+  },
+  "errors": {
+    "generic": "Ein Fehler ist aufgetreten",
+    "networkError": "Verbindungsfehler",
+    "unauthorized": "Nicht autorisiert",
+    "notFound": "Nicht gefunden",
+    "validation": "Ungültige Daten",
+    "tryAgain": "Erneut versuchen"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Posten",
+    "comment": "Kommentieren",
+    "like": "Gefällt mir",
+    "share": "Teilen",
+    "newPost": "Neuer Beitrag",
+    "whatOnYourMind": "Was gibt's Neues in deiner Karriere?",
+    "professionalContent": "Nur berufliche Inhalte",
+    "rejectedContent": "Dieser Inhalt entspricht nicht den professionellen Standards von SC"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Cowork-Bereich",
+    "createSpace": "Bereich erstellen",
+    "joinSpace": "Beitreten",
+    "mySpaces": "Meine Bereiche",
+    "findCollaborators": "Mitarbeiter finden",
+    "premiumFeature": "Premium-Funktion"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Gründer-Dashboard",
+    "monitoring": "Monitoring",
+    "telemetry": "MongoDB/Quellen",
+    "scans": "Scans & Logs",
+    "users": "Nutzer",
+    "conversations": "Unterhaltungen",
+    "revenue": "Einnahmen",
+    "activatePlan": "Plan aktivieren",
+    "changeStatus": "Status ändern",
+    "addTokens": "Tokens hinzufügen",
+    "testEmail": "E-Mail testen",
+    "scanToggle": "Scan umschalten"
   }
 }

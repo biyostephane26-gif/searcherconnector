@@ -18,6 +18,7 @@ export default function Opportunities() {
   const [opportunities, setOpportunities] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+  const [sortBy, setSortBy] = useState<'recommended' | 'freshest' | 'highest_paid'>('recommended')
   const [selected, setSelected] = useState<any>(null)        // opportunité sélectionnée
   const [readiness, setReadiness] = useState<any>(null)      // score de préparation
   const [loadingReadiness, setLoadingReadiness] = useState(false)
@@ -32,7 +33,7 @@ export default function Opportunities() {
         .order('score', { ascending: false })
 
       if (filter === 'fresh')   query = query.lt('hours_ago', 24)
-      if (filter === 'applied') query = query.eq('status', 'auto_applied')
+      if (filter === 'applied') query = query.eq('status', 'ready_to_send')
       if (filter === 'pending') query = query.eq('status', 'pending_action')
 
       const { data } = await query
@@ -80,18 +81,18 @@ export default function Opportunities() {
 
       if (data.success) {
         setOpportunities(prev => prev.map(o => o.id === id ? {
-          ...o, status: 'auto_applied', application_id: data.application_id
+          ...o, status: 'ready_to_send', application_id: data.application_id
         } : o))
         if (selected?.id === id) {
           setSelected((prev: any) => prev ? {
-            ...prev, status: 'auto_applied', application_id: data.application_id
+            ...prev, status: 'ready_to_send', application_id: data.application_id
           } : prev)
         }
       }
     } catch (err) {
-      // Fallback silencieux : marquer juste comme postulé localement
-      await supabase.from('opportunities').update({ status: 'auto_applied' }).eq('id', id)
-      setOpportunities(prev => prev.map(o => o.id === id ? { ...o, status: 'auto_applied' } : o))
+      // Ne JAMAIS marquer comme "prête" si l'appel a échoué — le message
+      // n'a pas été généré, l'utilisateur ne doit pas croire le contraire.
+      alert('La candidature n\'a pas pu être préparée. Réessaie dans quelques secondes.')
     }
   }
 
@@ -120,6 +121,22 @@ export default function Opportunities() {
     { key: 'pending', label: 'En attente' },
   ]
 
+  const SORTS: { key: typeof sortBy; label: string }[] = [
+    { key: 'recommended',  label: 'Recommandé' },
+    { key: 'freshest',     label: 'Plus fraîches' },
+    { key: 'highest_paid', label: 'Mieux payées' },
+  ]
+
+  const sortedOpportunities = [...opportunities].sort((a, b) => {
+    if (sortBy === 'freshest')     return (a.hours_ago ?? Infinity) - (b.hours_ago ?? Infinity)
+    if (sortBy === 'highest_paid') return (b.salary_max || 0) - (a.salary_max || 0)
+    if (sortBy === 'recommended') {
+      if (!!b.recommended !== !!a.recommended) return b.recommended ? 1 : -1
+      return (b.score || 0) - (a.score || 0)
+    }
+    return (b.score || 0) - (a.score || 0)
+  })
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex">
       <Sidebar />
@@ -146,11 +163,22 @@ export default function Opportunities() {
           {/* Liste des opportunités */}
           <div className={`flex-1 overflow-y-auto p-6 ${selected ? 'hidden lg:block lg:max-w-[55%]' : ''}`}>
             {/* Filtres */}
-            <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+            <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
               {FILTERS.map(f => (
                 <button key={f.key} onClick={() => setFilter(f.key)}
                   className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${filter === f.key ? 'bg-[#D4AF37] text-black' : 'bg-[#111] text-gray-400 hover:text-white border border-[#2a2a2a]'}`}>
                   {f.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Tri */}
+            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Trier :</span>
+              {SORTS.map(s => (
+                <button key={s.key} onClick={() => setSortBy(s.key)}
+                  className={`px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all ${sortBy === s.key ? 'bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/40' : 'bg-transparent text-gray-500 hover:text-white border border-[#2a2a2a]'}`}>
+                  {s.label}
                 </button>
               ))}
             </div>
@@ -169,17 +197,17 @@ export default function Opportunities() {
               </div>
             ) : (
               <div className="space-y-3">
-                {opportunities.slice(0, 6).map((opp) => (
+                {sortedOpportunities.slice(0, 6).map((opp) => (
                   <div key={opp.id} onClick={() => handleSelectOpp(opp)}
                     className={`cursor-pointer rounded-2xl border transition-all ${selected?.id === opp.id ? 'border-[#D4AF37]/50 bg-[#1A1500]/20' : 'border-[#1A1A1A] hover:border-[#2a2a2a]'}`}>
-                    <OpportunityCard opportunity={opp} onApply={handleApply} />
+                    <OpportunityCard opportunity={opp} onApply={handleApply} referralCode={profile?.referral_code} />
                   </div>
                 ))}
 
                 {/* 4 opportunités premium floutées pour free users */}
                 {(!profile?.plan || profile.plan === 'free') && opportunities.length > 6 && (
                   <>
-                    {opportunities.slice(6, 10).map((opp) => (
+                    {sortedOpportunities.slice(6, 10).map((opp) => (
                       <div key={opp.id} className="relative">
                         <div className="rounded-2xl border border-[#2a2a2a] filter blur-sm pointer-events-none opacity-50">
                           <OpportunityCard opportunity={opp} onApply={() => {}} />
@@ -195,10 +223,10 @@ export default function Opportunities() {
                 )}
 
                 {/* Premium users voient tout */}
-                {profile?.plan && profile.plan !== 'free' && opportunities.slice(6).map((opp) => (
+                {profile?.plan && profile.plan !== 'free' && sortedOpportunities.slice(6).map((opp) => (
                   <div key={opp.id} onClick={() => handleSelectOpp(opp)}
                     className={`cursor-pointer rounded-2xl border transition-all ${selected?.id === opp.id ? 'border-[#D4AF37]/50 bg-[#1A1500]/20' : 'border-[#1A1A1A] hover:border-[#2a2a2a]'}`}>
-                    <OpportunityCard opportunity={opp} onApply={handleApply} />
+                    <OpportunityCard opportunity={opp} onApply={handleApply} referralCode={profile?.referral_code} />
                   </div>
                 ))}
 
@@ -337,15 +365,15 @@ export default function Opportunities() {
 
                 {/* Actions */}
                 <div className="space-y-3 pb-6">
-                  <GoldButton fullWidth onClick={() => handleApply(selected.id)} disabled={selected.status === 'auto_applied'}>
-                    {selected.status === 'auto_applied' ? '✓ Candidature envoyée par SCAI' : '⚡ Laisser SCAI postuler'}
+                  <GoldButton fullWidth onClick={() => handleApply(selected.id)} disabled={selected.status === 'ready_to_send'}>
+                    {selected.status === 'ready_to_send' ? '✓ Candidature préparée par SCAI' : '⚡ Laisser SCAI préparer ma candidature'}
                   </GoldButton>
 
                   {/* Lien vers le détail de la candidature */}
-                  {selected.status === 'auto_applied' && selected.application_id && (
+                  {selected.status === 'ready_to_send' && selected.application_id && (
                     <a href={`/applications/${selected.application_id}`}
                       className="flex items-center justify-center gap-2 w-full bg-[#1A1500] border border-[#D4AF37]/30 hover:border-[#D4AF37]/60 text-[#D4AF37] py-3 rounded-xl text-sm font-medium transition-all">
-                      <FileText className="w-4 h-4" /> Voir ce que SCAI a envoyé →
+                      <FileText className="w-4 h-4" /> Relire et envoyer →
                     </a>
                   )}
 

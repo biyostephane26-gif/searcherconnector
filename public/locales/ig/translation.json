@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Na-ebu...",
+    "save": "Chekwaa",
+    "cancel": "Kagbuo",
+    "delete": "Hichapụ",
+    "edit": "Dezie",
+    "close": "Mechie",
+    "search": "Chọọ",
+    "filter": "Nyochaa",
+    "refresh": "Mee ọhụrụ",
+    "back": "Laghachi",
+    "next": "Osote",
+    "send": "Ziga",
+    "upload": "Bulite",
+    "download": "Budata",
+    "confirm": "Kwado",
+    "error": "Njehie",
+    "success": "Ihe ịga nke ọma"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Ụlọ",
+    "opportunities": "Ohere",
+    "agent": "Onye nnọchite Searcher",
+    "opportunityCreator": "Mepụta Onyinye",
+    "cowork": "Cowork",
+    "interviews": "Ajụjụ ọnụ",
+    "social": "Obodo",
+    "articles": "Ndetu",
+    "groups": "Otu",
+    "messages": "Ozi",
+    "salary": "Ụgwọ ọnwa",
+    "profile": "Profaịlụ",
+    "settings": "Ntọala",
+    "pricing": "Ọnụ ahịa",
+    "logout": "Pụọ"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Dashboard",
+    "agentActive": "Onye nnọchite na-arụ ọrụ awa 24/7",
+    "opportunitiesFound": "Ohere achọtara",
+    "applicationsSubmitted": "Ngwa ndị ezigara",
+    "avgMatchScore": "Ọkara akara nkwekọrịta",
+    "launchScan": "Malite nyocha ụwa niile",
+    "recentOpportunities": "Ohere ọhụrụ",
+    "viewAll": "Lee ihe niile",
+    "noOpportunities": "Enweghị ohere. Malite nyocha iji malite."
+  },
+  "opportunities": {
+    "title": "Nyocha Ohere",
+    "filters": {
+      "all": "Niile",
+      "fresh": "Ọhụrụ (<24h)",
+      "applied": "Etinyela akwụkwọ",
+      "pending": "Na-eche"
+    },
+    "matchScore": "Nkwekọrịta",
+    "source": "Isi mmalite",
+    "postedAgo": "E biputara ya {{hours}} awa gara aga",
+    "applicants": "Ndị na-achọ ọrụ {{count}}",
+    "apply": "Tinye akwụkwọ",
+    "applied": "Etinyela akwụkwọ",
+    "unlockPremium": "Mepee site na Premium",
+    "premiumOnly": "Naanị Premium",
+    "scaiAnalysis": "Nyocha SCAI",
+    "readinessScore": "Akara njikere",
+    "applyManually": "Aga m etinye akwụkwọ n'onwe m"
+  },
+  "scai": {
+    "title": "Onye nnọchite Searcher",
+    "greeting": "Ndewo! Abụ m SCAI, onye enyemaka ọrụ nkeonwe gị.",
+    "placeholder": "Jụọ m ajụjụ ma ọ bụ gwa m ka m chọta ohere...",
+    "voice": "Jiri olu",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "Fọdụrụ kredit olu {{count}}",
+    "thinking": "Ana m eche...",
+    "scanning": "Ana m achọ na ntanetị maka gị...",
+    "analyzing": "Ana m enyocha ohere ndị a...",
+    "applying": "Ana m eziga akwụkwọ gị..."
+  },
+  "profile": {
+    "title": "Profaịlụ Ọrụ",
+    "completion": "Imezu profaịlụ",
+    "level": "Ọkwa",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Etiti",
+      "senior": "Senior",
+      "expert": "Ọkachamara"
+    },
+    "progression": "Ọrụ {{count}} fọdụrụ iji ruo ọkwa {{level}}",
+    "maxLevel": "Erutela ọkwa kachasị elu",
+    "verification": {
+      "pending": "Na-eche",
+      "verified": "Akwadoro",
+      "genius": "Genius",
+      "refused": "Ajụrụ"
+    },
+    "editProfile": "Dezie profaịlụ",
+    "uploadAvatar": "Gbanwee foto",
+    "personalInfo": "Ozi nkeonwe",
+    "skills": "Nkà",
+    "experience": "Ahụmịhe",
+    "portfolio": "Ọrụ e mechara",
+    "documents": "Akwụkwọ"
+  },
+  "pricing": {
+    "title": "Atụmatụ na Ọnụ ahịa",
+    "monthly": "kwa ọnwa",
+    "currentPlan": "Atụmatụ ugbu a",
+    "upgrade": "Gbago na {{plan}}",
+    "features": "Àtụmàtụ",
+    "free": {
+      "name": "N'efu",
+      "features": [
+        "RSS feeds + API n'efu",
+        "Ohere 10 emere maka gị kwa nyocha",
+        "6 n'efu + 4 Premium akpọchiri",
+        "Ọkwa ozi izugbe",
+        "Ọ bụrụgodi nyocha aka 2 kwa ụbọchị",
+        "SCAI Voice adịghị"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Isi mmalite n'efu niile + API Premium",
+        "Ohere na-enweghị oke",
+        "Ọkwa ozi a chọrọ",
+        "Nyocha 10 kwa ụbọchị",
+        "Kredit olu 60 kwa ọnwa",
+        "Imepụta PDF: CV + akwụkwọ ozi ngwa ọrụ"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Isi mmalite niile (LinkedIn, Upwork...)",
+        "Ihu ụzọ na ohere ọhụrụ",
+        "Ọkwa ozi ozugbo mgbe ndị na-achọ ọrụ dị obere karịa 10",
+        "Nyocha na-enweghị oke",
+        "Kredit olu 300 kwa ọnwa",
+        "PDF niile",
+        "Ịme ihe nnwale ajụjụ ọnụ",
+        "Nyocha ọrụ e mechara"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Ntọala",
+    "language": "Asụsụ",
+    "theme": "Isiokwu",
+    "lightMode": "Ọnọdụ ọkụ",
+    "darkMode": "Ọnọdụ ọchịchịrị",
+    "notifications": "Ọkwa ozi",
+    "emailNotifications": "Ọkwa ozi email",
+    "pushNotifications": "Ọkwa ozi ngwa ngwa",
+    "privacy": "Nzuzo",
+    "security": "Nchekwa",
+    "account": "Akaụntụ",
+    "deleteAccount": "Hichapụ akaụntụ",
+    "changePassword": "Gbanwee paswọdụ",
+    "twoFactor": "Nkwenye ụzọ abụọ"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Ọkwa ozi",
+    "markAllRead": "Kaa niile dị ka agụọla",
+    "noNotifications": "Enweghị ọkwa ozi",
+    "types": {
+      "opportunity": "Ohere ọhụrụ",
+      "application": "Emelitere akwụkwọ",
+      "message": "Ozi ọhụrụ",
+      "system": "Ọkwa ozi sistemụ",
+      "plan": "Amalitela atụmatụ"
+    },
+    "filters": {
+      "all": "Niile",
+      "unread": "Ndị na-agụbeghị",
+      "opportunities": "Ohere",
+      "system": "Sistemụ"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Akwụkwọ M",
+    "status": {
+      "applied": "Ezigala",
+      "viewed": "Elere anya",
+      "interview": "Ajụjụ ọnụ",
+      "accepted": "Anabatara",
+      "rejected": "Ajụrụ"
+    },
+    "noApplications": "Enwebeghị akwụkwọ",
+    "viewDetails": "Lee nkọwa",
+    "withdrawApplication": "Wepụ akwụkwọ"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Banye",
+    "signup": "Debanye aha",
+    "email": "Email",
+    "password": "Paswọdụ",
+    "confirmPassword": "Kwado paswọdụ",
+    "forgotPassword": "Chefuru paswọdụ?",
+    "alreadyHaveAccount": "Ị nweelarị akaụntụ?",
+    "dontHaveAccount": "Ị nwebeghị akaụntụ?",
+    "loginWithGoogle": "Gaa n'ihu na Google",
+    "loginWithGithub": "Gaa n'ihu na GitHub",
+    "acceptTerms": "Ana m anabata usoro iji",
+    "waitlist": "Sonye na ndepụta ndị na-eche"
+  },
+  "errors": {
+    "generic": "Njehie mere",
+    "networkError": "Njehie njikọ",
+    "unauthorized": "Enweghị ikike",
+    "notFound": "Achọtaghị",
+    "validation": "Data na-ezighi ezi",
+    "tryAgain": "Nwaa ọzọ"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Bipụta",
+    "comment": "Tinye okwu",
+    "like": "Ilikita",
+    "share": "Kesaa",
+    "newPost": "Post ọhụrụ",
+    "whatOnYourMind": "Kedu ihe ọhụrụ na ọrụ gị?",
+    "professionalContent": "Ọdịnaya ọrụ naanị",
+    "rejectedContent": "Ọdịnaya a adabaghị n'ụkpụrụ ọrụ SC"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Oghere Cowork",
+    "createSpace": "Mepụta oghere",
+    "joinSpace": "Sonye",
+    "mySpaces": "Oghere m",
+    "findCollaborators": "Chọta ndị mmekọ",
+    "premiumFeature": "Àtụmàtụ Premium"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Dashboard Onye Nchọpụta",
+    "monitoring": "Nlekọta",
+    "telemetry": "MongoDB/Isi mmalite",
+    "scans": "Nyocha na Ndekọ",
+    "users": "Ndị ọrụ",
+    "conversations": "Mkparịta ụka",
+    "revenue": "Ego ọnụọgụgụ",
+    "activatePlan": "Malite atụmatụ",
+    "changeStatus": "Gbanwee ọnọdụ",
+    "addTokens": "Tinye tokin",
+    "testEmail": "Nwaa email",
+    "scanToggle": "Gbanye/gbanyụọ nyocha"
   }
 }

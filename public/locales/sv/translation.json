@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Laddar...",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "delete": "Radera",
+    "edit": "Redigera",
+    "close": "Stäng",
+    "search": "Sök",
+    "filter": "Filtrera",
+    "refresh": "Uppdatera",
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "send": "Skicka",
+    "upload": "Ladda upp",
+    "download": "Ladda ner",
+    "confirm": "Bekräfta",
+    "error": "Fel",
+    "success": "Lyckades"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Hem",
+    "opportunities": "Möjligheter",
+    "agent": "Searcher-agent",
+    "opportunityCreator": "Skapa erbjudande",
+    "cowork": "Cowork",
+    "interviews": "Intervjuer",
+    "social": "Community",
+    "articles": "Artiklar",
+    "groups": "Grupper",
+    "messages": "Meddelanden",
+    "salary": "Löner",
+    "profile": "Profil",
+    "settings": "Inställningar",
+    "pricing": "Priser",
+    "logout": "Logga ut"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Instrumentpanel",
+    "agentActive": "Agent aktiv dygnet runt",
+    "opportunitiesFound": "Hittade möjligheter",
+    "applicationsSubmitted": "Skickade ansökningar",
+    "avgMatchScore": "Genomsnittlig matchpoäng",
+    "launchScan": "Starta global sökning",
+    "recentOpportunities": "Senaste möjligheter",
+    "viewAll": "Visa alla",
+    "noOpportunities": "Inga möjligheter. Starta en sökning för att börja."
+  },
+  "opportunities": {
+    "title": "Möjlighetsutforskare",
+    "filters": {
+      "all": "Alla",
+      "fresh": "Nya (<24h)",
+      "applied": "Sökt",
+      "pending": "Väntande"
+    },
+    "matchScore": "Matchning",
+    "source": "Källa",
+    "postedAgo": "Publicerad för {{hours}}h sedan",
+    "applicants": "{{count}} sökande",
+    "apply": "Ansök",
+    "applied": "Ansökan skickad",
+    "unlockPremium": "Lås upp med Premium",
+    "premiumOnly": "Endast Premium",
+    "scaiAnalysis": "SCAI-analys",
+    "readinessScore": "Beredskapspoäng",
+    "applyManually": "Jag ansöker själv"
+  },
+  "scai": {
+    "title": "Searcher-agent",
+    "greeting": "Hej! Jag är SCAI, din personliga karriärassistent.",
+    "placeholder": "Ställ en fråga eller be mig hitta möjligheter...",
+    "voice": "Använd röst",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "{{count}} röstkrediter kvar",
+    "thinking": "Jag tänker...",
+    "scanning": "Jag söker webben åt dig...",
+    "analyzing": "Jag analyserar möjligheterna...",
+    "applying": "Jag skickar din ansökan..."
+  },
+  "profile": {
+    "title": "Professionell profil",
+    "completion": "Profil ifylld",
+    "level": "Nivå",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Mid",
+      "senior": "Senior",
+      "expert": "Expert"
+    },
+    "progression": "{{count}} uppdrag kvar till {{level}}",
+    "maxLevel": "Maxnivå uppnådd",
+    "verification": {
+      "pending": "Väntar",
+      "verified": "Verifierad",
+      "genius": "Genius",
+      "refused": "Avvisad"
+    },
+    "editProfile": "Redigera profil",
+    "uploadAvatar": "Byt foto",
+    "personalInfo": "Personlig information",
+    "skills": "Färdigheter",
+    "experience": "Erfarenhet",
+    "portfolio": "Portfolio",
+    "documents": "Dokument"
+  },
+  "pricing": {
+    "title": "Planer och priser",
+    "monthly": "per månad",
+    "currentPlan": "Nuvarande plan",
+    "upgrade": "Uppgradera till {{plan}}",
+    "features": "Funktioner",
+    "free": {
+      "name": "Gratis",
+      "features": [
+        "RSS-flöden + gratis API:er",
+        "10 personliga uppdrag per sökning",
+        "6 gratis + 4 låsta premium-uppdrag",
+        "Generella aviseringar",
+        "Max 2 manuella sökningar/dag",
+        "SCAI Voice ej tillgängligt"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Alla gratis källor + premium-API:er",
+        "Obegränsade uppdrag",
+        "Riktade aviseringar",
+        "10 sökningar/dag",
+        "60 röstkrediter/månad",
+        "PDF-generering: CV + personligt brev"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Alla källor (LinkedIn, Upwork...)",
+        "Prioritet för nya uppdrag",
+        "Realtidsaviseringar vid <10 sökande",
+        "Obegränsade sökningar",
+        "300 röstkrediter/månad",
+        "Alla PDF:er",
+        "Intervjusimulering",
+        "Portfolioanalys"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Inställningar",
+    "language": "Språk",
+    "theme": "Tema",
+    "lightMode": "Ljust läge",
+    "darkMode": "Mörkt läge",
+    "notifications": "Aviseringar",
+    "emailNotifications": "E-postaviseringar",
+    "pushNotifications": "Push-aviseringar",
+    "privacy": "Sekretess",
+    "security": "Säkerhet",
+    "account": "Konto",
+    "deleteAccount": "Radera konto",
+    "changePassword": "Byt lösenord",
+    "twoFactor": "Tvåfaktorsautentisering"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Aviseringar",
+    "markAllRead": "Markera alla som lästa",
+    "noNotifications": "Inga aviseringar",
+    "types": {
+      "opportunity": "Ny möjlighet",
+      "application": "Ansökan uppdaterad",
+      "message": "Nytt meddelande",
+      "system": "Systemavisering",
+      "plan": "Plan aktiverad"
+    },
+    "filters": {
+      "all": "Alla",
+      "unread": "Olästa",
+      "opportunities": "Möjligheter",
+      "system": "System"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Mina ansökningar",
+    "status": {
+      "applied": "Sökt",
+      "viewed": "Sedd",
+      "interview": "Intervju",
+      "accepted": "Accepterad",
+      "rejected": "Avvisad"
+    },
+    "noApplications": "Inga ansökningar ännu",
+    "viewDetails": "Visa detaljer",
+    "withdrawApplication": "Dra tillbaka ansökan"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Logga in",
+    "signup": "Registrera dig",
+    "email": "E-post",
+    "password": "Lösenord",
+    "confirmPassword": "Bekräfta lösenord",
+    "forgotPassword": "Glömt lösenordet?",
+    "alreadyHaveAccount": "Har du redan ett konto?",
+    "dontHaveAccount": "Har du inget konto än?",
+    "loginWithGoogle": "Fortsätt med Google",
+    "loginWithGithub": "Fortsätt med GitHub",
+    "acceptTerms": "Jag godkänner användarvillkoren",
+    "waitlist": "Gå med i väntelistan"
+  },
+  "errors": {
+    "generic": "Ett fel uppstod",
+    "networkError": "Anslutningsfel",
+    "unauthorized": "Obehörig",
+    "notFound": "Hittades inte",
+    "validation": "Ogiltig data",
+    "tryAgain": "Försök igen"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Publicera",
+    "comment": "Kommentera",
+    "like": "Gilla",
+    "share": "Dela",
+    "newPost": "Nytt inlägg",
+    "whatOnYourMind": "Vad är nytt i din karriär?",
+    "professionalContent": "Endast professionellt innehåll",
+    "rejectedContent": "Det här innehållet uppfyller inte SC:s professionella standarder"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Cowork-utrymme",
+    "createSpace": "Skapa utrymme",
+    "joinSpace": "Gå med",
+    "mySpaces": "Mina utrymmen",
+    "findCollaborators": "Hitta medarbetare",
+    "premiumFeature": "Premium-funktion"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Grundarpanel",
+    "monitoring": "Övervakning",
+    "telemetry": "MongoDB/Källor",
+    "scans": "Sökningar & loggar",
+    "users": "Användare",
+    "conversations": "Konversationer",
+    "revenue": "Intäkter",
+    "activatePlan": "Aktivera plan",
+    "changeStatus": "Ändra status",
+    "addTokens": "Lägg till tokens",
+    "testEmail": "Testa e-post",
+    "scanToggle": "Växla sökning"
   }
 }

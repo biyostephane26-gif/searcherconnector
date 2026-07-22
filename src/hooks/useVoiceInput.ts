@@ -13,6 +13,7 @@ export function useVoiceInput({
 }: UseVoiceInputOptions = {}) {
   const [isRecording, setIsRecording] = useState(false)
   const [transcript, setTranscript] = useState('')
+  const [interimText, setInterimText] = useState('')
   const recognitionRef = useRef<any>(null)
 
   const toggle = useCallback(() => {
@@ -53,6 +54,8 @@ export function useVoiceInput({
             }
           }
           
+          setInterimText(interimTranscript)
+
           if (finalTranscript) {
             setTranscript(prev => prev + finalTranscript)
             onTranscript?.(finalTranscript.trim())
@@ -81,7 +84,9 @@ export function useVoiceInput({
 
   return {
     isRecording,
+    isProcessing: isRecording, // pas de phase distincte avec Web Speech API — alias sur isRecording
     transcript,
+    interimText,
     toggle,
     error: null
   }

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import PremiumOpportunitiesDashboard from '../PremiumOpportunitiesDashboard';
 
 // Mock the auth context
@@ -16,21 +16,17 @@ vi.mock('../../../contexts/AuthContext', () => ({
 }));
 
 describe('PremiumOpportunitiesDashboard', () => {
-  it('shows Top 10 Flamboyant section', () => {
+  // Le composant fait un vrai fetch Supabase asynchrone (données réelles,
+  // plus de mock instantané — voir le fix "fausses opportunités factices").
+  // Un seul test avec plusieurs assertions après résolution : trois tests
+  // séparés dans le même describe se montaient sans démontage entre eux
+  // (pas de cleanup() automatique ici), ce qui rendait les requêtes
+  // findByText indépendantes non fiables selon l'ordre d'exécution.
+  it('renders with real fetched data once loaded', async () => {
     render(<PremiumOpportunitiesDashboard />);
-    
+
+    expect(await screen.findByText(/opportunités correspondent parfaitement à ton profil/i, {}, { timeout: 8000 })).toBeInTheDocument();
     expect(screen.getByText(/Top 10 Flamboyant/i)).toBeInTheDocument();
-  });
-
-  it('shows Pipelines by Skills section', () => {
-    render(<PremiumOpportunitiesDashboard />);
-    
     expect(screen.getByText(/Pipelines par Compétences/i)).toBeInTheDocument();
-  });
-
-  it('displays opportunity count', () => {
-    render(<PremiumOpportunitiesDashboard />);
-    
-    expect(screen.getByText(/opportunités correspondent parfaitement à ton profil/i)).toBeInTheDocument();
   });
 });

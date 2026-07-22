@@ -35,9 +35,9 @@ export async function POST(req: NextRequest) {
 
     // Nettoyer les champs — pas de champs vides qui écrasent des valeurs existantes
     const updates: Record<string, any> = { id: userId }
-    const allowed = ['full_name','bio','domain','country','city','email',
-                     'portfolio_url','github_url','linkedin_url','avatar_url',
-                     'salary_min','salary_max','profile_type','plan','verification_status']
+    const allowed = ['full_name','bio','domain','domains','skills','country','city','email',
+                     'portfolio_url','github_url','linkedin_url','avatar_url','whatsapp_number',
+                     'response_template','salary_min','salary_max','profile_type','plan','verification_status']
 
     for (const key of allowed) {
       if (fields[key] !== undefined && fields[key] !== null) {
@@ -63,11 +63,27 @@ export async function POST(req: NextRequest) {
       updates.profile_type = 'job_seeker'
     }
 
-    const { data, error } = await supabaseAdmin
+    let { data, error } = await supabaseAdmin
       .from('users_profiles')
       .upsert(updates, { onConflict: 'id' })
       .select()
       .single()
+
+    // `skills` n'existe que si la migration add_skill_level_matching.sql est
+    // appliquée — sans ce fallback, TOUTE la sauvegarde des paramètres
+    // échouait (constaté en live : PGRST204 "Could not find the 'skills'
+    // column"), pas seulement les compétences.
+    if (error && /skills/.test(error.message)) {
+      console.warn('[profile/update] retry sans skills (migration manquante ?):', error.message)
+      const { skills: _omit, ...withoutSkills } = updates
+      const retry = await supabaseAdmin
+        .from('users_profiles')
+        .upsert(withoutSkills, { onConflict: 'id' })
+        .select()
+        .single()
+      data = retry.data
+      error = retry.error
+    }
 
     if (error) {
       console.error('[profile/update] Supabase error:', error)

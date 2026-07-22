@@ -1,21 +1,39 @@
 import Card from '../ui/Card'
 import GoldButton from '../ui/GoldButton'
-import { ExternalLink, Send, AlertCircle, Users, Clock, Zap } from 'lucide-react'
+import { ExternalLink, Send, AlertCircle, Users, Clock, Zap, Coins, Target } from 'lucide-react'
 
 type Props = {
   opportunity: any
   onApply: (id: string) => void
+  referralCode?: string
 }
 
-export default function OpportunityCard({ opportunity, onApply }: Props) {
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.com'
+
+export default function OpportunityCard({ opportunity, onApply, referralCode }: Props) {
   const isFresh = opportunity.hours_ago < 6
   const isVeryFresh = opportunity.hours_ago < 24
+  const isUpwork = (opportunity.source_platform || '').toLowerCase().includes('upwork')
+
+  // Se greffer sur un comportement déjà ancré : "j'ai vu cette offre, je
+  // l'envoie à un ami" — pas un partage de vanité, un partage d'entraide.
+  // Le lien app (avec code parrainage) fait découvrir Searcher Connector
+  // à la personne qui reçoit le message.
+  const appLink = `${APP_URL}${referralCode ? `?ref=${referralCode}` : ''}`
+  const shareText = `SCAI a trouvé cette offre qui pourrait t'intéresser : "${opportunity.title}"${opportunity.company ? ` chez ${opportunity.company}` : ''}.\n${opportunity.original_url || appLink}\n\nDécouvre Searcher Connector, l'agent IA qui cherche des opportunités pour toi 24h/24 : ${appLink}`
+  const shareWhatsApp = () => window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank')
+  const shareLinkedIn = () => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(opportunity.original_url || appLink)}`, '_blank')
 
   return (
     <Card className={`relative overflow-hidden ${opportunity.score > 90 ? 'border-[#D4AF37] glow-gold' : ''}`}>
       {opportunity.score > 90 && (
         <div className="absolute top-0 right-0 bg-[#D4AF37] text-[#0A0A0A] text-[10px] font-bold px-3 py-1 rounded-bl-lg tracking-widest uppercase animate-pulse">
           High Match
+        </div>
+      )}
+      {opportunity.recommended && (
+        <div className="absolute top-0 left-0 bg-emerald-500 text-black text-[10px] font-bold px-3 py-1 rounded-br-lg tracking-widest uppercase flex items-center gap-1">
+          <Target className="w-3 h-3" /> Recommandé pour ton niveau
         </div>
       )}
 
@@ -34,9 +52,11 @@ export default function OpportunityCard({ opportunity, onApply }: Props) {
               <span>{opportunity.location}</span>
               {opportunity.country && <span className="text-xs">({opportunity.country})</span>}
             </div>
-            <div className="flex items-center gap-1 font-bold text-[#D4AF37]">
-              {opportunity.salary_min.toLocaleString()} - {opportunity.salary_max.toLocaleString()} {opportunity.currency}
-            </div>
+            {(opportunity.salary_min > 0 || opportunity.salary_max > 0) && (
+              <div className="flex items-center gap-1 font-bold text-[#D4AF37]">
+                {opportunity.salary_min.toLocaleString()} - {opportunity.salary_max.toLocaleString()} {opportunity.currency}
+              </div>
+            )}
           </div>
 
           <div className="flex flex-wrap gap-4 mb-6">
@@ -46,11 +66,17 @@ export default function OpportunityCard({ opportunity, onApply }: Props) {
             </div>
             <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-gray-600">
               <Users className="w-3 h-3" />
-              {opportunity.applicants_count} Applicants
+              {opportunity.applicants_count ?? 0} Applicants
             </div>
             <div className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
               via {opportunity.source_platform}
             </div>
+            {isUpwork && (
+              <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-orange-400" title="Upwork facture des Connects (crédits payants) pour postuler à cette offre">
+                <Coins className="w-3 h-3" />
+                Connects Upwork requis
+              </div>
+            )}
           </div>
 
           <div className="bg-[#0D0D0D] p-4 rounded-lg border border-[#1A1A1A] mb-6">
@@ -87,11 +113,25 @@ export default function OpportunityCard({ opportunity, onApply }: Props) {
               fullWidth 
               className="flex-1 py-2"
               onClick={() => onApply(opportunity.id)}
-              disabled={opportunity.status === 'auto_applied'}
+              disabled={opportunity.status === 'ready_to_send'}
             >
-              {opportunity.status === 'auto_applied' ? 'Application Sent' : 'Let Searcher Apply'}
+              {opportunity.status === 'ready_to_send' ? 'Ready to Send' : 'Let Searcher Apply'}
               <Send className="w-4 h-4" />
             </GoldButton>
+          </div>
+
+          {/* Partage — "j'envoie cette offre à un ami" est un réflexe déjà
+              ancré, on lui donne juste le raccourci en un clic */}
+          <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[#1A1A1A]">
+            <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Envoyer à un ami</span>
+            <button onClick={shareWhatsApp}
+              className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-green-400 border border-[#2a2a2a] hover:border-green-400/40 px-3 py-1.5 rounded-lg transition-all">
+              WhatsApp
+            </button>
+            <button onClick={shareLinkedIn}
+              className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-blue-400 border border-[#2a2a2a] hover:border-blue-400/40 px-3 py-1.5 rounded-lg transition-all">
+              LinkedIn
+            </button>
           </div>
         </div>
       </div>

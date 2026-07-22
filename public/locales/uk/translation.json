@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "Завантаження...",
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "delete": "Видалити",
+    "edit": "Редагувати",
+    "close": "Закрити",
+    "search": "Пошук",
+    "filter": "Фільтр",
+    "refresh": "Оновити",
+    "back": "Назад",
+    "next": "Далі",
+    "send": "Надіслати",
+    "upload": "Завантажити",
+    "download": "Скачати",
+    "confirm": "Підтвердити",
+    "error": "Помилка",
+    "success": "Успішно"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "Головна",
+    "opportunities": "Вакансії",
+    "agent": "Агент Searcher",
+    "opportunityCreator": "Створити пропозицію",
+    "cowork": "Cowork",
+    "interviews": "Співбесіди",
+    "social": "Спільнота",
+    "articles": "Статті",
+    "groups": "Групи",
+    "messages": "Повідомлення",
+    "salary": "Зарплати",
+    "profile": "Профіль",
+    "settings": "Налаштування",
+    "pricing": "Тарифи",
+    "logout": "Вийти"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "Панель керування",
+    "agentActive": "Агент активний 24/7",
+    "opportunitiesFound": "Знайдено вакансій",
+    "applicationsSubmitted": "Надіслано заявок",
+    "avgMatchScore": "Середній бал відповідності",
+    "launchScan": "Запустити глобальний пошук",
+    "recentOpportunities": "Останні вакансії",
+    "viewAll": "Переглянути всі",
+    "noOpportunities": "Немає вакансій. Запустіть пошук, щоб почати."
+  },
+  "opportunities": {
+    "title": "Огляд вакансій",
+    "filters": {
+      "all": "Усі",
+      "fresh": "Свіжі (<24г)",
+      "applied": "Відгук надіслано",
+      "pending": "В очікуванні"
+    },
+    "matchScore": "Відповідність",
+    "source": "Джерело",
+    "postedAgo": "Опубліковано {{hours}}г тому",
+    "applicants": "{{count}} кандидатів",
+    "apply": "Відгукнутися",
+    "applied": "Відгук надіслано",
+    "unlockPremium": "Відкрити з Premium",
+    "premiumOnly": "Лише Premium",
+    "scaiAnalysis": "Аналіз SCAI",
+    "readinessScore": "Оцінка готовності",
+    "applyManually": "Я відгукнуся сам"
+  },
+  "scai": {
+    "title": "Агент Searcher",
+    "greeting": "Привіт! Я SCAI, твій особистий кар'єрний асистент.",
+    "placeholder": "Постав мені питання або попроси знайти вакансії...",
+    "voice": "Використати голос",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "Залишилось {{count}} голосових кредитів",
+    "thinking": "Думаю...",
+    "scanning": "Шукаю для тебе в інтернеті...",
+    "analyzing": "Аналізую вакансії...",
+    "applying": "Надсилаю твою заявку..."
+  },
+  "profile": {
+    "title": "Професійний профіль",
+    "completion": "Заповненість профілю",
+    "level": "Рівень",
+    "levels": {
+      "junior": "Junior",
+      "mid": "Middle",
+      "senior": "Senior",
+      "expert": "Експерт"
+    },
+    "progression": "Залишилось {{count}} проєктів до рівня {{level}}",
+    "maxLevel": "Досягнуто максимального рівня",
+    "verification": {
+      "pending": "На розгляді",
+      "verified": "Підтверджено",
+      "genius": "Genius",
+      "refused": "Відхилено"
+    },
+    "editProfile": "Редагувати профіль",
+    "uploadAvatar": "Змінити фото",
+    "personalInfo": "Особисті дані",
+    "skills": "Навички",
+    "experience": "Досвід",
+    "portfolio": "Портфоліо",
+    "documents": "Документи"
+  },
+  "pricing": {
+    "title": "Тарифи",
+    "monthly": "на місяць",
+    "currentPlan": "Поточний тариф",
+    "upgrade": "Перейти на {{plan}}",
+    "features": "Можливості",
+    "free": {
+      "name": "Безкоштовний",
+      "features": [
+        "RSS-стрічки + безкоштовні API",
+        "10 персоналізованих вакансій за пошук",
+        "6 безкоштовних + 4 заблоковані premium-вакансії",
+        "Загальні сповіщення",
+        "Макс. 2 ручних пошуки/день",
+        "SCAI Voice недоступний"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "Усі безкоштовні джерела + premium API",
+        "Необмежена кількість вакансій",
+        "Цільові сповіщення",
+        "10 пошуків/день",
+        "60 голосових кредитів/місяць",
+        "Створення PDF: резюме + супровідний лист"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "Усі джерела (LinkedIn, Upwork...)",
+        "Пріоритет на свіжі вакансії",
+        "Сповіщення в реальному часі при <10 кандидатах",
+        "Необмежені пошуки",
+        "300 голосових кредитів/місяць",
+        "Усі PDF",
+        "Симуляція співбесіди",
+        "Аналіз портфоліо"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "Налаштування",
+    "language": "Мова",
+    "theme": "Тема",
+    "lightMode": "Світлий режим",
+    "darkMode": "Темний режим",
+    "notifications": "Сповіщення",
+    "emailNotifications": "Сповіщення по email",
+    "pushNotifications": "Push-сповіщення",
+    "privacy": "Конфіденційність",
+    "security": "Безпека",
+    "account": "Обліковий запис",
+    "deleteAccount": "Видалити обліковий запис",
+    "changePassword": "Змінити пароль",
+    "twoFactor": "Двофакторна автентифікація"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "Сповіщення",
+    "markAllRead": "Позначити все як прочитане",
+    "noNotifications": "Немає сповіщень",
+    "types": {
+      "opportunity": "Нова вакансія",
+      "application": "Оновлення заявки",
+      "message": "Нове повідомлення",
+      "system": "Системне сповіщення",
+      "plan": "Тариф активовано"
+    },
+    "filters": {
+      "all": "Усі",
+      "unread": "Непрочитані",
+      "opportunities": "Вакансії",
+      "system": "Система"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "Мої заявки",
+    "status": {
+      "applied": "Надіслано",
+      "viewed": "Переглянуто",
+      "interview": "Співбесіда",
+      "accepted": "Прийнято",
+      "rejected": "Відхилено"
+    },
+    "noApplications": "Поки немає заявок",
+    "viewDetails": "Детальніше",
+    "withdrawApplication": "Відкликати заявку"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "Увійти",
+    "signup": "Зареєструватися",
+    "email": "Email",
+    "password": "Пароль",
+    "confirmPassword": "Підтвердіть пароль",
+    "forgotPassword": "Забули пароль?",
+    "alreadyHaveAccount": "Вже є акаунт?",
+    "dontHaveAccount": "Ще немає акаунту?",
+    "loginWithGoogle": "Продовжити з Google",
+    "loginWithGithub": "Продовжити з GitHub",
+    "acceptTerms": "Я приймаю умови використання",
+    "waitlist": "Приєднатися до списку очікування"
+  },
+  "errors": {
+    "generic": "Сталася помилка",
+    "networkError": "Помилка з'єднання",
+    "unauthorized": "Не авторизовано",
+    "notFound": "Не знайдено",
+    "validation": "Невірні дані",
+    "tryAgain": "Спробувати знову"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "Опублікувати",
+    "comment": "Коментувати",
+    "like": "Подобається",
+    "share": "Поділитися",
+    "newPost": "Нова публікація",
+    "whatOnYourMind": "Що нового у твоїй кар'єрі?",
+    "professionalContent": "Лише професійний контент",
+    "rejectedContent": "Цей контент не відповідає професійним стандартам SC"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "Простір Cowork",
+    "createSpace": "Створити простір",
+    "joinSpace": "Приєднатися",
+    "mySpaces": "Мої простори",
+    "findCollaborators": "Знайти співавторів",
+    "premiumFeature": "Premium-функція"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "Панель засновника",
+    "monitoring": "Моніторинг",
+    "telemetry": "MongoDB/Джерела",
+    "scans": "Пошуки та логи",
+    "users": "Користувачі",
+    "conversations": "Розмови",
+    "revenue": "Дохід",
+    "activatePlan": "Активувати тариф",
+    "changeStatus": "Змінити статус",
+    "addTokens": "Додати токени",
+    "testEmail": "Тест Email",
+    "scanToggle": "Увімк/вимк пошук"
   }
 }

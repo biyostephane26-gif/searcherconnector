@@ -30,11 +30,18 @@ export default function Settings() {
   const [fullName, setFullName]         = useState('')
   const [bio, setBio]                   = useState('')
   const [domain, setDomain]             = useState('')
+  const [domains, setDomains]           = useState<string[]>([])
+  const [domainInput, setDomainInput]   = useState('')
+  const [skills, setSkills]             = useState<string[]>([])
+  const [skillInput, setSkillInput]     = useState('')
+  const [assessingLevel, setAssessingLevel] = useState(false)
   const [country, setCountry]           = useState('')
   const [city, setCity]                 = useState('')
   const [portfolioUrl, setPortfolioUrl] = useState('')
   const [githubUrl, setGithubUrl]       = useState('')
   const [linkedinUrl, setLinkedinUrl]   = useState('')
+  const [whatsappNumber, setWhatsappNumber] = useState('')
+  const [responseTemplate, setResponseTemplate] = useState('')
   const [savedMsg, setSavedMsg]         = useState(false)
   const [agentSchedule, setAgentSchedule] = useState<any>(null)
   const [latestScan, setLatestScan]     = useState<any>(null)
@@ -53,11 +60,15 @@ export default function Settings() {
     setFullName(profile.full_name || '')
     setBio(profile.bio || '')
     setDomain((profile as any).domain || '')
+    setDomains((profile as any).domains?.length ? (profile as any).domains : (profile as any).domain ? [(profile as any).domain] : [])
+    setSkills((profile as any).skills || [])
     setCountry((profile as any).country || '')
     setCity((profile as any).city || '')
     setPortfolioUrl((profile as any).portfolio_url || '')
     setGithubUrl((profile as any).github_url || '')
     setLinkedinUrl((profile as any).linkedin_url || '')
+    setWhatsappNumber((profile as any).whatsapp_number || '')
+    setResponseTemplate((profile as any).response_template || '')
   }, [profile])
 
   // Préférences UI
@@ -117,6 +128,18 @@ export default function Settings() {
     setAgentLoading(false)
   }
 
+  // Auto-candidature réelle — désactivée par défaut. upsert (pas update) car
+  // beaucoup de comptes n'ont encore aucune ligne agent_schedules.
+  const toggleAutoApply = async () => {
+    if (!user || agentLoading) return
+    setAgentLoading(true)
+    const { data, error } = await supabase.from('agent_schedules')
+      .upsert({ user_id: user.id, auto_apply_enabled: !agentSchedule?.auto_apply_enabled }, { onConflict: 'user_id' })
+      .select().single()
+    if (!error && data) setAgentSchedule(data)
+    setAgentLoading(false)
+  }
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) { alert('Non connecté'); return }
@@ -132,12 +155,16 @@ export default function Settings() {
           email:          user.email || '',
           full_name:      fullName.trim(),
           bio:            bio.trim(),
-          domain:         domain.trim(),
+          domain:         domains[0] || domain.trim(),
+          domains,
+          skills,
           country:        country.trim(),
           city:           city.trim(),
           portfolio_url:  portfolioUrl.trim(),
           github_url:     githubUrl.trim(),
           linkedin_url:   linkedinUrl.trim(),
+          whatsapp_number: whatsappNumber.trim(),
+          response_template: responseTemplate.trim(),
         }),
       })
       const data = await res.json()
@@ -226,9 +253,48 @@ export default function Settings() {
                       className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Domaine / Compétences</label>
-                    <input type="text" value={domain} onChange={e => setDomain(e.target.value)}
-                      placeholder="ex: Développeur Full Stack, Graphiste..."
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Domaines (max 3) — SCAI cherche dans chacun</label>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {domains.map((d, i) => (
+                        <span key={i} className="flex items-center gap-1.5 bg-[#1A1500] border border-[#D4AF37]/30 text-[#D4AF37] text-xs px-3 py-1.5 rounded-full">
+                          {d}
+                          <button type="button" onClick={() => setDomains(prev => prev.filter((_, idx) => idx !== i))} className="hover:text-white">×</button>
+                        </span>
+                      ))}
+                    </div>
+                    <input type="text" value={domainInput}
+                      onChange={e => setDomainInput(e.target.value)}
+                      onKeyDown={e => {
+                        if ((e.key === 'Enter' || e.key === ',') && domainInput.trim() && domains.length < 3) {
+                          e.preventDefault()
+                          setDomains(prev => [...prev, domainInput.trim()])
+                          setDomainInput('')
+                        }
+                      }}
+                      disabled={domains.length >= 3}
+                      placeholder={domains.length >= 3 ? 'Maximum 3 domaines' : 'ex: Développeur Full Stack (Entrée pour ajouter)'}
+                      className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none disabled:opacity-50" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Compétences — utilisées par SCAI pour évaluer ton niveau</label>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {skills.map((s, i) => (
+                        <span key={i} className="flex items-center gap-1.5 bg-[#111] border border-[#2a2a2a] text-gray-300 text-xs px-3 py-1.5 rounded-full">
+                          {s}
+                          <button type="button" onClick={() => setSkills(prev => prev.filter((_, idx) => idx !== i))} className="hover:text-white">×</button>
+                        </span>
+                      ))}
+                    </div>
+                    <input type="text" value={skillInput}
+                      onChange={e => setSkillInput(e.target.value)}
+                      onKeyDown={e => {
+                        if ((e.key === 'Enter' || e.key === ',') && skillInput.trim()) {
+                          e.preventDefault()
+                          setSkills(prev => [...prev, skillInput.trim()])
+                          setSkillInput('')
+                        }
+                      }}
+                      placeholder="ex: React, Figma, SEO... (Entrée pour ajouter)"
                       className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
                   </div>
                   <div className="space-y-2">
@@ -276,6 +342,20 @@ export default function Settings() {
                         placeholder="https://linkedin.com/in/ton-profil"
                         className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
                     </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">WhatsApp</label>
+                      <input type="text" value={whatsappNumber} onChange={e => setWhatsappNumber(e.target.value)}
+                        placeholder="+237 6XX XXX XXX"
+                        className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
+                      <p className="text-[10px] text-gray-600">Inclus dans les candidatures que SCAI prépare pour toi.</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Écris comme moi (optionnel)</label>
+                    <textarea value={responseTemplate} onChange={e => setResponseTemplate(e.target.value)}
+                      placeholder="Colle un message de candidature que tu as déjà écrit toi-même. SCAI imitera ton ton et ton style dans les prochaines candidatures qu'il prépare — sans jamais le recopier mot pour mot."
+                      rows={4}
+                      className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none resize-none" />
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -311,123 +391,41 @@ export default function Settings() {
               <Globe className="w-4 h-4" /> Langue
             </h3>
             <Card className="p-5">
-              <div className="mb-4">
-                <input
-                  type="text"
-                  placeholder="Rechercher une langue..."
-                  className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg px-4 py-2 text-white text-sm focus:border-[#D4AF37] outline-none"
-                />
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-h-[400px] overflow-y-auto pr-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-[400px] overflow-y-auto pr-2">
                 {[
                   { code: 'fr', label: 'Français' },
                   { code: 'en', label: 'English' },
                   { code: 'pt', label: 'Português' },
-                  { code: 'ja', label: '日本語' },
                   { code: 'es', label: 'Español' },
                   { code: 'de', label: 'Deutsch' },
                   { code: 'it', label: 'Italiano' },
                   { code: 'nl', label: 'Nederlands' },
-                  { code: 'pl', label: 'Polski' },
                   { code: 'ru', label: 'Русский' },
-                  { code: 'zh-CN', label: '中文 (简体)' },
-                  { code: 'zh-TW', label: '中文 (繁體)' },
+                  { code: 'pl', label: 'Polski' },
+                  { code: 'uk', label: 'Українська' },
+                  { code: 'ro', label: 'Română' },
+                  { code: 'el', label: 'Ελληνικά' },
+                  { code: 'tr', label: 'Türkçe' },
+                  { code: 'sv', label: 'Svenska' },
                   { code: 'ar', label: 'العربية' },
+                  { code: 'he', label: 'עברית' },
+                  { code: 'fa', label: 'فارسی' },
                   { code: 'hi', label: 'हिन्दी' },
                   { code: 'bn', label: 'বাংলা' },
-                  { code: 'pa', label: 'ਪੰਜਾਬੀ' },
-                  { code: 'te', label: 'తెలుగు' },
-                  { code: 'ta', label: 'தமிழ்' },
-                  { code: 'mr', label: 'मराठी' },
                   { code: 'ur', label: 'اردو' },
-                  { code: 'gu', label: 'ગુજરાતી' },
-                  { code: 'kn', label: 'ಕನ್ನಡ' },
-                  { code: 'ml', label: 'മലയാളം' },
-                  { code: 'th', label: 'ไทย' },
+                  { code: 'zh-CN', label: '中文' },
+                  { code: 'ja', label: '日本語' },
+                  { code: 'ko', label: '한국어' },
                   { code: 'vi', label: 'Tiếng Việt' },
                   { code: 'id', label: 'Bahasa Indonesia' },
-                  { code: 'ms', label: 'Bahasa Melayu' },
+                  { code: 'th', label: 'ไทย' },
                   { code: 'tl', label: 'Filipino' },
-                  { code: 'ko', label: '한국어' },
-                  { code: 'tr', label: 'Türkçe' },
-                  { code: 'fa', label: 'فارسی' },
-                  { code: 'he', label: 'עברית' },
-                  { code: 'af', label: 'Afrikaans' },
-                  { code: 'sq', label: 'Shqip' },
-                  { code: 'am', label: 'አማርኛ' },
-                  { code: 'hy', label: 'Հայերեն' },
-                  { code: 'az', label: 'Azərbaycan' },
-                  { code: 'eu', label: 'Euskara' },
-                  { code: 'be', label: 'Беларуская' },
-                  { code: 'bs', label: 'Bosanski' },
-                  { code: 'bg', label: 'Български' },
-                  { code: 'ca', label: 'Català' },
-                  { code: 'ceb', label: 'Cebuano' },
-                  { code: 'ny', label: 'Chichewa' },
-                  { code: 'co', label: 'Corsu' },
-                  { code: 'hr', label: 'Hrvatski' },
-                  { code: 'cs', label: 'Čeština' },
-                  { code: 'da', label: 'Dansk' },
-                  { code: 'eo', label: 'Esperanto' },
-                  { code: 'et', label: 'Eesti' },
-                  { code: 'fi', label: 'Suomi' },
-                  { code: 'fy', label: 'Frysk' },
-                  { code: 'gl', label: 'Galego' },
-                  { code: 'ka', label: 'ქართული' },
-                  { code: 'el', label: 'Ελληνικά' },
-                  { code: 'ht', label: 'Kreyòl Ayisyen' },
-                  { code: 'ha', label: 'Hausa' },
-                  { code: 'haw', label: 'ʻŌlelo Hawaiʻi' },
-                  { code: 'iw', label: 'עברית' },
-                  { code: 'hmn', label: 'Hmong' },
-                  { code: 'hu', label: 'Magyar' },
-                  { code: 'is', label: 'Íslenska' },
-                  { code: 'ig', label: 'Igbo' },
-                  { code: 'ga', label: 'Gaeilge' },
-                  { code: 'jw', label: 'Jawa' },
-                  { code: 'kk', label: 'Қазақ' },
-                  { code: 'km', label: 'ភាសាខ្មែរ' },
-                  { code: 'rw', label: 'Kinyarwanda' },
-                  { code: 'ku', label: 'Kurdî' },
-                  { code: 'ky', label: 'Кыргызча' },
-                  { code: 'lo', label: 'ລາວ' },
-                  { code: 'la', label: 'Latina' },
-                  { code: 'lv', label: 'Latviešu' },
-                  { code: 'lt', label: 'Lietuvių' },
-                  { code: 'lb', label: 'Lëtzebuergesch' },
-                  { code: 'mk', label: 'Македонски' },
-                  { code: 'mg', label: 'Malagasy' },
-                  { code: 'mt', label: 'Malti' },
-                  { code: 'mi', label: 'Māori' },
-                  { code: 'mn', label: 'Монгол' },
-                  { code: 'my', label: 'ဗမာစာ' },
-                  { code: 'ne', label: 'नेपाली' },
-                  { code: 'no', label: 'Norsk' },
-                  { code: 'or', label: 'ଓଡ଼ିଆ' },
-                  { code: 'ps', label: 'پښتو' },
-                  { code: 'ro', label: 'Română' },
-                  { code: 'sm', label: 'Gagana Samoa' },
-                  { code: 'gd', label: 'Gàidhlig' },
-                  { code: 'sr', label: 'Српски' },
-                  { code: 'st', label: 'Sesotho' },
-                  { code: 'sn', label: 'ChiShona' },
-                  { code: 'sd', label: 'سنڌي' },
-                  { code: 'si', label: 'සිංහල' },
-                  { code: 'sk', label: 'Slovenčina' },
-                  { code: 'sl', label: 'Slovenščina' },
-                  { code: 'so', label: 'Soomaali' },
-                  { code: 'su', label: 'Basa Sunda' },
                   { code: 'sw', label: 'Kiswahili' },
-                  { code: 'sv', label: 'Svenska' },
-                  { code: 'tg', label: 'Тоҷикӣ' },
-                  { code: 'uk', label: 'Українська' },
-                  { code: 'ug', label: 'ئۇيغۇرچە' },
-                  { code: 'uz', label: 'Oʻzbek' },
-                  { code: 'cy', label: 'Cymraeg' },
-                  { code: 'xh', label: 'isiXhosa' },
-                  { code: 'yi', label: 'ייִדיש' },
+                  { code: 'ha', label: 'Hausa' },
+                  { code: 'am', label: 'አማርኛ' },
                   { code: 'yo', label: 'Yorùbá' },
-                  { code: 'zu', label: 'isiZulu' }
+                  { code: 'zu', label: 'isiZulu' },
+                  { code: 'ig', label: 'Igbo' },
                 ].map((lang) => (
                   <button
                     key={lang.code}
@@ -442,6 +440,46 @@ export default function Settings() {
                   </button>
                 ))}
               </div>
+              <p className="text-[10px] text-gray-600 mt-4">
+                L'interface est disponible dans ces 33 langues, traduites une par une (pas de texte anglais recopié). SCAI (le chat IA) peut en plus discuter avec toi dans encore d'autres langues directement — essaie simplement de lui écrire dans ta langue.
+              </p>
+            </Card>
+          </section>
+
+          {/* ── Niveau de compétence évalué ──────────────────────── */}
+          <section className="space-y-4">
+            <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
+              <Brain className="w-4 h-4" /> Niveau évalué par SCAI
+            </h3>
+            <Card className="p-5">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-lg font-bold text-[#D4AF37] capitalize">{(profile as any)?.skill_level || 'Pas encore évalué'}</div>
+                  <p className="text-xs text-gray-600 mt-1 max-w-md">
+                    {(profile as any)?.skill_level_reasoning || 'SCAI analyse ta bio, tes compétences, ton portfolio et tes missions pour ne te proposer en priorité que des opportunités adaptées à ton vrai niveau — ni trop simples, ni trop complexes.'}
+                  </p>
+                </div>
+                <GoldButton
+                  variant="outlined"
+                  loading={assessingLevel}
+                  onClick={async () => {
+                    if (!user) return
+                    setAssessingLevel(true)
+                    try {
+                      await fetch('/api/profile/assess-skill-level', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: user.id }),
+                      })
+                      await refreshProfile()
+                    } finally {
+                      setAssessingLevel(false)
+                    }
+                  }}
+                >
+                  Réévaluer
+                </GoldButton>
+              </div>
             </Card>
           </section>
 
@@ -454,15 +492,15 @@ export default function Settings() {
               {/* SCAI Learning */}
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium text-white text-sm">Apprentissage SCAI</div>
-                  <p className="text-xs text-gray-600 max-w-xs mt-0.5">SCAI utilise tes conversations pour personnaliser ses réponses. Désactive si tu préfères la confidentialité totale.</p>
+                  <div className="font-medium text-white text-sm">Mémoire des conversations</div>
+                  <p className="text-xs text-gray-600 max-w-xs mt-0.5">SCAI garde l'historique de tes échanges pour que tu les retrouves après reconnexion. Désactive pour des conversations éphémères, non sauvegardées.</p>
                 </div>
                 <Toggle value={scaiLearning} onChange={toggleScaiLearning} />
               </div>
               <div className="border-t border-[#1A1A1A] pt-4 flex items-center justify-between">
                 <div>
                   <div className="font-medium text-white text-sm">Historique des conversations</div>
-                  <p className="text-xs text-gray-600 mt-0.5">Tes conversations avec SCAI sont conservées définitivement.</p>
+                  <p className="text-xs text-gray-600 mt-0.5">{scaiLearning ? 'Tes conversations avec SCAI sont conservées définitivement.' : 'Désactivé — tes conversations ne sont pas sauvegardées.'}</p>
                 </div>
                 <Link href="/agent" className="text-xs text-[#D4AF37] hover:underline flex items-center gap-1">
                   Voir <ChevronRight className="w-3 h-3" />
@@ -508,6 +546,16 @@ export default function Settings() {
                   <p className="text-xs text-gray-600">Activer / désactiver les scans planifiés.</p>
                 </div>
                 <Toggle value={isAutoScanEnabled} onChange={toggleAutoScan} disabled={!agentSchedule || agentLoading} />
+              </div>
+              <div className="flex items-center justify-between gap-4 rounded-xl border border-[#D4AF37]/30 bg-[#0D0D0D] p-4">
+                <div>
+                  <div className="font-medium text-white text-sm">⚡ Auto-candidature réelle</div>
+                  <p className="text-xs text-gray-600">
+                    SCAI postule automatiquement en ton nom pour les offres ≥ {agentSchedule?.auto_apply_threshold ?? 80}/100,
+                    même quand tu n'es pas connecté. Désactivé par défaut — active en connaissance de cause.
+                  </p>
+                </div>
+                <Toggle value={!!agentSchedule?.auto_apply_enabled} onChange={toggleAutoApply} disabled={agentLoading} />
               </div>
             </Card>
           </section>

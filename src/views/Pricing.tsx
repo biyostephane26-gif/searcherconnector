@@ -73,7 +73,6 @@ const PLANS = [
       '300 crédits vocaux SCAI/mois',
       'Génération PDF: tous les documents',
       'Simulation d\'entretien avec SCAI',
-      'Portfolio Analyzer',
     ],
     cta:     'Passer à Pro',
     popular: false,

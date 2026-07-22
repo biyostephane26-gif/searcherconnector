@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "جارٍ التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "close": "إغلاق",
+    "search": "بحث",
+    "filter": "تصفية",
+    "refresh": "تحديث",
+    "back": "رجوع",
+    "next": "التالي",
+    "send": "إرسال",
+    "upload": "رفع",
+    "download": "تنزيل",
+    "confirm": "تأكيد",
+    "error": "خطأ",
+    "success": "تم بنجاح"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "الرئيسية",
+    "opportunities": "الفرص",
+    "agent": "وكيل البحث",
+    "opportunityCreator": "إنشاء عرض",
+    "cowork": "كوورك",
+    "interviews": "المقابلات",
+    "social": "المجتمع",
+    "articles": "المقالات",
+    "groups": "المجموعات",
+    "messages": "الرسائل",
+    "salary": "الرواتب",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "pricing": "الأسعار",
+    "logout": "تسجيل الخروج"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "لوحة التحكم",
+    "agentActive": "الوكيل نشط على مدار الساعة",
+    "opportunitiesFound": "الفرص المكتشفة",
+    "applicationsSubmitted": "الطلبات المرسلة",
+    "avgMatchScore": "متوسط نسبة التوافق",
+    "launchScan": "بدء بحث شامل",
+    "recentOpportunities": "أحدث الفرص",
+    "viewAll": "عرض الكل",
+    "noOpportunities": "لا توجد فرص. ابدأ بحثًا للانطلاق."
+  },
+  "opportunities": {
+    "title": "مستكشف الفرص",
+    "filters": {
+      "all": "الكل",
+      "fresh": "حديثة (أقل من 24 ساعة)",
+      "applied": "تم التقديم",
+      "pending": "قيد الانتظار"
+    },
+    "matchScore": "التوافق",
+    "source": "المصدر",
+    "postedAgo": "نُشرت منذ {{hours}} ساعة",
+    "applicants": "{{count}} متقدم",
+    "apply": "تقديم",
+    "applied": "تم إرسال الطلب",
+    "unlockPremium": "فتح مع الاشتراك المميز",
+    "premiumOnly": "للمشتركين فقط",
+    "scaiAnalysis": "تحليل SCAI",
+    "readinessScore": "درجة الجاهزية",
+    "applyManually": "سأقدم بنفسي"
+  },
+  "scai": {
+    "title": "وكيل البحث",
+    "greeting": "مرحبًا! أنا SCAI، مساعدك الشخصي في المسار المهني.",
+    "placeholder": "اطرح سؤالاً أو اطلب مني البحث عن فرص...",
+    "voice": "استخدام الصوت",
+    "voicePremium": "SCAI Voice (مميز)",
+    "voiceCredits": "{{count}} رصيد صوتي متبقٍ",
+    "thinking": "أفكر...",
+    "scanning": "أبحث في الويب من أجلك...",
+    "analyzing": "أحلل الفرص...",
+    "applying": "أرسل طلبك..."
+  },
+  "profile": {
+    "title": "الملف المهني",
+    "completion": "اكتمال الملف الشخصي",
+    "level": "المستوى",
+    "levels": {
+      "junior": "مبتدئ",
+      "mid": "متوسط",
+      "senior": "متقدم",
+      "expert": "خبير"
+    },
+    "progression": "تبعد {{count}} مهمة عن الوصول إلى {{level}}",
+    "maxLevel": "تم بلوغ أعلى مستوى",
+    "verification": {
+      "pending": "قيد المراجعة",
+      "verified": "موثّق",
+      "genius": "متميز",
+      "refused": "مرفوض"
+    },
+    "editProfile": "تعديل الملف الشخصي",
+    "uploadAvatar": "تغيير الصورة",
+    "personalInfo": "المعلومات الشخصية",
+    "skills": "المهارات",
+    "experience": "الخبرة",
+    "portfolio": "الأعمال",
+    "documents": "المستندات"
+  },
+  "pricing": {
+    "title": "الخطط والأسعار",
+    "monthly": "شهريًا",
+    "currentPlan": "الخطة الحالية",
+    "upgrade": "الترقية إلى {{plan}}",
+    "features": "المزايا",
+    "free": {
+      "name": "مجانية",
+      "features": [
+        "مصادر RSS وواجهات برمجية مجانية",
+        "10 مهام مخصصة لكل بحث",
+        "6 فرص مجانية + 4 مقفلة مميزة",
+        "إشعارات عامة",
+        "بحثان يدويان يوميًا كحد أقصى",
+        "SCAI Voice غير متاح"
+      ]
+    },
+    "starter": {
+      "name": "المبتدئة",
+      "features": [
+        "كل المصادر المجانية + واجهات مميزة",
+        "مهام غير محدودة",
+        "إشعارات مخصصة",
+        "10 عمليات بحث يوميًا",
+        "60 رصيدًا صوتيًا شهريًا",
+        "إنشاء ملفات PDF: السيرة الذاتية + رسالة التقديم"
+      ]
+    },
+    "pro": {
+      "name": "الاحترافية",
+      "features": [
+        "كل المصادر (LinkedIn، Upwork...)",
+        "أولوية على الفرص الحديثة",
+        "إشعارات فورية لفرص أقل من 10 متقدمين",
+        "بحث غير محدود",
+        "300 رصيد صوتي شهريًا",
+        "كل ملفات PDF",
+        "محاكاة المقابلات",
+        "محلل الأعمال"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "الإعدادات",
+    "language": "اللغة",
+    "theme": "المظهر",
+    "lightMode": "الوضع الفاتح",
+    "darkMode": "الوضع الداكن",
+    "notifications": "الإشعارات",
+    "emailNotifications": "إشعارات البريد الإلكتروني",
+    "pushNotifications": "الإشعارات الفورية",
+    "privacy": "الخصوصية",
+    "security": "الأمان",
+    "account": "الحساب",
+    "deleteAccount": "حذف الحساب",
+    "changePassword": "تغيير كلمة المرور",
+    "twoFactor": "المصادقة الثنائية"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "الإشعارات",
+    "markAllRead": "تعليم الكل كمقروء",
+    "noNotifications": "لا توجد إشعارات",
+    "types": {
+      "opportunity": "فرصة جديدة",
+      "application": "تحديث الطلب",
+      "message": "رسالة جديدة",
+      "system": "إشعار النظام",
+      "plan": "تم تفعيل الخطة"
+    },
+    "filters": {
+      "all": "الكل",
+      "unread": "غير مقروءة",
+      "opportunities": "الفرص",
+      "system": "النظام"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "طلباتي",
+    "status": {
+      "applied": "تم التقديم",
+      "viewed": "تمت المشاهدة",
+      "interview": "مقابلة",
+      "accepted": "مقبولة",
+      "rejected": "مرفوضة"
+    },
+    "noApplications": "لا توجد طلبات بعد",
+    "viewDetails": "عرض التفاصيل",
+    "withdrawApplication": "سحب الطلب"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "dontHaveAccount": "ليس لديك حساب بعد؟",
+    "loginWithGoogle": "المتابعة عبر Google",
+    "loginWithGithub": "المتابعة عبر GitHub",
+    "acceptTerms": "أوافق على شروط الاستخدام",
+    "waitlist": "الانضمام لقائمة الانتظار"
+  },
+  "errors": {
+    "generic": "حدث خطأ ما",
+    "networkError": "خطأ في الاتصال",
+    "unauthorized": "غير مصرح",
+    "notFound": "غير موجود",
+    "validation": "بيانات غير صالحة",
+    "tryAgain": "أعد المحاولة"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "نشر",
+    "comment": "تعليق",
+    "like": "إعجاب",
+    "share": "مشاركة",
+    "newPost": "منشور جديد",
+    "whatOnYourMind": "ما الجديد في مسارك المهني؟",
+    "professionalContent": "محتوى مهني فقط",
+    "rejectedContent": "هذا المحتوى لا يتوافق مع معايير Searcher Connector المهنية"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "مساحة كوورك",
+    "createSpace": "إنشاء مساحة",
+    "joinSpace": "انضمام",
+    "mySpaces": "مساحاتي",
+    "findCollaborators": "البحث عن متعاونين",
+    "premiumFeature": "ميزة مميزة"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "لوحة المؤسس",
+    "monitoring": "المراقبة",
+    "telemetry": "MongoDB/المصادر",
+    "scans": "عمليات البحث والسجلات",
+    "users": "المستخدمون",
+    "conversations": "المحادثات",
+    "revenue": "الإيرادات",
+    "activatePlan": "تفعيل الخطة",
+    "changeStatus": "تغيير الحالة",
+    "addTokens": "إضافة رموز",
+    "testEmail": "اختبار البريد",
+    "scanToggle": "تفعيل/إيقاف البحث"
   }
 }

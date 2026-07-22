@@ -39,7 +39,7 @@ Retourne UN JSON :
   {
     "template_type": "initial_response|follow_up_1|follow_up_2|interview_confirm",
     "subject_template": "Objet avec {company} et {position} comme variables",
-    "body_template": "Corps avec {company}, {position}, {name}, {date} comme variables. 80-120 mots max. Fin avec : — ${profile.full_name} | Envoyé via Searcher Connector — searcherconnector.com"
+    "body_template": "Corps avec {company}, {position}, {name}, {date} comme variables. 80-120 mots max. Fin avec : — ${profile.full_name} | Powered by Searcher Connector · SCAI"
   }
 ]
 

@@ -1,132 +1,250 @@
 {
-  "welcome": "Welcome to Searcher Connector",
-  "jobSeeker": "Job Seeker",
-  "freelance": "Freelance",
-  "getStarted": "Get Started",
-  "plans": {
-    "free": "Free",
-    "freeDesc": "Get started with basic features",
-    "freeLimit": "10 personalized opportunities, 2 scans/day",
-    "starter": "Starter",
-    "starterPrice": "$19/month",
-    "starterDesc": "For active job seekers",
-    "starterFeatures": "All free features, unlimited scans, 60 voice credits",
-    "pro": "Pro",
-    "proPrice": "$49/month",
-    "proDesc": "For dedicated professionals",
-    "proFeatures": "All starter features, 300 voice credits, interview prep",
-    "enterprise": "Enterprise",
-    "enterprisePrice": "$199+/month",
-    "enterpriseDesc": "For teams and businesses",
-    "enterpriseFeatures": "All pro features, unlimited voice, dedicated support",
-    "contact": "Contact Sales"
+  "common": {
+    "loading": "กำลังโหลด...",
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "delete": "ลบ",
+    "edit": "แก้ไข",
+    "close": "ปิด",
+    "search": "ค้นหา",
+    "filter": "กรอง",
+    "refresh": "รีเฟรช",
+    "back": "ย้อนกลับ",
+    "next": "ถัดไป",
+    "send": "ส่ง",
+    "upload": "อัปโหลด",
+    "download": "ดาวน์โหลด",
+    "confirm": "ยืนยัน",
+    "error": "ข้อผิดพลาด",
+    "success": "สำเร็จ"
   },
-  "onboarding": {
-    "welcome": "Welcome! Let's set up your profile",
-    "chooseProfile": "Choose your profile type",
-    "jobSeeker": {
-      "q1": "What's your main field?",
-      "q2": "What's your experience level?",
-      "junior": "Junior",
-      "mid": "Mid-level",
-      "senior": "Senior",
-      "q3": "What are you looking for?",
-      "cdi": "Permanent (CDI)",
-      "cdd": "Fixed-term (CDD)",
-      "remote": "Remote",
-      "hybrid": "Hybrid",
-      "q4": "What's your minimum salary?",
-      "q5": "In which countries are you looking?"
-    },
-    "freelance": {
-      "q1": "What are your main skills?",
-      "q2": "What's your daily rate?",
-      "q3": "What's your availability?",
-      "oneShot": "One-shot missions",
-      "longTerm": "Long-term",
-      "both": "Both",
-      "q4": "Portfolio/GitHub/Behance link (optional)",
-      "q5": "In which countries are you looking for clients?"
-    },
-    "uploadCV": "Upload your CV",
-    "uploadHint": "We'll analyze it to pre-fill your profile",
-    "next": "Next",
-    "skip": "Skip",
-    "finish": "Finish & Start Scanning"
+  "nav": {
+    "home": "หน้าแรก",
+    "opportunities": "โอกาส",
+    "agent": "เอเจนต์ Searcher",
+    "opportunityCreator": "สร้างประกาศงาน",
+    "cowork": "Cowork",
+    "interviews": "สัมภาษณ์",
+    "social": "ชุมชน",
+    "articles": "บทความ",
+    "groups": "กลุ่ม",
+    "messages": "ข้อความ",
+    "salary": "เงินเดือน",
+    "profile": "โปรไฟล์",
+    "settings": "ตั้งค่า",
+    "pricing": "ราคา",
+    "logout": "ออกจากระบบ"
   },
   "dashboard": {
-    "title": "Your Dashboard",
-    "latestOpportunities": "Latest Opportunities",
-    "scanNow": "Scan Now"
+    "title": "แดชบอร์ด",
+    "agentActive": "เอเจนต์ทำงานตลอด 24 ชั่วโมง",
+    "opportunitiesFound": "โอกาสที่พบ",
+    "applicationsSubmitted": "ใบสมัครที่ส่งแล้ว",
+    "avgMatchScore": "คะแนนความเข้ากันเฉลี่ย",
+    "launchScan": "เริ่มการค้นหาทั่วโลก",
+    "recentOpportunities": "โอกาสล่าสุด",
+    "viewAll": "ดูทั้งหมด",
+    "noOpportunities": "ไม่มีโอกาส เริ่มการค้นหาเพื่อเริ่มต้น"
+  },
+  "opportunities": {
+    "title": "สำรวจโอกาส",
+    "filters": {
+      "all": "ทั้งหมด",
+      "fresh": "ใหม่ (<24 ชม.)",
+      "applied": "สมัครแล้ว",
+      "pending": "รอดำเนินการ"
+    },
+    "matchScore": "ความเข้ากัน",
+    "source": "แหล่งที่มา",
+    "postedAgo": "โพสต์เมื่อ {{hours}} ชม.ที่แล้ว",
+    "applicants": "ผู้สมัคร {{count}} คน",
+    "apply": "สมัคร",
+    "applied": "ส่งใบสมัครแล้ว",
+    "unlockPremium": "ปลดล็อกด้วย Premium",
+    "premiumOnly": "เฉพาะ Premium",
+    "scaiAnalysis": "การวิเคราะห์ SCAI",
+    "readinessScore": "คะแนนความพร้อม",
+    "applyManually": "ฉันจะสมัครเอง"
+  },
+  "scai": {
+    "title": "เอเจนต์ Searcher",
+    "greeting": "สวัสดี! ฉันคือ SCAI ผู้ช่วยด้านอาชีพส่วนตัวของคุณ",
+    "placeholder": "ถามคำถามหรือให้ฉันค้นหาโอกาส...",
+    "voice": "ใช้เสียง",
+    "voicePremium": "SCAI Voice (Premium)",
+    "voiceCredits": "เหลือเครดิตเสียง {{count}} ครั้ง",
+    "thinking": "กำลังคิด...",
+    "scanning": "กำลังค้นหาเว็บให้คุณ...",
+    "analyzing": "กำลังวิเคราะห์โอกาส...",
+    "applying": "กำลังส่งใบสมัครของคุณ..."
+  },
+  "profile": {
+    "title": "โปรไฟล์มืออาชีพ",
+    "completion": "ความสมบูรณ์ของโปรไฟล์",
+    "level": "ระดับ",
+    "levels": {
+      "junior": "จูเนียร์",
+      "mid": "ระดับกลาง",
+      "senior": "ซีเนียร์",
+      "expert": "ผู้เชี่ยวชาญ"
+    },
+    "progression": "อีก {{count}} โปรเจกต์ถึงระดับ {{level}}",
+    "maxLevel": "ถึงระดับสูงสุดแล้ว",
+    "verification": {
+      "pending": "รอดำเนินการ",
+      "verified": "ยืนยันแล้ว",
+      "genius": "Genius",
+      "refused": "ถูกปฏิเสธ"
+    },
+    "editProfile": "แก้ไขโปรไฟล์",
+    "uploadAvatar": "เปลี่ยนรูปภาพ",
+    "personalInfo": "ข้อมูลส่วนตัว",
+    "skills": "ทักษะ",
+    "experience": "ประสบการณ์",
+    "portfolio": "ผลงาน",
+    "documents": "เอกสาร"
+  },
+  "pricing": {
+    "title": "แพ็กเกจและราคา",
+    "monthly": "ต่อเดือน",
+    "currentPlan": "แพ็กเกจปัจจุบัน",
+    "upgrade": "อัปเกรดเป็น {{plan}}",
+    "features": "คุณสมบัติ",
+    "free": {
+      "name": "ฟรี",
+      "features": [
+        "ฟีด RSS + API ฟรี",
+        "โอกาสส่วนตัว 10 รายการต่อการค้นหา",
+        "ฟรี 6 รายการ + พรีเมียมล็อก 4 รายการ",
+        "การแจ้งเตือนทั่วไป",
+        "ค้นหาด้วยตนเองสูงสุด 2 ครั้ง/วัน",
+        "SCAI Voice ไม่พร้อมใช้งาน"
+      ]
+    },
+    "starter": {
+      "name": "Starter",
+      "features": [
+        "แหล่งข้อมูลฟรีทั้งหมด + API พรีเมียม",
+        "โอกาสไม่จำกัด",
+        "การแจ้งเตือนแบบเจาะจง",
+        "ค้นหา 10 ครั้ง/วัน",
+        "เครดิตเสียง 60 ครั้ง/เดือน",
+        "สร้าง PDF: เรซูเม่ + จดหมายสมัครงาน"
+      ]
+    },
+    "pro": {
+      "name": "Pro",
+      "features": [
+        "แหล่งข้อมูลทั้งหมด (LinkedIn, Upwork...)",
+        "ให้ความสำคัญกับโอกาสใหม่",
+        "แจ้งเตือนแบบเรียลไทม์เมื่อมีผู้สมัคร <10 คน",
+        "ค้นหาไม่จำกัด",
+        "เครดิตเสียง 300 ครั้ง/เดือน",
+        "PDF ทั้งหมด",
+        "จำลองการสัมภาษณ์",
+        "วิเคราะห์ผลงาน"
+      ]
+    }
   },
   "settings": {
-    "title": "Settings",
-    "language": "Language",
-    "changeLanguage": "Change language",
-    "fr": "Français",
-    "en": "English",
-    "pt": "Português",
-    "ja": "日本語"
+    "title": "ตั้งค่า",
+    "language": "ภาษา",
+    "theme": "ธีม",
+    "lightMode": "โหมดสว่าง",
+    "darkMode": "โหมดมืด",
+    "notifications": "การแจ้งเตือน",
+    "emailNotifications": "การแจ้งเตือนทางอีเมล",
+    "pushNotifications": "การแจ้งเตือนแบบพุช",
+    "privacy": "ความเป็นส่วนตัว",
+    "security": "ความปลอดภัย",
+    "account": "บัญชี",
+    "deleteAccount": "ลบบัญชี",
+    "changePassword": "เปลี่ยนรหัสผ่าน",
+    "twoFactor": "การยืนยันตัวตนสองขั้นตอน"
   },
   "notifications": {
-    "title": "Notifications",
-    "newOpportunity": "New opportunity found!",
-    "newOpportunities": "X new opportunities available",
-    "planExpiring": "Your plan expires soon",
-    "lowVoiceCredits": "You have X voice credits left",
-    "voiceCreditsExhausted": "Your voice credits are exhausted"
+    "title": "การแจ้งเตือน",
+    "markAllRead": "ทำเครื่องหมายว่าอ่านทั้งหมด",
+    "noNotifications": "ไม่มีการแจ้งเตือน",
+    "types": {
+      "opportunity": "โอกาสใหม่",
+      "application": "อัปเดตใบสมัคร",
+      "message": "ข้อความใหม่",
+      "system": "การแจ้งเตือนระบบ",
+      "plan": "เปิดใช้งานแพ็กเกจแล้ว"
+    },
+    "filters": {
+      "all": "ทั้งหมด",
+      "unread": "ยังไม่ได้อ่าน",
+      "opportunities": "โอกาส",
+      "system": "ระบบ"
+    }
   },
-  "voice": {
-    "start": "Start conversation",
-    "stop": "Stop",
-    "listening": "Listening...",
-    "thinking": "Thinking..."
+  "applications": {
+    "title": "ใบสมัครของฉัน",
+    "status": {
+      "applied": "สมัครแล้ว",
+      "viewed": "ดูแล้ว",
+      "interview": "สัมภาษณ์",
+      "accepted": "ได้รับการตอบรับ",
+      "rejected": "ถูกปฏิเสธ"
+    },
+    "noApplications": "ยังไม่มีใบสมัคร",
+    "viewDetails": "ดูรายละเอียด",
+    "withdrawApplication": "ถอนใบสมัคร"
   },
-  "candidatures": {
-    "title": "Candidature Tracker",
-    "applied": "Applied",
-    "seen": "Seen by recruiter",
-    "interview": "Interview scheduled",
-    "rejected": "Rejected",
-    "accepted": "Accepted",
-    "save": "Save for later"
+  "auth": {
+    "login": "เข้าสู่ระบบ",
+    "signup": "สมัครสมาชิก",
+    "email": "อีเมล",
+    "password": "รหัสผ่าน",
+    "confirmPassword": "ยืนยันรหัสผ่าน",
+    "forgotPassword": "ลืมรหัสผ่าน?",
+    "alreadyHaveAccount": "มีบัญชีอยู่แล้ว?",
+    "dontHaveAccount": "ยังไม่มีบัญชี?",
+    "loginWithGoogle": "ดำเนินการต่อด้วย Google",
+    "loginWithGithub": "ดำเนินการต่อด้วย GitHub",
+    "acceptTerms": "ฉันยอมรับข้อกำหนดการใช้งาน",
+    "waitlist": "เข้าร่วมรายชื่อรอ"
+  },
+  "errors": {
+    "generic": "เกิดข้อผิดพลาด",
+    "networkError": "ข้อผิดพลาดในการเชื่อมต่อ",
+    "unauthorized": "ไม่ได้รับอนุญาต",
+    "notFound": "ไม่พบ",
+    "validation": "ข้อมูลไม่ถูกต้อง",
+    "tryAgain": "ลองอีกครั้ง"
   },
   "social": {
-    "feed": "Your Feed",
-    "groups": "Groups",
-    "createPost": "Create a post",
-    "shareVictory": "Share your victory!"
-  },
-  "interviewPreps": {
-    "title": "Interview Preparation",
-    "companyResearch": "Company research",
-    "commonQuestions": "Common questions",
-    "simulateInterview": "Simulate interview"
-  },
-  "portfolioAnalyzer": {
-    "title": "Portfolio Analyzer",
-    "strengths": "Your strengths",
-    "weaknesses": "Areas to improve",
-    "benchmark": "Market benchmark",
-    "topPercent": "Top X%"
+    "post": "โพสต์",
+    "comment": "แสดงความคิดเห็น",
+    "like": "ถูกใจ",
+    "share": "แชร์",
+    "newPost": "โพสต์ใหม่",
+    "whatOnYourMind": "มีอะไรใหม่ในสายอาชีพของคุณ?",
+    "professionalContent": "เฉพาะเนื้อหาที่เป็นมืออาชีพ",
+    "rejectedContent": "เนื้อหานี้ไม่เป็นไปตามมาตรฐานความเป็นมืออาชีพของ SC"
   },
   "cowork": {
-    "title": "Cowork Space",
-    "createFromOpportunity": "Create from opportunity",
-    "findCollaborators": "Find collaborators"
-  },
-  "opportunityCreator": {
-    "title": "Opportunity Creator",
-    "postMission": "Post a mission",
-    "matchProfiles": "Match profiles"
+    "title": "พื้นที่ Cowork",
+    "createSpace": "สร้างพื้นที่",
+    "joinSpace": "เข้าร่วม",
+    "mySpaces": "พื้นที่ของฉัน",
+    "findCollaborators": "ค้นหาผู้ร่วมงาน",
+    "premiumFeature": "ฟีเจอร์ Premium"
   },
   "founder": {
-    "title": "Founder Dashboard",
-    "scraperHealth": "Scraper Health",
-    "opportunityQuality": "Opportunity Quality",
-    "cachePool": "Cache Pool",
-    "users": "Users",
-    "apiQuotas": "API & Quotas",
-    "feedback": "User Feedback"
+    "title": "แดชบอร์ดผู้ก่อตั้ง",
+    "monitoring": "การติดตาม",
+    "telemetry": "MongoDB/แหล่งข้อมูล",
+    "scans": "การค้นหาและบันทึก",
+    "users": "ผู้ใช้",
+    "conversations": "การสนทนา",
+    "revenue": "รายได้",
+    "activatePlan": "เปิดใช้งานแพ็กเกจ",
+    "changeStatus": "เปลี่ยนสถานะ",
+    "addTokens": "เพิ่มโทเคน",
+    "testEmail": "ทดสอบอีเมล",
+    "scanToggle": "เปิด/ปิดการค้นหา"
   }
 }

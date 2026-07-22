@@ -26,6 +26,7 @@ import { Message, Conversation, UserProfile } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { generateSmartReplies } from '../lib/gemini';
+import VoiceWaveform from '../components/scai/VoiceWaveform';
 import { useTranslation } from 'react-i18next';
 
 type ConnectionRow = {
@@ -116,6 +117,7 @@ export default function Messages() {
   }, [user, selectedUser?.id, targetUserId]);
 
   const [recordingStartTime, setRecordingStartTime] = useState<number>(0);
+  const [recordingStream, setRecordingStream] = useState<MediaStream | null>(null);
 
   const startRecording = async () => {
      if (!canMessageSelectedUser) {
@@ -134,12 +136,13 @@ export default function Messages() {
 
        recorder.onstop = async () => {
          const duration = Date.now() - startTime;
+         setRecordingStream(null);
          // Ne pas envoyer si le message est trop court (moins de 700ms)
          if (localChunks.length > 0 && duration > 700) {
            const audioBlob = new Blob(localChunks, { type: 'audio/webm' });
            await uploadAudio(audioBlob);
          } else {
-           
+
          }
          stream.getTracks().forEach(track => track.stop());
        };
@@ -147,6 +150,7 @@ export default function Messages() {
        setRecordingStartTime(startTime);
        recorder.start();
        setMediaRecorder(recorder);
+       setRecordingStream(stream);
        setIsRecording(true);
      } catch (err) {
        console.error("Error accessing microphone:", err);
@@ -812,7 +816,29 @@ export default function Messages() {
                           : "Envoie d'abord une demande de contact pour pouvoir discuter."}
                     </div>
                   )}
-                  {/* Smart Replies (Désactivé à la demande) */}
+                  {/* Suggestions de réponse SCAI */}
+                  {canMessageSelectedUser && (isAiThinking || smartReplies.length > 0) && (
+                    <div className="mb-3 flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
+                      <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-[#D4AF37] flex-shrink-0">
+                        <Sparkles size={11} /> SCAI
+                      </span>
+                      {isAiThinking ? (
+                        <span className="flex items-center gap-2 text-xs text-gray-500 flex-shrink-0">
+                          <Loader2 className="w-3 h-3 animate-spin" /> Réflexion en cours...
+                        </span>
+                      ) : (
+                        smartReplies.map((reply, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => sendMessage(reply)}
+                            className="flex-shrink-0 px-3 py-1.5 rounded-full border border-[#2a2a2a] bg-[#111111] text-xs text-gray-300 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all whitespace-nowrap"
+                          >
+                            {reply}
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
 
                   <div className="flex items-center gap-3">
                     <div className="flex gap-1">
@@ -845,6 +871,7 @@ export default function Messages() {
                           <div className="flex items-center gap-3">
                             <div className="w-2 h-2 bg-red-500 rounded-full animate-ping" />
                             Enregistrement en cours...
+                            <VoiceWaveform source={recordingStream} variant="recording" />
                           </div>
                           <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 animate-pulse">Relâchez pour envoyer</span>
                         </div>

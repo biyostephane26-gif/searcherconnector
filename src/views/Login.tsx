@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 import GoldButton from '../components/ui/GoldButton'
 import Card from '../components/ui/Card'
 import { Mail, Lock, ArrowRight, KeyRound, CheckCircle } from 'lucide-react'
@@ -48,13 +49,7 @@ export default function Login() {
     setResetLoading(true)
     setError(null)
     try {
-      // Import dynamique pour éviter les problèmes de SSR
-      const { createClient } = await import('@supabase/supabase-js')
-      const sb = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      )
-      const { error } = await sb.auth.resetPasswordForEmail(resetEmail.trim(), {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.trim(), {
         redirectTo: `${window.location.origin}/reset-password`,
       })
       if (error) {
