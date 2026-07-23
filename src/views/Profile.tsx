@@ -501,7 +501,7 @@ export default function Profile() {
                     {getProfessionalLevel(profile?.missions_completed || 0).label}
                   </div>
                 </div>
-                <p className={`text-xs font-bold uppercase tracking-[0.2em] ${theme.accentText}`}>
+                <p className={`text-xs font-bold uppercase tracking-[0.2em] ${theme.accentText} max-w-xs sm:max-w-sm md:max-w-md truncate`} title={`${profile?.profile_type?.replace('_', ' ')} • ${profile?.domain}`}>
                   {profile?.profile_type?.replace('_', ' ')} • {profile?.domain}
                 </p>
                 {/* Progression Niveau */}
@@ -527,7 +527,7 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="p-10 pt-24 grid grid-cols-1 lg:grid-cols-12 gap-10 max-w-7xl mx-auto w-full">
+          <div className="p-10 pt-28 md:pt-24 grid grid-cols-1 lg:grid-cols-12 gap-10 max-w-7xl mx-auto w-full">
             {/* Left Column: Info & Stats */}
             <div className="lg:col-span-8 space-y-10">
               <section>

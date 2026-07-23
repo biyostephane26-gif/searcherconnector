@@ -163,7 +163,7 @@ export default function Opportunities() {
           {/* Liste des opportunités */}
           <div className={`flex-1 overflow-y-auto p-6 ${selected ? 'hidden lg:block lg:max-w-[55%]' : ''}`}>
             {/* Filtres */}
-            <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+            <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
               {FILTERS.map(f => (
                 <button key={f.key} onClick={() => setFilter(f.key)}
                   className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${filter === f.key ? 'bg-[#D4AF37] text-black' : 'bg-[#111] text-gray-400 hover:text-white border border-[#2a2a2a]'}`}>
@@ -173,8 +173,8 @@ export default function Opportunities() {
             </div>
 
             {/* Tri */}
-            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Trier :</span>
+            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest flex-shrink-0">Trier :</span>
               {SORTS.map(s => (
                 <button key={s.key} onClick={() => setSortBy(s.key)}
                   className={`px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all ${sortBy === s.key ? 'bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/40' : 'bg-transparent text-gray-500 hover:text-white border border-[#2a2a2a]'}`}>
