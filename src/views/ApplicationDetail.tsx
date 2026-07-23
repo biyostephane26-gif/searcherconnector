@@ -35,16 +35,18 @@ export default function ApplicationDetail() {
         if (!data) { setLoading(false); return }
         let original_url: string | null = null
         let score: number | null = null
+        let source_platform: string | null = null
         if (data.opportunity_id) {
           const { data: opp } = await supabase
             .from('opportunities')
-            .select('original_url, score')
+            .select('original_url, score, source_platform')
             .eq('id', data.opportunity_id)
             .single()
           original_url = opp?.original_url || null
           score = opp?.score ?? null
+          source_platform = opp?.source_platform || null
         }
-        setApp({ ...data, original_url, score })
+        setApp({ ...data, original_url, score, source_platform })
         setLoading(false)
       })
   }, [id, user])
@@ -145,11 +147,40 @@ export default function ApplicationDetail() {
             </pre>
           </Card>
 
+          {/* Preuve — où et quoi exactement, pour rassurer l'utilisateur sur
+              ce que SCAI a réellement fait en son nom. */}
+          <Card className="p-5 border-[#D4AF37]/20">
+            <div className="flex items-center gap-2 text-[10px] text-gray-500 uppercase tracking-widest mb-3">
+              <CheckCircle className="w-4 h-4 text-[#D4AF37]" />
+              Preuve — où SCAI a préparé cette candidature
+            </div>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Plateforme</span>
+                <span className="text-white font-bold">{app.source_platform || 'Source web'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Poste</span>
+                <span className="text-white text-right">{app.job_title}</span>
+              </div>
+              {app.company && (
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Entreprise</span>
+                  <span className="text-white text-right">{app.company}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Préparée le</span>
+                <span className="text-white">{app.applied_at ? new Date(app.applied_at).toLocaleString('fr-FR') : '—'}</span>
+              </div>
+            </div>
+          </Card>
+
           {/* Lien vers l'offre originale — c'est ici que le message doit être envoyé */}
           {app.original_url && (
             <a href={app.original_url} target="_blank" rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full bg-[#D4AF37] hover:bg-[#F5E6A3] text-[#0A0A0A] py-3 rounded-xl text-sm font-bold transition-all">
-              <ExternalLink className="w-4 h-4" /> Ouvrir l'offre et envoyer
+              <ExternalLink className="w-4 h-4" /> Ouvrir l'offre sur {app.source_platform || 'la plateforme'} et envoyer
             </a>
           )}
 

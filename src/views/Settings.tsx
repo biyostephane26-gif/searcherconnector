@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import Sidebar from '../components/layout/Sidebar'
 import Card from '../components/ui/Card'
@@ -54,9 +54,16 @@ export default function Settings() {
     i18n.changeLanguage(lng)
   }
 
-  // Synchroniser les inputs quand le profil charge (async)
+  // Synchroniser les inputs quand le profil charge (async).
+  // Clé sur profile.id (pas profile en entier) : Supabase rafraîchit le
+  // token automatiquement quand l'onglet reprend le focus, ce qui recrée
+  // l'objet profile et déclenchait ce useEffect à CHAQUE retour d'onglet,
+  // écrasant silencieusement tout ce que l'utilisateur venait de taper et
+  // n'avait pas encore sauvegardé (ex: lien portfolio).
+  const syncedProfileId = useRef<string | null>(null)
   useEffect(() => {
-    if (!profile) return
+    if (!profile || syncedProfileId.current === profile.id) return
+    syncedProfileId.current = profile.id
     setFullName(profile.full_name || '')
     setBio(profile.bio || '')
     setDomain((profile as any).domain || '')

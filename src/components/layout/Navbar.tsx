@@ -5,8 +5,9 @@ import Link from 'next/link'
 import GoldDot from '../ui/GoldDot'
 import { useAuth } from '../../contexts/AuthContext'
 import Badge from '../ui/Badge'
-import { LogOut } from 'lucide-react'
+import { LogOut, Menu } from 'lucide-react'
 import NotificationBell from './NotificationBell'
+import { toggleMobileSidebar } from '../../hooks/useMobileSidebar'
 
 export default function Navbar() {
   const { user, profile, signOut } = useAuth()
@@ -46,6 +47,16 @@ export default function Navbar() {
       isVisible ? 'translate-y-0' : '-translate-y-full'
     }`}>
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {user && (
+            <button
+              onClick={toggleMobileSidebar}
+              className="lg:hidden p-2 -ml-2 text-gray-400 hover:text-white transition-colors"
+              aria-label="Ouvrir le menu"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          )}
         <Link href="/" className="flex items-center gap-2.5">
           <img
             src="/searcher-icon.png"
@@ -56,6 +67,7 @@ export default function Navbar() {
           <span className="text-[#D4AF37] font-bold tracking-tighter text-xl">SEARCHER</span>
           <span className="hidden md:inline text-[#444444] text-[10px] tracking-[0.2em] font-medium uppercase">Connector</span>
         </Link>
+        </div>
 
         <div className="flex items-center gap-6">
           <div className="hidden sm:flex items-center gap-2 text-[10px] tracking-widest text-[#D4AF37] font-bold">

@@ -457,9 +457,12 @@ export default function Profile() {
               </span>
             </div>
             {/* Description du type — ancrée en haut, loin du bloc avatar/nom qui
-                déborde par le bas (évite le chevauchement/troncature signalés) */}
-            <div className="absolute top-16 left-10 right-6 max-w-md hidden md:block">
-              <p className={`text-xs font-medium ${theme.accentText} opacity-70`}>{theme.description}</p>
+                déborde par le bas (évite le chevauchement/troncature signalés).
+                z-10 : passait derrière le filigrane du métier (z-0) sur certains
+                écrans. Visible sur tous les appareils désormais (plus de hidden
+                md:block qui la cachait entièrement sur mobile). */}
+            <div className="absolute top-14 md:top-16 left-6 md:left-10 right-24 md:right-6 max-w-md z-10">
+              <p className={`text-[11px] md:text-xs font-medium ${theme.accentText} opacity-90 truncate`}>{theme.description}</p>
             </div>
             <div className="absolute -bottom-16 left-10 flex items-end gap-6">
               <div className="relative group">

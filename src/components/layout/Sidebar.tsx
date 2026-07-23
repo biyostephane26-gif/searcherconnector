@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
-import { Home, Briefcase, Users, MessageSquare, DollarSign, User, Settings, Sparkles, Shield, BookOpen, PlusCircle, Building2, Mic } from 'lucide-react'
+import { Home, Briefcase, Users, MessageSquare, DollarSign, User, Settings, Sparkles, Shield, BookOpen, PlusCircle, Building2, Mic, X } from 'lucide-react'
+import { useMobileSidebar, closeMobileSidebar, openMobileSidebar } from '../../hooks/useMobileSidebar'
 
 // Fonction pour calculer le niveau professionnel
 const getProfessionalLevel = (missionsCount: number = 0) => {
@@ -63,8 +64,51 @@ export default function Sidebar() {
     menuItems.push({ icon: <span className="text-lg">🧪</span>, label: 'Test Panel', path: '/test-panel' })
   }
 
+  const isMobileOpen = useMobileSidebar()
+
+  // Tirer l'écran depuis le bord gauche pour ouvrir le tiroir (mobile).
+  useEffect(() => {
+    let startX = 0, startY = 0, tracking = false
+    const onTouchStart = (e: TouchEvent) => {
+      const t = e.touches[0]
+      if (t.clientX < 24) { startX = t.clientX; startY = t.clientY; tracking = true }
+    }
+    const onTouchMove = (e: TouchEvent) => {
+      if (!tracking) return
+      const t = e.touches[0]
+      const dx = t.clientX - startX, dy = Math.abs(t.clientY - startY)
+      if (dx > 40 && dy < 40) { openMobileSidebar(); tracking = false }
+    }
+    const onTouchEnd = () => { tracking = false }
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: true })
+    window.addEventListener('touchend', onTouchEnd)
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('touchend', onTouchEnd)
+    }
+  }, [])
+
   return (
-    <aside className="hidden lg:flex flex-col w-64 bg-[#0D0D0D] border-r border-[#1A1A1A] h-screen fixed top-0 left-0 overflow-y-auto z-50">
+    <>
+      {/* Fond sombre cliquable — mobile uniquement, quand le tiroir est ouvert */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+          onClick={closeMobileSidebar}
+        />
+      )}
+      <aside className={`flex flex-col w-64 bg-[#0D0D0D] border-r border-[#1A1A1A] h-screen fixed top-0 left-0 overflow-y-auto z-50
+        transition-transform duration-300 ease-out
+        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
+      <button
+        onClick={closeMobileSidebar}
+        className="lg:hidden absolute top-4 right-4 p-2 text-gray-500 hover:text-white"
+        aria-label="Fermer le menu"
+      >
+        <X className="w-5 h-5" />
+      </button>
       <div className="p-6">
         <div className="flex flex-col items-center text-center mb-8">
           {/* Avatar sans bordure qui coupe */}
@@ -161,6 +205,7 @@ export default function Sidebar() {
               <Link
                 key={item.path}
                 href={item.path}
+                onClick={closeMobileSidebar}
                 className={`
                   flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
                   ${isActive 
@@ -183,6 +228,7 @@ export default function Sidebar() {
           })}
         </nav>
       </div>
-    </aside>
+      </aside>
+    </>
   )
 }
