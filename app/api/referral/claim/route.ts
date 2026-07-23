@@ -80,10 +80,11 @@ export async function POST(req: NextRequest) {
       plan_expires_at: newExpiry.toISOString()
     }
 
-    // Si gratuit, passer à starter
+    // Récompense parrainage = accès Premium temporaire (voir spec : 7 filleuls
+    // → ~10 jours premium). Ici on applique le palier Premium + ses crédits.
     if (profile.plan === 'free') {
-      updates.plan = 'starter'
-      updates.voice_credits = 60
+      updates.plan = 'premium'
+      updates.voice_credits = 300
     }
 
     const { error: updateError } = await supabase

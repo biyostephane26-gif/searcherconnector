@@ -14,7 +14,10 @@
 
 type PlanCheckable = { plan?: string | null; role?: string | null } | null | undefined
 
-const PAID_PLANS = ['starter', 'pro', 'enterprise']
+// Modèle à 3 paliers : free / pro / premium (voir Pricing.tsx).
+// On garde les anciens noms (starter/enterprise) dans la liste par sécurité
+// pour les comptes non encore migrés — ils comptent comme payants.
+export const PAID_PLANS = ['pro', 'premium', 'starter', 'enterprise']
 
 export function isPaidPlan(profile: PlanCheckable): boolean {
   if (!profile) return false
@@ -24,4 +27,15 @@ export function isPaidPlan(profile: PlanCheckable): boolean {
 
 export function isFounderRole(profile: PlanCheckable): boolean {
   return profile?.role === 'founder'
+}
+
+// Palier normalisé pour le gating par quotas. Modèle final : free/pro/premium.
+// (Après la migration rename_plans_free_pro_premium.sql : 'pro' = palier
+// milieu, 'premium' = palier top. 'enterprise' legacy → premium.)
+export function planTier(profile: PlanCheckable): 'free' | 'pro' | 'premium' {
+  if (profile?.role === 'founder') return 'premium'
+  const p = profile?.plan || 'free'
+  if (p === 'premium' || p === 'enterprise') return 'premium'
+  if (p === 'pro' || p === 'starter') return 'pro'
+  return 'free'
 }

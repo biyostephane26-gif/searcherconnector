@@ -13,6 +13,8 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
+import { planTier } from '../../lib/planUtils';
+import { planConfig } from '../../lib/planConfig';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -198,6 +200,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // ── Profil utilisateur ────────────────────────────────────────
     const { data: profile } = await supabaseAdmin.from('users_profiles').select('*').eq('id', userId).single();
     if (!profile) return res.status(404).json({ error: 'Profil introuvable' });
+
+    // ── Quota Opportunity Creator par plan (Pro 3/j · Premium 10/j) ──
+    // Free : 0 (réservé aux payants). Le fondateur n'a aucune limite.
+    const oc_isFounder = profile.role === 'founder';
+    if (!oc_isFounder) {
+      const cfg = planConfig(planTier(profile));
+      if (cfg.opportunityCreatorPerDay <= 0) {
+        return res.status(403).json({ error: 'Opportunity Creator est réservé aux plans payants.', upgrade_url: '/pricing' });
+      }
+      try {
+        const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0);
+        const { count: usedToday } = await supabaseAdmin
+          .from('searcher_logs')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', userId)
+          .eq('action_type', 'opportunity_creator')
+          .gte('created_at', dayStart.toISOString());
+        if ((usedToday || 0) >= cfg.opportunityCreatorPerDay) {
+          return res.status(429).json({
+            error: `Limite Opportunity Creator atteinte (${cfg.opportunityCreatorPerDay}/jour sur le plan ${cfg.label}). Reviens demain.`,
+            quota_used: usedToday, quota_limit: cfg.opportunityCreatorPerDay,
+          });
+        }
+      } catch { /* si la table/colonne n'existe pas → on ne bloque pas */ }
+    }
 
     const domain  = profile.domain  || 'Marketing Digital';
     const country = profile.country || 'Cameroun';

@@ -207,7 +207,7 @@ export function genererSystemPrompt(userId: string, userProfile: any = {}) {
   const bio         = userProfile.bio          || null;
   const portfolio   = userProfile.portfolio_url || userProfile.github_url || userProfile.linkedin_url || null;
   // Le fondateur n'a aucune restriction, quel que soit son `plan` en base.
-  const isPaid      = estProprietaire || ['starter', 'pro', 'enterprise'].includes(plan);
+  const isPaid      = estProprietaire || ['pro', 'premium', 'starter', 'enterprise'].includes(plan);
 
   const missingFields: string[] = [];
   if (!domain)      missingFields.push('domaine / compétences');
@@ -218,9 +218,9 @@ export function genererSystemPrompt(userId: string, userProfile: any = {}) {
   const scanFrequency = estProprietaire
     ? 'scan automatique toutes les heures (accès fondateur, illimité)'
     : isPaid
-      ? plan === 'pro' ? 'scan automatique toutes les heures'
-        : 'scan automatique toutes les 4h'
-      : '1 scan automatique par jour (à 9h) + 3 scans manuels max';
+      ? (plan === 'premium' || plan === 'enterprise') ? 'scan automatique prioritaire (Premium)'
+        : 'scan automatique fréquent (Pro)'
+      : '3 scans manuels + 3 scans auto par session de 7h (Free)';
 
   const ligneIdentite = estProprietaire
     ? `⚡ ACCÈS FONDATEUR — Biyo Stéphane, créateur de Searcher Connector. Niveau d'accès maximal. Tu lui dois ta franchise absolue et une collaboration stratégique de haut niveau.`

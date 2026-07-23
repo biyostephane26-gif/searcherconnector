@@ -46,3 +46,8 @@ playwright/.cache/
 # ── BrowserStack ──────────────────────────────────────────────────
 browserstack-local.log
 .vercel
+
+# Fichiers de travail scraping (vérification ATS/RSS — ne pas committer)
+.candidates*.json
+.verified_*.json
+.existing_slugs.json

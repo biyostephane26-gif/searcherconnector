@@ -15,6 +15,8 @@ import { createClient } from '@supabase/supabase-js'
 import { sendApplicationConfirmation } from '../../../src/lib/email'
 import { callGeminiDirect } from '../../../src/lib/scaiUtils'
 import { checkRateLimit } from '../../../src/lib/rateLimiter'
+import { planTier } from '../../../src/lib/planUtils'
+import { planConfig } from '../../../src/lib/planConfig'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -122,6 +124,36 @@ export async function POST(req: NextRequest) {
     const profile     = profileRes.data
     const opportunity = oppRes.data
 
+    // ── Quota d'auto-candidature par plan (candidatures AUTO de SCAI) ──
+    // Pro : ≤10/jour · Premium : ≤50/jour · Free : 0 (manuel uniquement).
+    // Le fondateur n'a aucune limite. Au-delà = l'utilisateur clique manuellement.
+    const isFounder = profile.role === 'founder'
+    const isAuto    = sendVia === 'scai_auto'
+    if (isAuto && !isFounder) {
+      const cfg = planConfig(planTier(profile))
+      if (cfg.autoApplyPerDay <= 0) {
+        return NextResponse.json({
+          error: 'Ton plan ne permet pas la candidature automatique. Postule manuellement ou passe à un plan payant.',
+          requiresManual: true, upgrade_url: '/pricing',
+        }, { status: 403 })
+      }
+      const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0)
+      try {
+        const { count: autoToday } = await supabase
+          .from('applications_sent')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', userId)
+          .eq('sent_via', 'scai_auto')
+          .gte('applied_at', dayStart.toISOString())
+        if ((autoToday || 0) >= cfg.autoApplyPerDay) {
+          return NextResponse.json({
+            error: `Limite d'auto-candidatures atteinte (${cfg.autoApplyPerDay}/jour sur le plan ${cfg.label}). Les suivantes sont à envoyer manuellement.`,
+            quota_used: autoToday, quota_limit: cfg.autoApplyPerDay, requiresManual: true,
+          }, { status: 429 })
+        }
+      } catch { /* colonne sent_via pas encore migrée → on ne bloque pas */ }
+    }
+
     // ── Vérifier que l'utilisateur a autorisé l'auto-apply ───
     // (s'il a un score >= auto_apply_threshold dans ses settings)
     const { data: schedule } = await supabase
@@ -161,6 +193,7 @@ export async function POST(req: NextRequest) {
           cover_message:  fullMessage,
           applied_at:     appliedAt,
           response_status: 'waiting',
+          sent_via:       sendVia || 'manual',
         })
         .select('id')
         .single()

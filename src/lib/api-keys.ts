@@ -10,7 +10,7 @@ import { redis } from './scraper/queue';
 // TYPES
 // ─────────────────────────────────────────────────────────────────
 
-export type ApiKeyPlan = 'free' | 'starter' | 'pro' | 'enterprise';
+export type ApiKeyPlan = 'free' | 'pro' | 'premium' | 'starter' | 'enterprise';
 
 export interface ApiKey {
   id: string;
@@ -34,10 +34,11 @@ const REDIS_KEY_PREFIX = 'searcher:api_keys:';
 const REDIS_QUOTA_PREFIX = 'searcher:api_quota:';
 
 const PLAN_LIMITS: Record<ApiKeyPlan, number> = {
-  free: 100,        // 100 req/mois
-  starter: 1000,    // 1k req/mois
-  pro: 10000,       // 10k req/mois
-  enterprise: 100000, // 100k req/mois
+  free: 100,          // 100 req/mois
+  pro: 10000,         // 10k req/mois (palier milieu)
+  premium: 100000,    // 100k req/mois (palier top)
+  starter: 1000,      // legacy
+  enterprise: 100000, // legacy
 };
 
 // ─────────────────────────────────────────────────────────────────

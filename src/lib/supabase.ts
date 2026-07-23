@@ -30,7 +30,7 @@ export interface Profile {
   country: string;
   city?: string;
   verification_status: 'pending' | 'verified' | 'genius' | 'refused';
-  plan: 'free' | 'starter' | 'pro' | 'enterprise';
+  plan: 'free' | 'pro' | 'premium' | 'starter' | 'enterprise';
   role: 'user' | 'admin' | 'founder';
   avatar_url?: string;
   bio?: string;

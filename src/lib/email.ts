@@ -218,27 +218,26 @@ export async function sendPaymentConfirmation(params: {
       </div>
 
       <p class="text">Ce que tu débloque avec le plan <strong style="color:#fff;">${planLabel}</strong> :</p>
-      ${params.plan === 'starter' ? `
+      ${params.plan === 'pro' ? `
         <ul style="color:#AAAAAA;font-size:14px;line-height:2;padding-left:20px;">
-          <li>✅ Sources premium en plus des gratuites</li>
-          <li>✅ Toutes les missions sans limite</li>
-          <li>✅ 10 scans manuels/jour</li>
-          <li>✅ 60 crédits vocaux SCAI/mois</li>
+          <li>✅ ~1000 sources (dont la moitié premium)</li>
+          <li>✅ 5 scans/session 5h + 5 scans auto SCAI</li>
+          <li>✅ Auto-candidature jusqu'à 10/jour</li>
+          <li>✅ 60 crédits SCAI/mois (voix + scraping)</li>
           <li>✅ Génération PDF : CV + lettre de motivation</li>
         </ul>
-      ` : params.plan === 'pro' ? `
+      ` : params.plan === 'premium' ? `
         <ul style="color:#AAAAAA;font-size:14px;line-height:2;padding-left:20px;">
-          <li>✅ Toutes les sources, y compris LinkedIn/Upwork</li>
-          <li>✅ Priorité sur les missions les plus fraîches</li>
-          <li>✅ Scans manuels illimités</li>
-          <li>✅ 300 crédits vocaux SCAI/mois</li>
-          <li>✅ Simulation d'entretien avec SCAI</li>
+          <li>✅ Les 2005 sources — toute la puissance SCAI</li>
+          <li>✅ 10 scans/session 5h + 20 notifications (jusqu'à 250)</li>
+          <li>✅ Auto-candidature jusqu'à 50/jour + passage prioritaire</li>
+          <li>✅ 300 crédits SCAI/mois (voix + scraping)</li>
+          <li>✅ Simulation d'entretien + tous les PDF</li>
         </ul>
       ` : `
         <ul style="color:#AAAAAA;font-size:14px;line-height:2;padding-left:20px;">
-          <li>✅ Tout le plan Pro</li>
-          <li>✅ Accès prioritaire aux nouvelles fonctionnalités</li>
-          <li>✅ Support direct fondateur</li>
+          <li>✅ Accès élargi aux opportunités</li>
+          <li>✅ Fonctionnalités premium débloquées</li>
         </ul>
       `}
 

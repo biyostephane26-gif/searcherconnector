@@ -602,10 +602,10 @@ export default function Founder() {
                       <div className="flex items-center gap-2">
                         <select value={u.plan || 'free'} onChange={e => updateUserPlan(u.id, e.target.value)}
                           className="text-xs bg-[#0D0D0D] border border-[#2a2a2a] text-white rounded px-2 py-1 outline-none">
-                          {['free','starter','pro'].map(p => <option key={p} value={p}>{p}</option>)}
+                          {['free','pro','premium'].map(p => <option key={p} value={p}>{p}</option>)}
                         </select>
-                        <button 
-                          onClick={() => activatePlan1Month(u.id, u.plan || 'starter')}
+                        <button
+                          onClick={() => activatePlan1Month(u.id, u.plan || 'pro')}
                           className="px-2 py-1 bg-[#D4AF37]/20 text-[#D4AF37] text-[10px] font-bold rounded hover:bg-[#D4AF37]/30"
                           title="Activer ce plan pour 1 mois"
                         >

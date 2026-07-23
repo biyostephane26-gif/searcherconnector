@@ -147,4 +147,22 @@ async function runPlanExpiryCheck() {
 // Toutes les heures
 cron.schedule('0 * * * *', runPlanExpiryCheck);
 
-console.log('🚀 Scheduler démarré : scan 10/30/60min, rotation humaniste ~35min, rapport hebdo lundi 9h, polling Gmail 15min, nettoyage cache 1h, expiration plans 1h.');
+// ── Reset QUOTIDIEN des crédits SCAI (voix + scraping live) ─────────
+// Recharge les crédits selon le plan chaque jour à 00:05 (Free 5 · Pro 30
+// · Premium 100) — anti-abus (plafond quotidien) sans blocage définitif.
+async function runVoiceCreditsReset() {
+  try {
+    const res = await fetch(`${INTERNAL_URL}/api/cron/reset-voice-credits`, {
+      headers: { Authorization: `Bearer ${CRON_SECRET}` },
+      signal: AbortSignal.timeout(60000),
+    });
+    const data = await res.json().catch(() => ({}));
+    console.log(`🎙️ [Reset crédits SCAI] statut ${res.status} — comptes rechargés: ${data.accountsReset ?? '?'}`);
+  } catch (e) {
+    console.warn('⚠️ [Reset crédits SCAI] échec:', e.message);
+  }
+}
+// Chaque jour à 00:05
+cron.schedule('5 0 * * *', runVoiceCreditsReset);
+
+console.log('🚀 Scheduler démarré : scan 10/30/60min, rotation humaniste ~35min, rapport hebdo lundi 9h, polling Gmail 15min, nettoyage cache 1h, expiration plans 1h, reset crédits SCAI quotidien.');

@@ -40,6 +40,8 @@ import { cache } from '../../lib/scraper/cache-manager';
 import { matchCategories, matchCategoriesForUser } from '../../lib/scraper/categories';
 import { detectRequiredLevel, computeLevelMatch } from '../../lib/scraper/skill-matching';
 import { checkRateLimit } from '../../lib/rateLimiter';
+import { planTier } from '../../lib/planUtils';
+import { planConfig } from '../../lib/planConfig';
 import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
 
@@ -121,6 +123,10 @@ const LEVEL2_MIN = 25;  // si < 25 résultats → lancer niveau 3 (Apify)
 // Ex: une mission freelance à 500$ via Upwork couvre 26 mois d'abonnement
 const FREE_VISIBLE  = 10;
 const PAID_VISIBLE  = 999;
+// Coût en crédits d'UN scan qui déclenche le scraping live niveau 3
+// (LinkedIn/Upwork via Apify — le seul coût API réel côté utilisateur).
+// Les scans qui lisent le cache partagé ne coûtent rien → 0 crédit.
+const LIVE_SCRAPE_CREDIT_COST = 5;
 const UA = 'Mozilla/5.0 (compatible; SearcherConnector/6.0)';
 const H: Record<string,string> = { 'User-Agent': UA, Accept: '*/*' };
 
@@ -633,7 +639,7 @@ async function twitterScraper2(query: string): Promise<any[]> {
 
 async function twitterScraper3(query: string): Promise<any[]> {
   if (!APIFY_KEY) return [];
-  const items = await apifyRun('apify/twitter-scraper', { searchTerms: [query], maxTweets: 20, proxy: { useApifyProxy: true, apifyProxyGroups: ['RESIDENTIAL'] } });
+  const items = await apifyRun('apidojo/tweet-scraper', { searchTerms: [query], maxTweets: 20, proxy: { useApifyProxy: true, apifyProxyGroups: ['RESIDENTIAL'] } });
   return items.map((t: any) => ({ title: t.text?.slice(0, 80) || 'Tweet', link: t.url || t.twitterUrl || '', snippet: t.text?.slice(0, 300) || '', date: t.createdAt || '', source: 'humanist:twitter:apify' })).filter((t: any) => t.link && t.snippet?.length > 20);
 }
 
@@ -750,7 +756,7 @@ async function upworkScraper2(term: string): Promise<any[]> {
 
 async function upworkScraper3(term: string): Promise<any[]> {
   if (!APIFY_KEY) return [];
-  const items = await apifyRun('tugkan/upwork-jobs-scraper', { search: term, maxJobs: 15, proxy: { useApifyProxy: true } });
+  const items = await apifyRun('curious_coder/upwork-jobs-scraper', { search: term, maxJobs: 15, proxy: { useApifyProxy: true } });
   return items.map((j: any) => ({ title: j.title || '', link: j.url || j.link || '', snippet: j.description?.slice(0, 300) || '', date: j.publishedDate || '', source: 'humanist:upwork:apify' })).filter((j: any) => j.link);
 }
 
@@ -850,7 +856,10 @@ async function fetchReddit(subreddit: string, term: string): Promise<any[]> {
 async function apifyRun(actorId: string, input: Record<string,any>, timeoutMs=35000): Promise<any[]> {
   if (!APIFY_KEY) return [];
   const key = getApifyKey();
-  const run = await (await fetch(`https://api.apify.com/v2/acts/${actorId}/runs?token=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...input,maxItems:20}),signal:AbortSignal.timeout(timeoutMs)})).json();
+  // Apify attend `user~actor` (tilde) dans le chemin ; un slash → 404 (tous
+  // les scrapers Apify réseaux fermés cassés silencieusement). Voir humanist.ts.
+  const apiActorId = actorId.replace('/', '~');
+  const run = await (await fetch(`https://api.apify.com/v2/acts/${apiActorId}/runs?token=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...input,maxItems:20}),signal:AbortSignal.timeout(timeoutMs)})).json();
   const runId=run?.data?.id; if (!runId) return [];
   for (let i=0;i<6;i++) {
     await new Promise(r=>setTimeout(r,5000));
@@ -862,11 +871,13 @@ async function apifyRun(actorId: string, input: Record<string,any>, timeoutMs=35
 }
 
 async function apifyLinkedIn(term:string, country:string): Promise<any[]> {
-  const items=await apifyRun('curious_coder/linkedin-jobs-scraper',{queries:[term],location:country,limit:20,proxy:{useApifyProxy:true}});
-  return items.map((j:any)=>({title:j.title||j.jobTitle||'',link:j.applyUrl||j.jobUrl||j.url||'',snippet:`${j.company||''} — ${j.location||''} — ${j.employmentType||''}`,date:j.publishedAt||j.postedAt||'',source:'apify:linkedin',company:j.company||'',location:j.location||''})).filter((j:any)=>j.link);
+  // Schéma actuel : { urls:[URL recherche], count>=10 } (l'ancien { queries } était rejeté)
+  const searchUrl=`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(term)}&location=${encodeURIComponent(country)}&f_TPR=r604800&sortBy=DD`;
+  const items=await apifyRun('curious_coder/linkedin-jobs-scraper',{urls:[searchUrl],count:20,scrapeCompany:false,proxy:{useApifyProxy:true}});
+  return items.map((j:any)=>({title:j.title||j.jobTitle||'',link:j.applyUrl||j.jobUrl||j.url||j.link||'',snippet:`${j.companyName||j.company||''} — ${j.location||''} — ${j.employmentType||''}`,date:j.publishedAt||j.postedAt||'',source:'apify:linkedin',company:j.companyName||j.company||'',location:j.location||''})).filter((j:any)=>j.link);
 }
 async function apifyUpwork(term:string): Promise<any[]> {
-  const items=await apifyRun('tugkan/upwork-jobs-scraper',{search:term,maxJobs:20,proxy:{useApifyProxy:true}});
+  const items=await apifyRun('curious_coder/upwork-jobs-scraper',{search:term,maxJobs:20,proxy:{useApifyProxy:true}});
   return items.map((j:any)=>({title:j.title||'',link:j.url||j.link||'',snippet:j.description?.slice(0,300)||'',date:j.publishedDate||'',source:'apify:upwork'})).filter((j:any)=>j.link);
 }
 async function apifyMalt(term:string): Promise<any[]> {
@@ -912,7 +923,7 @@ async function apifyInstagram(hashtag:string): Promise<any[]> {
   return items.map((p:any)=>({title:p.caption?.slice(0,80)||'Instagram',link:p.url||p.shortCode?`https://instagram.com/p/${p.shortCode}`:'',snippet:p.caption?.slice(0,300)||'',date:p.timestamp||'',source:'apify:instagram'})).filter((p:any)=>p.link&&p.snippet?.length>20);
 }
 async function apifyTwitter(query:string): Promise<any[]> {
-  const items=await apifyRun('apify/twitter-scraper',{searchTerms:[query],maxTweets:20,proxy:{useApifyProxy:true,apifyProxyGroups:['RESIDENTIAL']}});
+  const items=await apifyRun('apidojo/tweet-scraper',{searchTerms:[query],maxTweets:20,proxy:{useApifyProxy:true,apifyProxyGroups:['RESIDENTIAL']}});
   return items.map((t:any)=>({title:t.text?.slice(0,80)||'Tweet',link:t.url||t.twitterUrl||'',snippet:t.text?.slice(0,300)||'',date:t.createdAt||'',source:'apify:twitter'})).filter((t:any)=>t.link&&t.snippet?.length>20);
 }
 
@@ -1055,7 +1066,8 @@ function scoreLocally(items: any[], profile: any, isPaid: boolean): any[] {
 async function orchestrate(
   profileType: string, domain: string, zone: string, country: string,
   hasBudget: boolean, isPaid: boolean,
-  log: string[]
+  log: string[],
+  allowLevel3: boolean = true
 ): Promise<{ items: any[]; metrics: Record<string,number> }> {
 
   const kws    = extractKeywords(domain);
@@ -1185,7 +1197,10 @@ async function orchestrate(
   // ── NIVEAU 3 — Scrapers humanistes + Apify ────────────────────
   // --- UNIQUEMENT POUR LES PROFILS PAYANTS !!! ---
   let apifyItems: any[] = [];
-  const needLevel3 = isPaid; // Seuls les payants ont droit au niveau 3
+  // Niveau 3 = scraping live (LinkedIn/Upwork via Apify/ScrapingBee) = le SEUL
+  // coût API réel par utilisateur. Réservé aux payants ET conditionné aux
+  // crédits (allowLevel3). Le cache partagé, lui, ne coûte rien → gratuit.
+  const needLevel3 = isPaid && allowLevel3;
   
   if (needLevel3) {
     const hasScrapers = SCRAPINGBEE_KEYS.length > 0 || ZENROWS_KEYS.length > 0 || APIFY_KEY;
@@ -1389,32 +1404,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const hasBudgetEff   = has_budget === true || has_budget === 'true' || isPaid
                         || (profile.search_preferences as any)?.has_budget === true;
 
-    // ── Quota quotidien par plan ────────────────────────────────
-    // Gratuit : 1 scan/jour · Starter : 10 scans/jour · Pro : illimité
-    // (voir Pricing.tsx) — le fondateur n'a pas de limite.
-    const DAILY_QUOTAS: Record<string, number> = {
-      free: 1, starter: 10, pro: 9999, enterprise: 9999
+    // ── Crédits pour le scraping live niveau 3 (seul coût API par user) ──
+    // Le fondateur n'a aucune limite. Un payant ne déclenche le niveau 3
+    // que s'il a assez de crédits ; sinon il reste sur le cache (gratuit).
+    const currentCredits = isFounder ? Infinity : ((profile as any).voice_credits ?? 0)
+    const allowLevel3    = isFounder || currentCredits >= LIVE_SCRAPE_CREDIT_COST
+    let   didLiveScrape  = false
+
+    // ── Quota de scans par SESSION glissante (config centrale) ──────
+    // Free : 3 scans / 7h · Pro : 5 / 5h · Premium : 10 / 5h.
+    // (voir src/lib/planConfig.ts) — le fondateur n'a aucune limite.
+    const tier = planTier(profile);
+    const cfg  = planConfig(tier);
+    if (!isFounder) {
+      try {
+        const windowStart = new Date(Date.now() - cfg.sessionHours * 3600_000).toISOString()
+        const { count: scansInWindow } = await supabaseAdmin
+          .from('agent_actions')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', userId)
+          .eq('action_type', 'search_scan')
+          .gte('created_at', windowStart)
+        if ((scansInWindow || 0) >= cfg.scansPerSession) {
+          releaseSlot()
+          return res.status(429).json({
+            error: `Quota atteint — ${cfg.scansPerSession} scan(s) par session de ${cfg.sessionHours}h sur le plan ${cfg.label}. Réessaie plus tard ou passe à un plan supérieur.`,
+            quota_used: scansInWindow,
+            quota_limit: cfg.scansPerSession,
+            session_hours: cfg.sessionHours,
+            plan: tier,
+            upgrade_url: '/pricing',
+          })
+        }
+      } catch { /* non-bloquant — si erreur on laisse passer */ }
     }
-    const dailyLimit = isFounder ? 9999 : (DAILY_QUOTAS[plan] || 1)
-    try {
-      const today = new Date().toISOString().split('T')[0]
-      const { count: scansToday } = await supabaseAdmin
-        .from('agent_actions')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId)
-        .eq('action_type', 'search_scan')
-        .gte('created_at', `${today}T00:00:00`)
-      if ((scansToday || 0) >= dailyLimit) {
-        releaseSlot()
-        return res.status(429).json({
-          error: `Quota atteint — ${dailyLimit} scan(s)/jour sur le plan ${plan}. Revient demain ou passe à un plan supérieur.`,
-          quota_used: scansToday,
-          quota_limit: dailyLimit,
-          plan,
-          upgrade_url: '/pricing',
-        })
-      }
-    } catch { /* non-bloquant — si erreur on laisse passer */ }
 
     log.push(`🚀 SCAN v6.1 | ${profile.full_name} | ${profileType} | zone: ${zone} | budget: ${hasBudgetEff} | plan: ${plan}`);
 
@@ -1424,11 +1447,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // scheduler.js → /api/cache-scan
     const categories = matchCategoriesForUser(profile.domains, domain, profileType);
     try {
+      // Volume de sources/opportunités selon le palier :
+      // Free = sources gratuites (100) · Pro = ~1000 (gratuites + premium) ·
+      // Premium = toute la puissance (2005). Le fondateur = max.
+      const cacheLimit = isFounder ? 2005 : (tier === 'premium' ? 2005 : tier === 'pro' ? 1000 : 100);
       const cachedOpportunities = (await cache.getOpportunities({
         categories,
         sourceType: isPaid ? undefined : 'free',
         excludeSeenByUserId: userId,
-        limit: isPaid ? 200 : 100
+        limit: cacheLimit
       })) as any[];
       
       // Seuil bas volontairement (le cache démarre vide) — à remonter vers ~100
@@ -1522,7 +1549,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         } catch (_) {}
 
         // ── Affichage conditionnel : Free = 8, Paid = tout ────────────
-        const maxVisible    = isPaid ? PAID_VISIBLE : FREE_VISIBLE;
+        const maxVisible    = isFounder ? 9999 : cfg.visibleOpportunities;
         const visible       = scored.slice(0, maxVisible);
         const locked        = scored.slice(maxVisible);
         const lockedCount   = locked.length;
@@ -1614,9 +1641,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         metrics  = (cached.metrics as Record<string, number>) || {};
       } else {
         log.push(`📡 [CACHE MISS${!useCache ? ' (plan payant, pas de cache)' : ''}] Lancement de l'orchestrateur...`);
-        const result = await orchestrate(profileType, domain, zone, country, hasBudgetEff, isPaid, log);
+        const result = await orchestrate(profileType, domain, zone, country, hasBudgetEff, isPaid, log, allowLevel3);
         allItems = result.items;
         metrics  = result.metrics;
+        didLiveScrape = true;
         if (allItems.length > 0 && useCache) // Sauvegarder le cache !
           await db.collection('scan_cache').updateOne(
             { key: cacheKey },
@@ -1626,9 +1654,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     } catch (mongoErr) {
       log.push(`⚠️ MongoDB indisponible — scan sans cache`);
-      const result = await orchestrate(profileType, domain, zone, country, hasBudgetEff, isPaid, log);
+      const result = await orchestrate(profileType, domain, zone, country, hasBudgetEff, isPaid, log, allowLevel3);
       allItems = result.items;
       metrics  = result.metrics;
+      didLiveScrape = true;
+    }
+
+    // ── Débit des crédits pour le scraping live niveau 3 (seul coût API réel
+    // par utilisateur). Le fondateur ne paie rien. Post-hoc : le scan a déjà
+    // tourné, on décompte ce qu'il a réellement coûté. Le cache = gratuit. ──
+    if (didLiveScrape && !isFounder && (metrics.apify || 0) > 0) {
+      await supabaseAdmin.rpc('deduct_voice_credits', { p_user_id: userId, p_amount: LIVE_SCRAPE_CREDIT_COST }).then(r => r, () => null)
+      log.push(`💳 Niveau 3 (scraping live) → ${LIVE_SCRAPE_CREDIT_COST} crédits débités`)
     }
 
     // ── Filtre temporel ───────────────────────────────────────────
@@ -1715,8 +1752,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     } catch (_) {}
 
-    // ── Affichage conditionnel : Free = 8, Paid = tout ────────────
-    const maxVisible    = isPaid ? PAID_VISIBLE : FREE_VISIBLE;
+    // ── Affichage conditionnel : Free = 10, Pro/Premium = tout ────
+    const maxVisible    = isFounder ? 9999 : cfg.visibleOpportunities;
     const visible       = scored.slice(0, maxVisible);
     const locked        = scored.slice(maxVisible);
     const lockedCount   = locked.length;

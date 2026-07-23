@@ -48,12 +48,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Si le plan change, attribuer les crédits vocaux correspondants
+    // Si le plan change, attribuer les crédits SCAI correspondants
+    // (modèle free/pro/premium ; 'starter'/'enterprise' = anciens noms tolérés)
     if (fields.plan && fields.plan !== existingProfile?.plan) {
       const creditsMap: Record<string, number> = {
         'free': 0,
-        'starter': 60,
-        'pro': 300
+        'pro': 60, 'starter': 60,
+        'premium': 300, 'enterprise': 300,
       }
       updates.voice_credits = creditsMap[fields.plan] || 0
     }

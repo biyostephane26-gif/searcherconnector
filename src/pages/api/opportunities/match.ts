@@ -48,9 +48,9 @@ export default async function handler(
       return res.status(404).json({ success: false, error: 'User profile not found' })
     }
 
-    // Check if user is premium
-    const isPremium = userProfile.plan === 'pro' || 
-                       userProfile.plan === 'enterprise' || 
+    // Check if user is premium (tout palier payant + founder + genius)
+    const isPremium = ['pro', 'premium', 'enterprise', 'starter'].includes(userProfile.plan || '') ||
+                       userProfile.role === 'founder' ||
                        userProfile.verification_status === 'genius'
 
     // Get opportunities from cache

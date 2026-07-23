@@ -71,8 +71,13 @@ async function zenRows(url: string): Promise<string> {
 async function apifyRun(actorId: string, input: Record<string, any>): Promise<any[]> {
   if (!HAS_APIFY) return [];
   const key = getApifyKey();
+  // L'API Apify attend l'ID au format `user~actor` (tilde) dans le chemin.
+  // Avec un slash (`user/actor`), l'URL devient malformée → 404 systématique,
+  // ce qui cassait silencieusement TOUS les fallbacks Apify (LinkedIn, Upwork,
+  // Facebook, Instagram) : aucun réseau fermé ne livrait via Apify.
+  const apiActorId = actorId.replace('/', '~');
   try {
-    const run = await (await fetch(`https://api.apify.com/v2/acts/${actorId}/runs?token=${key}`, {
+    const run = await (await fetch(`https://api.apify.com/v2/acts/${apiActorId}/runs?token=${key}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...input, maxItems: 20 }), signal: AbortSignal.timeout(35000),
     })).json();
@@ -110,8 +115,12 @@ async function linkedInViaScrapingBee(term: string, country: string): Promise<an
   return jobs;
 }
 async function linkedInViaApify(term: string, country: string): Promise<any[]> {
-  const items = await apifyRun('curious_coder/linkedin-jobs-scraper', { queries: [term], location: country, limit: 15, proxy: { useApifyProxy: true, apifyProxyGroups: ['RESIDENTIAL'] } });
-  return items.map((j: any) => ({ title: j.title || j.jobTitle || '', link: j.applyUrl || j.jobUrl || j.url || '', snippet: `${j.company || ''} — ${j.location || ''}`, date: j.publishedAt || '', source: 'humanist:linkedin', company: j.company || '', location: j.location || '' })).filter((j: any) => j.link);
+  // Schéma d'entrée actuel de l'acteur : { urls: [URL de recherche], count>=10 }.
+  // Avant on passait { queries, location } (ancien schéma) → l'acteur rejetait
+  // l'entrée. On construit donc l'URL de recherche LinkedIn nous-mêmes.
+  const searchUrl = `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(term)}&location=${encodeURIComponent(country)}&f_TPR=r604800&sortBy=DD`;
+  const items = await apifyRun('curious_coder/linkedin-jobs-scraper', { urls: [searchUrl], count: 20, scrapeCompany: false, proxy: { useApifyProxy: true, apifyProxyGroups: ['RESIDENTIAL'] } });
+  return items.map((j: any) => ({ title: j.title || j.jobTitle || '', link: j.applyUrl || j.jobUrl || j.url || j.link || '', snippet: `${j.companyName || j.company || ''} — ${j.location || ''}`, date: j.publishedAt || j.postedAt || '', source: 'humanist:linkedin', company: j.companyName || j.company || '', location: j.location || '' })).filter((j: any) => j.link);
 }
 export async function scrapeLinkedIn(term: string, country: string): Promise<any[]> {
   return withFailover([() => linkedInViaScrapingBee(term, country), () => linkedInViaApify(term, country)]);
@@ -129,7 +138,7 @@ async function upworkViaScrapingBee(term: string): Promise<any[]> {
   return jobs;
 }
 async function upworkViaApify(term: string): Promise<any[]> {
-  const items = await apifyRun('tugkan/upwork-jobs-scraper', { search: term, maxJobs: 15, proxy: { useApifyProxy: true } });
+  const items = await apifyRun('curious_coder/upwork-jobs-scraper', { search: term, maxJobs: 15, proxy: { useApifyProxy: true } });
   return items.map((j: any) => ({ title: j.title || '', link: j.url || j.link || '', snippet: j.description?.slice(0, 300) || '', date: j.publishedDate || '', source: 'humanist:upwork' })).filter((j: any) => j.link);
 }
 export async function scrapeUpwork(term: string): Promise<any[]> {

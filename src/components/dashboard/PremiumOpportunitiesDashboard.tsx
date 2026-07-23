@@ -46,7 +46,7 @@ export default function PremiumOpportunitiesDashboard() {
   const [totalMatching, setTotalMatching] = useState(0)
   const [activeTab, setActiveTab] = useState<string | null>(null)
 
-  const isPremium = profile?.plan === 'pro' || profile?.plan === 'enterprise' || profile?.verification_status === 'genius'
+  const isPremium = ['pro', 'premium', 'enterprise', 'starter'].includes(profile?.plan || '') || profile?.role === 'founder' || profile?.verification_status === 'genius'
 
   useEffect(() => {
     fetchOpportunities()

@@ -19,7 +19,7 @@ export default function FreeUserLimitBanner({
   const router = useRouter()
   const { profile } = useAuth()
 
-  const isPremium = profile?.plan === 'pro' || profile?.plan === 'enterprise' || profile?.verification_status === 'genius'
+  const isPremium = ['pro', 'premium', 'enterprise', 'starter'].includes(profile?.plan || '') || profile?.role === 'founder' || profile?.verification_status === 'genius'
   const hiddenOpportunities = Math.max(0, totalMatchingOpportunities - visibleOpportunities)
   const hiddenPercentage = Math.round((hiddenOpportunities / totalMatchingOpportunities) * 100)
 
