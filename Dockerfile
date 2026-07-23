@@ -22,8 +22,12 @@ ENV SKIP_ENV_VALIDATION=true
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Build Next.js (skip static generation)
-RUN npm run build || true
+# Build Next.js. Le `|| true` a été retiré : il masquait les échecs de build
+# (clients Supabase/Stripe qui plantaient au module-level sans les secrets),
+# produisant un .next incomplet → "Could not find a production build" au start.
+# Les clients sont désormais tolérants au build (fallback clé anon), donc si le
+# build échoue vraiment, on veut qu'il échoue ICI, clairement.
+RUN npm run build
 
 # Expose port
 EXPOSE 3000

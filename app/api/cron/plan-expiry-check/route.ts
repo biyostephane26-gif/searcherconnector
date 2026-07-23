@@ -16,7 +16,7 @@ const CRON_SECRET = process.env.CRON_SECRET || 'dev-secret'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 )
 
 export async function GET(req: NextRequest) {

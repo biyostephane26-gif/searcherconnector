@@ -10,7 +10,7 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!),
   // Next.js met en cache les fetch() des route handlers — sans no-store,
   // le dashboard fondateur affichait des stats vieilles de plusieurs jours.
   { global: { fetch: (url: any, init: any) => fetch(url, { ...init, cache: 'no-store' }) } }
