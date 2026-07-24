@@ -11,7 +11,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { fetchAllSources } from '../../../src/lib/scraper/generators'
+import { fetchAllSources, pickTierBatch, runTierBatch, SourceTier } from '../../../src/lib/scraper/generators'
 import { CATEGORIES, extractKeywordsForUser } from '../../../src/lib/scraper/categories'
 import { detectRequiredLevel, computeLevelMatch } from '../../../src/lib/scraper/skill-matching'
 import { isPaidPlan } from '../../../src/lib/planUtils'
@@ -64,7 +64,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, skipped: true, reason: 'maintenance_mode' })
     }
 
-    const { categories, isPaid = false, useHumanistScrapers = false } = await req.json()
+    const { categories, isPaid = false, useHumanistScrapers = false, sourceTier, humanistCategories } = await req.json() as {
+      categories?: string[]; isPaid?: boolean; useHumanistScrapers?: boolean; sourceTier?: SourceTier; humanistCategories?: string[]
+    }
+    // Les scrapers humanistes (LinkedIn/Upwork/Twitter, payants) ne tournent
+    // que sur ce sous-ensemble de catégories (rotation côté scheduler.js) —
+    // jamais sur les 14 d'un coup, sinon le coût API explose (×3.5).
+    const humanistSet = new Set(humanistCategories || [])
     const targetCategories: string[] = (categories && categories.length ? categories : Object.keys(CATEGORIES))
 
     const { data: session } = await supabase
@@ -79,6 +85,15 @@ export async function POST(req: NextRequest) {
     let opportunitiesAdded = 0
     const errors: string[] = []
 
+    // sourceTier (fast/medium/slow/veryslow) : le lot du tick est tiré
+    // UNE SEULE FOIS ici (avant la boucle catégories), sinon la rotation
+    // avancerait une fois par catégorie au lieu d'une fois par tick de
+    // cron — cassant la garantie "palier entier cyclé en 1h". Chaque
+    // catégorie exécute ensuite ce même lot avec son propre mot-clé.
+    const tierLog: string[] = []
+    const tierBatch = sourceTier ? pickTierBatch(sourceTier, isPaid, tierLog) : null
+    if (tierLog.length) console.log(tierLog.join(' | '))
+
     for (const cat of targetCategories) {
       const keywords = CATEGORIES[cat]
       if (!keywords) continue
@@ -86,7 +101,9 @@ export async function POST(req: NextRequest) {
 
       try {
         const term = keywords[0]
-        let raw = await fetchAllSources(term, log, isPaid)
+        let raw = tierBatch
+          ? await runTierBatch(tierBatch, term, log)
+          : await fetchAllSources(term, log, isPaid)
         sourcesScanned += 1
 
         // ── Scrapers humanistes (ScrapingBee/ZenRows/Apify) ──────
@@ -95,7 +112,8 @@ export async function POST(req: NextRequest) {
         // Résultats marqués isPremium → source_type='premium' dans le
         // cache, donc jamais mélangés avec le flux gratuit : le
         // frontend applique déjà le flou/cadenas pour les non-payants.
-        if (useHumanistScrapers && HAS_HUMANIST_SCRAPERS) {
+        const runHumanistForThisCategory = useHumanistScrapers && (humanistSet.size === 0 || humanistSet.has(cat))
+        if (runHumanistForThisCategory && HAS_HUMANIST_SCRAPERS) {
           const humanist = await Promise.allSettled([
             scrapeLinkedIn(term, 'worldwide'),
             scrapeUpwork(term),

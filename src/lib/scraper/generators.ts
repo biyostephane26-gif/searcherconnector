@@ -328,12 +328,9 @@ async function siteScopedSearch(domain: string, keyword: string): Promise<any[]>
 // à chaque scan répété dans une courte fenêtre (protège le budget API)
 // =================================================================
 const sourceCacheTTLMs = 6 * 60 * 60 * 1000; // 6h — protège le budget API par source
-// Fenêtre de ROTATION (distincte du cache ci-dessus) — détermine la vitesse à
-// laquelle rotatingSlice() parcourt tout le pool de ~2005 sources. À 6h et
-// 150 sources/scan, un cycle complet prenait ~80h (2005/150×6h) : le
-// dashboard fondateur (actif = vu <24h) ne pouvait jamais refléter qu'une
-// fraction du pool. À 90min, un cycle complet prend ~20h → le pool entier
-// est retenté en moins d'un jour, sans coût API supplémentaire par scan.
+// Fenêtre de rotation pour fetchAllSources() (scan live utilisateur,
+// inchangé) — distincte du système de paliers par source (pickTierBatch,
+// utilisé par le scan de fond du scheduler) plus bas dans ce fichier.
 const rotationWindowMs = 90 * 60 * 1000; // 90min
 const sourceCache = new Map<string, { at: number; results: any[] }>();
 
@@ -436,4 +433,94 @@ export async function fetchAllSources(keyword: string, log: string[], isPaid: bo
   log.push(`✅ Scan terminé ! ${allResults.length} résultats bruts sur ${batch.length} sources interrogées`);
 
   return allResults;
+}
+
+// =================================================================
+// SCAN DE FOND PAR PALIER DE FRÉQUENCE (scheduler.js)
+// =================================================================
+// Chaque source est classée selon la fréquence probable de repost de son
+// origine (agrégateur multi-entreprises = très fréquent, board niche d'une
+// seule PME = rare). Chaque palier tourne à SA cadence, et le lot par tick
+// est calculé pour que le palier entier soit épuisé en 1h : à 10min (6
+// ticks/h) le lot = pool/6 ; à 60min (1 tick/h) le lot = pool entier.
+// Contrairement à fetchAllSources() (rotation temporelle, utilisée par le
+// scan live utilisateur — inchangée), ici un index en mémoire avance
+// exactement du lot à chaque appel, garantissant un cycle complet par heure.
+export type SourceTier = 'fast' | 'medium' | 'slow' | 'veryslow';
+
+const TIER_TICKS_PER_HOUR: Record<SourceTier, number> = { fast: 6, medium: 4, slow: 2, veryslow: 1 };
+
+function buildTierPool(tier: SourceTier): SourceEntry[] {
+  const atsAsSourceEntries: SourceEntry[] = ATS_COMPANIES.map(c => ({ name: c.name, type: 'ats', url: `https://${c.ats}/${c.slug}`, isPaidOnly: c.isPaidOnly }));
+  switch (tier) {
+    // FAST (10min) — agrégateurs multi-entreprises à très fort volume de
+    // reposts (job boards + RSS tech + communautés) : le contenu change en continu.
+    case 'fast':
+      return [...(JOB_BOARDS as SourceEntry[]), ...(TECH_RSS_FEEDS as any[]).map(f => ({ name: f.name, type: 'rss', url: f.url, isPaidOnly: f.isPaidOnly })), ...(SOCIAL_COMMUNITIES as SourceEntry[])];
+    // MEDIUM (15min) — boards ATS d'entreprises (recrutement actif mais pas
+    // en continu) + plateformes freelance.
+    case 'medium':
+      return [...atsAsSourceEntries, ...(FREELANCE_PLATFORMS as SourceEntry[])];
+    // SLOW (30min) — plateformes de niche, volume de postes plus faible.
+    case 'slow':
+      return [...(NICHE_PLATFORMS as SourceEntry[]), ...(AI_TECH_PLATFORMS as SourceEntry[]), ...(GLOBAL_FREELANCE as SourceEntry[])];
+    // VERYSLOW (60min) — stages, postes exécutifs, secteurs spécialisés :
+    // reposts rares, inutile de revérifier plus souvent qu'une fois/heure.
+    case 'veryslow':
+      return [...(INTERNSHIP_JUNIOR as SourceEntry[]), ...(REMOTE_EXCLUSIVE as SourceEntry[]), ...(EXECUTIVE_CAREERS as SourceEntry[]), ...(INDUSTRY_SPECIALIZED as SourceEntry[])];
+  }
+}
+
+const tierPools: Partial<Record<SourceTier, SourceEntry[]>> = {};
+const tierRotationIndex: Record<SourceTier, number> = { fast: 0, medium: 0, slow: 0, veryslow: 0 };
+
+// Tire LE lot du tick pour ce palier — à appeler UNE SEULE FOIS par appel
+// HTTP à /api/cache-scan, même si plusieurs catégories/mots-clés sont
+// traités dans le même appel (sinon la rotation avancerait plusieurs fois
+// pour un seul tick de cron, cassant la garantie "cycle complet en 1h").
+export function pickTierBatch(tier: SourceTier, isPaid: boolean, log: string[]): SourceEntry[] {
+  if (!tierPools[tier]) tierPools[tier] = buildTierPool(tier);
+  const pool = tierPools[tier]!;
+  const eligible = pool.filter(s => isPaid || !s.isPaidOnly);
+  if (eligible.length === 0) return [];
+
+  const ticksPerHour = TIER_TICKS_PER_HOUR[tier];
+  const batchSize = Math.max(1, Math.ceil(eligible.length / ticksPerHour));
+
+  const offset = tierRotationIndex[tier] % eligible.length;
+  const batch = [...eligible.slice(offset), ...eligible.slice(0, offset)].slice(0, batchSize);
+  tierRotationIndex[tier] = (offset + batchSize) % eligible.length;
+
+  log.push(`🎯 Palier ${tier} (${ticksPerHour}×/h) : ${eligible.length} sources au total, ${batch.length} ce tick (offset ${offset}) — cycle complet en 1h`);
+  return batch;
+}
+
+// Exécute un lot déjà tiré (via pickTierBatch) pour UN mot-clé de catégorie
+// donné — appelable plusieurs fois (une par catégorie) sans toucher à la
+// rotation, qui a déjà été fixée pour tout le tick par pickTierBatch.
+export async function runTierBatch(batch: SourceEntry[], keyword: string, log: string[]): Promise<any[]> {
+  if (batch.length === 0) return [];
+  const atsBatch = batch.filter(s => s.type === 'ats');
+  const otherBatch = batch.filter(s => s.type !== 'ats');
+  const atsByName = new Map(ATS_COMPANIES.map(c => [c.name, c]));
+
+  const [atsResults, otherResults] = await Promise.all([
+    runInBatches(atsBatch, 5, s => {
+      const company = atsByName.get(s.name);
+      if (!company) return Promise.resolve([]);
+      return withSourceCache(s.url, keyword, () => fetchATS(company, keyword));
+    }),
+    runInBatches(otherBatch, 5, s => executeSource(s, keyword)),
+  ]);
+
+  const allResults = [...atsResults, ...otherResults];
+  log.push(`✅ Lot palier exécuté pour "${keyword}" : ${allResults.length} résultats sur ${batch.length} sources`);
+  return allResults;
+}
+
+// Wrapper pratique quand un seul mot-clé/catégorie est traité par appel
+// (tire ET exécute en un coup — avance donc la rotation une fois).
+export async function fetchSourcesByTier(tier: SourceTier, keyword: string, log: string[], isPaid: boolean = false): Promise<any[]> {
+  const batch = pickTierBatch(tier, isPaid, log);
+  return runTierBatch(batch, keyword, log);
 }

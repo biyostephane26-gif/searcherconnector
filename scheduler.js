@@ -1,21 +1,23 @@
 // =================================================================
-// SEARCHER CONNECTOR — SCHEDULER DE SCAN AUTOMATIQUE (paliers)
+// SEARCHER CONNECTOR — SCHEDULER DE SCAN AUTOMATIQUE (paliers par SOURCE)
 // =================================================================
 // Tourne en tâche de fond dans le même conteneur que le serveur Next.js.
 // Scanne UNE FOIS PAR MÉTIER (pas une fois par utilisateur) et alimente
 // le cache partagé (cache_opportunities) via /api/cache-scan. Les
-// utilisateurs dont le domaine matche sont ensuite notifiés directement
-// (voir matchAndNotify côté API) — plus besoin d'appeler les APIs de
-// scraping à chaque recherche individuelle : ça économise les crédits.
+// utilisateurs dont le domaine matche sont ensuite notifiés directement.
 //
-// Deux dimensions de fréquence, indépendantes :
-//  1) BRÉADTH (fetchAllSources — API/RSS/site: — peu coûteux grâce au
-//     cache par URL) : chaque catégorie a un palier 10/30/60min selon
-//     son intensité d'offres.
-//  2) HUMANISTE (ScrapingBee/ZenRows/Apify — coûteux) : TOUTES les 14
-//     catégories tournent dessus, 4 par tick de 10min, donc chaque
-//     métier en bénéficie environ toutes les 35 min — pas seulement
-//     un sous-ensemble fixe, comme demandé.
+// Paliers par FRÉQUENCE DE REPOST DE LA SOURCE (demandé par le fondateur,
+// pas par métier) — chaque palier tourne à sa cadence et le lot par tick
+// est dimensionné pour que TOUT le pool du palier soit épuisé en 1h :
+//   FAST (10min, 6 ticks/h)     — agrégateurs à très fort volume (job
+//                                 boards, RSS tech, communautés)
+//   MEDIUM (15min, 4 ticks/h)   — boards ATS d'entreprises + freelance
+//   SLOW (30min, 2 ticks/h)     — plateformes de niche
+//   VERYSLOW (60min, 1 tick/h)  — stages/exécutif/spécialisé, reposts rares
+// Le calcul du lot (pool/ticks_par_heure) vit dans generators.ts
+// (pickTierBatch) — ce fichier ne fait que déclencher au bon rythme.
+// Toutes les 14 catégories sont passées à chaque tick pour que chaque
+// métier profite de chaque palier de sources.
 // =================================================================
 
 import dotenv from 'dotenv';
@@ -26,14 +28,17 @@ dotenv.config();
 
 const INTERNAL_URL = process.env.INTERNAL_APP_URL || `http://localhost:${process.env.PORT || 3000}`;
 
-// ── Paliers de fréquence pour le scan "large" (sources API/RSS/site:) ──
-const TIER_1_CATEGORIES = ['dev-engineering', 'design', 'marketing-growth', 'freelance-general', 'sales-bizdev'];
-const TIER_2_CATEGORIES = ['data-ai', 'product', 'devops-cloud', 'writing-content', 'startup-funding'];
-const TIER_3_CATEGORIES = ['finance', 'customer-support', 'hr-recruiting', 'admin-office'];
-const ALL_CATEGORIES = [...TIER_1_CATEGORIES, ...TIER_2_CATEGORIES, ...TIER_3_CATEGORIES];
+const ALL_CATEGORIES = [
+  'dev-engineering', 'design', 'marketing-growth', 'freelance-general', 'sales-bizdev',
+  'data-ai', 'product', 'devops-cloud', 'writing-content', 'startup-funding',
+  'finance', 'customer-support', 'hr-recruiting', 'admin-office',
+];
 
-// ── Rotation pour le scan "humaniste" (LinkedIn/Upwork/Twitter) ──────
-// 4 catégories par tick de 10min → les 14 sont toutes couvertes en ~35min
+// ── Rotation pour le scan "humaniste" (LinkedIn/Upwork/Twitter, payant) ──
+// 4 catégories par tick de 10min → les 14 sont toutes couvertes en ~35min.
+// Distincte de la rotation par PALIER DE SOURCE ci-dessous : les scrapers
+// humanistes ne tournent JAMAIS sur les 14 catégories d'un coup, sinon le
+// coût API (ScrapingBee/ZenRows/Apify) explose ×3.5.
 const HUMANIST_BATCH_SIZE = 4;
 let humanistRotationIndex = 0;
 function nextHumanistBatch() {
@@ -45,34 +50,41 @@ function nextHumanistBatch() {
   return batch;
 }
 
-async function runCacheScan(label, categories, useHumanistScrapers = false) {
+async function runCacheScan(label, sourceTier, useHumanistScrapers = false) {
   try {
     const res = await fetch(`${INTERNAL_URL}/api/cache-scan`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       // isPaid: true → couvre aussi les sources premium pour remplir le cache
       // au maximum ; l'affichage gratuit/payant est filtré côté frontend.
-      body: JSON.stringify({ categories, isPaid: true, useHumanistScrapers }),
+      body: JSON.stringify({
+        categories: ALL_CATEGORIES, isPaid: true, sourceTier,
+        useHumanistScrapers,
+        humanistCategories: useHumanistScrapers ? nextHumanistBatch() : undefined,
+      }),
       signal: AbortSignal.timeout(180000),
     });
     const data = await res.json().catch(() => ({}));
-    console.log(`⏰ [${label}] (${categories.join(', ')}) statut ${res.status} — trouvées: ${data.opportunitiesFound ?? '?'}, ajoutées: ${data.opportunitiesAdded ?? '?'}, matchées: ${data.matched?.matched ?? '?'}, notifiées: ${data.matched?.notified ?? '?'}`);
+    console.log(`⏰ [${label}] statut ${res.status} — trouvées: ${data.opportunitiesFound ?? '?'}, ajoutées: ${data.opportunitiesAdded ?? '?'}, matchées: ${data.matched?.matched ?? '?'}, notifiées: ${data.matched?.notified ?? '?'}`);
   } catch (e) {
     console.warn(`⚠️ [${label}] échec:`, e.message);
   }
 }
 
-// TIER 1 — breadth toutes les 10 minutes + rotation humaniste (4 catégories, toutes couvertes en rotation)
+// FAST — 10min, 6×/h → pool entier épuisé en 1h. + scrapers humanistes
+// (LinkedIn/Upwork/Twitter, coûteux) en rotation sur 4 catégories/tick.
 cron.schedule('*/10 * * * *', async () => {
-  await runCacheScan('TIER 1 — 10min', TIER_1_CATEGORIES);
-  await runCacheScan('HUMANISTE — rotation', nextHumanistBatch(), true);
+  await runCacheScan('FAST — 10min', 'fast', true);
 });
 
-// TIER 2 — breadth toutes les 30 minutes
-cron.schedule('*/30 * * * *', () => runCacheScan('TIER 2 — 30min', TIER_2_CATEGORIES));
+// MEDIUM — 15min, 4×/h → pool entier épuisé en 1h.
+cron.schedule('*/15 * * * *', () => runCacheScan('MEDIUM — 15min', 'medium'));
 
-// TIER 3 — breadth toutes les 60 minutes
-cron.schedule('0 * * * *', () => runCacheScan('TIER 3 — 60min', TIER_3_CATEGORIES));
+// SLOW — 30min, 2×/h → pool entier épuisé en 1h.
+cron.schedule('*/30 * * * *', () => runCacheScan('SLOW — 30min', 'slow'));
+
+// VERYSLOW — 60min, 1×/h → tout le pool en un seul tick.
+cron.schedule('0 * * * *', () => runCacheScan('VERYSLOW — 60min', 'veryslow'));
 
 // ── Rapport hebdomadaire par email ────────────────────────────────
 // Route déjà écrite (app/api/cron/weekly-report) mais pensée pour Vercel
