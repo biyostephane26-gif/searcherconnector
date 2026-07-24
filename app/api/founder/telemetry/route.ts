@@ -25,6 +25,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
     }
 
+    // Sources en panne — échouent depuis plusieurs cycles d'affilée
+    // (erreur réseau/parsing réelle, distinct d'un simple "0 résultat ce
+    // tour-ci"). Voir supabase/migrations/add_source_health.sql.
+    const { data: deadSources } = await supabase
+      .from('source_health')
+      .select('source_name, consecutive_failures, last_error, last_success_at, last_attempt_at')
+      .gte('consecutive_failures', 3)
+      .order('consecutive_failures', { ascending: false })
+      .limit(50)
+
     // Récupérer toutes les opportunités depuis le cache
     // (count exact séparé : Supabase plafonne à 1000 lignes par requête,
     // donc data.length sous-estimait le total dès que le cache dépassait 1000)
@@ -155,6 +165,7 @@ export async function GET(req: NextRequest) {
         failedScans
       },
       sources: Object.values(sourceStats).sort((a, b) => b.last24h - a.last24h),
+      deadSources: deadSources || [],
       recentSessions,
       chartData
     })

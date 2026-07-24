@@ -22,6 +22,21 @@ export const TOTAL_CONFIGURED_SOURCES =
   AI_TECH_PLATFORMS.length + GLOBAL_FREELANCE.length + INTERNSHIP_JUNIOR.length +
   REMOTE_EXCLUSIVE.length + EXECUTIVE_CAREERS.length + INDUSTRY_SPECIALIZED.length;
 
+// Bufferise les échecs/succès de sources pour que l'appelant (cache-scan)
+// les persiste après le scan — generators.ts reste indépendant de la
+// couche DB, pas de client Supabase ici.
+type SourceOutcome = { name: string; ok: boolean; error?: string };
+let outcomeBuffer: SourceOutcome[] = [];
+export function drainSourceHealthBuffer(): SourceOutcome[] {
+  const buf = outcomeBuffer;
+  outcomeBuffer = [];
+  return buf;
+}
+function recordOutcome(name: string | undefined, ok: boolean, error?: string) {
+  if (!name) return;
+  outcomeBuffer.push({ name, ok, error });
+}
+
 export const TOTAL_CONFIGURED_PAID_SOURCES =
   [JOB_BOARDS, ATS_COMPANIES, FREELANCE_PLATFORMS, TECH_RSS_FEEDS, SOCIAL_COMMUNITIES,
    NICHE_PLATFORMS, AI_TECH_PLATFORMS, GLOBAL_FREELANCE, INTERNSHIP_JUNIOR,
@@ -105,13 +120,17 @@ async function fetchRawCached(url: string, kind: 'json' | 'text'): Promise<any> 
 // =================================================================
 // GÉNÉRATEUR 1 — TRAITEMENT DES APIs GÉNÉRIQUES
 // =================================================================
-export async function fetchGenericAPI(url: string, keyword: string, isPaidOnly: boolean = false): Promise<any[]> {
+export async function fetchGenericAPI(url: string, keyword: string, isPaidOnly: boolean = false, sourceName?: string): Promise<any[]> {
   try {
     const data = await fetchRawCached(url, 'json');
     const results = parseGenericAPIData(data, keyword, isPaidOnly);
+    // Fetch + parse réussis = la source répond, indépendamment du nombre
+    // de résultats matchés ce tour-ci (mot-clé absent ce cycle ≠ source cassée).
+    recordOutcome(sourceName, true);
     // 🚨 FILTRER TEMPS RÉEL : GARDER SEULEMENT < 24h !
     return results.filter(item => isDateFreshEnough(item.date));
   } catch (e) {
+    recordOutcome(sourceName, false, (e as any)?.message);
     console.warn(`[API] Erreur ${url}:`, (e as any)?.message);
     return [];
   }
@@ -168,13 +187,15 @@ function parseGenericAPIData(data: any, keyword: string, isPaidOnly: boolean): a
 // =================================================================
 // GÉNÉRATEUR 2 — TRAITEMENT DES RSS FEEDS (TEMPS RÉEL)
 // =================================================================
-export async function fetchGenericRSS(url: string, keyword: string, isPaidOnly: boolean = false): Promise<any[]> {
+export async function fetchGenericRSS(url: string, keyword: string, isPaidOnly: boolean = false, sourceName?: string): Promise<any[]> {
   try {
     const text = await fetchRawCached(url, 'text');
     const results = parseGenericRSS(text, keyword, url, isPaidOnly);
+    recordOutcome(sourceName, true);
     // 🚨 FILTRER TEMPS RÉEL : GARDER SEULEMENT < 24h !
     return results.filter(item => isDateFreshEnough(item.date));
   } catch (e) {
+    recordOutcome(sourceName, false, (e as any)?.message);
     console.warn(`[RSS] Erreur ${url}:`, (e as any)?.message);
     return [];
   }
@@ -375,8 +396,8 @@ async function runInBatches<T>(items: T[], limit: number, worker: (item: T) => P
 // Exécute une source selon son type (api/rss → vrai fetch, browser/autre → site:)
 async function executeSource(source: SourceEntry, keyword: string): Promise<any[]> {
   return withSourceCache(source.url, keyword, async () => {
-    if (source.type === 'api') return fetchGenericAPI(source.url, keyword, source.isPaidOnly);
-    if (source.type === 'rss') return fetchGenericRSS(source.url, keyword, source.isPaidOnly);
+    if (source.type === 'api') return fetchGenericAPI(source.url, keyword, source.isPaidOnly, source.name);
+    if (source.type === 'rss') return fetchGenericRSS(source.url, keyword, source.isPaidOnly, source.name);
     // 'browser' ou tout autre type sans parseur direct → recherche site-scoped
     return siteScopedSearch(hostnameOf(source.url), keyword);
   });

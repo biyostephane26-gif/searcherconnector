@@ -11,7 +11,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { fetchAllSources, pickTierBatch, runTierBatch, SourceTier } from '../../../src/lib/scraper/generators'
+import { fetchAllSources, pickTierBatch, runTierBatch, SourceTier, drainSourceHealthBuffer } from '../../../src/lib/scraper/generators'
 import { CATEGORIES, extractKeywordsForUser } from '../../../src/lib/scraper/categories'
 import { detectRequiredLevel, computeLevelMatch } from '../../../src/lib/scraper/skill-matching'
 import { typeMatchDelta } from '../../../src/lib/scraper/typeSignals'
@@ -164,6 +164,19 @@ export async function POST(req: NextRequest) {
 
     // ── Matching + notification directe des utilisateurs concernés ──
     const matchStats = await matchAndNotify(targetCategories)
+
+    // ── Santé des sources — persiste les échecs/succès de ce scan ────
+    // Jamais bloquant : un souci ici ne doit jamais faire échouer le scan.
+    const healthOutcomes = drainSourceHealthBuffer()
+    if (healthOutcomes.length > 0) {
+      const latestByName = new Map<string, { name: string; ok: boolean; error?: string }>()
+      for (const o of healthOutcomes) latestByName.set(o.name, o) // dernier état gagne si appelé plusieurs fois ce tour
+      Promise.allSettled(
+        Array.from(latestByName.values()).map(o =>
+          supabase.rpc('record_source_outcome', { p_name: o.name, p_ok: o.ok, p_error: o.error?.slice(0, 500) || null })
+        )
+      ).catch(() => {})
+    }
 
     if (session?.id) {
       await supabase.from('scraper_sessions').update({

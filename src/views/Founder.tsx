@@ -103,6 +103,7 @@ export default function Founder() {
   const [events, setEvents]   = useState<any[]>([])
   // Telemetry
   const [sourcesStats, setSourcesStats] = useState<any>(null)
+  const [deadSources, setDeadSources] = useState<any[]>([])
   const [scanSessions, setScanSessions] = useState<any[]>([])
   const [freeScanEnabled, setFreeScanEnabled] = useState(true)
   const [paidScanEnabled, setPaidScanEnabled] = useState(true)
@@ -152,6 +153,7 @@ export default function Founder() {
         if (res.ok) {
           const data = await res.json()
           setSourcesStats(data.summary)
+          setDeadSources(data.deadSources || [])
           setScanSessions(data.recentSessions || [])
         } else {
           console.error('Erreur chargement télémétrie:', await res.text())
@@ -477,6 +479,28 @@ export default function Founder() {
                       </p>
                     </Card>
                   </div>
+
+                  {/* Sources en panne — échouent depuis ≥3 cycles d'affilée
+                      (erreur réseau/parsing réelle, pas juste "0 résultat ce
+                      tour"). Distingue une source RSS/ATS cassée d'une des
+                      ~87 entrées LinkedIn/Upwork/Twitter décoratives qui
+                      n'ont jamais fonctionné (aucune API JSON publique). */}
+                  {deadSources.length > 0 && (
+                    <Card className="p-6">
+                      <h3 className="font-bold text-white mb-3 flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-red-400" />
+                        Sources en panne ({deadSources.length})
+                      </h3>
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                        {deadSources.map((s: any) => (
+                          <div key={s.source_name} className="flex items-center justify-between gap-3 text-xs border-b border-[#1A1A1A] pb-2">
+                            <span className="text-gray-300 truncate">{s.source_name}</span>
+                            <span className="text-red-400 font-bold flex-shrink-0">{s.consecutive_failures} échecs</span>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+                  )}
 
                   {/* Toggle Controls */}
                   <Card className="p-6">

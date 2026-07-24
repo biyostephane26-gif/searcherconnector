@@ -123,28 +123,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // un `profile` encore null et redirige à tort (ex: un vrai founder
     // éjecté de /founder parce que fetchProfile() n'avait pas fini).
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
-      setSession(newSession)
-      setUser(newSession?.user ?? null)
+      try {
+        setSession(newSession)
+        setUser(newSession?.user ?? null)
 
-      if (newSession?.user) {
-        await fetchProfile(newSession.user.id)
-      } else {
-        setProfile(null)
+        if (newSession?.user) {
+          await fetchProfile(newSession.user.id)
+        } else {
+          setProfile(null)
+        }
+      } finally {
+        setLoading(false)
       }
-
-      setLoading(false)
     })
 
+    // Avant ce fix : aucun .catch() ici — un token corrompu/expiré dont le
+    // rafraîchissement échoue faisait rejeter cette promesse, setLoading(false)
+    // n'était jamais atteint, et l'écran de chargement tournait indéfiniment
+    // (signalé par un utilisateur réel bloqué sur /profile).
     supabase.auth.getSession().then(async ({ data: { session: currentSession } }) => {
-      setSession(currentSession)
-      setUser(currentSession?.user ?? null)
+      try {
+        setSession(currentSession)
+        setUser(currentSession?.user ?? null)
 
-      if (currentSession?.user) {
-        await fetchProfile(currentSession.user.id)
+        if (currentSession?.user) {
+          await fetchProfile(currentSession.user.id)
+        }
+      } finally {
+        setLoading(false)
       }
-
-      setLoading(false)
-    })
+    }).catch(() => setLoading(false))
 
     return () => subscription.unsubscribe()
   }, [])
