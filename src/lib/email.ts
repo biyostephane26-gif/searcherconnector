@@ -222,7 +222,7 @@ export async function sendPaymentConfirmation(params: {
         <ul style="color:#AAAAAA;font-size:14px;line-height:2;padding-left:20px;">
           <li>✅ ~1000 sources (dont la moitié premium)</li>
           <li>✅ 5 scans/session 5h + 5 scans auto SCAI</li>
-          <li>✅ Auto-candidature jusqu'à 10/jour</li>
+          <li>✅ Candidatures auto-rédigées jusqu'à 10/jour</li>
           <li>✅ 60 crédits SCAI/mois (voix + scraping)</li>
           <li>✅ Génération PDF : CV + lettre de motivation</li>
         </ul>
@@ -230,7 +230,7 @@ export async function sendPaymentConfirmation(params: {
         <ul style="color:#AAAAAA;font-size:14px;line-height:2;padding-left:20px;">
           <li>✅ Les 2005 sources — toute la puissance SCAI</li>
           <li>✅ 10 scans/session 5h + 20 notifications (jusqu'à 250)</li>
-          <li>✅ Auto-candidature jusqu'à 50/jour + passage prioritaire</li>
+          <li>✅ Candidatures auto-rédigées jusqu'à 50/jour + passage prioritaire</li>
           <li>✅ 300 crédits SCAI/mois (voix + scraping)</li>
           <li>✅ Simulation d'entretien + tous les PDF</li>
         </ul>

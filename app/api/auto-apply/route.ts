@@ -67,7 +67,9 @@ Génère UNIQUEMENT le corps du message.`
   try {
     const geminiResult = await callGeminiDirect(prompt)
     if (geminiResult && geminiResult.length > 50) return geminiResult
-  } catch { /* fallback Groq */ }
+  } catch (e: any) {
+    console.warn('[auto-apply] Gemini a échoué, tentative Groq:', e?.message)
+  }
 
   // Groq en secours
   const groqKeys = [
@@ -75,6 +77,16 @@ Génère UNIQUEMENT le corps du message.`
     process.env.GROQ_API_KEY_10,
     process.env.GROQ_API_KEY,
   ].filter(Boolean) as string[]
+
+  // Avant ce fix : erreurs Gemini/Groq totalement silencieuses (catch vide)
+  // — impossible de savoir si le fallback statique était utilisé parce que
+  // les clés API manquaient (c'était le cas — GEMINI_API_KEY et
+  // GROQ_API_KEY* absentes) ou pour une autre raison. Résultat en prod :
+  // 100% des candidatures auto envoyaient le MÊME message générique,
+  // jamais une vraie génération IA.
+  if (groqKeys.length === 0) {
+    console.warn('[auto-apply] Aucune clé Groq configurée (GROQ_API_KEY_9/10/plain) — message de secours statique utilisé.')
+  }
 
   for (const key of groqKeys) {
     try {
@@ -89,13 +101,17 @@ Génère UNIQUEMENT le corps du message.`
         }),
         signal: AbortSignal.timeout(15000),
       })
-      if (!r.ok) continue
+      if (!r.ok) { console.warn('[auto-apply] Groq HTTP', r.status, await r.text().catch(() => '')); continue }
       const text = (await r.json()).choices?.[0]?.message?.content?.trim()
       if (text && text.length > 50) return text
-    } catch { continue }
+    } catch (e: any) {
+      console.warn('[auto-apply] Groq a échoué:', e?.message)
+      continue
+    }
   }
 
   // Template de secours si tout l'IA échoue
+  console.warn('[auto-apply] IA indisponible (Gemini + Groq) — message de secours statique envoyé.')
   return fallbackMessage
 }
 
@@ -133,7 +149,7 @@ export async function POST(req: NextRequest) {
       const cfg = planConfig(planTier(profile))
       if (cfg.autoApplyPerDay <= 0) {
         return NextResponse.json({
-          error: 'Ton plan ne permet pas la candidature automatique. Postule manuellement ou passe à un plan payant.',
+          error: 'Ton plan ne permet pas la rédaction automatique de candidatures. Postule manuellement ou passe à un plan payant.',
           requiresManual: true, upgrade_url: '/pricing',
         }, { status: 403 })
       }

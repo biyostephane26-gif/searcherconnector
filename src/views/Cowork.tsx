@@ -301,7 +301,7 @@ export default function Cowork() {
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Comment ça marche :</p>
                     {[
                       '1. Tu lances un scan → SCAI trouve des opportunités',
-                      '2. SCAI postule en ton nom (avec ta signature)',
+                      '2. SCAI rédige la candidature (avec ta signature) — tu l\'envoies',
                       '3. Les réponses arrivent ici dans Cowork',
                       '4. Tu peux répondre par Email ou WhatsApp depuis ici',
                     ].map((s, i) => (

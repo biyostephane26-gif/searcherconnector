@@ -271,11 +271,11 @@ export default function Applications() {
           <Card className="p-12 text-center">
             <FileText className="w-16 h-16 mx-auto mb-4 text-gray-600 opacity-50" />
             <h3 className="text-xl font-bold mb-2">
-              {autoOnly ? 'SCAI n\'a encore postulé seule à aucune offre'
+              {autoOnly ? 'SCAI n\'a encore rédigé aucune candidature seule'
                 : filter === 'all' ? 'Aucune candidature' : `Aucune candidature ${STATUS_CONFIG[filter as ApplicationStatus].label.toLowerCase()}`}
             </h3>
             <p className="text-gray-400 mb-6">
-              {autoOnly ? 'Active "Candidature automatique" dans Paramètres pour que SCAI postule seule dès qu\'une offre dépasse ton seuil.'
+              {autoOnly ? 'Active "Candidatures auto-rédigées" dans Paramètres pour que SCAI rédige seule dès qu\'une offre dépasse ton seuil.'
                 : 'Commence à postuler pour voir tes candidatures ici'}
             </p>
             <GoldButton onClick={() => router.push('/opportunities')}>
@@ -368,7 +368,7 @@ export default function Applications() {
                             className="flex items-center gap-1 text-xs text-blue-400 hover:underline"
                           >
                             <ExternalLink className="w-3 h-3" />
-                            Aller sur l'offre {app.sent_via === 'scai_auto' ? '(où SCAI a postulé)' : ''}
+                            Aller sur l'offre {app.sent_via === 'scai_auto' ? '(candidature préparée par SCAI)' : ''}
                           </a>
                         )}
                         <button

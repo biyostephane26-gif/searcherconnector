@@ -315,7 +315,7 @@ export default function AppGuide() {
 
             <div className="grid grid-cols-2 gap-4">
               {[
-                { icon: '💼', title: 'Job Seeker', desc: 'Tu cherches un emploi. SCAI scanne les job boards monde entier et postule en ton nom avec des candidatures personnalisées.' },
+                { icon: '💼', title: 'Job Seeker', desc: 'Tu cherches un emploi. SCAI scanne les job boards monde entier et rédige des candidatures personnalisées prêtes à envoyer.' },
                 { icon: '⚡', title: 'Freelance Talent', desc: 'Tu cherches des missions. SCAI trouve des clients sur Upwork, Malt, Contra, et localement — avec budget ou sans.' },
                 { icon: '🏢', title: 'Business Owner', desc: 'Tu cherches des clients. Opportunity Creator scanne les entreprises qui ont besoin de tes services et génère les messages d\'approche.' },
                 { icon: '📈', title: 'Investisseur', desc: 'Tu cherches des projets à financer. SCAI analyse des startups, VC deals, et projets en phase seed dans ton secteur.' },

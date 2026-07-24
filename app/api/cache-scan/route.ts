@@ -14,7 +14,7 @@ import { createClient } from '@supabase/supabase-js'
 import { fetchAllSources, pickTierBatch, runTierBatch, SourceTier, drainSourceHealthBuffer } from '../../../src/lib/scraper/generators'
 import { CATEGORIES, extractKeywordsForUser } from '../../../src/lib/scraper/categories'
 import { detectRequiredLevel, computeLevelMatch } from '../../../src/lib/scraper/skill-matching'
-import { typeMatchDelta } from '../../../src/lib/scraper/typeSignals'
+import { typeMatchDelta, isHardTypeMismatch } from '../../../src/lib/scraper/typeSignals'
 import { isPaidPlan } from '../../../src/lib/planUtils'
 import { scrapeLinkedIn, scrapeUpwork, scrapeTwitter, HAS_HUMANIST_SCRAPERS } from '../../../src/lib/scraper/humanist'
 import { sendOpportunityAlert } from '../../../src/lib/email'
@@ -241,6 +241,20 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
     .in('user_id', users.map(u => u.id))
   const scheduleByUser = new Map((schedules || []).map((s: any) => [s.user_id, s]))
 
+  // ── Dédup cross-tick ───────────────────────────────────────────────
+  // freshItems couvre les 15 dernières minutes, mais matchAndNotify est
+  // rappelée à CHAQUE tick de cron dans cet intervalle (FAST=10min,
+  // MEDIUM=15min...) — seenPairs ci-dessous est local à CET appel et ne
+  // suffit pas à empêcher qu'une même offre déjà traitée à un tick
+  // précédent soit re-matchée, re-insérée dans `opportunities`, et
+  // redéclenche triggerAutoApply. Conséquence observée en prod : la même
+  // offre recevait 2-3 candidatures automatiques identiques en 10 minutes.
+  const candidateUrls = Array.from(new Set(freshItems.map((i: any) => i.original_url).filter(Boolean)))
+  const { data: existingOpps } = candidateUrls.length
+    ? await supabase.from('opportunities').select('user_id, original_url').in('original_url', candidateUrls)
+    : { data: [] as any[] }
+  const existingPairs = new Set((existingOpps || []).map((e: any) => `${e.user_id}::${e.original_url}`))
+
   let matched = 0, notified = 0
   const opportunityRows: any[] = []
   const notificationRows: any[] = []
@@ -276,6 +290,13 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
       const key = `${u.id}::${item.fingerprint}`
       if (seenPairs.has(key)) continue
       seenPairs.add(key)
+
+      // Déjà matché/postulé à un tick précédent — jamais une deuxième fois.
+      if (item.original_url && existingPairs.has(`${u.id}::${item.original_url}`)) continue
+
+      // Exclusion dure — un CDI classique sans ambiguïté ne doit jamais
+      // atteindre un profil freelance (voir typeSignals.ts).
+      if (isHardTypeMismatch((u as any).profile_type, hay)) continue
 
       // ── Barème fraîcheur (identique à scan.ts scoreLocally) ──────
       // Payant : <6h ultra frais (+50) ... >14j trop vieux (-50)

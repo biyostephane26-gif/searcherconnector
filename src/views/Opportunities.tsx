@@ -60,7 +60,7 @@ export default function Opportunities() {
     // BLOQUER pour free users
     const isFree = !profile?.plan || profile.plan === 'free'
     if (isFree) {
-      alert('⚠️ Fonctionnalité réservée aux membres Premium. Upgrade pour que SCAI postule automatiquement pour toi.')
+      alert('⚠️ Fonctionnalité réservée aux membres Premium. Upgrade pour que SCAI rédige tes candidatures automatiquement.')
       router.push('/pricing')
       return
     }

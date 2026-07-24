@@ -556,10 +556,11 @@ export default function Settings() {
               </div>
               <div className="flex items-center justify-between gap-4 rounded-xl border border-[#D4AF37]/30 bg-[#0D0D0D] p-4">
                 <div>
-                  <div className="font-medium text-white text-sm">⚡ Auto-candidature réelle</div>
+                  <div className="font-medium text-white text-sm">⚡ Candidatures auto-rédigées</div>
                   <p className="text-xs text-gray-600">
-                    SCAI postule automatiquement en ton nom pour les offres ≥ {agentSchedule?.auto_apply_threshold ?? 80}/100,
-                    même quand tu n'es pas connecté. Désactivé par défaut — active en connaissance de cause.
+                    SCAI rédige et enregistre automatiquement un message de candidature pour les offres ≥ {agentSchedule?.auto_apply_threshold ?? 80}/100,
+                    même quand tu n'es pas connecté. Tu restes celui qui envoie réellement — SCAI ne soumet rien lui-même sur le site de l'employeur.
+                    Désactivé par défaut — active en connaissance de cause.
                   </p>
                 </div>
                 <Toggle value={!!agentSchedule?.auto_apply_enabled} onChange={toggleAutoApply} disabled={agentLoading} />

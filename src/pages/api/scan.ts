@@ -39,7 +39,7 @@ import { fetchAllSources } from '../../lib/scraper/generators';
 import { cache } from '../../lib/scraper/cache-manager';
 import { matchCategories, matchCategoriesForUser } from '../../lib/scraper/categories';
 import { detectRequiredLevel, computeLevelMatch } from '../../lib/scraper/skill-matching';
-import { typeMatchDelta } from '../../lib/scraper/typeSignals';
+import { typeMatchDelta, isHardTypeMismatch } from '../../lib/scraper/typeSignals';
 import { checkRateLimit } from '../../lib/rateLimiter';
 import { planTier } from '../../lib/planUtils';
 import { planConfig } from '../../lib/planConfig';
@@ -957,6 +957,11 @@ function scoreLocally(items: any[], profile: any, isPaid: boolean): any[] {
 
   return items.map(r => {
     const hay = `${r.title||''} ${r.snippet||''}`.toLowerCase();
+    // Exclusion dure AVANT de calculer un score — un CDI classique sans
+    // ambiguïté ne doit jamais atteindre un profil freelance, même si
+    // d'autres signaux de domaine sont forts. Un simple malus ne
+    // suffisait pas en pratique (voir typeSignals.ts).
+    if (isHardTypeMismatch(type, hay)) return null;
     let score = 20;
 
     const dHits = terms.filter(t=>t.length>3&&hay.includes(t)).length;

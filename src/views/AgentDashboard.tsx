@@ -958,7 +958,7 @@ export default function AgentDashboard() {
             </div>
 
             <div className="bg-[#111111] border border-gray-800 rounded-xl p-5">
-              <div className="font-syne font-bold text-sm text-white mb-4">🎯 Seuil de candidature automatique</div>
+              <div className="font-syne font-bold text-sm text-white mb-4">🎯 Seuil de rédaction automatique</div>
               <div className="flex items-center gap-4">
                 <input
                   type="range" min="50" max="100" step="5"
@@ -970,7 +970,7 @@ export default function AgentDashboard() {
                   {schedule.auto_apply_threshold}+
                 </span>
               </div>
-              <div className="text-xs text-gray-500 mt-1">Searcher postule automatiquement si score ≥ {schedule.auto_apply_threshold}/100</div>
+              <div className="text-xs text-gray-500 mt-1">Searcher rédige et prépare automatiquement la candidature si score ≥ {schedule.auto_apply_threshold}/100</div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

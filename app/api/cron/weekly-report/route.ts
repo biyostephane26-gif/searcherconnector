@@ -136,7 +136,7 @@ export async function GET(req: NextRequest) {
         if (user.plan === 'free') {
           premiumBenefits.push('Scans 10x plus fréquents')
           premiumBenefits.push('Accès à LinkedIn, Indeed, Glassdoor')
-          premiumBenefits.push('Auto-candidature intelligente')
+          premiumBenefits.push('Candidatures auto-rédigées intelligentes')
           premiumBenefits.push('Notifications temps réel')
           premiumBenefits.push('SCAI Voice illimité')
         }
