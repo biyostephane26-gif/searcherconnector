@@ -831,8 +831,8 @@ export default function AgentDashboard() {
 
         {/* Tab: Queue */}
         {activeTab === 'queue' && (
-          <div className="bg-[#111111] border border-gray-800 rounded-xl overflow-hidden">
-            <table className="w-full">
+          <div className="bg-[#111111] border border-gray-800 rounded-xl overflow-x-auto">
+            <table className="w-full min-w-[560px]">
               <thead>
                 <tr className="border-b border-gray-800">
                   <th className="text-left px-4 py-3 text-xs text-gray-500 font-medium uppercase tracking-wider">Tâche</th>
@@ -973,7 +973,7 @@ export default function AgentDashboard() {
               <div className="text-xs text-gray-500 mt-1">Searcher postule automatiquement si score ≥ {schedule.auto_apply_threshold}/100</div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 { key: 'email_auto_reply', label: '📧 Réponses email auto', desc: 'Searcher répond aux recruteurs' },
                 { key: 'whatsapp_auto_reply', label: '💬 Réponses WhatsApp auto', desc: 'Searcher gère les messages WA' },

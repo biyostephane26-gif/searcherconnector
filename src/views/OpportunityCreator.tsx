@@ -167,7 +167,7 @@ export default function OpportunityCreator() {
 
           {/* Config */}
           <Card className="p-6 space-y-5">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Ton service</label>
                 <div className="bg-black border border-[#2a2a2a] rounded-lg px-4 py-3 text-white text-sm">
@@ -215,7 +215,7 @@ export default function OpportunityCreator() {
           {result && (
             <div className="space-y-6">
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
                   { label: 'Entreprises scannées', value: result.total_found,   color: 'text-gray-400' },
                   { label: 'Audits générés',       value: result.total_audited, color: 'text-[#D4AF37]' },
@@ -342,7 +342,7 @@ export default function OpportunityCreator() {
               <div className="space-y-2">
                 {leads.map((lead: any) => (
                   <Card key={lead.id} className="p-4">
-                    <div className="flex items-center justify-between gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-white text-sm truncate">{lead.company_name}</span>

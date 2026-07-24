@@ -43,6 +43,7 @@ interface Application {
   rejection_reason?: string
   opportunity_id?: string
   application_id?: string
+  sent_via?: 'scai_auto' | 'manual'
 }
 
 const STATUS_CONFIG: Record<ApplicationStatus, { label: string; icon: any; color: string; bg: string }> = {
@@ -103,6 +104,10 @@ export default function Applications() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | ApplicationStatus>('all')
   const [searchQuery, setSearchQuery] = useState('')
+  // Preuve des candidatures envoyées par SCAI seule, sans clic manuel —
+  // demandé explicitement : aucun moyen avant ça de distinguer "SCAI a
+  // postulé tout seul" d'une candidature manuelle sur cette page.
+  const [autoOnly, setAutoOnly] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -127,7 +132,8 @@ export default function Applications() {
 
   const filteredApplications = applications.filter(app => {
     if (filter !== 'all' && app.status !== filter) return false
-    if (searchQuery && !app.job_title.toLowerCase().includes(searchQuery.toLowerCase()) && 
+    if (autoOnly && app.sent_via !== 'scai_auto') return false
+    if (searchQuery && !app.job_title.toLowerCase().includes(searchQuery.toLowerCase()) &&
         !app.company.toLowerCase().includes(searchQuery.toLowerCase())) return false
     return true
   })
@@ -137,7 +143,8 @@ export default function Applications() {
     active: applications.filter(a => !['accepted', 'rejected', 'withdrawn'].includes(a.status)).length,
     interviews: applications.filter(a => ['interview_scheduled', 'interview_completed'].includes(a.status)).length,
     offers: applications.filter(a => a.status === 'offer_received').length,
-    accepted: applications.filter(a => a.status === 'accepted').length
+    accepted: applications.filter(a => a.status === 'accepted').length,
+    autoApplied: applications.filter(a => a.sent_via === 'scai_auto').length
   }
 
   const timeAgo = (date: string) => {
@@ -175,10 +182,14 @@ export default function Applications() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
           <Card className="p-4">
             <div className="text-sm text-gray-500 mb-1">Total</div>
             <div className="text-3xl font-bold text-white">{stats.total}</div>
+          </Card>
+          <Card className="p-4">
+            <div className="text-sm text-gray-500 mb-1">🤖 SCAI seule</div>
+            <div className="text-3xl font-bold text-[#D4AF37]">{stats.autoApplied}</div>
           </Card>
           <Card className="p-4">
             <div className="text-sm text-gray-500 mb-1">En cours</div>
@@ -212,6 +223,18 @@ export default function Applications() {
                 className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg pl-10 pr-4 py-2.5 text-sm focus:border-[#D4AF37] outline-none"
               />
             </div>
+
+            {/* Preuve SCAI — candidatures envoyées sans intervention manuelle */}
+            <button
+              onClick={() => setAutoOnly(v => !v)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                autoOnly
+                  ? 'bg-[#D4AF37] text-black'
+                  : 'bg-[#1A1A1A] text-gray-400 hover:text-white'
+              }`}
+            >
+              🤖 SCAI seule ({stats.autoApplied})
+            </button>
 
             {/* Status Filter */}
             <div className="flex gap-2 overflow-x-auto">
@@ -247,10 +270,12 @@ export default function Applications() {
           <Card className="p-12 text-center">
             <FileText className="w-16 h-16 mx-auto mb-4 text-gray-600 opacity-50" />
             <h3 className="text-xl font-bold mb-2">
-              {filter === 'all' ? 'Aucune candidature' : `Aucune candidature ${STATUS_CONFIG[filter as ApplicationStatus].label.toLowerCase()}`}
+              {autoOnly ? 'SCAI n\'a encore postulé seule à aucune offre'
+                : filter === 'all' ? 'Aucune candidature' : `Aucune candidature ${STATUS_CONFIG[filter as ApplicationStatus].label.toLowerCase()}`}
             </h3>
             <p className="text-gray-400 mb-6">
-              Commence à postuler pour voir tes candidatures ici
+              {autoOnly ? 'Active "Candidature automatique" dans Paramètres pour que SCAI postule seule dès qu\'une offre dépasse ton seuil.'
+                : 'Commence à postuler pour voir tes candidatures ici'}
             </p>
             <GoldButton onClick={() => router.push('/opportunities')}>
               Explorer les opportunités
@@ -274,9 +299,16 @@ export default function Applications() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-4 mb-2">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-bold text-white mb-1 truncate group-hover:text-[#D4AF37] transition-colors">
-                            {app.job_title}
-                          </h3>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-lg font-bold text-white truncate group-hover:text-[#D4AF37] transition-colors">
+                              {app.job_title}
+                            </h3>
+                            {app.sent_via === 'scai_auto' && (
+                              <span className="text-[9px] font-bold uppercase tracking-widest text-[#D4AF37] bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-full px-2 py-0.5 flex-shrink-0">
+                                🤖 SCAI seule
+                              </span>
+                            )}
+                          </div>
                           <div className="flex items-center gap-4 text-sm text-gray-400">
                             <div className="flex items-center gap-1">
                               <Building2 className="w-4 h-4" />

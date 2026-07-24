@@ -10,6 +10,7 @@ import Card from '../components/ui/Card'
 import GoldButton from '../components/ui/GoldButton'
 import { Search, Zap, X, ExternalLink, CheckCircle, XCircle, AlertTriangle, Globe, Clock, Star, ChevronRight, FileText } from 'lucide-react'
 import { usePDF } from '../hooks/usePDF'
+import { computeProfileCompletion } from '../lib/profileCompletion'
 
 export default function Opportunities() {
   const { user, profile } = useAuth()
@@ -74,7 +75,10 @@ export default function Opportunities() {
       const data = await res.json()
 
       if (data.requiresManual) {
-        // Score trop bas → ouvrir directement l'offre
+        // Score trop bas / quota atteint / plan ne permet pas → toujours
+        // prévenir l'utilisateur du POURQUOI avant d'ouvrir l'offre en
+        // secours (avant ce fix : silence total quand original_url manquait).
+        alert(data.error || 'SCAI ne peut pas préparer cette candidature automatiquement. Postule manuellement.')
         if (opp.original_url) window.open(opp.original_url, '_blank')
         return
       }
@@ -88,7 +92,13 @@ export default function Opportunities() {
             ...prev, status: 'ready_to_send', application_id: data.application_id
           } : prev)
         }
+        return
       }
+
+      // Ni succès ni requiresManual (ex. rate-limit 429, profil/offre 404,
+      // erreur serveur 500) — avant ce fix : bouton "ne faisait rien" car
+      // aucun des deux cas ci-dessus n'était couvert.
+      alert(data.error || 'La candidature n\'a pas pu être préparée. Réessaie dans quelques secondes.')
     } catch (err) {
       // Ne JAMAIS marquer comme "prête" si l'appel a échoué — le message
       // n'a pas été généré, l'utilisateur ne doit pas croire le contraire.
@@ -98,8 +108,11 @@ export default function Opportunities() {
 
   // Calculer le score de préparation pour une opportunité
   const computeReadiness = (opp: any) => {
+    // Live, pas la colonne profile_completion figée à l'onboarding (même
+    // bug que Sidebar.tsx — voir src/lib/profileCompletion.ts)
+    const { percent: liveCompletion } = computeProfileCompletion(profile, true)
     const checks = [
-      { label: 'Profil complet',         ok: (profile?.profile_completion || 0) >= 70, tip: 'Complète ton profil à 70%+' },
+      { label: 'Profil complet',         ok: liveCompletion >= 70, tip: 'Complète ton profil à 70%+' },
       { label: 'Bio professionnelle',    ok: !!profile?.bio && (profile.bio?.length || 0) > 50, tip: 'Ajoute une bio de 50 mots minimum' },
       { label: 'Portfolio/liens',        ok: !!(profile?.portfolio_url || profile?.github_url || profile?.linkedin_url), tip: 'Ajoute un lien portfolio ou LinkedIn' },
       { label: 'Documents uploadés',     ok: true, tip: '' },  // simplifié
@@ -191,9 +204,24 @@ export default function Opportunities() {
             ) : opportunities.length === 0 ? (
               <div className="text-center py-20 bg-[#111111] rounded-3xl border border-dashed border-[#2a2a2a]">
                 <Search className="w-12 h-12 text-gray-800 mx-auto mb-4" />
-                <h3 className="text-lg font-bold text-gray-500 mb-2">Aucune opportunité.</h3>
-                <p className="text-sm text-gray-600 mb-6">Lance un scan global depuis le dashboard.</p>
-                <GoldButton onClick={() => router.push('/dashboard')}>Lancer un scan</GoldButton>
+                {filter === 'applied' ? (
+                  <>
+                    {/* Ce filtre dépend de opportunities.status, qui peut être
+                        vide même quand SCAI a bien postulé (offres nettoyées
+                        du cache après un moment, mise à jour de statut parfois
+                        silencieusement ratée) — la preuve fiable et permanente
+                        de tout ce que SCAI a envoyé vit dans /applications. */}
+                    <h3 className="text-lg font-bold text-gray-500 mb-2">Rien à afficher ici pour l'instant.</h3>
+                    <p className="text-sm text-gray-600 mb-6">La liste complète et permanente des candidatures — y compris celles envoyées par SCAI seule — est sur la page Candidatures.</p>
+                    <GoldButton onClick={() => router.push('/applications')}>Voir mes candidatures</GoldButton>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-lg font-bold text-gray-500 mb-2">Aucune opportunité.</h3>
+                    <p className="text-sm text-gray-600 mb-6">Lance un scan global depuis le dashboard.</p>
+                    <GoldButton onClick={() => router.push('/dashboard')}>Lancer un scan</GoldButton>
+                  </>
+                )}
               </div>
             ) : (
               <div className="space-y-3">
