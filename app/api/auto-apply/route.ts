@@ -59,7 +59,7 @@ OPPORTUNITÉ :
 - Entreprise : ${opportunity.company || 'Non précisée'}
 - Description : ${(opportunity.snippet || opportunity.match_reason || '').slice(0, 200)}
 ${profile.response_template ? `\nSTYLE DU CANDIDAT — exemple d'un message que lui-même a déjà écrit. Imite son ton, son registre et ses tournures de phrase, ne le recopie pas mot pour mot :\n"""\n${profile.response_template.slice(0, 500)}\n"""\n` : ''}
-RÈGLES : message direct 80-150 mots, accroche sur l'opportunité, 1-2 compétences clés, appel à l'action. Pas de "Bonjour je me présente". Pas de signature (ajoutée automatiquement). Langue : français sauf si opportunité en anglais.
+RÈGLES : message direct 80-150 mots, accroche sur l'opportunité, 1-2 compétences clés, appel à l'action. Pas de "Bonjour je me présente". Pas de signature (ajoutée automatiquement). LANGUE : détecte la langue du titre/de la description de l'opportunité ci-dessus et écris le message dans CETTE langue (anglais, espagnol, allemand, etc.) — pas systématiquement en français.
 
 Génère UNIQUEMENT le corps du message.`
 

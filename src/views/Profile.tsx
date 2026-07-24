@@ -439,16 +439,21 @@ export default function Profile() {
 
         <div className="flex-1 overflow-y-auto">
           {/* ── Hero / Header Section — couleur selon le type de profil ── */}
-          <div className={`relative h-64 bg-gradient-to-r ${theme.gradient} border-b border-[#1A1A1A] overflow-hidden`}>
-            {/* Icône du métier en filigrane — purement décoratif, ne capte
-                jamais le clic (pointer-events-none) et reste sous le reste
-                du contenu (z-0) pour ne jamais gêner la lecture. */}
-            <DomainIcon
-              className="absolute -right-6 -top-6 text-white/5 pointer-events-none select-none z-0"
-              size={220}
-              strokeWidth={1}
-              aria-hidden="true"
-            />
+          <div className={`relative h-64 bg-gradient-to-r ${theme.gradient} border-b border-[#1A1A1A]`}>
+            {/* overflow-hidden isolé à ce wrapper (pas au conteneur h-64 entier) :
+                le bloc photo+nom plus bas déborde volontairement de -bottom-16
+                sous la bannière (avatar "à cheval" sur le contenu) — mettre
+                overflow-hidden sur le conteneur parent le coupait net (nom/sous-titre
+                tronqués visible en bas de la bannière). Seule l'icône filigrane a
+                besoin d'être clippée aux bords de la bannière. */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <DomainIcon
+                className="absolute -right-6 -top-6 text-white/5 select-none z-0"
+                size={220}
+                strokeWidth={1}
+                aria-hidden="true"
+              />
+            </div>
             {/* Badge type de profil en haut à droite */}
             <div className="absolute top-4 right-6">
               <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest ${theme.badgeBg}`}>

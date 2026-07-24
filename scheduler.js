@@ -165,4 +165,23 @@ async function runVoiceCreditsReset() {
 // Chaque jour à 00:05
 cron.schedule('5 0 * * *', runVoiceCreditsReset);
 
+// ── Anti-veille (Render free tier) ──────────────────────────────────
+// Render endort le service après ~15min sans requête entrante → le
+// premier visiteur attend ~15s de réveil, ce qui ressemble à "rien ne
+// s'affiche". Ce ping garde le service actif tant qu'il tourne déjà.
+// Complément : un ping EXTERNE (UptimeRobot) est nécessaire en plus,
+// car si le service dort déjà, ce ping interne dort avec lui et ne
+// peut pas se réveiller tout seul.
+const PUBLIC_URL = process.env.RENDER_EXTERNAL_URL || process.env.NEXT_PUBLIC_APP_URL || '';
+async function runSelfPing() {
+  if (!PUBLIC_URL) return;
+  try {
+    const res = await fetch(PUBLIC_URL, { signal: AbortSignal.timeout(15000) });
+    console.log(`💓 [Anti-veille] ping ${PUBLIC_URL} → statut ${res.status}`);
+  } catch (e) {
+    console.warn('⚠️ [Anti-veille] échec ping:', e.message);
+  }
+}
+cron.schedule('*/10 * * * *', runSelfPing);
+
 console.log('🚀 Scheduler démarré : scan 10/30/60min, rotation humaniste ~35min, rapport hebdo lundi 9h, polling Gmail 15min, nettoyage cache 1h, expiration plans 1h, reset crédits SCAI quotidien.');

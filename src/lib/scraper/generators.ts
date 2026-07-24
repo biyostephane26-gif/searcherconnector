@@ -327,7 +327,14 @@ async function siteScopedSearch(domain: string, keyword: string): Promise<any[]>
 // Cache mémoire léger par source — évite de re-hit la même source
 // à chaque scan répété dans une courte fenêtre (protège le budget API)
 // =================================================================
-const sourceCacheTTLMs = 6 * 60 * 60 * 1000; // 6h
+const sourceCacheTTLMs = 6 * 60 * 60 * 1000; // 6h — protège le budget API par source
+// Fenêtre de ROTATION (distincte du cache ci-dessus) — détermine la vitesse à
+// laquelle rotatingSlice() parcourt tout le pool de ~2005 sources. À 6h et
+// 150 sources/scan, un cycle complet prenait ~80h (2005/150×6h) : le
+// dashboard fondateur (actif = vu <24h) ne pouvait jamais refléter qu'une
+// fraction du pool. À 90min, un cycle complet prend ~20h → le pool entier
+// est retenté en moins d'un jour, sans coût API supplémentaire par scan.
+const rotationWindowMs = 90 * 60 * 1000; // 90min
 const sourceCache = new Map<string, { at: number; results: any[] }>();
 
 function cacheKey(url: string, keyword: string): string { return `${url}::${keyword.toLowerCase()}`; }
@@ -365,7 +372,7 @@ async function executeSource(source: SourceEntry, keyword: string): Promise<any[
 // Choisit un sous-ensemble rotatif d'une liste (couverture complète sur plusieurs scans)
 function rotatingSlice<T>(items: T[], count: number): T[] {
   if (items.length <= count) return items;
-  const offset = Math.floor(Date.now() / sourceCacheTTLMs) % items.length; // change toutes les 6h
+  const offset = Math.floor(Date.now() / rotationWindowMs) % items.length; // change toutes les 90min
   const rotated = [...items.slice(offset), ...items.slice(0, offset)];
   return rotated.slice(0, count);
 }

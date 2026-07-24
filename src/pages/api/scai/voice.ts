@@ -179,6 +179,16 @@ async function transcribeAudio(audioData: any): Promise<string> {
   throw new Error(`STT failed: ${lastError}`);
 }
 
+// Coupe à `max` caractères max, mais à la dernière fin de phrase avant
+// cette limite (jamais en plein mot) — avant, un slice(0,500) brut coupait
+// SCAI en pleine phrase, ce qui donnait l'impression que l'audio "se coupe".
+function truncateAtSentence(text: string, max: number): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const lastEnd = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('! '), cut.lastIndexOf('? '), cut.lastIndexOf('\n'));
+  return lastEnd > max * 0.5 ? cut.slice(0, lastEnd + 1) : cut;
+}
+
 // ──────────────────────────────────────────────────────────────
 // TEXT-TO-SPEECH (ElevenLabs)
 // ──────────────────────────────────────────────────────────────
@@ -200,7 +210,7 @@ async function textToSpeech(text: string): Promise<Buffer> {
           'xi-api-key': key,
         },
         body: JSON.stringify({
-          text: text.slice(0, 500), // Limit to prevent very long audio
+          text: truncateAtSentence(text, 2500), // coupe proprement, pas en plein mot
           model_id: 'eleven_multilingual_v2',
           voice_settings: {
             stability: 0.5,
