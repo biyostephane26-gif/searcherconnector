@@ -49,6 +49,45 @@ export default function Settings() {
   const [feedbackText, setFeedbackText] = useState('')
   const [feedbackSent, setFeedbackSent] = useState(false)
   const [feedbackLoading, setFeedbackLoading] = useState(false)
+  const [extensionToken, setExtensionToken] = useState<string | null>(null)
+  const [extensionTokenLoading, setExtensionTokenLoading] = useState(false)
+  const [extensionTokenCopied, setExtensionTokenCopied] = useState(false)
+
+  useEffect(() => {
+    if (!user) return
+    fetch(`/api/extension/token?userId=${user.id}`).then(r => r.json()).then(d => setExtensionToken(d.token || null)).catch(() => {})
+  }, [user])
+
+  const generateExtensionToken = async () => {
+    if (!user) return
+    setExtensionTokenLoading(true)
+    try {
+      const r = await fetch('/api/extension/token', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id }),
+      })
+      const d = await r.json()
+      setExtensionToken(d.token || null)
+    } catch { /* silencieux */ }
+    setExtensionTokenLoading(false)
+  }
+
+  const revokeExtensionToken = async () => {
+    if (!user) return
+    setExtensionTokenLoading(true)
+    try {
+      await fetch(`/api/extension/token?userId=${user.id}`, { method: 'DELETE' })
+      setExtensionToken(null)
+    } catch { /* silencieux */ }
+    setExtensionTokenLoading(false)
+  }
+
+  const copyExtensionToken = () => {
+    if (!extensionToken) return
+    navigator.clipboard.writeText(extensionToken)
+    setExtensionTokenCopied(true)
+    setTimeout(() => setExtensionTokenCopied(false), 2000)
+  }
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
@@ -565,6 +604,44 @@ export default function Settings() {
                 </div>
                 <Toggle value={!!agentSchedule?.auto_apply_enabled} onChange={toggleAutoApply} disabled={agentLoading} />
               </div>
+            </Card>
+          </section>
+
+          {/* ── Extension navigateur ────────────────────────────────── */}
+          <section className="space-y-4">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-gray-500">Extension navigateur</h2>
+            <Card className="p-6 space-y-4">
+              <p className="text-xs text-gray-600">
+                Une fois installée, l'extension détecte n'importe quel formulaire de candidature (LinkedIn, Upwork,
+                Freelancer, site d'entreprise...) et pré-remplit tes infos + le message SCAI en un clic — tu gardes
+                toujours la main sur l'envoi final. Colle ce token dans l'extension pour la connecter à ton compte.
+              </p>
+              {extensionToken ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 bg-black border border-[#2a2a2a] rounded-lg px-3 py-2 text-xs text-[#D4AF37] truncate">
+                      {extensionToken}
+                    </code>
+                    <button onClick={copyExtensionToken}
+                      className="px-3 py-2 text-xs text-gray-400 hover:text-white border border-[#2a2a2a] rounded-lg">
+                      {extensionTokenCopied ? '✓ Copié' : 'Copier'}
+                    </button>
+                  </div>
+                  <button onClick={generateExtensionToken} disabled={extensionTokenLoading}
+                    className="text-xs text-gray-500 hover:text-white">
+                    Régénérer (invalide le token actuel)
+                  </button>
+                  <span className="mx-2 text-gray-700">·</span>
+                  <button onClick={revokeExtensionToken} disabled={extensionTokenLoading}
+                    className="text-xs text-red-500 hover:text-red-400">
+                    Révoquer
+                  </button>
+                </div>
+              ) : (
+                <GoldButton onClick={generateExtensionToken} loading={extensionTokenLoading}>
+                  Générer mon token d'extension
+                </GoldButton>
+              )}
             </Card>
           </section>
 

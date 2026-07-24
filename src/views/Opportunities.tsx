@@ -23,6 +23,15 @@ export default function Opportunities() {
   const [selected, setSelected] = useState<any>(null)        // opportunité sélectionnée
   const [readiness, setReadiness] = useState<any>(null)      // score de préparation
   const [loadingReadiness, setLoadingReadiness] = useState(false)
+  // Candidature en série — pour ceux qui n'installent pas l'extension :
+  // au lieu de rechercher chaque message à la main, copier, naviguer,
+  // revenir, copier encore, un flux guidé qui enchaîne les candidatures
+  // déjà préparées par SCAI en 2 clics chacune.
+  const [queueOpen, setQueueOpen] = useState(false)
+  const [queueItems, setQueueItems] = useState<any[]>([])
+  const [queueIndex, setQueueIndex] = useState(0)
+  const [queueLoading, setQueueLoading] = useState(false)
+  const [queueCopied, setQueueCopied] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -106,6 +115,50 @@ export default function Opportunities() {
     }
   }
 
+  // Charge toutes les offres déjà préparées par SCAI (message généré,
+  // status='ready_to_send') et démarre le défilé guidé.
+  const openQueue = async () => {
+    const ready = opportunities.filter(o => o.status === 'ready_to_send')
+    if (ready.length === 0) return
+    setQueueLoading(true)
+    const { data: apps } = await supabase
+      .from('applications_sent')
+      .select('opportunity_id, cover_message')
+      .in('opportunity_id', ready.map(o => o.id))
+    const messageByOppId = new Map((apps || []).map((a: any) => [a.opportunity_id, a.cover_message]))
+    setQueueItems(ready.map(o => ({ ...o, message: messageByOppId.get(o.id) || '' })))
+    setQueueIndex(0)
+    setQueueLoading(false)
+    setQueueOpen(true)
+  }
+
+  const copyQueueMessage = () => {
+    const item = queueItems[queueIndex]
+    if (!item?.message) return
+    navigator.clipboard.writeText(item.message)
+    setQueueCopied(true)
+    setTimeout(() => setQueueCopied(false), 1500)
+  }
+
+  const openQueueOffer = () => {
+    const item = queueItems[queueIndex]
+    if (item?.original_url) window.open(item.original_url, '_blank')
+  }
+
+  const nextQueueItem = () => {
+    setQueueCopied(false)
+    if (queueIndex + 1 >= queueItems.length) { setQueueOpen(false); return }
+    setQueueIndex(i => i + 1)
+  }
+
+  // Copie automatique à chaque étape — pas besoin de re-cliquer "Copier"
+  // avant de coller, le presse-papier est toujours prêt pour l'offre en cours.
+  useEffect(() => {
+    if (!queueOpen) return
+    const item = queueItems[queueIndex]
+    if (item?.message) navigator.clipboard.writeText(item.message).catch(() => {})
+  }, [queueOpen, queueIndex])
+
   // Calculer le score de préparation pour une opportunité
   const computeReadiness = (opp: any) => {
     // Live, pas la colonne profile_completion figée à l'onboarding (même
@@ -162,6 +215,13 @@ export default function Opportunities() {
             <div className="text-[10px] tracking-widest text-[#D4AF37] font-bold uppercase">
               {opportunities.length} opportunités
             </div>
+            {opportunities.some(o => o.status === 'ready_to_send') && (
+              <button
+                onClick={openQueue}
+                className="flex items-center gap-1.5 text-xs text-black bg-[#D4AF37] hover:bg-[#e0bd4f] px-3 py-1.5 rounded-lg transition-all font-bold">
+                <Zap className="w-3.5 h-3.5" /> Postuler en série
+              </button>
+            )}
             {opportunities.length > 0 && (
               <button
                 onClick={() => exportOpportunities(opportunities, profile?.full_name || 'Profil')}
@@ -415,6 +475,50 @@ export default function Opportunities() {
           )}
         </div>
       </main>
+
+      {/* Candidature en série — guide 2 clics par offre : copie le
+          message, ouvre la vraie page, tu colles et envoies toi-même. */}
+      {queueOpen && queueItems[queueIndex] && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+          <div className="bg-[#111] border border-[#D4AF37]/30 rounded-2xl p-6 max-w-lg w-full space-y-5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
+                Candidature {queueIndex + 1} / {queueItems.length}
+              </span>
+              <button onClick={() => setQueueOpen(false)} className="text-gray-500 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div>
+              <h3 className="text-white font-bold">{queueItems[queueIndex].title}</h3>
+              <p className="text-xs text-gray-500">{queueItems[queueIndex].company}</p>
+            </div>
+
+            <div className="bg-black/40 rounded-xl p-4 text-xs text-gray-300 whitespace-pre-wrap leading-relaxed max-h-48 overflow-y-auto border border-[#1A1A1A]">
+              {queueItems[queueIndex].message || 'Message indisponible pour cette offre.'}
+            </div>
+            <p className="text-[10px] text-gray-600">
+              {queueCopied ? '✓ Message copié — colle-le sur la page qui vient de s\'ouvrir.' : 'Le message est déjà copié dans ton presse-papier.'}
+            </p>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button onClick={copyQueueMessage}
+                className="flex items-center justify-center gap-2 py-3 border border-[#2a2a2a] hover:border-[#D4AF37]/40 text-gray-300 rounded-xl text-sm font-medium">
+                Copier à nouveau
+              </button>
+              <button onClick={openQueueOffer}
+                className="flex items-center justify-center gap-2 py-3 bg-[#1A1500] border border-[#D4AF37]/40 text-[#D4AF37] rounded-xl text-sm font-medium">
+                <ExternalLink className="w-4 h-4" /> Ouvrir l'offre
+              </button>
+            </div>
+
+            <GoldButton onClick={nextQueueItem} fullWidth>
+              {queueIndex + 1 >= queueItems.length ? 'Terminer' : 'Suivant →'}
+            </GoldButton>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
