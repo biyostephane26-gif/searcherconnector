@@ -194,6 +194,9 @@ export async function POST(req: NextRequest) {
           applied_at:     appliedAt,
           response_status: 'waiting',
           sent_via:       sendVia || 'manual',
+          // Figé à l'instant T — survit à la purge de la ligne opportunities
+          // (cache-cleanup cron), contrairement à la FK opportunity_id seule.
+          original_url:   opportunity.original_url || null,
         })
         .select('id')
         .single()

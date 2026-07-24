@@ -44,6 +44,7 @@ interface Application {
   opportunity_id?: string
   application_id?: string
   sent_via?: 'scai_auto' | 'manual'
+  original_url?: string
 }
 
 const STATUS_CONFIG: Record<ApplicationStatus, { label: string; icon: any; color: string; bg: string }> = {
@@ -348,7 +349,7 @@ export default function Applications() {
                       )}
 
                       {/* Actions */}
-                      <div className="flex items-center gap-3 mt-4">
+                      <div className="flex items-center gap-3 mt-4 flex-wrap">
                         {app.application_id && (
                           <button
                             onClick={() => router.push(`/applications/${app.application_id}`)}
@@ -357,6 +358,18 @@ export default function Applications() {
                             <ExternalLink className="w-3 h-3" />
                             Voir la candidature
                           </button>
+                        )}
+                        {app.original_url && (
+                          <a
+                            href={app.original_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={e => e.stopPropagation()}
+                            className="flex items-center gap-1 text-xs text-blue-400 hover:underline"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            Aller sur l'offre {app.sent_via === 'scai_auto' ? '(où SCAI a postulé)' : ''}
+                          </a>
                         )}
                         <button
                           onClick={() => router.push(`/applications/edit/${app.id}`)}

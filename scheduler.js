@@ -71,10 +71,18 @@ async function runCacheScan(label, sourceTier, useHumanistScrapers = false) {
   }
 }
 
-// FAST — 10min, 6×/h → pool entier épuisé en 1h. + scrapers humanistes
-// (LinkedIn/Upwork/Twitter, coûteux) en rotation sur 4 catégories/tick.
+// FAST — 10min, 6×/h → pool entier épuisé en 1h.
+// URGENCE 2026-07-24 : scrapers humanistes (LinkedIn/Upwork/Twitter)
+// COUPÉS ici — ils tournaient toutes les 10min, 24/7, sur 4 catégories
+// en render_js:true (5-10x le coût normal d'un appel ScrapingBee), sans
+// aucun rapport avec une vraie demande utilisateur → 98% des crédits
+// ScrapingBee consommés en spéculatif. L'accès LinkedIn/Upwork live
+// reste disponible à la demande via le scan payant (src/pages/api/scan.ts,
+// gated à 5 crédits/scan, déclenché par un vrai clic utilisateur) — c'est
+// LE seul chemin qui doit consommer du ScrapingBee tant que le budget
+// n'est pas fixé avec le fondateur.
 cron.schedule('*/10 * * * *', async () => {
-  await runCacheScan('FAST — 10min', 'fast', true);
+  await runCacheScan('FAST — 10min', 'fast', false);
 });
 
 // MEDIUM — 15min, 4×/h → pool entier épuisé en 1h.

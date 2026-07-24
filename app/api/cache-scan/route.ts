@@ -344,11 +344,20 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
         }
 
         // ── Auto-candidature réelle — seulement si explicitement activée ──
+        // ET seulement sur des sources ouvertes (ATS, job boards, RSS) —
+        // jamais sur les réseaux fermés scrapés (LinkedIn/Upwork/Twitter/
+        // Facebook/Instagram, préfixe "humanist:") : il n'existe aucun canal
+        // de candidature réel sans se connecter au compte du réseau, donc
+        // "SCAI a postulé seul" y serait un mensonge — et forcer une action
+        // automatisée sur un compte tiers login-walled est le genre de chose
+        // qui expose à un bannissement, ce qu'on veut justement éviter.
+        const isOpenSource = !item.source_platform?.startsWith('humanist:')
         const schedule = scheduleByUser.get(u.id) as any
         const autoThreshold = schedule?.auto_apply_threshold || 80
         const autoApplyCountSoFar = autoApplyCountByFingerprint.get(item.fingerprint) || 0
         if (
           schedule?.auto_apply_enabled &&
+          isOpenSource &&
           score >= autoThreshold &&
           autoApplyCountSoFar < AUTO_APPLY_CAP_PER_OPPORTUNITY
         ) {
