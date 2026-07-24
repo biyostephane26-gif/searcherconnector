@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { TOTAL_CONFIGURED_SOURCES, TOTAL_CONFIGURED_PAID_SOURCES } from '../../../../src/lib/scraper/generators'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -135,12 +136,20 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       success: true,
       summary: {
+        // Sources ayant livré ≥1 opportunité récemment (mesure d'activité)
         totalSources,
         activeSources,
         warningSources,
         errorSources,
         paidSources,
         freeSources,
+        // Taille réelle du registre configuré (ce que le scan interroge
+        // réellement, indépendamment de ce qui a déjà livré un résultat) —
+        // c'est le "2005" — distinct de totalSources ci-dessus qui ne
+        // comptait avant que les plateformes distinctes en cache.
+        totalConfiguredSources: TOTAL_CONFIGURED_SOURCES,
+        totalConfiguredPaidSources: TOTAL_CONFIGURED_PAID_SOURCES,
+        totalConfiguredFreeSources: TOTAL_CONFIGURED_SOURCES - TOTAL_CONFIGURED_PAID_SOURCES,
         totalOpportunitiesFound,
         successfulScans,
         failedScans

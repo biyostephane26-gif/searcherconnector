@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '../contexts/AuthContext'
 import Sidebar from '../components/layout/Sidebar'
@@ -7,6 +7,15 @@ import Navbar from '../components/layout/Navbar'
 import Card from '../components/ui/Card'
 import GoldButton from '../components/ui/GoldButton'
 import { Search, Target, Send, Loader2, Star, TrendingUp, AlertCircle, ExternalLink, Copy, CheckCheck, Lock } from 'lucide-react'
+
+const LEAD_GOAL = 50
+const STATUS_LABELS: Record<string, { label: string; color: string }> = {
+  new:       { label: 'Nouveau',   color: 'text-gray-400' },
+  contacted: { label: 'Contacté',  color: 'text-blue-400' },
+  replied:   { label: 'A répondu', color: 'text-[#D4AF37]' },
+  won:       { label: 'Gagné',     color: 'text-green-400' },
+  dead:      { label: 'Sans suite', color: 'text-gray-700' },
+}
 
 export default function OpportunityCreator() {
   const { user, profile } = useAuth()
@@ -17,10 +26,37 @@ export default function OpportunityCreator() {
   const [error, setError] = useState('')
   const [copied, setCopied] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<string | null>(null)
-  
+  const [leads, setLeads] = useState<any[]>([])
+  const [leadsLoading, setLeadsLoading] = useState(true)
+
   // Paywall pour free users
   const isFree = !profile?.plan || profile.plan === 'free'
   const [showPaywall, setShowPaywall] = useState(isFree)
+
+  // ── Charger le pipeline persistant au montage — c'est l'actif qui
+  // grandit dans le temps, pas un résultat éphémère perdu au refresh. ──
+  const loadLeads = async () => {
+    if (!user) return
+    setLeadsLoading(true)
+    try {
+      const r = await fetch(`/api/opportunity-leads?userId=${user.id}`)
+      const data = await r.json()
+      if (r.ok) setLeads(data.leads || [])
+    } catch { /* silencieux */ }
+    setLeadsLoading(false)
+  }
+  useEffect(() => { loadLeads() }, [user])
+
+  const updateLeadStatus = async (leadId: string, status: string) => {
+    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status } : l))
+    try {
+      await fetch('/api/opportunity-leads', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leadId, status }),
+      })
+    } catch { /* déjà mis à jour en optimiste, réessai silencieux ignoré */ }
+  }
 
   const handleScan = async () => {
     if (!user) return
@@ -29,11 +65,12 @@ export default function OpportunityCreator() {
       const r = await fetch('/api/opportunity-creator', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, zone, limit: 10 }),
+        body: JSON.stringify({ userId: user.id, zone, limit: 30 }),
       })
       const data = await r.json()
       if (!r.ok) throw new Error(data.error)
       setResult(data)
+      await loadLeads() // recharge le pipeline complet (nouveaux leads inclus)
     } catch (e: any) { setError(e.message) }
     setLoading(false)
   }
@@ -107,6 +144,26 @@ export default function OpportunityCreator() {
               et génère un message d'approche personnalisé avec preuve à l'appui — avant même d'envoyer.
             </p>
           </div>
+
+          {/* Progression vers l'objectif — l'actif grandit à chaque scan,
+              jamais les mêmes leads réaffichés en boucle */}
+          {!leadsLoading && (
+            <Card className="p-5">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Ton pipeline de leads</span>
+                <span className="text-sm font-bold text-[#D4AF37]">{leads.length} / {LEAD_GOAL}</span>
+              </div>
+              <div className="h-2 bg-[#1A1A1A] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-[#D4AF37] to-[#F5E6A3] transition-all duration-500"
+                  style={{ width: `${Math.min(100, (leads.length / LEAD_GOAL) * 100)}%` }}
+                />
+              </div>
+              <p className="text-[10px] text-gray-600 mt-2">
+                Chaque scan ajoute de NOUVELLES entreprises à ta liste — jamais les mêmes deux fois.
+              </p>
+            </Card>
+          )}
 
           {/* Config */}
           <Card className="p-6 space-y-5">
@@ -271,6 +328,57 @@ export default function OpportunityCreator() {
                   </div>
                 </Card>
               )}
+            </div>
+          )}
+
+          {/* Pipeline complet — l'actif persistant, visible même sans scan
+              récent. C'est ça qui rend l'outil indispensable au quotidien
+              plutôt qu'un gadget qu'on lance une fois et qu'on oublie. */}
+          {!leadsLoading && leads.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-[#D4AF37] flex items-center gap-2">
+                <Target className="w-4 h-4" /> Ton pipeline complet ({leads.length} entreprises)
+              </h3>
+              <div className="space-y-2">
+                {leads.map((lead: any) => (
+                  <Card key={lead.id} className="p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-white text-sm truncate">{lead.company_name}</span>
+                          {lead.digital_score != null && (
+                            <span className={`text-xs font-bold ${scoreColor(lead.digital_score)}`}>{lead.digital_score}/100</span>
+                          )}
+                        </div>
+                        {lead.website && (
+                          <a href={lead.website} target="_blank" rel="noopener noreferrer"
+                            className="text-[10px] text-gray-600 hover:text-[#D4AF37] flex items-center gap-1 transition-colors">
+                            {lead.website.slice(0, 45)} <ExternalLink className="w-2.5 h-2.5" />
+                          </a>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        {lead.message_approche && (
+                          <button onClick={() => copyMessage(`lead-${lead.id}`, lead.message_approche)}
+                            title="Copier le message d'approche"
+                            className="p-2 text-gray-500 hover:text-[#D4AF37] transition-colors">
+                            {copied === `lead-${lead.id}` ? <CheckCheck className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                          </button>
+                        )}
+                        <select
+                          value={lead.status}
+                          onChange={e => updateLeadStatus(lead.id, e.target.value)}
+                          className={`text-[10px] font-bold uppercase tracking-widest bg-black border border-[#2a2a2a] rounded-lg px-2 py-1.5 outline-none ${STATUS_LABELS[lead.status]?.color || 'text-gray-400'}`}
+                        >
+                          {Object.entries(STATUS_LABELS).map(([value, { label }]) => (
+                            <option key={value} value={value}>{label}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
             </div>
           )}
         </div>

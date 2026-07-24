@@ -231,9 +231,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     log.push(`🔍 Recherche entreprises pour : ${domain} | Zone: ${zone} | Pays: ${country}`);
 
+    // ── Dédup : ne jamais re-suggérer une entreprise déjà trouvée pour
+    // cet utilisateur — chaque scan doit faire GRANDIR sa liste de leads
+    // vers l'objectif (jusqu'à 50), pas ressortir les mêmes 5 en boucle.
+    const { data: existingLeads } = await supabaseAdmin
+      .from('opportunity_leads').select('company_name').eq('user_id', userId);
+    const knownNames = new Set((existingLeads || []).map((l: any) => (l.company_name || '').toLowerCase().trim()));
+
     // ── Étape 1 : Trouver les entreprises ─────────────────────────
-    const companies = await findCompanies(domain, zone, country);
-    log.push(`✅ ${companies.length} entreprises trouvées`);
+    const companiesRaw = await findCompanies(domain, zone, country);
+    const companies = companiesRaw.filter(c => !knownNames.has((c.name || '').toLowerCase().trim()));
+    log.push(`✅ ${companiesRaw.length} entreprises trouvées, ${companies.length} nouvelles (${companiesRaw.length - companies.length} déjà dans ta liste)`);
 
     // ── Étape 2 : Auditer chaque entreprise ───────────────────────
     const audits = await Promise.all(companies.slice(0, limit).map(c => auditCompany(c, domain)));
@@ -241,8 +249,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     audits.sort((a, b) => a.digital_score - b.digital_score);
     log.push(`📊 ${audits.length} audits générés`);
 
-    // ── Étape 3 : Générer mockup + message pour les 5 meilleures ──
-    const topTargets = audits.slice(0, 5);
+    // ── Étape 3 : Générer mockup + message pour les meilleures (jusqu'à
+    // 15/run — avant limité à 5, ce qui rendait la progression vers 50
+    // leads beaucoup trop lente pour être utile au quotidien) ──────
+    const topTargets = audits.slice(0, 15);
     const enriched = await Promise.all(topTargets.map(async (audit) => {
       const [mockup, message] = await Promise.all([
         generateMockup(audit, profile),
@@ -253,17 +263,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     log.push(`✉️ ${enriched.length} messages d'approche générés`);
 
-    // ── Étape 4 : Sauvegarder dans searcher_logs ──────────────────
+    // ── Étape 4 : Persister les leads (l'actif qui grandit dans le temps) ──
+    if (enriched.length > 0) {
+      try {
+        await supabaseAdmin.from('opportunity_leads').upsert(
+          enriched.map(e => ({
+            user_id:          userId,
+            company_name:     e.company_name,
+            website:          e.website || null,
+            digital_score:    e.digital_score,
+            issues_detected:  e.issues_detected || [],
+            budget_estimate:  e.budget_estimate,
+            reply_chance:     e.reply_chance,
+            mockup_textuel:   e.mockup_textuel,
+            message_approche: e.message_approche,
+            status:           'new',
+          })),
+          { onConflict: 'user_id,company_name', ignoreDuplicates: true }
+        )
+      } catch (e: any) { log.push(`⚠️ Persistance leads échouée: ${e.message}`) }
+    }
+
+    // ── Étape 5 : Sauvegarder dans searcher_logs (historique/quota) ──
     try {
       await supabaseAdmin.from('searcher_logs').insert({
         user_id:      userId,
         action_type:  'opportunity_creator',
-        description:  `${companies.length} entreprises scannées, ${enriched.length} opportunités préparées pour ${domain}`,
+        description:  `${companies.length} nouvelles entreprises scannées, ${enriched.length} leads ajoutés pour ${domain}`,
         platform:     'Opportunity Creator',
-        result:       `Score moyen : ${Math.round(audits.reduce((a, b) => a + b.digital_score, 0) / audits.length)}/100`,
+        result:       audits.length > 0 ? `Score moyen : ${Math.round(audits.reduce((a, b) => a + b.digital_score, 0) / audits.length)}/100` : 'Aucun nouvel audit',
         auto_promo_sent: true,
       });
     } catch (_) {}
+
+    const { count: totalLeads } = await supabaseAdmin
+      .from('opportunity_leads').select('*', { count: 'exact', head: true }).eq('user_id', userId);
 
     return res.status(200).json({
       success:          true,
@@ -271,8 +305,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       zone,
       total_found:      companies.length,
       total_audited:    audits.length,
-      top_targets:      enriched,       // 5 meilleures avec mockup + message
-      all_audits:       audits,         // tous les audits sans mockup
+      top_targets:      enriched,       // nouveaux leads de CE scan, avec mockup + message
+      all_audits:       audits,
+      total_leads:      totalLeads || 0, // cumulé, tous scans confondus — progression vers 50
       log,
       execution_ms:     Date.now() - startedAt,
     });

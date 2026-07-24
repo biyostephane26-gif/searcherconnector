@@ -429,11 +429,23 @@ export default function Founder() {
               ) : (
                 <>
                   {/* Stats Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <Card className="p-6">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Server className="text-purple-400" size={20} />
+                        <h3 className="font-bold text-white">Registre configuré</h3>
+                      </div>
+                      <p className="text-3xl font-bold text-purple-400">
+                        {sourcesStats?.totalConfiguredSources?.toLocaleString() || 0}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {sourcesStats?.totalConfiguredFreeSources || 0} gratuites · {sourcesStats?.totalConfiguredPaidSources || 0} premium — interrogées par rotation, pas toutes en même temps
+                      </p>
+                    </Card>
                     <Card className="p-6">
                       <div className="flex items-center gap-3 mb-2">
                         <Server className="text-green-400" size={20} />
-                        <h3 className="font-bold text-white">Sources gratuites</h3>
+                        <h3 className="font-bold text-white">Sources gratuites ayant livré</h3>
                       </div>
                       <p className="text-3xl font-bold text-green-400">
                         {sourcesStats?.freeSources || 0}
@@ -445,12 +457,12 @@ export default function Founder() {
                     <Card className="p-6">
                       <div className="flex items-center gap-3 mb-2">
                         <Globe className="text-blue-400" size={20} />
-                        <h3 className="font-bold text-white">Sources payantes</h3>
+                        <h3 className="font-bold text-white">Sources payantes ayant livré</h3>
                       </div>
                       <p className="text-3xl font-bold text-blue-400">
                         {sourcesStats?.paidSources || 0}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">LinkedIn, Indeed, Glassdoor...</p>
+                      <p className="text-xs text-gray-500 mt-1">sur {sourcesStats?.totalConfiguredPaidSources || 0} configurées (LinkedIn, Upwork, Indeed...)</p>
                     </Card>
                     <Card className="p-6">
                       <div className="flex items-center gap-3 mb-2">

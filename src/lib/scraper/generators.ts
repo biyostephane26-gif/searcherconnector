@@ -12,6 +12,22 @@ import {
 
 type SourceEntry = { name: string; type: string; url: string; isPaidOnly: boolean };
 
+// Total de sources CONFIGURÉES (le "2005" annoncé) — distinct du nombre de
+// sources ayant réellement livré une opportunité récemment (telemetry
+// fondateur ne comptait avant que les plateformes DISTINCTES ayant produit
+// un résultat en cache, jamais la taille réelle du registre configuré).
+export const TOTAL_CONFIGURED_SOURCES =
+  JOB_BOARDS.length + ATS_COMPANIES.length + FREELANCE_PLATFORMS.length +
+  TECH_RSS_FEEDS.length + SOCIAL_COMMUNITIES.length + NICHE_PLATFORMS.length +
+  AI_TECH_PLATFORMS.length + GLOBAL_FREELANCE.length + INTERNSHIP_JUNIOR.length +
+  REMOTE_EXCLUSIVE.length + EXECUTIVE_CAREERS.length + INDUSTRY_SPECIALIZED.length;
+
+export const TOTAL_CONFIGURED_PAID_SOURCES =
+  [JOB_BOARDS, ATS_COMPANIES, FREELANCE_PLATFORMS, TECH_RSS_FEEDS, SOCIAL_COMMUNITIES,
+   NICHE_PLATFORMS, AI_TECH_PLATFORMS, GLOBAL_FREELANCE, INTERNSHIP_JUNIOR,
+   REMOTE_EXCLUSIVE, EXECUTIVE_CAREERS, INDUSTRY_SPECIALIZED]
+    .reduce((n, arr: any[]) => n + arr.filter(s => s.isPaidOnly).length, 0);
+
 // 🚦 Rate Limiting par domaine pour éviter les blocages
 const lastRequestPerDomain = new Map<string, number>();
 const MIN_DELAY_PER_DOMAIN = 1000; // Minimum 1s entre chaque requête au même domaine

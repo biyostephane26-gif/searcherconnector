@@ -7,6 +7,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
 import { Home, Briefcase, Users, MessageSquare, DollarSign, User, Settings, Sparkles, Shield, BookOpen, PlusCircle, Building2, Mic, X } from 'lucide-react'
 import { useMobileSidebar, closeMobileSidebar, openMobileSidebar } from '../../hooks/useMobileSidebar'
+import { computeProfileCompletion } from '../../lib/profileCompletion'
 
 // Fonction pour calculer le niveau professionnel
 const getProfessionalLevel = (missionsCount: number = 0) => {
@@ -38,6 +39,19 @@ export default function Sidebar() {
     supabase.from('user_voice_credits').select('credits_remaining').eq('user_id', user.id).single()
       .then(({ data }) => setVoiceCredits(data?.credits_remaining || 0))
   }, [user])
+
+  // Complétion calculée EN DIRECT depuis les vrais champs (jamais une
+  // valeur figée en base) — voir src/lib/profileCompletion.ts pour le
+  // pourquoi (Sidebar affichait un vieux % gelé depuis l'onboarding,
+  // désynchronisé de la réalité dès que l'utilisateur complétait son
+  // profil plus tard).
+  const [hasDocs, setHasDocs] = useState(false)
+  useEffect(() => {
+    if (!user) return
+    supabase.from('uploaded_documents').select('id').eq('user_id', user.id).limit(1)
+      .then(({ data }) => setHasDocs(!!(data && data.length > 0)))
+  }, [user])
+  const { percent: profileCompletionPercent } = computeProfileCompletion(profile, hasDocs)
 
   const menuItems = [
     { icon: <Home className="w-5 h-5" />, label: 'Accueil', path: '/dashboard' },
@@ -158,18 +172,18 @@ export default function Sidebar() {
           <div className="mt-6 w-full space-y-1">
             <div className="flex justify-between text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">
               <span>Profile Completion</span>
-              <span>{profile?.profile_completion || 0}%</span>
+              <span>{profileCompletionPercent}%</span>
             </div>
             <div className="h-1 bg-[#1A1A1A] rounded-full overflow-hidden">
-              <div 
+              <div
                 className={`h-full transition-all duration-500 ${
-                  (profile?.profile_completion || 0) >= 80 ? 'bg-green-500' :
-                  (profile?.profile_completion || 0) >= 50 ? 'bg-[#D4AF37]' : 'bg-red-500'
+                  profileCompletionPercent >= 80 ? 'bg-green-500' :
+                  profileCompletionPercent >= 50 ? 'bg-[#D4AF37]' : 'bg-red-500'
                 }`}
-                style={{ width: `${profile?.profile_completion || 0}%` }}
+                style={{ width: `${profileCompletionPercent}%` }}
               />
             </div>
-            {(profile?.profile_completion || 0) < 80 && (
+            {profileCompletionPercent < 80 && (
               <Link href="/settings" className="block text-[9px] text-[#D4AF37] hover:underline mt-1 text-center">
                 Compléter mon profil →
               </Link>

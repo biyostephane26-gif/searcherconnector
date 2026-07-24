@@ -14,6 +14,7 @@ import { createClient } from '@supabase/supabase-js'
 import { fetchAllSources, pickTierBatch, runTierBatch, SourceTier } from '../../../src/lib/scraper/generators'
 import { CATEGORIES, extractKeywordsForUser } from '../../../src/lib/scraper/categories'
 import { detectRequiredLevel, computeLevelMatch } from '../../../src/lib/scraper/skill-matching'
+import { typeMatchDelta } from '../../../src/lib/scraper/typeSignals'
 import { isPaidPlan } from '../../../src/lib/planUtils'
 import { scrapeLinkedIn, scrapeUpwork, scrapeTwitter, HAS_HUMANIST_SCRAPERS } from '../../../src/lib/scraper/humanist'
 import { sendOpportunityAlert } from '../../../src/lib/email'
@@ -291,7 +292,14 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
       // ── Niveau de compétence — boost/malus selon l'adéquation ────────
       const levelMatch = computeLevelMatch((u as any).skill_level, requiredLevel)
 
-      const score = Math.max(0, Math.min(100, 40 + hits * 20 + freshnessBoost + applicantsBoost + levelMatch.boost))
+      // ── Type de profil (freelance/emploi/investisseur/entreprise) ────
+      // Sans ça, une offre CDI classique pouvait être poussée en
+      // NOTIFICATION (pas juste affichée) à un profil freelance, juste
+      // parce que le domaine matchait — jamais vérifié que le TYPE de
+      // mission correspondait vraiment à ce que l'utilisateur cherche.
+      const typeDelta = typeMatchDelta((u as any).profile_type, hay)
+
+      const score = Math.max(0, Math.min(100, 40 + hits * 20 + freshnessBoost + applicantsBoost + levelMatch.boost + typeDelta))
       matched++
 
       opportunityRows.push({

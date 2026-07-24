@@ -39,6 +39,7 @@ import { fetchAllSources } from '../../lib/scraper/generators';
 import { cache } from '../../lib/scraper/cache-manager';
 import { matchCategories, matchCategoriesForUser } from '../../lib/scraper/categories';
 import { detectRequiredLevel, computeLevelMatch } from '../../lib/scraper/skill-matching';
+import { typeMatchDelta } from '../../lib/scraper/typeSignals';
 import { checkRateLimit } from '../../lib/rateLimiter';
 import { planTier } from '../../lib/planUtils';
 import { planConfig } from '../../lib/planConfig';
@@ -946,19 +947,10 @@ function scoreLocally(items: any[], profile: any, isPaid: boolean): any[] {
   const terms = [profile.domain?.toLowerCase()||'', ...kws.map((k:string)=>k.toLowerCase().replace(/"/g,''))].filter(t=>t.length>2);
   const type: string = profile.profile_type || 'freelance';
 
-  const pos: Record<string,string[]> = {
-    freelance:  ['freelance','contract','mission','project','remote','hiring','looking for','need a','budget','pay','hire','gig','[hiring]','urgent','developer needed','designer needed'],
-    job_seeker: ['job','hiring','position','role','career','apply','recruitment','emploi','poste','cdi','cdd','stage','internship','vacancy'],
-    investor:   ['startup','funding','investment','seed','series','venture','raise','financement','levée','pitch','fundraising','raising','founder','pre-seed','series a'],
-    business:   ['client','b2b','partner','outsource','service','agency','need','vendor','provider','looking for','outsource','needs'],
-  };
-  const neg: Record<string,string[]> = {
-    freelance:  ['[for hire]','i am a ','i\'m a ','my portfolio','available for hire','looking for work','hire me','my rate is','cdi permanent','staff engineer','full-time employee'],
-    job_seeker: ['[for hire]','freelance mission','i am looking for work'],
-    investor:   ['job posting','apply now','[for hire]','cdi','cdd','hiring','position'],
-    business:   ['[for hire]','looking for work','my cv','my resume'],
-  };
-  const p = pos[type] || [], n = neg[type] || [];
+  // Signal positif/négatif freelance-vs-emploi-vs-investisseur-vs-entreprise
+  // — partagé avec cache-scan/route.ts (matchAndNotify) via typeSignals.ts,
+  // pour que le scan live ET le pipeline de fond (qui envoie les
+  // notifications) appliquent exactement la même logique sans diverger.
 
   // Minimum score lower for investor/business to keep more relevant results
   const minScore = ['investor','business'].includes(type) ? 18 : 25;
@@ -969,8 +961,7 @@ function scoreLocally(items: any[], profile: any, isPaid: boolean): any[] {
 
     const dHits = terms.filter(t=>t.length>3&&hay.includes(t)).length;
     score += Math.min(dHits * 20, 45);
-    score += Math.min(p.filter(w=>hay.includes(w)).length * 8, 25);
-    score -= n.filter(w=>hay.includes(w)).length * 30;
+    score += typeMatchDelta(type, hay);
 
     const ah = ageH(r.date);
     // 🚨 Filtrage ULTRA pour PROFILS PAYANTS : < 48h (2 jours) !
@@ -1024,7 +1015,7 @@ function scoreLocally(items: any[], profile: any, isPaid: boolean): any[] {
       location:        (r.location||'').slice(0,120),
       country:         profile.country||'',
       score,
-      match_reason:    dHits>0 ? `${dHits} terme(s) du domaine "${profile.domain}" trouvé(s). ${p.filter(w=>hay.includes(w)).length} signal(aux) positif(s).${r.applicants_count ? ` ${r.applicants_count} candidats !` : ''}` : `Signal ${type} détecté.`,
+      match_reason:    dHits>0 ? `${dHits} terme(s) du domaine "${profile.domain}" trouvé(s).${r.applicants_count ? ` ${r.applicants_count} candidats !` : ''}` : `Signal ${type} détecté.`,
       source_platform: r.source||'web',
       original_url:    r.link||'',
       is_foreign:      false,
