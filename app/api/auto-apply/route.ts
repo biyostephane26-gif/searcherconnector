@@ -268,7 +268,7 @@ export async function POST(req: NextRequest) {
         jobTitle: opportunity.title,
         company:  opportunity.company || '',
         score:    opportunity.score,
-        viewUrl:  `${process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.com'}/applications/${applicationId}`,
+        viewUrl:  `${process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.onrender.com'}/applications/${applicationId}`,
       }).catch(() => {}) // non-bloquant
     }
 

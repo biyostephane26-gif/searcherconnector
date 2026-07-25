@@ -14,7 +14,7 @@
 const RESEND_KEY  = process.env.RESEND_API_KEY || ''
 const FROM_EMAIL  = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
 const FROM_NAME   = 'Searcher Connector'
-const APP_URL     = process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.com'
+const APP_URL     = process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.onrender.com'
 
 // ── Gmail SMTP — solution gratuite en attendant un domaine vérifié ──
 // Resend en mode sandbox ne peut envoyer qu'à l'adresse du compte lui-même.

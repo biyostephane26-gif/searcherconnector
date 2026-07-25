@@ -8,7 +8,7 @@ type Props = {
   referralCode?: string
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.com'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.onrender.com'
 
 export default function OpportunityCard({ opportunity, onApply, referralCode }: Props) {
   const isFresh = opportunity.hours_ago < 6

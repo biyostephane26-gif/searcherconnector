@@ -62,7 +62,7 @@ export default function Referrals() {
     setClaimingId(null)
   }
 
-  const referralLink = `${process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.com'}?ref=${profile?.referral_code}`
+  const referralLink = `${process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.onrender.com'}?ref=${profile?.referral_code}`
 
   useEffect(() => {
     if (!user) return

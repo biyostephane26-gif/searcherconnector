@@ -18,7 +18,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.com'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.onrender.com'
 
 // Prix par plan — doit rester synchronisé avec PLANS dans src/views/Pricing.tsx
 const PLAN_PRICES_XAF: Record<string, number> = {
