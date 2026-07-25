@@ -11,6 +11,7 @@ import GoldButton from '../components/ui/GoldButton'
 import { Search, Zap, X, ExternalLink, CheckCircle, XCircle, AlertTriangle, Globe, Clock, Star, ChevronRight, FileText } from 'lucide-react'
 import { usePDF } from '../hooks/usePDF'
 import { computeProfileCompletion } from '../lib/profileCompletion'
+import { detectAtsPlatform } from '../lib/scraper/atsPlatformDetect'
 
 export default function Opportunities() {
   const { user, profile } = useAuth()
@@ -181,10 +182,12 @@ export default function Opportunities() {
   }
 
   const FILTERS = [
-    { key: 'all',     label: 'Toutes' },
-    { key: 'fresh',   label: 'Fraîches (<24h)' },
-    { key: 'applied', label: 'Auto-postulées' },
-    { key: 'pending', label: 'En attente' },
+    { key: 'all',      label: 'Toutes' },
+    { key: 'fresh',    label: 'Fraîches (<24h)' },
+    { key: 'applied',  label: 'Auto-postulées' },
+    { key: 'pending',  label: 'En attente' },
+    { key: 'ats_auto', label: '⚡ Envoi automatique' },
+    { key: 'manual',   label: '✋ Envoi manuel requis' },
   ]
 
   const SORTS: { key: typeof sortBy; label: string }[] = [
@@ -193,7 +196,19 @@ export default function Opportunities() {
     { key: 'highest_paid', label: 'Mieux payées' },
   ]
 
-  const sortedOpportunities = [...opportunities].sort((a, b) => {
+  // Envoi auto (Greenhouse/Lever, aucun compte requis, formulaire public) vs
+  // envoi manuel requis (tout le reste — LinkedIn/Upwork/sites custom, où
+  // aucun outil ne peut soumettre sans qu'un humain clique lui-même, voir
+  // atsSubmit.ts pour le détail des raisons).
+  const isAtsAuto = (opp: any) => !!detectAtsPlatform(opp.original_url || '')
+
+  const filteredByMechanism = opportunities.filter(o => {
+    if (filter === 'ats_auto') return isAtsAuto(o)
+    if (filter === 'manual')   return !isAtsAuto(o)
+    return true
+  })
+
+  const sortedOpportunities = [...filteredByMechanism].sort((a, b) => {
     if (sortBy === 'freshest')     return (a.hours_ago ?? Infinity) - (b.hours_ago ?? Infinity)
     if (sortBy === 'highest_paid') return (b.salary_max || 0) - (a.salary_max || 0)
     if (sortBy === 'recommended') {
@@ -287,7 +302,10 @@ export default function Opportunities() {
               <div className="space-y-3">
                 {sortedOpportunities.slice(0, 6).map((opp) => (
                   <div key={opp.id} onClick={() => handleSelectOpp(opp)}
-                    className={`cursor-pointer rounded-2xl border transition-all ${selected?.id === opp.id ? 'border-[#D4AF37]/50 bg-[#1A1500]/20' : 'border-[#1A1A1A] hover:border-[#2a2a2a]'}`}>
+                    className={`relative cursor-pointer rounded-2xl border transition-all ${selected?.id === opp.id ? 'border-[#D4AF37]/50 bg-[#1A1500]/20' : 'border-[#1A1A1A] hover:border-[#2a2a2a]'}`}>
+                    <span className={`absolute top-3 right-3 z-10 text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full ${isAtsAuto(opp) ? 'bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30' : 'bg-[#1A1A1A] text-gray-500 border border-[#2a2a2a]'}`}>
+                      {isAtsAuto(opp) ? '⚡ Auto' : '✋ Manuel'}
+                    </span>
                     <OpportunityCard opportunity={opp} onApply={handleApply} referralCode={profile?.referral_code} />
                   </div>
                 ))}

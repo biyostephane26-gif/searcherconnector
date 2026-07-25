@@ -14,17 +14,12 @@
 // =================================================================
 
 import { chromium, Browser, Page } from 'playwright-core';
+import { detectAtsPlatform, AtsPlatform } from './atsPlatformDetect';
 
-export type AtsPlatform = 'greenhouse' | 'lever';
-
-export function detectAtsPlatform(url: string): AtsPlatform | null {
-  try {
-    const host = new URL(url).hostname;
-    if (host.includes('greenhouse.io')) return 'greenhouse';
-    if (host.includes('lever.co')) return 'lever';
-    return null;
-  } catch { return null; }
-}
+// Ré-exporté pour compatibilité — les appelants existants (cache-scan,
+// submit-ats/route.ts) importent toujours depuis ce fichier.
+export { detectAtsPlatform };
+export type { AtsPlatform };
 
 export interface AtsSubmitInput {
   applyUrl: string;
