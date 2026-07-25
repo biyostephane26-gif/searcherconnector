@@ -88,6 +88,27 @@ export default function Signup() {
           })
         } catch { /* non-bloquant — ne pas bloquer l'inscription */ }
 
+        // Parrainage — avant ce fix, ?ref= n'était jamais lu du tout,
+        // aucun filleul n'a jamais été suivi depuis la création du
+        // programme. Non-bloquant : un souci ici ne doit jamais empêcher
+        // l'inscription elle-même.
+        const refCode = searchParams?.get('ref')
+        if (refCode) {
+          try {
+            const { data: referrer } = await supabase
+              .from('users_profiles')
+              .select('id')
+              .eq('referral_code', refCode)
+              .maybeSingle()
+            if (referrer && referrer.id !== newUser.id) {
+              await supabase.from('referrals').insert({
+                referrer_id: referrer.id,
+                referred_id: newUser.id,
+              })
+            }
+          } catch { /* non-bloquant */ }
+        }
+
         // Supabase peut confirmer auto (si désactivé dans dashboard)
         // ou demander confirmation email
         if (newUser.confirmed_at || newUser.email_confirmed_at) {

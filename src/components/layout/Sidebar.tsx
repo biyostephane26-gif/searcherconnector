@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabase'
 import { Home, Briefcase, Users, MessageSquare, DollarSign, User, Settings, Sparkles, Shield, BookOpen, PlusCircle, Building2, Mic, X } from 'lucide-react'
 import { useMobileSidebar, closeMobileSidebar, openMobileSidebar } from '../../hooks/useMobileSidebar'
 import { computeProfileCompletion } from '../../lib/profileCompletion'
+import { useTranslation } from 'react-i18next'
 
 // Fonction pour calculer le niveau professionnel
 const getProfessionalLevel = (missionsCount: number = 0) => {
@@ -27,6 +28,7 @@ const getNextLevelProgress = (missionsCount: number = 0) => {
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const { t } = useTranslation()
   const { profile, user } = useAuth()
   const level = getProfessionalLevel(profile?.missions_completed || 0)
   const nextProgress = getNextLevelProgress(profile?.missions_completed || 0)
@@ -54,23 +56,23 @@ export default function Sidebar() {
   const { percent: profileCompletionPercent } = computeProfileCompletion(profile, hasDocs)
 
   const menuItems = [
-    { icon: <Home className="w-5 h-5" />, label: 'Accueil', path: '/dashboard' },
+    { icon: <Home className="w-5 h-5" />, label: t('nav.home'), path: '/dashboard' },
     { icon: (
         <img src="/scai-icon.png" alt="SCAI" className="w-5 h-5 rounded object-contain"
           onError={e => { (e.target as HTMLImageElement).replaceWith(Object.assign(document.createElement('span'), { textContent: '⚡', className: 'text-sm' })) }}
         />
-      ), label: 'Agent Searcher', path: '/agent', badge: 'LIVE' },
-    { icon: <Briefcase className="w-5 h-5" />, label: 'Opportunités', path: '/opportunities' },
-    { icon: <PlusCircle className="w-5 h-5" />, label: 'Opportunity Creator', path: '/opportunity-creator' },
-    { icon: <Building2 className="w-5 h-5" />, label: 'Cowork', path: '/cowork' },
-    { icon: <Sparkles className="w-5 h-5 text-[#D4AF37]" />, label: 'Entretiens', path: '/interview-preps' },
-    { icon: <Users className="w-5 h-5" />, label: 'Social', path: '/social' },
-    { icon: <BookOpen className="w-5 h-5" />, label: 'Articles', path: '/articles' },
-    { icon: <Shield className="w-5 h-5" />, label: 'Communautés', path: '/groups' },
-    { icon: <MessageSquare className="w-5 h-5" />, label: 'Messages', path: '/messages' },
-    { icon: <DollarSign className="w-5 h-5" />, label: 'Salaires', path: '/salary' },
-    { icon: <User className="w-5 h-5" />, label: 'Profil', path: '/profile' },
-    { icon: <Settings className="w-5 h-5" />, label: 'Paramètres', path: '/settings' },
+      ), label: t('nav.agent'), path: '/agent', badge: 'LIVE' },
+    { icon: <Briefcase className="w-5 h-5" />, label: t('nav.opportunities'), path: '/opportunities' },
+    { icon: <PlusCircle className="w-5 h-5" />, label: t('nav.opportunityCreator'), path: '/opportunity-creator' },
+    { icon: <Building2 className="w-5 h-5" />, label: t('nav.cowork'), path: '/cowork' },
+    { icon: <Sparkles className="w-5 h-5 text-[#D4AF37]" />, label: t('nav.interviews'), path: '/interview-preps' },
+    { icon: <Users className="w-5 h-5" />, label: t('nav.social'), path: '/social' },
+    { icon: <BookOpen className="w-5 h-5" />, label: t('nav.articles'), path: '/articles' },
+    { icon: <Shield className="w-5 h-5" />, label: t('nav.groups'), path: '/groups' },
+    { icon: <MessageSquare className="w-5 h-5" />, label: t('nav.messages'), path: '/messages' },
+    { icon: <DollarSign className="w-5 h-5" />, label: t('nav.salary'), path: '/salary' },
+    { icon: <User className="w-5 h-5" />, label: t('nav.profile'), path: '/profile' },
+    { icon: <Settings className="w-5 h-5" />, label: t('nav.settings'), path: '/settings' },
   ]
 
   if (profile?.role === 'founder') {

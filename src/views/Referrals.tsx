@@ -41,6 +41,26 @@ export default function Referrals() {
   const [referrals, setReferrals] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
+  const [claimingId, setClaimingId] = useState<string | null>(null)
+
+  const claimReward = async (referralId: string) => {
+    if (!user || claimingId) return
+    setClaimingId(referralId)
+    try {
+      const res = await fetch('/api/referral/claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ referralId, userId: user.id }),
+      })
+      const data = await res.json()
+      if (!res.ok) { alert(data.error || 'Impossible de réclamer cette récompense.'); return }
+      await fetchStats()
+      await refreshProfile()
+    } catch {
+      alert('Impossible de réclamer cette récompense. Réessaie dans quelques secondes.')
+    }
+    setClaimingId(null)
+  }
 
   const referralLink = `${process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.com'}?ref=${profile?.referral_code}`
 
@@ -62,30 +82,32 @@ export default function Referrals() {
 
     const refs = referralData || []
     
-    // Enrichir avec les profils des filleuls
+    // Enrichir avec les profils des filleuls — colonne réelle : referred_id
+    // (referred_user_id n'a jamais existé, voir migration fix_referrals_system.sql)
     const enrichedRefs = await Promise.all(
       refs.map(async (ref) => {
-        if (!ref.referred_user_id) return { ...ref, referred: null }
-        
+        if (!ref.referred_id) return { ...ref, referred: null }
+
         const { data: referredProfile } = await supabase
           .from('users_profiles')
           .select('id, full_name, avatar_url, plan, created_at, verification_status')
-          .eq('id', ref.referred_user_id)
+          .eq('id', ref.referred_id)
           .single()
-        
+
         return { ...ref, referred: referredProfile }
       })
     )
-    
+
     setReferrals(enrichedRefs)
 
-    // Calculer les stats
-    const activePremium = enrichedRefs.filter(r => 
+    // Calculer les stats — dérivé de reward_claimed (réel) plutôt que des
+    // colonnes status/premium_days_earned qui n'ont jamais existé.
+    const activePremium = enrichedRefs.filter(r =>
       r.referred?.plan && r.referred.plan !== 'free'
     ).length
 
-    const daysEarned = enrichedRefs.reduce((sum, r) => sum + (r.premium_days_earned || 0), 0)
-    const pending = enrichedRefs.filter(r => r.status === 'completed' && r.premium_days_earned === 0).length
+    const daysEarned = enrichedRefs.filter(r => r.reward_claimed).reduce((sum, r) => sum + (r.reward_days || 7), 0)
+    const pending = enrichedRefs.filter(r => r.referred?.plan && r.referred.plan !== 'free' && !r.reward_claimed).length
 
     setStats({
       totalReferred: enrichedRefs.length,
@@ -282,16 +304,17 @@ export default function Referrals() {
                   </div>
 
                   <div className="text-right flex-shrink-0">
-                    {ref.premium_days_earned > 0 ? (
+                    {ref.reward_claimed ? (
                       <div className="flex items-center gap-2 text-green-400 text-sm">
                         <CheckCircle2 className="w-4 h-4" />
-                        <span className="font-bold">{ref.premium_days_earned}j réclamés</span>
+                        <span className="font-bold">{ref.reward_days || 7}j réclamés</span>
                       </div>
-                    ) : ref.status === 'completed' ? (
-                      <div className="flex items-center gap-2 text-[#D4AF37] text-sm">
+                    ) : ref.referred?.plan && ref.referred.plan !== 'free' ? (
+                      <button onClick={() => claimReward(ref.id)} disabled={claimingId === ref.id}
+                        className="flex items-center gap-2 text-[#D4AF37] text-sm bg-[#1A1500] border border-[#D4AF37]/40 hover:border-[#D4AF37] px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50">
                         <Gift className="w-4 h-4" />
-                        <span className="font-bold">7j à réclamer</span>
-                      </div>
+                        <span className="font-bold">{claimingId === ref.id ? 'Réclamation...' : `Réclamer ${ref.reward_days || 7}j`}</span>
+                      </button>
                     ) : (
                       <span className="text-xs text-gray-600">En attente d'abonnement</span>
                     )}
