@@ -186,6 +186,20 @@ export default function Settings() {
     setAgentLoading(false)
   }
 
+  // Soumission ATS 100% autonome — désactivé par défaut. Quand actif,
+  // SCAI remplit ET envoie réellement le formulaire Greenhouse/Lever sans
+  // relecture ; désactivé, le message reste préparé mais jamais soumis
+  // sans passer par la candidature en série ou l'extension.
+  const toggleAtsAutoSubmit = async () => {
+    if (!user || agentLoading) return
+    setAgentLoading(true)
+    const { data, error } = await supabase.from('agent_schedules')
+      .upsert({ user_id: user.id, ats_auto_submit_no_review: !agentSchedule?.ats_auto_submit_no_review }, { onConflict: 'user_id' })
+      .select().single()
+    if (!error && data) setAgentSchedule(data)
+    setAgentLoading(false)
+  }
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) { alert('Non connecté'); return }
@@ -598,11 +612,23 @@ export default function Settings() {
                   <div className="font-medium text-white text-sm">⚡ Candidatures auto-rédigées</div>
                   <p className="text-xs text-gray-600">
                     SCAI rédige et enregistre automatiquement un message de candidature pour les offres ≥ {agentSchedule?.auto_apply_threshold ?? 80}/100,
-                    même quand tu n'es pas connecté. Tu restes celui qui envoie réellement — SCAI ne soumet rien lui-même sur le site de l'employeur.
+                    même quand tu n'es pas connecté. Par défaut le message reste préparé, pas envoyé — active le réglage
+                    ci-dessous si tu veux aussi que l'envoi se fasse tout seul sur les offres ATS (Greenhouse/Lever).
                     Désactivé par défaut — active en connaissance de cause.
                   </p>
                 </div>
                 <Toggle value={!!agentSchedule?.auto_apply_enabled} onChange={toggleAutoApply} disabled={agentLoading} />
+              </div>
+              <div className="flex items-center justify-between gap-4 rounded-xl border border-red-900/40 bg-[#0D0D0D] p-4">
+                <div>
+                  <div className="font-medium text-white text-sm">🚀 Soumission ATS 100% autonome</div>
+                  <p className="text-xs text-gray-600">
+                    Sur les offres publiées via Greenhouse ou Lever, SCAI remplit ET envoie réellement ta candidature
+                    sans que tu la relises avant — nom, email, CV, message. Une fois envoyée, c'est envoyé : aucune
+                    validation ne t'est demandée. Ne fonctionne que si "Candidatures auto-rédigées" est aussi activé.
+                  </p>
+                </div>
+                <Toggle value={!!agentSchedule?.ats_auto_submit_no_review} onChange={toggleAtsAutoSubmit} disabled={agentLoading} />
               </div>
             </Card>
           </section>

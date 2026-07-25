@@ -27,14 +27,25 @@ const supabase = createClient(
 const INTERNAL_URL = process.env.INTERNAL_APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
 // Déclenche une vraie candidature via /api/auto-apply (génère le message,
-// l'envoie, notifie l'utilisateur) — non-bloquant, jamais critique pour le scan.
+// l'enregistre, notifie l'utilisateur) — non-bloquant, jamais critique
+// pour le scan. Enchaîne ensuite sur /api/auto-apply/submit-ats : ce
+// second appel ne fait rien tant que l'utilisateur n'a pas activé
+// "Soumission ATS 100% autonome" dans Paramètres (vérifié côté route),
+// donc toujours sûr d'appeler même quand désactivé.
 function triggerAutoApply(userId: string, opportunityId: string) {
   fetch(`${INTERNAL_URL}/api/auto-apply`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userId, opportunityId, sendVia: 'scai_auto' }),
     signal: AbortSignal.timeout(30000),
-  }).catch(e => console.warn('[cache-scan] auto-apply déclenché mais échoué:', e.message))
+  })
+    .then(() => fetch(`${INTERNAL_URL}/api/auto-apply/submit-ats`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, opportunityId }),
+      signal: AbortSignal.timeout(45000),
+    }))
+    .catch(e => console.warn('[cache-scan] auto-apply déclenché mais échoué:', e.message))
 }
 
 function safeISODate(dateStr?: string): string {
