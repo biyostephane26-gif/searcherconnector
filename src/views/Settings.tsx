@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import Sidebar from '../components/layout/Sidebar'
 import Card from '../components/ui/Card'
 import GoldButton from '../components/ui/GoldButton'
@@ -26,6 +27,10 @@ function Toggle({ value, onChange, disabled }: { value: boolean; onChange: (v: b
 export default function Settings() {
   const { t, i18n } = useTranslation()
   const { profile, user, refreshProfile } = useAuth()
+  const router = useRouter()
+  // Extension navigateur + soumission ATS réelle — réservées Pro/Premium
+  // (voir planConfig.ts extensionAccess), même règle que côté serveur.
+  const isPaidUser = profile?.role === 'founder' || ['pro', 'premium', 'starter', 'enterprise'].includes((profile as any)?.plan || '')
   const [loading, setLoading]           = useState(false)
   const [fullName, setFullName]         = useState('')
   const [bio, setBio]                   = useState('')
@@ -626,9 +631,10 @@ export default function Settings() {
                     Sur les offres publiées via Greenhouse ou Lever, SCAI remplit ET envoie réellement ta candidature
                     sans que tu la relises avant — nom, email, CV, message. Une fois envoyée, c'est envoyé : aucune
                     validation ne t'est demandée. Ne fonctionne que si "Candidatures auto-rédigées" est aussi activé.
+                    {!isPaidUser && <span className="text-[#D4AF37]"> Réservé aux plans Pro et Premium.</span>}
                   </p>
                 </div>
-                <Toggle value={!!agentSchedule?.ats_auto_submit_no_review} onChange={toggleAtsAutoSubmit} disabled={agentLoading} />
+                <Toggle value={!!agentSchedule?.ats_auto_submit_no_review} onChange={toggleAtsAutoSubmit} disabled={agentLoading || !isPaidUser} />
               </div>
             </Card>
           </section>
@@ -639,10 +645,32 @@ export default function Settings() {
             <Card className="p-6 space-y-4">
               <p className="text-xs text-gray-600">
                 Une fois installée, l'extension détecte n'importe quel formulaire de candidature (LinkedIn, Upwork,
-                Freelancer, site d'entreprise...) et pré-remplit tes infos + le message SCAI en un clic — tu gardes
-                toujours la main sur l'envoi final. Colle ce token dans l'extension pour la connecter à ton compte.
+                Freelancer, site d'entreprise...) et pré-remplit tes infos + le message SCAI automatiquement — tu gardes
+                toujours la main sur l'envoi final (sauf Greenhouse/Lever si tu actives l'option autonome dans l'extension).
+                Réservée aux plans Pro et Premium.
               </p>
-              {extensionToken ? (
+
+              {isPaidUser ? (
+                <div className="bg-[#111] border border-[#1A1A1A] rounded-xl p-4 space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Installation (2 minutes)</p>
+                  <ol className="text-xs text-gray-400 space-y-1.5 list-decimal list-inside">
+                    <li>
+                      <a href="/downloads/searcher-connector-extension.zip" download
+                        className="text-[#D4AF37] hover:underline font-medium">Télécharge l'extension (.zip)</a> et décompresse-la
+                    </li>
+                    <li>Ouvre <code className="bg-black px-1.5 py-0.5 rounded text-[10px]">chrome://extensions</code> et active "Mode développeur" (en haut à droite)</li>
+                    <li>Clique "Charger l'extension non empaquetée" et sélectionne le dossier décompressé</li>
+                    <li>Colle ton token ci-dessous dans le popup de l'extension</li>
+                  </ol>
+                </div>
+              ) : (
+                <div className="bg-[#1A1500] border border-[#D4AF37]/20 rounded-xl p-4 flex items-center justify-between gap-4">
+                  <p className="text-xs text-gray-400">Passe au plan Pro ou Premium pour débloquer l'extension.</p>
+                  <GoldButton onClick={() => router.push('/pricing')}>Voir les plans</GoldButton>
+                </div>
+              )}
+
+              {isPaidUser && (extensionToken ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <code className="flex-1 bg-black border border-[#2a2a2a] rounded-lg px-3 py-2 text-xs text-[#D4AF37] truncate">
@@ -667,7 +695,7 @@ export default function Settings() {
                 <GoldButton onClick={generateExtensionToken} loading={extensionTokenLoading}>
                   Générer mon token d'extension
                 </GoldButton>
-              )}
+              ))}
             </Card>
           </section>
 

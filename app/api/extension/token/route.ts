@@ -6,6 +6,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
+import { planTier } from '../../../../src/lib/planUtils'
+import { planConfig } from '../../../../src/lib/planConfig'
 
 export const dynamic = 'force-dynamic'
 
@@ -34,6 +36,14 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const { userId } = await req.json()
   if (!userId) return NextResponse.json({ error: 'userId requis' }, { status: 400 })
+
+  // Extension réservée aux plans payants — même logique que les autres
+  // fonctionnalités à coût réel (Playwright côté serveur, etc.).
+  const { data: profile } = await supabase.from('users_profiles').select('plan, role').eq('id', userId).single()
+  const isFounder = profile?.role === 'founder'
+  if (!isFounder && !planConfig(planTier(profile as any)).extensionAccess) {
+    return NextResponse.json({ error: 'L\'extension navigateur est réservée aux plans Pro et Premium.', requiresUpgrade: true }, { status: 403 })
+  }
 
   const token = 'sc_ext_' + crypto.randomBytes(24).toString('hex')
 

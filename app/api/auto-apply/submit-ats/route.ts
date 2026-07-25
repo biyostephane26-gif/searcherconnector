@@ -8,6 +8,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { detectAtsPlatform, submitAtsApplication } from '../../../../src/lib/scraper/atsSubmit'
+import { planTier } from '../../../../src/lib/planUtils'
+import { planConfig } from '../../../../src/lib/planConfig'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -25,7 +27,7 @@ export async function POST(req: NextRequest) {
     }
 
     const [{ data: profile }, { data: opportunity }, { data: schedule }] = await Promise.all([
-      supabase.from('users_profiles').select('full_name, email, whatsapp_number, cv_url, portfolio_url, linkedin_url').eq('id', userId).single(),
+      supabase.from('users_profiles').select('full_name, email, whatsapp_number, cv_url, portfolio_url, linkedin_url, plan, role').eq('id', userId).single(),
       supabase.from('opportunities').select('original_url, title, company').eq('id', opportunityId).single(),
       supabase.from('agent_schedules').select('ats_auto_submit_no_review').eq('user_id', userId).single(),
     ])
@@ -37,6 +39,26 @@ export async function POST(req: NextRequest) {
     // Garde-fou explicite — jamais de soumission réelle sans ce réglage actif.
     if (!schedule?.ats_auto_submit_no_review) {
       return NextResponse.json({ error: 'Soumission ATS autonome désactivée. Active-la dans Paramètres pour utiliser cette fonctionnalité.' }, { status: 403 })
+    }
+
+    // Réservé aux plans payants + plafond quotidien (coût réel : Chromium
+    // côté serveur). Le fondateur n'a aucune limite.
+    const isFounder = profile.role === 'founder'
+    if (!isFounder) {
+      const cfg = planConfig(planTier(profile as any))
+      if (cfg.atsAutoSubmitPerDay <= 0) {
+        return NextResponse.json({ error: 'La soumission ATS réelle est réservée aux plans Pro et Premium.', requiresUpgrade: true }, { status: 403 })
+      }
+      const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0)
+      const { count: submittedToday } = await supabase
+        .from('applications_sent')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .not('ats_submitted_at', 'is', null)
+        .gte('ats_submitted_at', dayStart.toISOString())
+      if ((submittedToday || 0) >= cfg.atsAutoSubmitPerDay) {
+        return NextResponse.json({ error: `Limite de soumissions ATS atteinte (${cfg.atsAutoSubmitPerDay}/jour sur le plan ${cfg.label}).`, requiresUpgrade: true }, { status: 429 })
+      }
     }
 
     const platform = detectAtsPlatform(opportunity.original_url || '')

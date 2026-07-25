@@ -9,6 +9,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { detectAtsPlatform } from '../../../../src/lib/scraper/atsSubmit'
+import { planTier } from '../../../../src/lib/planUtils'
+import { planConfig } from '../../../../src/lib/planConfig'
 
 export const dynamic = 'force-dynamic'
 
@@ -44,11 +46,18 @@ export async function GET(req: NextRequest) {
 
   const { data: profile } = await supabase
     .from('users_profiles')
-    .select('full_name, email, whatsapp_number, portfolio_url, github_url, linkedin_url, bio, domain')
+    .select('full_name, email, whatsapp_number, portfolio_url, github_url, linkedin_url, bio, domain, plan, role')
     .eq('id', tokenRow.user_id)
     .single()
 
   if (!profile) return NextResponse.json({ error: 'Profil introuvable' }, { status: 404 })
+
+  // Défense en profondeur — un token généré avant la mise en place du
+  // plafond payant, ou un plan rétrogradé depuis, ne doit plus fonctionner.
+  const isFounder = profile.role === 'founder'
+  if (!isFounder && !planConfig(planTier(profile as any)).extensionAccess) {
+    return NextResponse.json({ error: 'L\'extension navigateur est réservée aux plans Pro et Premium.', requiresUpgrade: true }, { status: 403 })
+  }
 
   let message: string | null = null
   let matchedTitle: string | null = null

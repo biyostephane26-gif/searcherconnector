@@ -29,6 +29,11 @@ export interface PlanConfig {
   premiumSourcesRatio: number  // proportion de sources premium dans le pool (0..1)
   // ── Auto-candidature ──
   autoApplyPerDay: number      // candidatures auto/jour (au-delà = clic manuel)
+  // ── Extension navigateur + soumission ATS réelle (Playwright) ──
+  // Réservées aux plans payants — coût réel (Chromium côté serveur pour
+  // Playwright) et fonctionnalité à plus forte valeur.
+  extensionAccess: boolean     // accès au token d'extension navigateur
+  atsAutoSubmitPerDay: number  // soumissions ATS réelles/jour (Greenhouse/Lever)
   // ── Opportunity Creator ──
   opportunityCreatorPerDay: number
   // ── SCAI Voice (crédits, reset quotidien) ──
@@ -60,6 +65,8 @@ export const PLANS: Record<PlanTier, PlanConfig> = {
     monthlyCredits: 0,
     visibleOpportunities: 10,
     level3LiveScraping: false,
+    extensionAccess: false,
+    atsAutoSubmitPerDay: 0,
   },
   pro: {
     label: 'Pro',
@@ -80,6 +87,8 @@ export const PLANS: Record<PlanTier, PlanConfig> = {
     monthlyCredits: 60,
     visibleOpportunities: 999,
     level3LiveScraping: true,
+    extensionAccess: true,
+    atsAutoSubmitPerDay: 5,
   },
   premium: {
     label: 'Premium',
@@ -100,6 +109,8 @@ export const PLANS: Record<PlanTier, PlanConfig> = {
     monthlyCredits: 300,
     visibleOpportunities: 999,
     level3LiveScraping: true,
+    extensionAccess: true,
+    atsAutoSubmitPerDay: 20,
   },
 }
 
