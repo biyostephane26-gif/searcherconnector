@@ -17,6 +17,16 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
+    // playwright-core (atsSubmit.ts) casse le build webpack si Next essaie
+    // de le bundler statiquement — coreBundle.js référence des sous-modules
+    // internes de chromium-bidi (bidiMapper/BidiMapper, cdp/CdpConnection)
+    // que webpack ne sait pas résoudre. En le déclarant "external", Next
+    // le laisse en require() Node normal au runtime — exactement ce qu'il
+    // faut puisque l'image Docker (mcr.microsoft.com/playwright:v1.49.0)
+    // a déjà tout ce qu'il faut installé. TOUS les déploiements Render
+    // ont échoué silencieusement depuis l'introduction de Playwright
+    // jusqu'à ce correctif — Render continuait de servir l'ancien build.
+    serverComponentsExternalPackages: ['playwright-core'],
   },
   typescript: {
     ignoreBuildErrors: true,
