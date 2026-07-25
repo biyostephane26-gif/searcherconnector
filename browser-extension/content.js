@@ -88,31 +88,52 @@ function showToast(text, isError) {
   setTimeout(() => toast.remove(), 4000);
 }
 
+const BTN_LABEL = `
+  <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;border:1.5px solid #D4AF37;flex-shrink:0;">
+    <span style="width:6px;height:6px;border-radius:50%;background:#D4AF37;"></span>
+  </span>
+  <span>Remplir avec Searcher</span>
+`;
+
 function injectButton() {
   if (document.getElementById('sc-fill-button')) return;
   const btn = document.createElement('button');
   btn.id = 'sc-fill-button';
-  btn.textContent = '🔍 Remplir avec Searcher Connector';
-  btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:2147483647;background:#D4AF37;color:#000;border:none;padding:10px 16px;border-radius:24px;font:bold 12px system-ui;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4);';
+  btn.innerHTML = BTN_LABEL;
+  btn.style.cssText = `
+    position:fixed;bottom:24px;right:24px;z-index:2147483647;
+    display:flex;align-items:center;gap:8px;
+    background:#0D0D0D;color:#D4AF37;border:1px solid rgba(212,175,55,.4);
+    padding:11px 18px;border-radius:999px;
+    font:600 12.5px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    letter-spacing:.02em;cursor:pointer;
+    box-shadow:0 8px 24px rgba(0,0,0,.45), 0 0 0 1px rgba(212,175,55,.08);
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  `;
+  btn.onmouseenter = () => { btn.style.transform = 'translateY(-2px)'; btn.style.boxShadow = '0 12px 28px rgba(0,0,0,.5), 0 0 0 1px rgba(212,175,55,.25), 0 0 20px rgba(212,175,55,.15)'; btn.style.borderColor = 'rgba(212,175,55,.8)'; };
+  btn.onmouseleave = () => { btn.style.transform = 'translateY(0)'; btn.style.boxShadow = '0 8px 24px rgba(0,0,0,.45), 0 0 0 1px rgba(212,175,55,.08)'; btn.style.borderColor = 'rgba(212,175,55,.4)'; };
+
+  const setLabel = (text) => { btn.innerHTML = ''; const span = document.createElement('span'); span.textContent = text; btn.appendChild(span); };
+
   btn.addEventListener('click', async () => {
-    btn.textContent = '⏳ Chargement...';
+    setLabel('⏳ Chargement...');
     chrome.storage.sync.get(['sc_token'], async (data) => {
       if (!data.sc_token) {
         showToast('Connecte d\'abord ton token via l\'icône de l\'extension.', true);
-        btn.textContent = '🔍 Remplir avec Searcher Connector';
+        btn.innerHTML = BTN_LABEL;
         return;
       }
       try {
         const url = `${API_BASE}/api/extension/context?token=${encodeURIComponent(data.sc_token)}&url=${encodeURIComponent(window.location.href)}`;
         const res = await fetch(url);
         const ctx = await res.json();
-        if (!res.ok) { showToast(ctx.error || 'Erreur — vérifie ton token.', true); btn.textContent = '🔍 Remplir avec Searcher Connector'; return; }
+        if (!res.ok) { showToast(ctx.error || 'Erreur — vérifie ton token.', true); btn.innerHTML = BTN_LABEL; return; }
         const n = fillForm(ctx);
         showToast(n > 0 ? `✓ ${n} champ(s) rempli(s) — relis avant d'envoyer, et attache ton CV si demandé.` : 'Aucun champ reconnu sur cette page.');
       } catch (e) {
         showToast('Impossible de contacter Searcher Connector.', true);
       }
-      btn.textContent = '🔍 Remplir avec Searcher Connector';
+      btn.innerHTML = BTN_LABEL;
     });
   });
   document.body.appendChild(btn);
