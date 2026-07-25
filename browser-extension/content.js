@@ -1,9 +1,13 @@
 // =================================================================
 // Searcher Connector — assistant de remplissage
-// Détecte un formulaire de candidature sur la page, ajoute un bouton
-// flottant. Au clic : récupère profil + message via l'API (token perso,
-// jamais le mot de passe), remplit les champs détectés. L'utilisateur
-// garde TOUJOURS la main sur l'envoi final — ce script ne soumet rien.
+// Détecte un formulaire de candidature sur la page et se remplit TOUT
+// SEUL dès le chargement — plus besoin de cliquer pour déclencher le
+// remplissage. Le bouton flottant sert juste à relancer manuellement
+// (formulaire chargé en retard, changement de champ, etc.).
+// Sur les ATS reconnus (Greenhouse/Lever), si l'option "soumission
+// autonome" est activée dans le popup, l'envoi se fait aussi tout seul.
+// Partout ailleurs, le clic final d'envoi reste TOUJOURS humain — ce
+// script ne soumet jamais rien hors de ce cas précis.
 // =================================================================
 
 const API_BASE = 'https://searcherconnector.onrender.com';
@@ -95,11 +99,59 @@ const BTN_LABEL = `
   <span>Remplir avec Searcher</span>
 `;
 
+let sharedBtn = null;
+
+async function runFill(triggeredManually) {
+  if (!sharedBtn) return;
+  const setLabel = (text) => { sharedBtn.innerHTML = ''; const span = document.createElement('span'); span.textContent = text; sharedBtn.appendChild(span); };
+  setLabel('⏳ Chargement...');
+
+  chrome.storage.sync.get(['sc_token', 'sc_auto_submit'], async (data) => {
+    if (!data.sc_token) {
+      if (triggeredManually) showToast('Connecte d\'abord ton token via l\'icône de l\'extension.', true);
+      sharedBtn.innerHTML = BTN_LABEL;
+      return;
+    }
+    try {
+      const url = `${API_BASE}/api/extension/context?token=${encodeURIComponent(data.sc_token)}&url=${encodeURIComponent(window.location.href)}`;
+      const res = await fetch(url);
+      const ctx = await res.json();
+      if (!res.ok) { showToast(ctx.error || 'Erreur — vérifie ton token.', true); sharedBtn.innerHTML = BTN_LABEL; return; }
+      const n = fillForm(ctx);
+
+      // Auto-soumission — seulement si l'utilisateur l'a activée ET que
+      // le serveur confirme que cette page est un ATS reconnu
+      // (Greenhouse/Lever). Sur toute autre page (LinkedIn, Upwork,
+      // Freelancer, site maison...), le clic final reste TOUJOURS humain
+      // — ces plateformes interdisent la soumission automatisée dans
+      // leurs conditions d'utilisation, script ou pas.
+      if (data.sc_auto_submit && ctx.autoSubmitAllowed && n > 0) {
+        const submitBtn = document.querySelector('button[type="submit"], input[type="submit"]');
+        if (submitBtn) {
+          await new Promise(r => setTimeout(r, 600));
+          submitBtn.click();
+          showToast(`✓ ${n} champ(s) rempli(s) — candidature envoyée automatiquement (ATS reconnu).`);
+        } else {
+          showToast(`✓ ${n} champ(s) rempli(s) — bouton d'envoi introuvable, termine toi-même.`, true);
+        }
+      } else if (n > 0) {
+        showToast(`✓ ${n} champ(s) rempli(s) automatiquement — relis avant d'envoyer, et attache ton CV si demandé.`);
+      } else if (triggeredManually) {
+        showToast('Aucun champ reconnu sur cette page.');
+      }
+    } catch (e) {
+      if (triggeredManually) showToast('Impossible de contacter Searcher Connector.', true);
+    }
+    sharedBtn.innerHTML = BTN_LABEL;
+  });
+}
+
 function injectButton() {
   if (document.getElementById('sc-fill-button')) return;
   const btn = document.createElement('button');
   btn.id = 'sc-fill-button';
   btn.innerHTML = BTN_LABEL;
+  btn.title = 'Se remplit déjà tout seul — clique pour relancer manuellement';
   btn.style.cssText = `
     position:fixed;bottom:24px;right:24px;z-index:2147483647;
     display:flex;align-items:center;gap:8px;
@@ -112,60 +164,31 @@ function injectButton() {
   `;
   btn.onmouseenter = () => { btn.style.transform = 'translateY(-2px)'; btn.style.boxShadow = '0 12px 28px rgba(0,0,0,.5), 0 0 0 1px rgba(212,175,55,.25), 0 0 20px rgba(212,175,55,.15)'; btn.style.borderColor = 'rgba(212,175,55,.8)'; };
   btn.onmouseleave = () => { btn.style.transform = 'translateY(0)'; btn.style.boxShadow = '0 8px 24px rgba(0,0,0,.45), 0 0 0 1px rgba(212,175,55,.08)'; btn.style.borderColor = 'rgba(212,175,55,.4)'; };
-
-  const setLabel = (text) => { btn.innerHTML = ''; const span = document.createElement('span'); span.textContent = text; btn.appendChild(span); };
-
-  btn.addEventListener('click', async () => {
-    setLabel('⏳ Chargement...');
-    chrome.storage.sync.get(['sc_token', 'sc_auto_submit'], async (data) => {
-      if (!data.sc_token) {
-        showToast('Connecte d\'abord ton token via l\'icône de l\'extension.', true);
-        btn.innerHTML = BTN_LABEL;
-        return;
-      }
-      try {
-        const url = `${API_BASE}/api/extension/context?token=${encodeURIComponent(data.sc_token)}&url=${encodeURIComponent(window.location.href)}`;
-        const res = await fetch(url);
-        const ctx = await res.json();
-        if (!res.ok) { showToast(ctx.error || 'Erreur — vérifie ton token.', true); btn.innerHTML = BTN_LABEL; return; }
-        const n = fillForm(ctx);
-
-        // Auto-soumission — seulement si l'utilisateur l'a activée ET que
-        // le serveur confirme que cette page est un ATS reconnu
-        // (Greenhouse/Lever). Sur toute autre page (LinkedIn, Upwork,
-        // Freelancer, site maison...), le clic final reste TOUJOURS humain
-        // — ces plateformes interdisent la soumission automatisée dans
-        // leurs conditions d'utilisation, script ou pas.
-        if (data.sc_auto_submit && ctx.autoSubmitAllowed && n > 0) {
-          const submitBtn = document.querySelector('button[type="submit"], input[type="submit"]');
-          if (submitBtn) {
-            await new Promise(r => setTimeout(r, 600));
-            submitBtn.click();
-            showToast(`✓ ${n} champ(s) rempli(s) — candidature envoyée automatiquement (ATS reconnu).`);
-          } else {
-            showToast(`✓ ${n} champ(s) rempli(s) — bouton d'envoi introuvable, termine toi-même.`, true);
-          }
-        } else {
-          showToast(n > 0 ? `✓ ${n} champ(s) rempli(s) — relis avant d'envoyer, et attache ton CV si demandé.` : 'Aucun champ reconnu sur cette page.');
-        }
-      } catch (e) {
-        showToast('Impossible de contacter Searcher Connector.', true);
-      }
-      btn.innerHTML = BTN_LABEL;
-    });
-  });
+  btn.addEventListener('click', () => runFill(true));
   document.body.appendChild(btn);
+  sharedBtn = btn;
 }
 
-if (looksLikeApplicationForm()) injectButton();
+let autoFilledOnce = false;
+
+if (looksLikeApplicationForm()) {
+  injectButton();
+  autoFilledOnce = true;
+  runFill(false);
+}
 
 // Certains sites (React/Vue) construisent le formulaire après le chargement
 // initial — on réessaie sur les mutations du DOM, avec un throttle simple.
+// Le remplissage auto ne se déclenche qu'UNE fois par page (autoFilledOnce) ;
+// le bouton reste disponible ensuite pour un déclenchement manuel.
 let lastCheck = 0;
 const observer = new MutationObserver(() => {
   const now = Date.now();
   if (now - lastCheck < 2000) return;
   lastCheck = now;
-  if (looksLikeApplicationForm()) injectButton();
+  if (looksLikeApplicationForm()) {
+    injectButton();
+    if (!autoFilledOnce) { autoFilledOnce = true; runFill(false); }
+  }
 });
 observer.observe(document.body, { childList: true, subtree: true });
