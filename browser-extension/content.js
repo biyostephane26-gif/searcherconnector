@@ -117,7 +117,7 @@ function injectButton() {
 
   btn.addEventListener('click', async () => {
     setLabel('⏳ Chargement...');
-    chrome.storage.sync.get(['sc_token'], async (data) => {
+    chrome.storage.sync.get(['sc_token', 'sc_auto_submit'], async (data) => {
       if (!data.sc_token) {
         showToast('Connecte d\'abord ton token via l\'icône de l\'extension.', true);
         btn.innerHTML = BTN_LABEL;
@@ -129,7 +129,25 @@ function injectButton() {
         const ctx = await res.json();
         if (!res.ok) { showToast(ctx.error || 'Erreur — vérifie ton token.', true); btn.innerHTML = BTN_LABEL; return; }
         const n = fillForm(ctx);
-        showToast(n > 0 ? `✓ ${n} champ(s) rempli(s) — relis avant d'envoyer, et attache ton CV si demandé.` : 'Aucun champ reconnu sur cette page.');
+
+        // Auto-soumission — seulement si l'utilisateur l'a activée ET que
+        // le serveur confirme que cette page est un ATS reconnu
+        // (Greenhouse/Lever). Sur toute autre page (LinkedIn, Upwork,
+        // Freelancer, site maison...), le clic final reste TOUJOURS humain
+        // — ces plateformes interdisent la soumission automatisée dans
+        // leurs conditions d'utilisation, script ou pas.
+        if (data.sc_auto_submit && ctx.autoSubmitAllowed && n > 0) {
+          const submitBtn = document.querySelector('button[type="submit"], input[type="submit"]');
+          if (submitBtn) {
+            await new Promise(r => setTimeout(r, 600));
+            submitBtn.click();
+            showToast(`✓ ${n} champ(s) rempli(s) — candidature envoyée automatiquement (ATS reconnu).`);
+          } else {
+            showToast(`✓ ${n} champ(s) rempli(s) — bouton d'envoi introuvable, termine toi-même.`, true);
+          }
+        } else {
+          showToast(n > 0 ? `✓ ${n} champ(s) rempli(s) — relis avant d'envoyer, et attache ton CV si demandé.` : 'Aucun champ reconnu sur cette page.');
+        }
       } catch (e) {
         showToast('Impossible de contacter Searcher Connector.', true);
       }

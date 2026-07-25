@@ -8,6 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { detectAtsPlatform } from '../../../../src/lib/scraper/atsSubmit'
 
 export const dynamic = 'force-dynamic'
 
@@ -80,6 +81,12 @@ export async function GET(req: NextRequest) {
     message = `Bonjour,\n\nJe suis intéressé(e) par cette opportunité et pense que mon profil en ${profile.domain || 'ce domaine'} correspond bien à vos besoins.\n\n${(profile.bio || '').slice(0, 200)}\n\nJe reste disponible pour échanger.\n\nCordialement,\n${profile.full_name || ''}`
   }
 
+  // Auto-soumission jamais autorisée hors ATS reconnus (Greenhouse/Lever) —
+  // même règle que le chantier Playwright : LinkedIn/Upwork/Freelancer
+  // interdisent la soumission automatisée de candidatures dans leurs
+  // conditions d'utilisation, peu importe que ce soit via API ou script.
+  const autoSubmitAllowed = pageUrl ? !!detectAtsPlatform(pageUrl) : false
+
   return NextResponse.json({
     full_name:      profile.full_name || '',
     email:           profile.email || '',
@@ -91,5 +98,6 @@ export async function GET(req: NextRequest) {
     matched:          !!matchedTitle,
     matched_title:    matchedTitle,
     matched_company:  matchedCompany,
+    autoSubmitAllowed,
   })
 }

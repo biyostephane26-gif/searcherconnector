@@ -1,12 +1,18 @@
 const tokenInput = document.getElementById('token');
 const statusEl = document.getElementById('status');
+const autoSubmitEl = document.getElementById('autoSubmit');
 
-chrome.storage.sync.get(['sc_token'], (data) => {
+chrome.storage.sync.get(['sc_token', 'sc_auto_submit'], (data) => {
   if (data.sc_token) {
     tokenInput.value = data.sc_token;
     statusEl.textContent = '✓ Connecté';
     statusEl.className = 'status ok';
   }
+  autoSubmitEl.checked = !!data.sc_auto_submit;
+});
+
+autoSubmitEl.addEventListener('change', () => {
+  chrome.storage.sync.set({ sc_auto_submit: autoSubmitEl.checked });
 });
 
 document.getElementById('save').addEventListener('click', () => {
