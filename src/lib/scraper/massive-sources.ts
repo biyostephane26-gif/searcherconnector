@@ -2272,5 +2272,28 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'I am Beezy', type: 'browser', url: 'https://www.iambeezy.com', isPaidOnly: false, category: 'freelance' },
   // --- 9quater. Amérique Latine 🟢 ---
   { name: 'Workana', type: 'browser', url: 'https://www.workana.com', isPaidOnly: false, category: 'freelance' },
+  // --- 10. Complément recherche web (2026-07-27) — plateformes freelance
+  // réelles hors du fichier de sourcing original, trouvées pour augmenter
+  // le volume sans réintroduire de job boards CDI. Toutes 🟢 structurées :
+  // marketplaces ouvertes où freelances postulent à des missions, pas des
+  // agences de placement qui recrutent en interne (Belay/Time Etc/Zirtual
+  // écartées pour cette raison — pas d'offres publiques scrapables). ---
+  { name: 'Truelancer', type: 'browser', url: 'https://www.truelancer.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Useme', type: 'browser', url: 'https://useme.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Contra', type: 'browser', url: 'https://contra.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Twine', type: 'browser', url: 'https://www.twine.net', isPaidOnly: false, category: 'freelance' },
+  { name: 'Legiit', type: 'browser', url: 'https://legiit.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Brigad', type: 'browser', url: 'https://www.brigad.co', isPaidOnly: false, category: 'freelance' },
+  { name: 'Voices.com', type: 'browser', url: 'https://www.voices.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Rev', type: 'browser', url: 'https://www.rev.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Scribie', type: 'browser', url: 'https://scribie.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'TranscribeMe', type: 'browser', url: 'https://transcribeme.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Gengo', type: 'browser', url: 'https://gengo.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Smartcat', type: 'browser', url: 'https://www.smartcat.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Webflow Experts', type: 'browser', url: 'https://webflow.com/experts', isPaidOnly: false, category: 'freelance' },
+  { name: 'Bubble Experts', type: 'browser', url: 'https://bubble.io/experts', isPaidOnly: false, category: 'freelance' },
+  { name: 'Zapier Experts', type: 'browser', url: 'https://zapier.com/experts', isPaidOnly: false, category: 'freelance' },
+  { name: 'Fancy Hands', type: 'browser', url: 'https://www.fancyhands.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Hoofdkraan', type: 'browser', url: 'https://www.hoofdkraan.nl', isPaidOnly: false, category: 'freelance' },
 ];
 // ─────────────────────────────────────────────────────────────────

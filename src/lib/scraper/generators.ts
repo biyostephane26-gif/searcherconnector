@@ -467,7 +467,8 @@ const TIER_TICKS_PER_HOUR: Record<SourceTier, number> = { fast: 6, medium: 4, sl
 // Registre freelance-only découpé par palier — les tranches correspondent
 // à l'ordre des catégories dans FREELANCE_PLATFORMS_CURATED (massive-
 // sources.ts) : [0,34)=France+Mondiales, [34,66)=IT France+Design+Rédaction,
-// [66,78)=Data/IA+Remote (🟡), [78,93)=Allemagne+Afrique+Maghreb+Ouest+LATAM.
+// [66,78)=Data/IA+Remote (🟡), [78,∞)=Allemagne+Afrique+Maghreb+Ouest+LATAM
+// + compléments de recherche web ajoutés après le fichier de sourcing.
 function buildTierPool(tier: SourceTier): SourceEntry[] {
   const pool = FREELANCE_PLATFORMS_CURATED as SourceEntry[];
   switch (tier) {
