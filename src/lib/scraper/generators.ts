@@ -5,6 +5,7 @@
 // filtrent les résultats à < 24h, et évitent les blocages !
 
 import { FREELANCE_PLATFORMS_CURATED } from './massive-sources';
+import { parseFreeApi, FREE_API_NAMES, type FreeApiName } from './freeJobApis';
 
 type SourceEntry = { name: string; type: string; url: string; isPaidOnly: boolean; category?: SourceCategory };
 
@@ -134,6 +135,34 @@ export async function fetchGenericAPI(url: string, keyword: string, isPaidOnly: 
   } catch (e) {
     recordOutcome(sourceName, false, (e as any)?.message);
     console.warn(`[API] Erreur ${url}:`, (e as any)?.message);
+    return [];
+  }
+}
+
+// =================================================================
+// GÉNÉRATEUR 1bis — API PUBLIQUES GRATUITES (sans clé ni crédit)
+// =================================================================
+// Même contrat que fetchGenericAPI (cache, fraîcheur, santé de source),
+// mais le parsing est spécifique par plateforme et ne conserve que les
+// annonces déclarées freelance/contrat par un champ structuré.
+export async function fetchFreeJobAPI(url: string, keyword: string, sourceName?: string): Promise<any[]> {
+  try {
+    const data = await fetchRawCached(url, 'json');
+    const name = (FREE_API_NAMES as readonly string[]).includes(sourceName || '')
+      ? (sourceName as FreeApiName)
+      : null;
+    if (!name) { recordOutcome(sourceName, false, 'nom de source inconnu du parseur gratuit'); return []; }
+
+    const items = parseFreeApi(name, data);
+    recordOutcome(sourceName, true);
+
+    const kw = keyword.toLowerCase();
+    return items
+      .filter(it => `${it.title} ${it.snippet} ${it.company}`.toLowerCase().includes(kw))
+      .filter(it => isDateFreshEnough(it.date));
+  } catch (e) {
+    recordOutcome(sourceName, false, (e as any)?.message);
+    console.warn(`[FREE-API] Erreur ${url}:`, (e as any)?.message);
     return [];
   }
 }
@@ -423,6 +452,7 @@ async function runInBatches<T>(items: T[], limit: number, worker: (item: T) => P
 // Exécute une source selon son type (api/rss → vrai fetch, browser/autre → site:)
 async function executeSource(source: SourceEntry, keyword: string): Promise<any[]> {
   const results = await withSourceCache(source.url, keyword, async () => {
+    if (source.type === 'freeapi') return fetchFreeJobAPI(source.url, keyword, source.name);
     if (source.type === 'api') return fetchGenericAPI(source.url, keyword, source.isPaidOnly, source.name);
     if (source.type === 'rss') return fetchGenericRSS(source.url, keyword, source.isPaidOnly, source.name);
     // 'browser' ou tout autre type sans parseur direct → recherche site-scoped

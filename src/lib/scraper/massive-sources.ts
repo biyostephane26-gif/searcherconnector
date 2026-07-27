@@ -2300,5 +2300,16 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'Zapier Experts', type: 'browser', url: 'https://zapier.com/experts', isPaidOnly: false, category: 'freelance' },
   { name: 'Fancy Hands', type: 'browser', url: 'https://www.fancyhands.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Hoofdkraan', type: 'browser', url: 'https://www.hoofdkraan.nl', isPaidOnly: false, category: 'freelance' },
+  // --- 11. API publiques gratuites (2026-07-27) — aucune clé, aucun crédit,
+  // aucun quota. Seule voie de sourcing totalement indépendante d'un
+  // fournisseur payant après la mise à sec de Serper/ScrapingBee/ZenRows.
+  // type:'freeapi' → parseur dédié (freeJobApis.ts) qui ne garde que les
+  // annonces déclarées freelance/contrat par un champ STRUCTURÉ de la
+  // plateforme. Catégorie 'freelance' assumée : après ce filtre il ne reste
+  // que du contrat déclaré, pas du salarié déguisé. ---
+  { name: 'Remotive', type: 'freeapi', url: 'https://remotive.com/api/remote-jobs', isPaidOnly: false, category: 'freelance' },
+  { name: 'Arbeitnow', type: 'freeapi', url: 'https://www.arbeitnow.com/api/job-board-api', isPaidOnly: false, category: 'freelance' },
+  { name: 'Jobicy', type: 'freeapi', url: 'https://jobicy.com/api/v2/remote-jobs', isPaidOnly: false, category: 'freelance' },
+  { name: 'Himalayas', type: 'freeapi', url: 'https://himalayas.app/jobs/api', isPaidOnly: false, category: 'freelance' },
 ];
 // ─────────────────────────────────────────────────────────────────
