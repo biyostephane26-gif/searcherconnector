@@ -344,8 +344,18 @@ function hostnameOf(url: string): string {
   try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; }
 }
 
-async function siteScopedSearch(domain: string, keyword: string): Promise<any[]> {
-  if (!SERPER_KEY || !domain) return [];
+// Drapeau global : dès que Serper répond "plus de crédits", inutile de
+// continuer à le marteler pour les ~100 sources suivantes du même tick —
+// on coupe court et on remonte l'info au lieu de renvoyer [] en silence.
+// (Réinitialisé à chaque redémarrage du conteneur, donc une recharge de
+// crédits est reprise en compte au prochain déploiement/restart.)
+let serperExhausted = false;
+export function isSerperExhausted(): boolean { return serperExhausted; }
+
+async function siteScopedSearch(domain: string, keyword: string, sourceName?: string): Promise<any[]> {
+  if (!SERPER_KEY) { recordOutcome(sourceName, false, 'SERPER_API_KEY absente'); return []; }
+  if (!domain) { recordOutcome(sourceName, false, 'domaine illisible'); return []; }
+  if (serperExhausted) { recordOutcome(sourceName, false, 'Serper: crédits épuisés'); return []; }
   try {
     const r = await fetch('https://google.serper.dev/search', {
       method: 'POST',
@@ -353,13 +363,28 @@ async function siteScopedSearch(domain: string, keyword: string): Promise<any[]>
       body: JSON.stringify({ q: `site:${domain} ${keyword}`, num: 5, tbs: 'qdr:w' }),
       signal: AbortSignal.timeout(8000),
     });
-    if (!r.ok) return [];
+    if (!r.ok) {
+      const body = await r.text().catch(() => '');
+      // 400 "Not enough credits" / 401 / 403 = panne de compte, pas de source :
+      // sans ce drapeau la panne restait invisible (toutes les sources
+      // renvoyaient [] sans qu'aucune erreur ne soit jamais enregistrée).
+      if (/not enough credits/i.test(body) || r.status === 401 || r.status === 403) {
+        serperExhausted = true;
+        console.error(`🚨 SERPER HORS SERVICE (HTTP ${r.status}) — toutes les sources 'browser' vont renvoyer 0 résultat. Réponse: ${body.slice(0, 120)}`);
+      }
+      recordOutcome(sourceName, false, `Serper HTTP ${r.status}`);
+      return [];
+    }
     const data = await r.json();
+    recordOutcome(sourceName, true);
     return ((data.organic || []) as any[]).map((x: any) => ({
       title: x.title, company: '', location: '', link: x.link,
       snippet: x.snippet || '', date: x.date || '', source: `site:${domain}`, isPremium: false,
     }));
-  } catch { return []; }
+  } catch (e) {
+    recordOutcome(sourceName, false, (e as any)?.message);
+    return [];
+  }
 }
 
 // =================================================================
@@ -401,7 +426,7 @@ async function executeSource(source: SourceEntry, keyword: string): Promise<any[
     if (source.type === 'api') return fetchGenericAPI(source.url, keyword, source.isPaidOnly, source.name);
     if (source.type === 'rss') return fetchGenericRSS(source.url, keyword, source.isPaidOnly, source.name);
     // 'browser' ou tout autre type sans parseur direct → recherche site-scoped
-    return siteScopedSearch(hostnameOf(source.url), keyword);
+    return siteScopedSearch(hostnameOf(source.url), keyword, source.name);
   });
   // Le cache stocke les résultats bruts (sans catégorie) — on la ré-attache
   // à chaque appel plutôt que dans le cache, pour rester correct même si un

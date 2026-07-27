@@ -2184,14 +2184,18 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'Free-Work', type: 'browser', url: 'https://www.free-work.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Talent.io', type: 'browser', url: 'https://www.talent.io', isPaidOnly: false, category: 'freelance' },
   { name: 'Club Freelance', type: 'browser', url: 'https://www.club-freelance.com', isPaidOnly: false, category: 'freelance' },
-  { name: 'Codeur.com', type: 'browser', url: 'https://www.codeur.com', isPaidOnly: false, category: 'freelance' },
+  // Flux RSS de missions réelles, vérifié 2026-07-27 (contenu contrôlé :
+  // « Recherche un développeur shopify », etc. — pas un flux de blog).
+  // type:'rss' = zéro appel Serper, gratuit et illimité.
+  { name: 'Codeur.com', type: 'rss', url: 'https://www.codeur.com/projects.rss', isPaidOnly: false, category: 'freelance' },
   { name: '5euros.com', type: 'browser', url: 'https://www.5euros.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Sortlist', type: 'browser', url: 'https://www.sortlist.com', isPaidOnly: false, category: 'freelance' },
   // --- 2. Plateformes mondiales 🟢 ---
   { name: 'Toptal', type: 'browser', url: 'https://www.toptal.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Upwork', type: 'browser', url: 'https://www.upwork.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Fiverr', type: 'browser', url: 'https://www.fiverr.com', isPaidOnly: false, category: 'freelance' },
-  { name: 'Freelancer.com', type: 'browser', url: 'https://www.freelancer.com', isPaidOnly: false, category: 'freelance' },
+  // Flux RSS de projets réels, vérifié 2026-07-27.
+  { name: 'Freelancer.com', type: 'rss', url: 'https://www.freelancer.com/rss.xml', isPaidOnly: false, category: 'freelance' },
   { name: 'Guru', type: 'browser', url: 'https://www.guru.com', isPaidOnly: false, category: 'freelance' },
   { name: 'PeoplePerHour', type: 'browser', url: 'https://www.peopleperhour.com', isPaidOnly: false, category: 'freelance' },
   { name: 'CloudPeeps', type: 'browser', url: 'https://www.cloudpeeps.com', isPaidOnly: false, category: 'freelance' },
@@ -2261,7 +2265,8 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'ComeUp', type: 'browser', url: 'https://comeup.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Jobbers.io', type: 'browser', url: 'https://www.jobbers.io', isPaidOnly: false, category: 'freelance' },
   // --- 9bis. Maghreb 🟢 ---
-  { name: 'Missions-Freelance.ma', type: 'browser', url: 'https://www.missions-freelance.ma', isPaidOnly: false, category: 'freelance' },
+  // Flux RSS de missions réelles (Maroc), vérifié 2026-07-27.
+  { name: 'Missions-Freelance.ma', type: 'rss', url: 'https://www.missions-freelance.ma/feed', isPaidOnly: false, category: 'freelance' },
   { name: 'Freelancer.ma', type: 'browser', url: 'https://www.freelancer.ma', isPaidOnly: false, category: 'freelance' },
   { name: 'Jobbers.ma', type: 'browser', url: 'https://www.jobbers.ma', isPaidOnly: false, category: 'freelance' },
   { name: 'Tunisie Freelance', type: 'browser', url: 'https://www.tunisiefreelance.com', isPaidOnly: false, category: 'freelance' },
