@@ -14,7 +14,8 @@ import { createClient } from '@supabase/supabase-js'
 import { fetchAllSources, pickTierBatch, runTierBatch, SourceTier, drainSourceHealthBuffer } from '../../../src/lib/scraper/generators'
 import { CATEGORIES, extractKeywordsForUser } from '../../../src/lib/scraper/categories'
 import { detectRequiredLevel, computeLevelMatch } from '../../../src/lib/scraper/skill-matching'
-import { typeMatchDelta, isHardTypeMismatch } from '../../../src/lib/scraper/typeSignals'
+import { typeMatchDelta, isHardTypeMismatch, isSourceCategoryMismatch } from '../../../src/lib/scraper/typeSignals'
+import { normalizeMissionKey, evaluateMissionFreshness, CAP_SC_PAR_INSTANCE } from '../../../src/lib/scraper/missionFreshness'
 import { isPaidPlan } from '../../../src/lib/planUtils'
 import { scrapeLinkedIn, scrapeUpwork, scrapeTwitter, HAS_HUMANIST_SCRAPERS } from '../../../src/lib/scraper/humanist'
 import { sendOpportunityAlert } from '../../../src/lib/email'
@@ -153,7 +154,9 @@ export async function POST(req: NextRequest) {
             country:         '',
             description:     (r.snippet || '').slice(0, 500),
             original_url:    r.link || r.url,
+            mission_key:     normalizeMissionKey(r.title || '', r.company || ''),
             source_platform: r.source || 'web',
+            source_category: r.sourceCategory || null,
             source_type:     r.isPremium ? 'premium' : 'free',
             category:        cat,
             published_at:    safeISODate(r.date),
@@ -161,10 +164,24 @@ export async function POST(req: NextRequest) {
           }))
 
         if (rows.length > 0) {
-          const { data: inserted, error } = await supabase
+          let { data: inserted, error } = await supabase
             .from('cache_opportunities')
             .upsert(rows, { onConflict: 'fingerprint', ignoreDuplicates: true })
             .select('id')
+          // mission_key n'existe que si add_mission_freshness.sql a été
+          // appliquée — retry sans plutôt que de perdre TOUT le scan tant
+          // que la migration n'a pas tourné (même piège que required_level
+          // plus bas : une colonne manquante ne doit jamais tout casser).
+          if (error && /mission_key|source_category/.test(error.message)) {
+            console.warn('[cache-scan] retry insert sans mission_key/source_category (migration manquante ?):', error.message)
+            const stripped = rows.map(({ mission_key, source_category, ...rest }) => rest)
+            const retry = await supabase
+              .from('cache_opportunities')
+              .upsert(stripped, { onConflict: 'fingerprint', ignoreDuplicates: true })
+              .select('id')
+            inserted = retry.data
+            error = retry.error
+          }
           if (error) errors.push(`${cat}: ${error.message}`)
           else opportunitiesAdded += inserted?.length || 0
         }
@@ -275,12 +292,28 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
   const alertsByUser = new Map<string, { to: string; name: string; opportunities: any[] }>()
   // Candidats à l'auto-candidature réelle — traités après l'insert (besoin de l'id)
   const autoApplyCandidates: Array<{ user_id: string; original_url: string }> = []
-  // Anti-saturation : évite qu'une seule offre reçoive des dizaines de
-  // candidatures auto-générées par nos propres utilisateurs (ex. 100
-  // marketeurs sur 1 seul poste) — mauvais pour l'utilisateur (dilue son
-  // avantage "premier arrivé") et suspect pour l'employeur.
-  const AUTO_APPLY_CAP_PER_OPPORTUNITY = 15
-  const autoApplyCountByFingerprint = new Map<string, number>()
+
+  // ── Cap SC PAR INSTANCE (persistant, pas juste ce tick) ─────────────
+  // Anti-saturation : évite qu'une seule URL reçoive des dizaines de
+  // candidatures auto-générées par nos propres utilisateurs. Compte réel
+  // depuis applications_sent (survit aux ticks suivants — l'ancienne
+  // version comptait dans une Map locale qui repartait de zéro à chaque
+  // tick de 15min et ne plafonnait donc jamais réellement rien sur la
+  // durée de vie d'une offre). Ne s'applique QU'AUX offres déjà jugées
+  // fraîches (voir evaluateMissionFreshness plus bas) — une offre qui a
+  // dépassé le seuil de fraîcheur global disparaît du flux avant même que
+  // ce cap ait besoin d'intervenir.
+  const { data: existingScApps } = candidateUrls.length
+    ? await supabase.from('applications_sent').select('original_url').eq('sent_via', 'scai_auto').in('original_url', candidateUrls)
+    : { data: [] as any[] }
+  const autoApplyCountByUrl = new Map<string, number>()
+  for (const a of (existingScApps || [])) {
+    autoApplyCountByUrl.set(a.original_url, (autoApplyCountByUrl.get(a.original_url) || 0) + 1)
+  }
+
+  // Mémoïsation par mission_key sur la durée de ce tick — une seule
+  // requête d'agrégat par mission, pas une par (mission × utilisateur).
+  const freshnessCache = new Map<string, Awaited<ReturnType<typeof evaluateMissionFreshness>>>()
 
   for (const item of freshItems) {
     const hay = `${item.title} ${item.description}`.toLowerCase()
@@ -290,6 +323,14 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
     // Niveau requis détecté une seule fois par offre (même pour tous les
     // utilisateurs qui matchent dessus) — voir skill-matching.ts
     const requiredLevel = detectRequiredLevel(item.title, item.description)
+
+    // ── Fraîcheur globale (toutes plateformes confondues) ────────────
+    const missionKey = item.mission_key || normalizeMissionKey(item.title || '', item.company || '')
+    if (!freshnessCache.has(missionKey)) {
+      freshnessCache.set(missionKey, await evaluateMissionFreshness(supabase, missionKey))
+    }
+    const freshness = freshnessCache.get(missionKey)!
+    if (!freshness.fresh) continue // mission trop vieille / trop de postulants → disparaît du flux, pour tout le monde
 
     for (const u of users) {
       // Jusqu'à 3 domaines/utilisateur — matche sur l'union de leurs mots-clés
@@ -308,6 +349,12 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
       // Exclusion dure — un CDI classique sans ambiguïté ne doit jamais
       // atteindre un profil freelance (voir typeSignals.ts).
       if (isHardTypeMismatch((u as any).profile_type, hay)) continue
+
+      // Exclusion dure par SOURCE — plus fiable que le texte quand le
+      // snippet scrapé est trop court pour contenir un marqueur CDI (RSS,
+      // site:). Un board généraliste (source_category='job') ne doit jamais
+      // atteindre un profil freelance, peu importe le texte de l'annonce.
+      if (isSourceCategoryMismatch((u as any).profile_type, item.source_category)) continue
 
       // ── Barème fraîcheur (identique à scan.ts scoreLocally) ──────
       // Payant : <6h ultra frais (+50) ... >14j trop vieux (-50)
@@ -399,15 +446,15 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
         const isOpenSource = !item.source_platform?.startsWith('humanist:')
         const schedule = scheduleByUser.get(u.id) as any
         const autoThreshold = schedule?.auto_apply_threshold || 80
-        const autoApplyCountSoFar = autoApplyCountByFingerprint.get(item.fingerprint) || 0
+        const autoApplyCountSoFar = autoApplyCountByUrl.get(item.original_url) || 0
         if (
           schedule?.auto_apply_enabled &&
           isOpenSource &&
           score >= autoThreshold &&
-          autoApplyCountSoFar < AUTO_APPLY_CAP_PER_OPPORTUNITY
+          autoApplyCountSoFar < CAP_SC_PAR_INSTANCE
         ) {
           autoApplyCandidates.push({ user_id: u.id, original_url: item.original_url })
-          autoApplyCountByFingerprint.set(item.fingerprint, autoApplyCountSoFar + 1)
+          autoApplyCountByUrl.set(item.original_url, autoApplyCountSoFar + 1)
         }
       }
     }

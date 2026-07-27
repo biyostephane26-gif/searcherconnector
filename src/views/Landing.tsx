@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { User, Code } from 'lucide-react'
+import { Code } from 'lucide-react'
 import Navbar from '../components/layout/Navbar'
 import Footer from '../components/layout/Footer'
 import GoldButton from '../components/ui/GoldButton'
@@ -79,14 +79,6 @@ export default function Landing() {
   }, [])
 
   const profileTypes = [
-    {
-      id: 'job_seeker',
-      title: 'Job Seeker',
-      icon: <User className="w-5 h-5" />,
-      desc: 'Find your dream job — local or worldwide.',
-      accent: 'border-blue-500/30 hover:border-blue-400',
-      badge: 'bg-blue-500/10 text-blue-400',
-    },
     {
       id: 'freelance',
       title: 'Freelance',
@@ -169,12 +161,12 @@ export default function Landing() {
             The world's first autonomous intelligence agent that doesn't just find opportunities — it secures them for you.
           </p>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full mb-16">
+          <div className="flex justify-center w-full mb-16">
             {profileTypes.map((type) => (
               <button
                 key={type.id}
                 onClick={() => router.push(`/signup?type=${type.id}`)}
-                className={`group bg-[#111111] border ${type.accent} p-6 rounded-2xl transition-all duration-300 text-left`}
+                className={`group bg-[#111111] border ${type.accent} p-6 rounded-2xl transition-all duration-300 text-left max-w-sm`}
               >
                 <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest mb-3 ${type.badge}`}>
                   {type.icon}

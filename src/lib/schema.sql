@@ -6,8 +6,10 @@ create table if not exists users_profiles (
   id uuid references auth.users primary key,
   full_name text not null,
   email text not null,
+  -- freelance-only depuis 2026-07-27 (job_seeker retiré, voir
+  -- supabase/migrations/remove_job_seeker_profile_type.sql)
   profile_type text not null check (
-    profile_type in ('job_seeker','freelance','business','investor')
+    profile_type in ('freelance','business','investor')
   ),
   domain text,
   country text,

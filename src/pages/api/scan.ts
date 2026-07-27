@@ -39,7 +39,7 @@ import { fetchAllSources } from '../../lib/scraper/generators';
 import { cache } from '../../lib/scraper/cache-manager';
 import { matchCategories, matchCategoriesForUser } from '../../lib/scraper/categories';
 import { detectRequiredLevel, computeLevelMatch } from '../../lib/scraper/skill-matching';
-import { typeMatchDelta, isHardTypeMismatch } from '../../lib/scraper/typeSignals';
+import { typeMatchDelta, isHardTypeMismatch, isSourceCategoryMismatch } from '../../lib/scraper/typeSignals';
 import { checkRateLimit } from '../../lib/rateLimiter';
 import { planTier } from '../../lib/planUtils';
 import { planConfig } from '../../lib/planConfig';
@@ -962,6 +962,10 @@ function scoreLocally(items: any[], profile: any, isPaid: boolean): any[] {
     // d'autres signaux de domaine sont forts. Un simple malus ne
     // suffisait pas en pratique (voir typeSignals.ts).
     if (isHardTypeMismatch(type, hay)) return null;
+    // Idem via la catégorie de la source (voir cache-scan/route.ts et
+    // typeSignals.ts) — plus fiable que le texte quand le snippet est trop
+    // court pour contenir un marqueur CDI.
+    if (isSourceCategoryMismatch(type, r.sourceCategory)) return null;
     let score = 20;
 
     const dHits = terms.filter(t=>t.length>3&&hay.includes(t)).length;

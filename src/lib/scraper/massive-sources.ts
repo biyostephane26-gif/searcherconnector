@@ -2138,4 +2138,139 @@ export const INDUSTRY_SPECIALIZED = [
 // avec rotation par lot + cache 6h pour ne jamais tout interroger d'un
 // coup et protéger le budget Serper. Ce nombre grandit simplement en
 // ajoutant des entrées ici — pas besoin de toucher au moteur.
+
+// ═════════════════════════════════════════════════════════════════
+// REGISTRE FREELANCE-ONLY (2026-07-27) — remplace les ~2000 sources
+// ci-dessus dans le pipeline de scan ACTIF (generators.ts n'importe
+// plus que ce tableau). Les ~2000 sources restent définies plus haut
+// pour ne pas casser scraper-core.ts (fetchATS via ATS_COMPANIES,
+// chemin secondaire /api/v1), mais elles ne sont plus scannées.
+//
+// Pourquoi : décision produit — Searcher Connector devient freelance-
+// only (job_seeker retiré). L'immense majorité des ~2000 sources
+// ci-dessus sont des job boards CDI classiques (JOB_BOARDS,
+// ATS_COMPANIES, NICHE_PLATFORMS, EXECUTIVE_CAREERS...) — la cause
+// racine confirmée du bug "un profil freelance reçoit ~80% d'offres
+// CDI" (voir typeSignals.ts). Remplacées par une liste curée de ~93
+// plateformes RÉELLEMENT freelance, vérifiées individuellement
+// (source : plateformes-freelance-searcher-connector.md, juillet 2026).
+//
+// Catégories 10-13 du fichier source (Conseil/Transformation, Cabinets
+// ESN, Finance spécialisé, Achats/Procurement — ~46 entrées 🔴)
+// délibérément EXCLUES ici : le fichier lui-même les déconseille pour
+// l'instant ("pas d'API/RSS publique, scraping HTML fragile ou contact
+// humain, incompatible avec le pipeline automatisé actuel") — à
+// réintégrer plus tard si besoin, cf. le fichier .md.
+//
+// category: 'freelance' (🟢, structure 100% mission — safe) |
+//           'mixed' (🟡, mélange CDI remote / freelance — filtre texte
+//           typeSignals.ts toujours actif en plus pour ces sources).
+// ═════════════════════════════════════════════════════════════════
+export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: string; isPaidOnly: boolean; category: 'freelance' | 'mixed' }[] = [
+  // --- 1. Généralistes France 🟢 ---
+  { name: 'Malt', type: 'browser', url: 'https://www.malt.fr', isPaidOnly: false, category: 'freelance' },
+  { name: 'Crème de la Crème', type: 'browser', url: 'https://www.cremedelacreme.io', isPaidOnly: false, category: 'freelance' },
+  { name: 'Comet', type: 'browser', url: 'https://www.comet.co', isPaidOnly: false, category: 'freelance' },
+  { name: 'LittleBig Connection', type: 'browser', url: 'https://www.littlebigconnection.com', isPaidOnly: false, category: 'freelance' },
+  { name: '404Works', type: 'browser', url: 'https://www.404works.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Freelance.com', type: 'browser', url: 'https://www.freelance.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Side', type: 'browser', url: 'https://www.side.co', isPaidOnly: false, category: 'freelance' },
+  { name: 'Iziday', type: 'browser', url: 'https://www.iziday.fr', isPaidOnly: false, category: 'freelance' },
+  { name: 'Acracy', type: 'browser', url: 'https://www.acracy.co', isPaidOnly: false, category: 'freelance' },
+  { name: 'Jump', type: 'browser', url: 'https://www.jump.co', isPaidOnly: false, category: 'freelance' },
+  { name: 'Yeita', type: 'browser', url: 'https://www.yeita.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Beager', type: 'browser', url: 'https://www.beager.co', isPaidOnly: false, category: 'freelance' },
+  { name: 'Collective.work', type: 'browser', url: 'https://www.collective.work', isPaidOnly: false, category: 'freelance' },
+  { name: 'Free-Work', type: 'browser', url: 'https://www.free-work.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Talent.io', type: 'browser', url: 'https://www.talent.io', isPaidOnly: false, category: 'freelance' },
+  { name: 'Club Freelance', type: 'browser', url: 'https://www.club-freelance.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Codeur.com', type: 'browser', url: 'https://www.codeur.com', isPaidOnly: false, category: 'freelance' },
+  { name: '5euros.com', type: 'browser', url: 'https://www.5euros.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Sortlist', type: 'browser', url: 'https://www.sortlist.com', isPaidOnly: false, category: 'freelance' },
+  // --- 2. Plateformes mondiales 🟢 ---
+  { name: 'Toptal', type: 'browser', url: 'https://www.toptal.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Upwork', type: 'browser', url: 'https://www.upwork.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Fiverr', type: 'browser', url: 'https://www.fiverr.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Freelancer.com', type: 'browser', url: 'https://www.freelancer.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Guru', type: 'browser', url: 'https://www.guru.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'PeoplePerHour', type: 'browser', url: 'https://www.peopleperhour.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'CloudPeeps', type: 'browser', url: 'https://www.cloudpeeps.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Gun.io', type: 'browser', url: 'https://www.gun.io', isPaidOnly: false, category: 'freelance' },
+  { name: 'Arc.dev', type: 'browser', url: 'https://arc.dev', isPaidOnly: false, category: 'freelance' },
+  { name: 'Turing', type: 'browser', url: 'https://www.turing.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'A.Team', type: 'browser', url: 'https://www.a.team', isPaidOnly: false, category: 'freelance' },
+  { name: 'X-Team', type: 'browser', url: 'https://www.x-team.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Braintrust', type: 'browser', url: 'https://www.usebraintrust.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Codeable', type: 'browser', url: 'https://www.codeable.io', isPaidOnly: false, category: 'freelance' },
+  { name: 'Superside', type: 'browser', url: 'https://www.superside.com', isPaidOnly: false, category: 'freelance' },
+  // --- 3. IT & Digital spécialisé France 🟢 ---
+  { name: 'Kicklox', type: 'browser', url: 'https://www.kicklox.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'LeHibou', type: 'browser', url: 'https://www.lehibou.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Mindquest', type: 'browser', url: 'https://www.mindquest.io', isPaidOnly: false, category: 'freelance' },
+  { name: 'Silkhom', type: 'browser', url: 'https://www.silkhom.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Externatic', type: 'browser', url: 'https://www.externatic.co', isPaidOnly: false, category: 'freelance' },
+  { name: 'Urban Linker', type: 'browser', url: 'https://www.urbanlinker.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'WeLoveDevs', type: 'browser', url: 'https://www.welovedevs.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'ChooseYourBoss', type: 'browser', url: 'https://www.chooseyourboss.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Pentalog', type: 'browser', url: 'https://www.pentalog.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Padok', type: 'browser', url: 'https://www.padok.fr', isPaidOnly: false, category: 'freelance' },
+  { name: 'Eficode', type: 'browser', url: 'https://www.eficode.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Stack Labs', type: 'browser', url: 'https://www.stacklabs.fr', isPaidOnly: false, category: 'freelance' },
+  // --- 4. Design & Créa 🟢 ---
+  { name: '99designs', type: 'browser', url: 'https://99designs.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Dribbble', type: 'browser', url: 'https://dribbble.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Behance', type: 'browser', url: 'https://www.behance.net', isPaidOnly: false, category: 'freelance' },
+  { name: 'Working Not Working', type: 'browser', url: 'https://www.workingnotworking.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'We Are Rosie', type: 'browser', url: 'https://www.wearerosie.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'DesignCrowd', type: 'browser', url: 'https://www.designcrowd.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Crowdspring', type: 'browser', url: 'https://www.crowdspring.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Graphiste.com', type: 'browser', url: 'https://www.graphiste.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Creads', type: 'browser', url: 'https://www.creads.com', isPaidOnly: false, category: 'freelance' },
+  // --- 5. Rédaction & Traduction 🟢 ---
+  { name: 'ProZ.com', type: 'browser', url: 'https://www.proz.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'TextMaster', type: 'browser', url: 'https://www.textmaster.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Textbroker', type: 'browser', url: 'https://www.textbroker.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Scripted', type: 'browser', url: 'https://www.scripted.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Verblio', type: 'browser', url: 'https://www.verblio.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'WriterAccess', type: 'browser', url: 'https://www.writeraccess.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'ClearVoice', type: 'browser', url: 'https://www.clearvoice.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'iWriter', type: 'browser', url: 'https://www.iwriter.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Constant Content', type: 'browser', url: 'https://www.constant-content.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Reedsy', type: 'browser', url: 'https://reedsy.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Contently', type: 'browser', url: 'https://contently.com', isPaidOnly: false, category: 'freelance' },
+  // --- 6. Data/IA & micro-tâches 🟡 (mission courte, parfois classée "emploi remote") ---
+  { name: 'Clickworker', type: 'browser', url: 'https://www.clickworker.com', isPaidOnly: false, category: 'mixed' },
+  { name: 'Appen', type: 'browser', url: 'https://www.appen.com', isPaidOnly: false, category: 'mixed' },
+  { name: 'Lionbridge AI', type: 'browser', url: 'https://www.lionbridge.com', isPaidOnly: false, category: 'mixed' },
+  { name: 'Amazon Mechanical Turk', type: 'browser', url: 'https://www.mturk.com', isPaidOnly: false, category: 'mixed' },
+  { name: 'Crowdsource (Google)', type: 'browser', url: 'https://crowdsource.google.com', isPaidOnly: false, category: 'mixed' },
+  // --- 7. Remote work boards 🟡 (mélange CDI remote / freelance) ---
+  { name: 'We Work Remotely', type: 'browser', url: 'https://weworkremotely.com', isPaidOnly: false, category: 'mixed' },
+  { name: 'RemoteOK', type: 'browser', url: 'https://remoteok.io', isPaidOnly: false, category: 'mixed' },
+  { name: 'FlexJobs', type: 'browser', url: 'https://www.flexjobs.com', isPaidOnly: false, category: 'mixed' },
+  { name: 'JustRemote', type: 'browser', url: 'https://justremote.co', isPaidOnly: false, category: 'mixed' },
+  { name: 'Working Nomads', type: 'browser', url: 'https://www.workingnomads.co', isPaidOnly: false, category: 'mixed' },
+  { name: 'Remote.co', type: 'browser', url: 'https://remote.co', isPaidOnly: false, category: 'mixed' },
+  { name: 'Wellfound (AngelList Talent)', type: 'browser', url: 'https://wellfound.com', isPaidOnly: false, category: 'mixed' },
+  // --- 8. Allemagne / Europe 🟢 ---
+  { name: 'Twago', type: 'browser', url: 'https://www.twago.de', isPaidOnly: false, category: 'freelance' },
+  { name: 'GULP', type: 'browser', url: 'https://www.gulp.de', isPaidOnly: false, category: 'freelance' },
+  { name: 'Freelancermap', type: 'browser', url: 'https://www.freelancermap.de', isPaidOnly: false, category: 'freelance' },
+  { name: 'Malt DE', type: 'browser', url: 'https://www.malt.de', isPaidOnly: false, category: 'freelance' },
+  // --- 9. Afrique / marché local 🟢 ---
+  { name: 'ComeUp', type: 'browser', url: 'https://comeup.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Jobbers.io', type: 'browser', url: 'https://www.jobbers.io', isPaidOnly: false, category: 'freelance' },
+  // --- 9bis. Maghreb 🟢 ---
+  { name: 'Missions-Freelance.ma', type: 'browser', url: 'https://www.missions-freelance.ma', isPaidOnly: false, category: 'freelance' },
+  { name: 'Freelancer.ma', type: 'browser', url: 'https://www.freelancer.ma', isPaidOnly: false, category: 'freelance' },
+  { name: 'Jobbers.ma', type: 'browser', url: 'https://www.jobbers.ma', isPaidOnly: false, category: 'freelance' },
+  { name: 'Tunisie Freelance', type: 'browser', url: 'https://www.tunisiefreelance.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'Freelances.tn', type: 'browser', url: 'https://www.freelances.tn', isPaidOnly: false, category: 'freelance' },
+  // --- 9ter. Afrique de l'Ouest francophone 🟢 ---
+  { name: 'IWORKS', type: 'browser', url: 'https://www.iworks.africa', isPaidOnly: false, category: 'freelance' },
+  { name: 'Izylance', type: 'browser', url: 'https://www.izylance.com', isPaidOnly: false, category: 'freelance' },
+  { name: 'I am Beezy', type: 'browser', url: 'https://www.iambeezy.com', isPaidOnly: false, category: 'freelance' },
+  // --- 9quater. Amérique Latine 🟢 ---
+  { name: 'Workana', type: 'browser', url: 'https://www.workana.com', isPaidOnly: false, category: 'freelance' },
+];
 // ─────────────────────────────────────────────────────────────────

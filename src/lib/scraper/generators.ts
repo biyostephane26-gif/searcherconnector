@@ -4,23 +4,28 @@
 // Ces fonctions génériques traitent TOUTES nos 300+ sources,
 // filtrent les résultats à < 24h, et évitent les blocages !
 
-import {
-  JOB_BOARDS, ATS_COMPANIES, FREELANCE_PLATFORMS, TECH_RSS_FEEDS, SOCIAL_COMMUNITIES,
-  NICHE_PLATFORMS, AI_TECH_PLATFORMS, GLOBAL_FREELANCE, INTERNSHIP_JUNIOR,
-  REMOTE_EXCLUSIVE, EXECUTIVE_CAREERS, INDUSTRY_SPECIALIZED,
-} from './massive-sources';
+import { FREELANCE_PLATFORMS_CURATED } from './massive-sources';
 
-type SourceEntry = { name: string; type: string; url: string; isPaidOnly: boolean };
+type SourceEntry = { name: string; type: string; url: string; isPaidOnly: boolean; category?: SourceCategory };
 
-// Total de sources CONFIGURÉES (le "2005" annoncé) — distinct du nombre de
-// sources ayant réellement livré une opportunité récemment (telemetry
-// fondateur ne comptait avant que les plateformes DISTINCTES ayant produit
-// un résultat en cache, jamais la taille réelle du registre configuré).
-export const TOTAL_CONFIGURED_SOURCES =
-  JOB_BOARDS.length + ATS_COMPANIES.length + FREELANCE_PLATFORMS.length +
-  TECH_RSS_FEEDS.length + SOCIAL_COMMUNITIES.length + NICHE_PLATFORMS.length +
-  AI_TECH_PLATFORMS.length + GLOBAL_FREELANCE.length + INTERNSHIP_JUNIOR.length +
-  REMOTE_EXCLUSIVE.length + EXECUTIVE_CAREERS.length + INDUSTRY_SPECIALIZED.length;
+// Catégorie de CONTRAT typique de la source (pas du contenu individuel) —
+// utilisée pour l'exclusion dure freelance-vs-CDI par source plutôt que par
+// mots-clés dans le texte scrapé (souvent trop court pour contenir un
+// marqueur fiable). Voir isSourceCategoryMismatch dans typeSignals.ts.
+export type SourceCategory = 'job' | 'freelance' | 'mixed';
+
+function tagCategory<T extends { name: string; type?: string; url: string; isPaidOnly: boolean }>(
+  arr: T[], category: SourceCategory
+): SourceEntry[] {
+  return arr.map(s => ({ name: s.name, type: s.type || 'browser', url: s.url, isPaidOnly: s.isPaidOnly, category }));
+}
+
+// Total de sources CONFIGURÉES — depuis le passage freelance-only
+// (2026-07-27), ne compte plus que le registre curé (~93 plateformes
+// freelance vérifiées), les ~2000 sources job/CDI génériques ayant été
+// retirées du pipeline actif (voir FREELANCE_PLATFORMS_CURATED dans
+// massive-sources.ts).
+export const TOTAL_CONFIGURED_SOURCES = FREELANCE_PLATFORMS_CURATED.length;
 
 // Bufferise les échecs/succès de sources pour que l'appelant (cache-scan)
 // les persiste après le scan — generators.ts reste indépendant de la
@@ -38,10 +43,7 @@ function recordOutcome(name: string | undefined, ok: boolean, error?: string) {
 }
 
 export const TOTAL_CONFIGURED_PAID_SOURCES =
-  [JOB_BOARDS, ATS_COMPANIES, FREELANCE_PLATFORMS, TECH_RSS_FEEDS, SOCIAL_COMMUNITIES,
-   NICHE_PLATFORMS, AI_TECH_PLATFORMS, GLOBAL_FREELANCE, INTERNSHIP_JUNIOR,
-   REMOTE_EXCLUSIVE, EXECUTIVE_CAREERS, INDUSTRY_SPECIALIZED]
-    .reduce((n, arr: any[]) => n + arr.filter(s => s.isPaidOnly).length, 0);
+  FREELANCE_PLATFORMS_CURATED.filter(s => s.isPaidOnly).length;
 
 // 🚦 Rate Limiting par domaine pour éviter les blocages
 const lastRequestPerDomain = new Map<string, number>();
@@ -395,12 +397,16 @@ async function runInBatches<T>(items: T[], limit: number, worker: (item: T) => P
 
 // Exécute une source selon son type (api/rss → vrai fetch, browser/autre → site:)
 async function executeSource(source: SourceEntry, keyword: string): Promise<any[]> {
-  return withSourceCache(source.url, keyword, async () => {
+  const results = await withSourceCache(source.url, keyword, async () => {
     if (source.type === 'api') return fetchGenericAPI(source.url, keyword, source.isPaidOnly, source.name);
     if (source.type === 'rss') return fetchGenericRSS(source.url, keyword, source.isPaidOnly, source.name);
     // 'browser' ou tout autre type sans parseur direct → recherche site-scoped
     return siteScopedSearch(hostnameOf(source.url), keyword);
   });
+  // Le cache stocke les résultats bruts (sans catégorie) — on la ré-attache
+  // à chaque appel plutôt que dans le cache, pour rester correct même si un
+  // même item (url identique) était atteignable via deux registres différents.
+  return source.category ? results.map((r: any) => ({ ...r, sourceCategory: source.category })) : results;
 }
 
 // Choisit un sous-ensemble rotatif d'une liste (couverture complète sur plusieurs scans)
@@ -423,50 +429,21 @@ export async function fetchAllSources(keyword: string, log: string[], isPaid: bo
   // pour le budget puisque chaque source est cachée 6h.
   const BATCH_SIZE = isPaid ? 150 : 40;
 
-  // `url` ici sert uniquement de clé de cache/dédup — l'URL réelle interrogée
-  // est reconstruite dans fetchATS() à partir de `ats` + `slug`.
-  const atsAsSourceEntries: SourceEntry[] = ATS_COMPANIES.map(c => ({ name: c.name, type: 'ats', url: `https://${c.ats}/${c.slug}`, isPaidOnly: c.isPaidOnly }));
-
-  const allCategories: SourceEntry[] = [
-    ...(JOB_BOARDS as SourceEntry[]),
-    ...atsAsSourceEntries,
-    ...(FREELANCE_PLATFORMS as SourceEntry[]),
-    ...(TECH_RSS_FEEDS as any[]).map(f => ({ name: f.name, type: 'rss', url: f.url, isPaidOnly: f.isPaidOnly })),
-    ...(SOCIAL_COMMUNITIES as SourceEntry[]),
-    ...(NICHE_PLATFORMS as SourceEntry[]),
-    ...(AI_TECH_PLATFORMS as SourceEntry[]),
-    ...(GLOBAL_FREELANCE as SourceEntry[]),
-    ...(INTERNSHIP_JUNIOR as SourceEntry[]),
-    ...(REMOTE_EXCLUSIVE as SourceEntry[]),
-    ...(EXECUTIVE_CAREERS as SourceEntry[]),
-    ...(INDUSTRY_SPECIALIZED as SourceEntry[]),
-  ];
+  // Registre freelance-only (voir massive-sources.ts) — plus d'ATS_COMPANIES
+  // ni de job boards génériques dans le pipeline actif.
+  const allSources: SourceEntry[] = FREELANCE_PLATFORMS_CURATED as SourceEntry[];
 
   // ── Filtrage RÉEL gratuit / payant (absent jusqu'ici) ──────────
-  const eligible = allCategories.filter(s => isPaid || !s.isPaidOnly);
+  const eligible = allSources.filter(s => isPaid || !s.isPaidOnly);
 
-  const total = allCategories.length;
+  const total = allSources.length;
   const eligibleCount = eligible.length;
-  log.push(`🔍 Registre: ${total} sources (${allCategories.filter(s=>!s.isPaidOnly).length} gratuites / ${allCategories.filter(s=>s.isPaidOnly).length} premium)`);
+  log.push(`🔍 Registre freelance: ${total} sources (${allSources.filter(s=>!s.isPaidOnly).length} gratuites / ${allSources.filter(s=>s.isPaidOnly).length} premium)`);
   log.push(`📋 Plan ${isPaid ? 'payant' : 'gratuit'} → ${eligibleCount} sources éligibles, ${BATCH_SIZE} interrogées ce scan (rotation 6h pour couverture complète)`);
 
   const batch = rotatingSlice(eligible, BATCH_SIZE);
+  const allResults = await runInBatches(batch, 5, s => executeSource(s, keyword));
 
-  // fetchATS a une signature différente (company object) → traité à part
-  const atsBatch = batch.filter(s => s.type === 'ats');
-  const otherBatch = batch.filter(s => s.type !== 'ats');
-
-  const atsByName = new Map(ATS_COMPANIES.map(c => [c.name, c]));
-  const [atsResults, otherResults] = await Promise.all([
-    runInBatches(atsBatch, 5, s => {
-      const company = atsByName.get(s.name);
-      if (!company) return Promise.resolve([]);
-      return withSourceCache(s.url, keyword, () => fetchATS(company, keyword));
-    }),
-    runInBatches(otherBatch, 5, s => executeSource(s, keyword)),
-  ]);
-
-  const allResults = [...atsResults, ...otherResults];
   log.push(`✅ Scan terminé ! ${allResults.length} résultats bruts sur ${batch.length} sources interrogées`);
 
   return allResults;
@@ -487,24 +464,17 @@ export type SourceTier = 'fast' | 'medium' | 'slow' | 'veryslow';
 
 const TIER_TICKS_PER_HOUR: Record<SourceTier, number> = { fast: 6, medium: 4, slow: 2, veryslow: 1 };
 
+// Registre freelance-only découpé par palier — les tranches correspondent
+// à l'ordre des catégories dans FREELANCE_PLATFORMS_CURATED (massive-
+// sources.ts) : [0,34)=France+Mondiales, [34,66)=IT France+Design+Rédaction,
+// [66,78)=Data/IA+Remote (🟡), [78,93)=Allemagne+Afrique+Maghreb+Ouest+LATAM.
 function buildTierPool(tier: SourceTier): SourceEntry[] {
-  const atsAsSourceEntries: SourceEntry[] = ATS_COMPANIES.map(c => ({ name: c.name, type: 'ats', url: `https://${c.ats}/${c.slug}`, isPaidOnly: c.isPaidOnly }));
+  const pool = FREELANCE_PLATFORMS_CURATED as SourceEntry[];
   switch (tier) {
-    // FAST (10min) — agrégateurs multi-entreprises à très fort volume de
-    // reposts (job boards + RSS tech + communautés) : le contenu change en continu.
-    case 'fast':
-      return [...(JOB_BOARDS as SourceEntry[]), ...(TECH_RSS_FEEDS as any[]).map(f => ({ name: f.name, type: 'rss', url: f.url, isPaidOnly: f.isPaidOnly })), ...(SOCIAL_COMMUNITIES as SourceEntry[])];
-    // MEDIUM (15min) — boards ATS d'entreprises (recrutement actif mais pas
-    // en continu) + plateformes freelance.
-    case 'medium':
-      return [...atsAsSourceEntries, ...(FREELANCE_PLATFORMS as SourceEntry[])];
-    // SLOW (30min) — plateformes de niche, volume de postes plus faible.
-    case 'slow':
-      return [...(NICHE_PLATFORMS as SourceEntry[]), ...(AI_TECH_PLATFORMS as SourceEntry[]), ...(GLOBAL_FREELANCE as SourceEntry[])];
-    // VERYSLOW (60min) — stages, postes exécutifs, secteurs spécialisés :
-    // reposts rares, inutile de revérifier plus souvent qu'une fois/heure.
-    case 'veryslow':
-      return [...(INTERNSHIP_JUNIOR as SourceEntry[]), ...(REMOTE_EXCLUSIVE as SourceEntry[]), ...(EXECUTIVE_CAREERS as SourceEntry[]), ...(INDUSTRY_SPECIALIZED as SourceEntry[])];
+    case 'fast':     return pool.slice(0, 34);
+    case 'medium':   return pool.slice(34, 66);
+    case 'slow':     return pool.slice(66, 78);
+    case 'veryslow': return pool.slice(78);
   }
 }
 
@@ -537,20 +507,7 @@ export function pickTierBatch(tier: SourceTier, isPaid: boolean, log: string[]):
 // rotation, qui a déjà été fixée pour tout le tick par pickTierBatch.
 export async function runTierBatch(batch: SourceEntry[], keyword: string, log: string[]): Promise<any[]> {
   if (batch.length === 0) return [];
-  const atsBatch = batch.filter(s => s.type === 'ats');
-  const otherBatch = batch.filter(s => s.type !== 'ats');
-  const atsByName = new Map(ATS_COMPANIES.map(c => [c.name, c]));
-
-  const [atsResults, otherResults] = await Promise.all([
-    runInBatches(atsBatch, 5, s => {
-      const company = atsByName.get(s.name);
-      if (!company) return Promise.resolve([]);
-      return withSourceCache(s.url, keyword, () => fetchATS(company, keyword));
-    }),
-    runInBatches(otherBatch, 5, s => executeSource(s, keyword)),
-  ]);
-
-  const allResults = [...atsResults, ...otherResults];
+  const allResults = await runInBatches(batch, 5, s => executeSource(s, keyword));
   log.push(`✅ Lot palier exécuté pour "${keyword}" : ${allResults.length} résultats sur ${batch.length} sources`);
   return allResults;
 }

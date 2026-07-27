@@ -86,3 +86,20 @@ export function isHardTypeMismatch(profileType: string | null | undefined, text:
   const hits = STRONG_FULLTIME_MARKERS.filter(w => hay.includes(w)).length
   return hits >= 2
 }
+
+// CORRECTIF 2026-07-27 : les deux marqueurs textuels ci-dessus ne suffisent
+// pas quand la source ne fournit qu'un titre + un snippet tronqué (RSS,
+// site:) — le texte scrapé ne contient presque jamais "401(k)" ou "benefits
+// package", même quand l'offre originale en ligne les contient. Résultat
+// vérifié en prod : un profil freelance recevait ~80% de titres CDI classiques
+// ("Senior Data Analyst", "Senior Director, Sales- West"...) malgré le filtre
+// texte. Le signal réellement fiable n'est pas dans le texte de l'offre mais
+// dans la SOURCE elle-même : un board généraliste (JOB_BOARDS, ATS_COMPANIES,
+// NICHE_PLATFORMS...) publie quasi exclusivement du CDI, une plateforme
+// freelance (FREELANCE_PLATFORMS, GLOBAL_FREELANCE) quasi exclusivement des
+// missions. Exclusion dure basée sur la CATÉGORIE de la source, en plus du
+// filtre texte existant (qui reste utile pour les sources 'mixed').
+export function isSourceCategoryMismatch(profileType: string | null | undefined, sourceCategory: string | null | undefined): boolean {
+  if ((profileType || 'freelance') !== 'freelance') return false
+  return sourceCategory === 'job'
+}

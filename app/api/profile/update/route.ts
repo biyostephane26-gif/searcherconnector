@@ -59,9 +59,10 @@ export async function POST(req: NextRequest) {
       updates.voice_credits = creditsMap[fields.plan] || 0
     }
 
-    // Définir une valeur par défaut pour profile_type si nécessaire
+    // Définir une valeur par défaut pour profile_type si nécessaire —
+    // freelance-only depuis 2026-07-27 (job_seeker retiré)
     if (!updates.profile_type) {
-      updates.profile_type = 'job_seeker'
+      updates.profile_type = 'freelance'
     }
 
     let { data, error } = await supabaseAdmin

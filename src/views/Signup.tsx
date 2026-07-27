@@ -9,7 +9,7 @@ import GoldButton from '../components/ui/GoldButton'
 import Card from '../components/ui/Card'
 import { Shield, Mail, Lock, ArrowRight, Eye, EyeOff, CheckCircle } from 'lucide-react'
 
-type SignupProfileType = 'job_seeker' | 'freelance'
+type SignupProfileType = 'freelance'
 
 export default function Signup() {
   const searchParams  = useSearchParams()
@@ -23,9 +23,7 @@ export default function Signup() {
   const [showPass, setShowPass] = useState(false)
   const [emailSent, setEmailSent] = useState(false) // confirmation envoyée
 
-  const rawProfileType = searchParams?.get('type')
-  const profileType: SignupProfileType =
-    rawProfileType === 'freelance' ? rawProfileType : 'job_seeker'
+  const profileType: SignupProfileType = 'freelance'
 
   const FOUNDER_EMAILS = [
     'biyostephane26@gmail.com',

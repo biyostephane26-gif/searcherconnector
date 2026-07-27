@@ -70,7 +70,9 @@ export default function Onboarding() {
     onError: (err) => console.error(err),
   })
 
-  const profileType = profile?.profile_type || 'job_seeker'
+  // Freelance-only désormais (job_seeker retiré) — un profil legacy job_seeker
+  // suit aussi le parcours freelance.
+  const profileType = 'freelance'
   const totalSteps = 5
 
   useEffect(() => {
@@ -715,7 +717,7 @@ export default function Onboarding() {
           </div>
         </div>
 
-        {profileType === 'job_seeker' ? renderJobSeekerSteps() : renderFreelanceSteps()}
+        {renderFreelanceSteps()}
       </div>
     </div>
   )
