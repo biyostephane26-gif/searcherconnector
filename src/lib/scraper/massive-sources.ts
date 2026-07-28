@@ -2182,8 +2182,10 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'Beager', type: 'browser', url: 'https://www.beager.co', isPaidOnly: false, category: 'freelance' },
   { name: 'Collective.work', type: 'browser', url: 'https://www.collective.work', isPaidOnly: false, category: 'freelance' },
   { name: 'Free-Work', type: 'browser', url: 'https://www.free-work.com', isPaidOnly: false, category: 'freelance' },
-  { name: 'Talent.io', type: 'browser', url: 'https://www.talent.io', isPaidOnly: false, category: 'freelance' },
-  { name: 'Club Freelance', type: 'browser', url: 'https://www.club-freelance.com', isPaidOnly: false, category: 'freelance' },
+  // Talent.io retiré 2026-07-27 : vérifié via Google — publie du CDI
+  // salarié (ex. "Safran 75k€", "RATP 70k€"), pas des missions freelance.
+  // Club Freelance retiré : le site n'existe plus, absorbé par Mindquest
+  // en 2022 (redirige automatiquement, déjà présent séparément ci-dessous).
   // Flux RSS de missions réelles, vérifié 2026-07-27 (contenu contrôlé :
   // « Recherche un développeur shopify », etc. — pas un flux de blog).
   // type:'rss' = zéro appel Serper, gratuit et illimité.
@@ -2212,11 +2214,12 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'LeHibou', type: 'browser', url: 'https://www.lehibou.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Mindquest', type: 'browser', url: 'https://www.mindquest.io', isPaidOnly: false, category: 'freelance' },
   { name: 'Silkhom', type: 'browser', url: 'https://www.silkhom.com', isPaidOnly: false, category: 'freelance' },
-  { name: 'Externatic', type: 'browser', url: 'https://www.externatic.co', isPaidOnly: false, category: 'freelance' },
+  // Externatic, WeLoveDevs, Pentalog retirés 2026-07-27 : vérifiés via
+  // Google — cabinets de recrutement / ESN publiant du CDI salarié
+  // (35-68k€/an, "100% remote CDI"), pas des missions freelance, malgré
+  // leur présence dans le fichier de sourcing original.
   { name: 'Urban Linker', type: 'browser', url: 'https://www.urbanlinker.com', isPaidOnly: false, category: 'freelance' },
-  { name: 'WeLoveDevs', type: 'browser', url: 'https://www.welovedevs.com', isPaidOnly: false, category: 'freelance' },
   { name: 'ChooseYourBoss', type: 'browser', url: 'https://www.chooseyourboss.com', isPaidOnly: false, category: 'freelance' },
-  { name: 'Pentalog', type: 'browser', url: 'https://www.pentalog.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Padok', type: 'browser', url: 'https://www.padok.fr', isPaidOnly: false, category: 'freelance' },
   { name: 'Eficode', type: 'browser', url: 'https://www.eficode.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Stack Labs', type: 'browser', url: 'https://www.stacklabs.fr', isPaidOnly: false, category: 'freelance' },

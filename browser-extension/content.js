@@ -169,6 +169,63 @@ function injectButton() {
   sharedBtn = btn;
 }
 
+// =================================================================
+// Lecture de pages de résultats — plateformes verrouillées derrière
+// connexion (Comet, Crème de la Crème, etc.) où AUCUN serveur ne peut
+// scraper de contenu (vérifié un par un le 2026-07-27 : ni RSS, ni API,
+// ni sitemap). L'extension lit la page déjà rendue dans LA SESSION DE
+// L'UTILISATEUR — jamais de mot de passe géré par Searcher Connector,
+// chaque utilisateur reste responsable de son propre compte.
+// Les sélecteurs viennent du serveur (listing-configs), pas figés ici,
+// pour pouvoir ajouter des plateformes sans republier l'extension.
+// =================================================================
+let listingReadOnce = false;
+
+function extractListingItems(cfg) {
+  const items = [];
+  document.querySelectorAll(cfg.itemSelector).forEach(card => {
+    const titleEl = cfg.titleSelector ? card.querySelector(cfg.titleSelector) : card;
+    const linkEl = cfg.linkSelector ? card.querySelector(cfg.linkSelector) : card;
+    const dateEl = cfg.dateSelector ? card.querySelector(cfg.dateSelector) : null;
+    const title = (titleEl?.textContent || '').trim();
+    const link = linkEl?.href || (linkEl?.getAttribute && linkEl.getAttribute('href')) || '';
+    if (!title || !link) return;
+    items.push({
+      title: title.slice(0, 200),
+      link: link.startsWith('http') ? link : new URL(link, location.origin).href,
+      date: (dateEl?.textContent || dateEl?.getAttribute?.('datetime') || '').trim(),
+    });
+  });
+  return items;
+}
+
+async function tryReadListings() {
+  if (listingReadOnce) return;
+  chrome.storage.sync.get(['sc_token'], async (data) => {
+    if (!data.sc_token) return;
+    try {
+      const cfgRes = await fetch(`${API_BASE}/api/extension/listing-configs`);
+      const { configs } = await cfgRes.json();
+      const cfg = (configs || []).find(c => { try { return new RegExp(c.listingUrlPattern, 'i').test(location.href); } catch { return false; } });
+      if (!cfg) return;
+
+      const items = extractListingItems(cfg);
+      if (items.length === 0) return;
+      listingReadOnce = true;
+
+      const res = await fetch(`${API_BASE}/api/extension/submit-listings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: data.sc_token, platform: cfg.platform, items }),
+      });
+      const out = await res.json().catch(() => ({}));
+      if (res.ok && out.inserted > 0) {
+        showToast(`✓ ${out.inserted} mission(s) partagée(s) avec Searcher Connector depuis ${cfg.platform}.`);
+      }
+    } catch { /* silencieux — ne jamais gêner la navigation de l'utilisateur */ }
+  });
+}
+
 let autoFilledOnce = false;
 
 if (looksLikeApplicationForm()) {
@@ -176,6 +233,7 @@ if (looksLikeApplicationForm()) {
   autoFilledOnce = true;
   runFill(false);
 }
+tryReadListings();
 
 // Certains sites (React/Vue) construisent le formulaire après le chargement
 // initial — on réessaie sur les mutations du DOM, avec un throttle simple.
@@ -190,5 +248,6 @@ const observer = new MutationObserver(() => {
     injectButton();
     if (!autoFilledOnce) { autoFilledOnce = true; runFill(false); }
   }
+  if (!listingReadOnce) tryReadListings();
 });
 observer.observe(document.body, { childList: true, subtree: true });
