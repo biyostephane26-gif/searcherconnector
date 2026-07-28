@@ -94,6 +94,27 @@ cron.schedule('*/30 * * * *', () => runCacheScan('SLOW — 30min', 'slow'));
 // VERYSLOW — 60min, 1×/h → tout le pool en un seul tick.
 cron.schedule('0 * * * *', () => runCacheScan('VERYSLOW — 60min', 'veryslow'));
 
+// ── Plateformes verrouillées derrière connexion (comptes du fondateur) ──
+// Playwright se connecte et lit les pages de missions même hors ligne —
+// voir platformSessionScraper.ts. Décalé de 30min par rapport à VERYSLOW
+// pour ne jamais superposer deux scans lourds sur le même conteneur.
+// Chaque login+lecture prend du temps réel (page rendue + JS) : cadence
+// volontairement basse (toutes les 2h) tant que peu de plateformes sont
+// configurées, à resserrer une fois le registre étoffé.
+async function runPlatformSessionScan() {
+  try {
+    const res = await fetch(`${INTERNAL_URL}/api/platform-session-scan`, {
+      method: 'POST',
+      signal: AbortSignal.timeout(280000),
+    });
+    const data = await res.json().catch(() => ({}));
+    console.log(`🔐 [Sessions plateformes] statut ${res.status} — ${data.ok ?? '?'}/${data.scanned ?? '?'} OK`);
+  } catch (e) {
+    console.warn('⚠️ [Sessions plateformes] échec:', e.message);
+  }
+}
+cron.schedule('30 */2 * * *', runPlatformSessionScan);
+
 // ── Rapport hebdomadaire par email ────────────────────────────────
 // Route déjà écrite (app/api/cron/weekly-report) mais pensée pour Vercel
 // Cron — jamais déclenchée sur Render. On l'appelle nous-mêmes ici.
