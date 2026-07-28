@@ -2177,9 +2177,14 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'Side', type: 'browser', url: 'https://www.side.co', isPaidOnly: false, category: 'freelance' },
   { name: 'Iziday', type: 'browser', url: 'https://www.iziday.fr', isPaidOnly: false, category: 'freelance' },
   { name: 'Acracy', type: 'browser', url: 'https://www.acracy.co', isPaidOnly: false, category: 'freelance' },
-  { name: 'Jump', type: 'browser', url: 'https://www.jump.co', isPaidOnly: false, category: 'freelance' },
+  // Jump retiré 2026-07-27 : a pivoté vers des solutions IA d'entreprise,
+  // n'est plus une plateforme freelance.
   { name: 'Yeita', type: 'browser', url: 'https://www.yeita.com', isPaidOnly: false, category: 'freelance' },
-  { name: 'Beager', type: 'browser', url: 'https://www.beager.co', isPaidOnly: false, category: 'freelance' },
+  // Beager : domaine corrigé .co -> .com (bug du fichier de sourcing d'origine).
+  { name: 'Beager', type: 'browser', url: 'https://www.beager.com', isPaidOnly: false, category: 'freelance' },
+  // Collective.work : missions individuelles réelles confirmées indexées
+  // par Google (/jobs/fr/mission-freelance-...) — Serper suffira, pas
+  // besoin de compte pour celle-ci.
   { name: 'Collective.work', type: 'browser', url: 'https://www.collective.work', isPaidOnly: false, category: 'freelance' },
   { name: 'Free-Work', type: 'browser', url: 'https://www.free-work.com', isPaidOnly: false, category: 'freelance' },
   // Talent.io retiré 2026-07-27 : vérifié via Google — publie du CDI
@@ -2191,7 +2196,8 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   // type:'rss' = zéro appel Serper, gratuit et illimité.
   { name: 'Codeur.com', type: 'rss', url: 'https://www.codeur.com/projects.rss', isPaidOnly: false, category: 'freelance' },
   { name: '5euros.com', type: 'browser', url: 'https://www.5euros.com', isPaidOnly: false, category: 'freelance' },
-  { name: 'Sortlist', type: 'browser', url: 'https://www.sortlist.com', isPaidOnly: false, category: 'freelance' },
+  // Sortlist retiré 2026-07-27 : annuaire d'agences (les entreprises s'y
+  // inscrivent pour être trouvées), pas un board de missions freelance.
   // --- 2. Plateformes mondiales 🟢 ---
   { name: 'Toptal', type: 'browser', url: 'https://www.toptal.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Upwork', type: 'browser', url: 'https://www.upwork.com', isPaidOnly: false, category: 'freelance' },
@@ -2204,11 +2210,17 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'Gun.io', type: 'browser', url: 'https://www.gun.io', isPaidOnly: false, category: 'freelance' },
   { name: 'Arc.dev', type: 'browser', url: 'https://arc.dev', isPaidOnly: false, category: 'freelance' },
   { name: 'Turing', type: 'browser', url: 'https://www.turing.com', isPaidOnly: false, category: 'freelance' },
+  // A.Team confirmé extension-only : ils publient les missions sur un
+  // "réseau privé" (leurs propres mots), rien d'accessible publiquement.
   { name: 'A.Team', type: 'browser', url: 'https://www.a.team', isPaidOnly: false, category: 'freelance' },
+  // X-Team : vrai portail public indexé (jobs.x-team.com, offres
+  // individuelles réelles) — Serper suffira, pas besoin de compte.
   { name: 'X-Team', type: 'browser', url: 'https://www.x-team.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Braintrust', type: 'browser', url: 'https://www.usebraintrust.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Codeable', type: 'browser', url: 'https://www.codeable.io', isPaidOnly: false, category: 'freelance' },
-  { name: 'Superside', type: 'browser', url: 'https://www.superside.com', isPaidOnly: false, category: 'freelance' },
+  // Superside retiré 2026-07-27 : recrute en interne via un vrai ATS
+  // (ats:'lever' déjà présent ailleurs dans ce fichier) — salariés, pas
+  // des missions freelance proposées à des clients externes.
   // --- 3. IT & Digital spécialisé France 🟢 ---
   { name: 'Kicklox', type: 'browser', url: 'https://www.kicklox.com', isPaidOnly: false, category: 'freelance' },
   { name: 'LeHibou', type: 'browser', url: 'https://www.lehibou.com', isPaidOnly: false, category: 'freelance' },
@@ -2221,7 +2233,9 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'Urban Linker', type: 'browser', url: 'https://www.urbanlinker.com', isPaidOnly: false, category: 'freelance' },
   { name: 'ChooseYourBoss', type: 'browser', url: 'https://www.chooseyourboss.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Padok', type: 'browser', url: 'https://www.padok.fr', isPaidOnly: false, category: 'freelance' },
-  { name: 'Eficode', type: 'browser', url: 'https://www.eficode.com', isPaidOnly: false, category: 'freelance' },
+  // Eficode retiré 2026-07-27 : offres indexées ("Solutions Architect")
+  // ressemblent à du recrutement salarié interne, pas des missions
+  // freelance proposées à des clients externes.
   { name: 'Stack Labs', type: 'browser', url: 'https://www.stacklabs.fr', isPaidOnly: false, category: 'freelance' },
   // --- 4. Design & Créa 🟢 ---
   { name: '99designs', type: 'browser', url: 'https://99designs.com', isPaidOnly: false, category: 'freelance' },
@@ -2231,6 +2245,9 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'We Are Rosie', type: 'browser', url: 'https://www.wearerosie.com', isPaidOnly: false, category: 'freelance' },
   { name: 'DesignCrowd', type: 'browser', url: 'https://www.designcrowd.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Crowdspring', type: 'browser', url: 'https://www.crowdspring.com', isPaidOnly: false, category: 'freelance' },
+  // Graphiste.com : missions individuelles réelles confirmées indexées
+  // par Google ("Recherche Graphiste Freelance – Mission courte") —
+  // Serper suffira, pas besoin de compte.
   { name: 'Graphiste.com', type: 'browser', url: 'https://www.graphiste.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Creads', type: 'browser', url: 'https://www.creads.com', isPaidOnly: false, category: 'freelance' },
   // --- 5. Rédaction & Traduction 🟢 ---
@@ -2239,11 +2256,12 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'Textbroker', type: 'browser', url: 'https://www.textbroker.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Scripted', type: 'browser', url: 'https://www.scripted.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Verblio', type: 'browser', url: 'https://www.verblio.com', isPaidOnly: false, category: 'freelance' },
-  { name: 'WriterAccess', type: 'browser', url: 'https://www.writeraccess.com', isPaidOnly: false, category: 'freelance' },
-  { name: 'ClearVoice', type: 'browser', url: 'https://www.clearvoice.com', isPaidOnly: false, category: 'freelance' },
-  { name: 'iWriter', type: 'browser', url: 'https://www.iwriter.com', isPaidOnly: false, category: 'freelance' },
+  // WriterAccess, ClearVoice, iWriter, Reedsy retirés 2026-07-27 :
+  // modèle commande/mise-en-relation par algorithme interne, pas de
+  // missions publiées à parcourir — ne correspond à aucun mécanisme de
+  // sourcing possible (ni Serper, ni compte+extension : il n'y a
+  // simplement rien à lire, même connecté).
   { name: 'Constant Content', type: 'browser', url: 'https://www.constant-content.com', isPaidOnly: false, category: 'freelance' },
-  { name: 'Reedsy', type: 'browser', url: 'https://reedsy.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Contently', type: 'browser', url: 'https://contently.com', isPaidOnly: false, category: 'freelance' },
   // --- 6. Data/IA & micro-tâches 🟡 (mission courte, parfois classée "emploi remote") ---
   { name: 'Clickworker', type: 'browser', url: 'https://www.clickworker.com', isPaidOnly: false, category: 'mixed' },
@@ -2260,9 +2278,13 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'Remote.co', type: 'browser', url: 'https://remote.co', isPaidOnly: false, category: 'mixed' },
   { name: 'Wellfound (AngelList Talent)', type: 'browser', url: 'https://wellfound.com', isPaidOnly: false, category: 'mixed' },
   // --- 8. Allemagne / Europe 🟢 ---
+  // Twago : que des pages catégorie/vitrine indexées, aucune mission
+  // individuelle trouvée — extension-only.
   { name: 'Twago', type: 'browser', url: 'https://www.twago.de', isPaidOnly: false, category: 'freelance' },
   { name: 'GULP', type: 'browser', url: 'https://www.gulp.de', isPaidOnly: false, category: 'freelance' },
   { name: 'Freelancermap', type: 'browser', url: 'https://www.freelancermap.de', isPaidOnly: false, category: 'freelance' },
+  // Malt DE : même protection anti-bot que Malt.fr, mêmes pages
+  // catégorie sans mission individuelle — extension-only, comme Malt.
   { name: 'Malt DE', type: 'browser', url: 'https://www.malt.de', isPaidOnly: false, category: 'freelance' },
   // --- 9. Afrique / marché local 🟢 ---
   { name: 'ComeUp', type: 'browser', url: 'https://comeup.com', isPaidOnly: false, category: 'freelance' },
@@ -2272,13 +2294,19 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'Missions-Freelance.ma', type: 'rss', url: 'https://www.missions-freelance.ma/feed', isPaidOnly: false, category: 'freelance' },
   { name: 'Freelancer.ma', type: 'browser', url: 'https://www.freelancer.ma', isPaidOnly: false, category: 'freelance' },
   { name: 'Jobbers.ma', type: 'browser', url: 'https://www.jobbers.ma', isPaidOnly: false, category: 'freelance' },
-  { name: 'Tunisie Freelance', type: 'browser', url: 'https://www.tunisiefreelance.com', isPaidOnly: false, category: 'freelance' },
+  // Tunisie Freelance : domaine corrigé .com -> .tn (bug du fichier de
+  // sourcing d'origine) ; missions individuelles réelles indexées.
+  { name: 'Tunisie Freelance', type: 'browser', url: 'https://tunisiefreelance.tn', isPaidOnly: false, category: 'freelance' },
   { name: 'Freelances.tn', type: 'browser', url: 'https://www.freelances.tn', isPaidOnly: false, category: 'freelance' },
   // --- 9ter. Afrique de l'Ouest francophone 🟢 ---
-  { name: 'IWORKS', type: 'browser', url: 'https://www.iworks.africa', isPaidOnly: false, category: 'freelance' },
+  // IWORKS : domaine corrigé .africa -> .sn (bug du fichier de sourcing
+  // d'origine, la plateforme est basée au Sénégal comme prévu).
+  { name: 'IWORKS', type: 'browser', url: 'https://www.iworks.sn', isPaidOnly: false, category: 'freelance' },
   { name: 'Izylance', type: 'browser', url: 'https://www.izylance.com', isPaidOnly: false, category: 'freelance' },
   { name: 'I am Beezy', type: 'browser', url: 'https://www.iambeezy.com', isPaidOnly: false, category: 'freelance' },
   // --- 9quater. Amérique Latine 🟢 ---
+  // Workana : missions individuelles réelles confirmées indexées par
+  // Google (/es/job/proyecto-completo-3, etc.) — Serper suffira.
   { name: 'Workana', type: 'browser', url: 'https://www.workana.com', isPaidOnly: false, category: 'freelance' },
   // --- 10. Complément recherche web (2026-07-27) — plateformes freelance
   // réelles hors du fichier de sourcing original, trouvées pour augmenter
@@ -2287,10 +2315,14 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   // agences de placement qui recrutent en interne (Belay/Time Etc/Zirtual
   // écartées pour cette raison — pas d'offres publiques scrapables). ---
   { name: 'Truelancer', type: 'browser', url: 'https://www.truelancer.com', isPaidOnly: false, category: 'freelance' },
+  // Useme, Twine, Legiit : offres/briefs individuels réels confirmés
+  // indexés par Google — Serper suffira, pas besoin de compte.
   { name: 'Useme', type: 'browser', url: 'https://useme.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Contra', type: 'browser', url: 'https://contra.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Twine', type: 'browser', url: 'https://www.twine.net', isPaidOnly: false, category: 'freelance' },
   { name: 'Legiit', type: 'browser', url: 'https://legiit.com', isPaidOnly: false, category: 'freelance' },
+  // Brigad confirmé extension-only : "algorithme de matching" privé
+  // décrit par la plateforme elle-même, rien d'accessible publiquement.
   { name: 'Brigad', type: 'browser', url: 'https://www.brigad.co', isPaidOnly: false, category: 'freelance' },
   { name: 'Voices.com', type: 'browser', url: 'https://www.voices.com', isPaidOnly: false, category: 'freelance' },
   { name: 'Rev', type: 'browser', url: 'https://www.rev.com', isPaidOnly: false, category: 'freelance' },
@@ -2301,7 +2333,10 @@ export const FREELANCE_PLATFORMS_CURATED: { name: string; type: string; url: str
   { name: 'Webflow Experts', type: 'browser', url: 'https://webflow.com/experts', isPaidOnly: false, category: 'freelance' },
   { name: 'Bubble Experts', type: 'browser', url: 'https://bubble.io/experts', isPaidOnly: false, category: 'freelance' },
   { name: 'Zapier Experts', type: 'browser', url: 'https://zapier.com/experts', isPaidOnly: false, category: 'freelance' },
-  { name: 'Fancy Hands', type: 'browser', url: 'https://www.fancyhands.com', isPaidOnly: false, category: 'freelance' },
+  // Fancy Hands retiré 2026-07-27 : tâches soumises en privé par le
+  // client, rien à parcourir publiquement — aucun mécanisme de sourcing
+  // possible (ni Serper, ni compte+extension).
+  // Hoofdkraan : missions individuelles réelles confirmées indexées.
   { name: 'Hoofdkraan', type: 'browser', url: 'https://www.hoofdkraan.nl', isPaidOnly: false, category: 'freelance' },
   // --- 11. API publiques gratuites (2026-07-27) — aucune clé, aucun crédit,
   // aucun quota. Seule voie de sourcing totalement indépendante d'un
