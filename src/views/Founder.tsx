@@ -90,6 +90,7 @@ const TABS = [
   { id: 'users',     label: '👥 Utilisateurs',     icon: Users },
   { id: 'chats',     label: '💬 Conversations',    icon: MessageSquare },
   { id: 'revenue',   label: '💰 Revenus',          icon: DollarSign },
+  { id: 'platforms', label: '🔐 Comptes plateformes', icon: Shield },
 ]
 
 export default function Founder() {
@@ -119,6 +120,11 @@ export default function Founder() {
   const [selectedChat, setSelectedChat] = useState<any>(null)
   // Revenue
   const [payments, setPayments] = useState<any[]>([])
+  // Comptes plateformes (lecture Playwright automatisée hors ligne)
+  const [platformCreds, setPlatformCreds] = useState<any[]>([])
+  const [pcForm, setPcForm] = useState({ platform_name: '', login_url: '', listing_url: '', username: '', password: '' })
+  const [pcSaving, setPcSaving] = useState(false)
+  const [pcMsg, setPcMsg] = useState('')
 
   const FOUNDER_EMAILS = [
     'biyostephane26@gmail.com',
@@ -180,6 +186,13 @@ export default function Founder() {
         const res = await fetch('/api/scai/all-sessions')
         const data = await res.json()
         setChats(data.sessions || [])
+      }
+      if (t === 'platforms') {
+        const { data: { session } } = await supabase.auth.getSession()
+        const res = await fetch('/api/founder/platform-credentials', {
+          headers: { Authorization: `Bearer ${session?.access_token}` },
+        })
+        if (res.ok) setPlatformCreds((await res.json()).credentials || [])
       }
       if (t === 'revenue') {
         const { data } = await supabase.from('payment_attempts').select('*').order('created_at', { ascending: false }).limit(100)
@@ -760,6 +773,97 @@ export default function Founder() {
                   </Card>
                 ))
               }
+            </div>
+          )}
+
+          {/* ── COMPTES PLATEFORMES ─────────────────────────── */}
+          {tab === 'platforms' && (
+            <div className="space-y-6">
+              <div className="text-xs text-gray-500 bg-[#111] border border-[#1A1A1A] rounded-lg p-3">
+                Identifiants chiffrés côté serveur (AES-256-GCM) — jamais renvoyés en clair, jamais visibles ailleurs que sur cette page.
+                Utilisés par le worker Playwright pour lire les missions de ces plateformes même hors ligne (toutes les 2h).
+              </div>
+
+              <Card className="p-5">
+                <h3 className="text-white font-bold text-sm mb-4">Ajouter / mettre à jour un compte</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <input placeholder="Nom exact (ex: Kicklox)" value={pcForm.platform_name}
+                    onChange={e => setPcForm(f => ({ ...f, platform_name: e.target.value }))}
+                    className="bg-[#0A0A0A] border border-[#1A1A1A] rounded-lg px-3 py-2 text-sm text-white col-span-2" />
+                  <input placeholder="URL de connexion" value={pcForm.login_url}
+                    onChange={e => setPcForm(f => ({ ...f, login_url: e.target.value }))}
+                    className="bg-[#0A0A0A] border border-[#1A1A1A] rounded-lg px-3 py-2 text-sm text-white col-span-2" />
+                  <input placeholder="URL de la page de missions" value={pcForm.listing_url}
+                    onChange={e => setPcForm(f => ({ ...f, listing_url: e.target.value }))}
+                    className="bg-[#0A0A0A] border border-[#1A1A1A] rounded-lg px-3 py-2 text-sm text-white col-span-2" />
+                  <input placeholder="Identifiant / email" value={pcForm.username}
+                    onChange={e => setPcForm(f => ({ ...f, username: e.target.value }))}
+                    className="bg-[#0A0A0A] border border-[#1A1A1A] rounded-lg px-3 py-2 text-sm text-white" />
+                  <input placeholder="Mot de passe" type="password" value={pcForm.password}
+                    onChange={e => setPcForm(f => ({ ...f, password: e.target.value }))}
+                    className="bg-[#0A0A0A] border border-[#1A1A1A] rounded-lg px-3 py-2 text-sm text-white" />
+                </div>
+                {pcMsg && <div className="text-xs text-[#D4AF37] mt-3">{pcMsg}</div>}
+                <GoldButton
+                  disabled={pcSaving || !pcForm.platform_name || !pcForm.login_url || !pcForm.listing_url || !pcForm.username || !pcForm.password}
+                  onClick={async () => {
+                    setPcSaving(true); setPcMsg('')
+                    try {
+                      const { data: { session } } = await supabase.auth.getSession()
+                      const res = await fetch('/api/founder/platform-credentials', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+                        body: JSON.stringify(pcForm),
+                      })
+                      const d = await res.json()
+                      if (!res.ok) { setPcMsg(`Erreur: ${d.error}`); setPcSaving(false); return }
+                      setPcMsg(`✓ ${pcForm.platform_name} enregistré — sélecteurs à ajouter ensuite.`)
+                      setPcForm({ platform_name: '', login_url: '', listing_url: '', username: '', password: '' })
+                      loadTab('platforms')
+                    } catch { setPcMsg('Erreur réseau') }
+                    setPcSaving(false)
+                  }}
+                  className="mt-4"
+                >
+                  {pcSaving ? 'Enregistrement...' : 'Enregistrer (chiffré)'}
+                </GoldButton>
+              </Card>
+
+              <div className="space-y-2">
+                {platformCreds.map((c: any) => (
+                  <Card key={c.id} className="p-4 flex items-center justify-between">
+                    <div>
+                      <div className="font-bold text-white text-sm">{c.platform_name}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {c.username} · dernière lecture: {c.last_scrape_at ? new Date(c.last_scrape_at).toLocaleString('fr-FR') : 'jamais'}
+                        {typeof c.last_scrape_count === 'number' ? ` · ${c.last_scrape_count} missions` : ''}
+                      </div>
+                      {c.last_login_error && <div className="text-xs text-red-400 mt-1">⚠ {c.last_login_error}</div>}
+                      {(!c.selectors || Object.keys(c.selectors).length === 0) && (
+                        <div className="text-xs text-yellow-400 mt-1">⚠ Sélecteurs non configurés — le worker ne fera rien tant que ce n'est pas fait.</div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                        c.status === 'active' ? 'text-green-400 bg-green-400/10' :
+                        c.status === 'login_failed' ? 'text-red-400 bg-red-400/10' :
+                        'text-gray-400 bg-gray-400/10'
+                      }`}>{c.status}</span>
+                      <button onClick={async () => {
+                        const { data: { session } } = await supabase.auth.getSession()
+                        await fetch(`/api/founder/platform-credentials?id=${c.id}`, {
+                          method: 'DELETE',
+                          headers: { Authorization: `Bearer ${session?.access_token}` },
+                        })
+                        loadTab('platforms')
+                      }} className="text-xs text-red-400 border border-red-400/30 px-3 py-1 rounded-lg hover:bg-red-400/10">
+                        Supprimer
+                      </button>
+                    </div>
+                  </Card>
+                ))}
+                {platformCreds.length === 0 && <div className="text-xs text-gray-600 text-center py-6">Aucun compte enregistré.</div>}
+              </div>
             </div>
           )}
         </div>
