@@ -12,6 +12,7 @@ import { Search, Zap, X, ExternalLink, CheckCircle, XCircle, AlertTriangle, Glob
 import { usePDF } from '../hooks/usePDF'
 import { computeProfileCompletion } from '../lib/profileCompletion'
 import { detectAtsPlatform } from '../lib/scraper/atsPlatformDetect'
+import { isFreshOpportunity, isLowCompetition, isPersonalizedOpportunity, opportunityHoursAgo } from '../lib/opportunityFilters'
 
 export default function Opportunities() {
   const { user, profile } = useAuth()
@@ -43,7 +44,6 @@ export default function Opportunities() {
         .eq('user_id', user.id)
         .order('score', { ascending: false })
 
-      if (filter === 'fresh')   query = query.lt('hours_ago', 24)
       if (filter === 'applied') query = query.eq('status', 'ready_to_send')
       if (filter === 'pending') query = query.eq('status', 'pending_action')
 
@@ -182,12 +182,14 @@ export default function Opportunities() {
   }
 
   const FILTERS = [
-    { key: 'all',      label: 'Toutes' },
-    { key: 'fresh',    label: 'Fraîches (<24h)' },
-    { key: 'applied',  label: 'Auto-postulées' },
-    { key: 'pending',  label: 'En attente' },
-    { key: 'ats_auto', label: '⚡ Envoi automatique' },
-    { key: 'manual',   label: '✋ Envoi manuel requis' },
+    { key: 'all',          label: 'Toutes' },
+    { key: 'for_you',      label: 'Pour toi' },
+    { key: 'fresh',        label: 'Fraîches (<24h)' },
+    { key: 'low_comp',     label: 'Faible concurrence' },
+    { key: 'applied',      label: 'Auto-postulées' },
+    { key: 'pending',      label: 'En attente' },
+    { key: 'ats_auto',     label: '⚡ Envoi automatique' },
+    { key: 'manual',       label: '✋ Envoi manuel requis' },
   ]
 
   const SORTS: { key: typeof sortBy; label: string }[] = [
@@ -203,13 +205,16 @@ export default function Opportunities() {
   const isAtsAuto = (opp: any) => !!detectAtsPlatform(opp.original_url || '')
 
   const filteredByMechanism = opportunities.filter(o => {
-    if (filter === 'ats_auto') return isAtsAuto(o)
-    if (filter === 'manual')   return !isAtsAuto(o)
+    if (filter === 'fresh')     return isFreshOpportunity(o)
+    if (filter === 'low_comp')  return isLowCompetition(o)
+    if (filter === 'for_you')   return isPersonalizedOpportunity(o, profile)
+    if (filter === 'ats_auto')  return isAtsAuto(o)
+    if (filter === 'manual')    return !isAtsAuto(o)
     return true
   })
 
   const sortedOpportunities = [...filteredByMechanism].sort((a, b) => {
-    if (sortBy === 'freshest')     return (a.hours_ago ?? Infinity) - (b.hours_ago ?? Infinity)
+    if (sortBy === 'freshest')     return opportunityHoursAgo(a) - opportunityHoursAgo(b)
     if (sortBy === 'highest_paid') return (b.salary_max || 0) - (a.salary_max || 0)
     if (sortBy === 'recommended') {
       if (!!b.recommended !== !!a.recommended) return b.recommended ? 1 : -1

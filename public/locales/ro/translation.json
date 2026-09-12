@@ -21,7 +21,7 @@
   "nav": {
     "home": "Acasă",
     "opportunities": "Oportunități",
-    "agent": "Agent Searcher",
+    "agent": "SCAI Cowork",
     "opportunityCreator": "Creează ofertă",
     "cowork": "Cowork",
     "interviews": "Interviuri",
@@ -67,7 +67,7 @@
     "applyManually": "Voi aplica singur"
   },
   "scai": {
-    "title": "Agent Searcher",
+    "title": "SCAI Cowork",
     "greeting": "Bună! Sunt SCAI, asistentul tău personal de carieră.",
     "placeholder": "Pune-mi o întrebare sau cere-mi să caut oportunități...",
     "voice": "Folosește vocea",

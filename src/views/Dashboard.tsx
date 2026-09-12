@@ -317,7 +317,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] text-gray-500 uppercase">
                     <span className="inline-flex items-center gap-2">
                       <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                      Agent Searcher
+                      SCAI Cowork
                     </span>
                   </div>
                   <div className="text-lg font-bold text-white">
@@ -334,7 +334,7 @@ export default function Dashboard() {
                     ⚡ Lancer scan
                   </GoldButton>
                   <GoldButton variant="outlined" onClick={() => router.push('/agent')}>
-                    Ouvrir l'agent
+                    Ouvrir SCAI Cowork
                   </GoldButton>
                 </div>
               </div>
@@ -378,8 +378,8 @@ export default function Dashboard() {
                   <TrendingUp className="w-8 h-8 text-[#D4AF37]" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-white mb-1">Agent Autonome Searcher</h4>
-                  <p className="text-sm text-gray-500 max-w-md">L'agent surveille le marché et gère vos candidatures 24/7 pour maximiser votre valeur.</p>
+                  <h4 className="font-bold text-white mb-1">SCAI Cowork autonome</h4>
+                  <p className="text-sm text-gray-500 max-w-md">SCAI surveille le marché et gère vos candidatures 24/7 pour maximiser votre valeur.</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">

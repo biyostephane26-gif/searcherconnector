@@ -1,6 +1,7 @@
 import Card from '../ui/Card'
 import GoldButton from '../ui/GoldButton'
 import { ExternalLink, Send, AlertCircle, Users, Clock, Zap, Coins, Target } from 'lucide-react'
+import { opportunityHoursAgo } from '../../lib/opportunityFilters'
 
 type Props = {
   opportunity: any
@@ -11,8 +12,9 @@ type Props = {
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://searcherconnector.onrender.com'
 
 export default function OpportunityCard({ opportunity, onApply, referralCode }: Props) {
-  const isFresh = opportunity.hours_ago < 6
-  const isVeryFresh = opportunity.hours_ago < 24
+  const hoursAgo = opportunityHoursAgo(opportunity)
+  const isFresh = hoursAgo < 6
+  const isVeryFresh = hoursAgo < 24
   const isUpwork = (opportunity.source_platform || '').toLowerCase().includes('upwork')
 
   // Se greffer sur un comportement déjà ancré : "j'ai vu cette offre, je
@@ -62,7 +64,7 @@ export default function OpportunityCard({ opportunity, onApply, referralCode }: 
           <div className="flex flex-wrap gap-4 mb-6">
             <div className={`flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase ${isFresh ? 'text-green-500' : isVeryFresh ? 'text-[#D4AF37]' : 'text-gray-600'}`}>
               <Clock className="w-3 h-3" />
-              Published {opportunity.hours_ago}h ago
+              Published {Number.isFinite(hoursAgo) ? `${Math.round(hoursAgo)}h ago` : 'date inconnue'}
             </div>
             <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-gray-600">
               <Users className="w-3 h-3" />

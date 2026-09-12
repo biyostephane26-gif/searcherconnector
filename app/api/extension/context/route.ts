@@ -110,3 +110,32 @@ export async function GET(req: NextRequest) {
     autoSubmitAllowed,
   })
 }
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json()
+    const token = body.token || (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim()
+    if (!token) return NextResponse.json({ error: 'Token manquant' }, { status: 401 })
+
+    const { data: tokenRow } = await supabase
+      .from('extension_tokens')
+      .select('user_id')
+      .eq('token', token)
+      .maybeSingle()
+
+    if (!tokenRow) return NextResponse.json({ error: 'Token invalide' }, { status: 401 })
+
+    await supabase.from('extension_apply_logs').insert({
+      user_id: tokenRow.user_id,
+      url: body.url || '',
+      site_type: detectAtsPlatform(body.url || '') || 'generic',
+      mode: body.mode || 'autofill',
+      success: body.success !== false,
+      meta: body.meta || {},
+    })
+
+    return NextResponse.json({ ok: true })
+  } catch (e: any) {
+    return NextResponse.json({ error: e?.message || 'Erreur' }, { status: 500 })
+  }
+}

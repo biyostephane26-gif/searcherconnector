@@ -11,20 +11,13 @@ import { supabase } from '@/lib/supabase'
 import Card from '@/components/ui/Card'
 import GoldButton from '@/components/ui/GoldButton'
 import { getAllServicesStats } from '@/lib/api-key-manager'
+import { getProfessionalLevel } from '@/lib/geniusLadder'
 import { 
   Database, Users, Zap, Shield, Bell, Lock, Unlock, 
   Settings, ToggleLeft, ToggleRight, Clock, Plus, Minus,
   Activity, Globe, CheckCircle, AlertTriangle, Mail, RefreshCw,
   Server, TrendingUp, FileText, Filter
 } from 'lucide-react'
-
-// Fonction pour calculer le niveau professionnel
-const getProfessionalLevel = (missionsCount: number = 0) => {
-  if (missionsCount >= 25) return { label: 'Expert', color: 'text-purple-400 bg-purple-900/30 border-purple-700/30' }
-  if (missionsCount >= 10) return { label: 'Senior', color: 'text-blue-400 bg-blue-900/30 border-blue-700/30' }
-  if (missionsCount >= 3) return { label: 'Mid', color: 'text-green-400 bg-green-900/30 border-green-700/30' }
-  return { label: 'Junior', color: 'text-yellow-400 bg-yellow-900/30 border-yellow-700/30' }
-}
 
 export default function FounderDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
@@ -565,9 +558,9 @@ export default function FounderDashboard() {
                       </td>
                       <td className='py-3'>
                         <span className={`px-2 py-1 rounded text-xs border ${
-                          getProfessionalLevel(user.missions_completed || 0).color
+                          getProfessionalLevel(user.missions_completed || 0, user.verification_status).color
                         }`}>
-                          {getProfessionalLevel(user.missions_completed || 0).label}
+                          {getProfessionalLevel(user.missions_completed || 0, user.verification_status).label}
                         </span>
                       </td>
                       <td className='py-3'>

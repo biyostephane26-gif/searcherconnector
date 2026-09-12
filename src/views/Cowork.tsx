@@ -295,7 +295,7 @@ export default function Cowork() {
                   <p className="text-sm font-bold text-gray-500 mb-1">Cowork est vide pour l'instant</p>
                   <p className="text-xs leading-relaxed">
                     Les messages apparaissent ici dès que SCAI envoie des candidatures en ton nom.<br/>
-                    Lance un scan depuis le <a href="/agent" className="text-[#D4AF37] hover:underline">dashboard SCAI</a> pour commencer.
+                    Lance un scan depuis le <a href="/agent" className="text-[#D4AF37] hover:underline">SCAI Cowork</a> pour commencer.
                   </p>
                   <div className="mt-4 space-y-2 text-left bg-[#111] border border-[#1A1A1A] rounded-xl p-4">
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Comment ça marche :</p>

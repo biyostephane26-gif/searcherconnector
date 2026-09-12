@@ -574,10 +574,10 @@ export default function Settings() {
             </Card>
           </section>
 
-          {/* ── Agent Searcher ─────────────────────────────────── */}
+          {/* ── SCAI Cowork ─────────────────────────────────── */}
           <section className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
-              <Bot className="w-4 h-4" /> Agent Searcher
+              <Bot className="w-4 h-4" /> SCAI Cowork
             </h3>
             <Card className="p-6 space-y-5">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -586,7 +586,7 @@ export default function Settings() {
                   <p className="text-xs text-gray-500">Scans, relances, candidatures automatiques.</p>
                 </div>
                 <Link href="/agent" className="inline-flex items-center gap-2 text-sm font-bold text-[#D4AF37] hover:text-[#F5E6A3] transition-colors">
-                  Ouvrir l'agent <ArrowRight className="w-4 h-4" />
+                  Ouvrir SCAI Cowork <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
               <div className="grid gap-4 md:grid-cols-2">

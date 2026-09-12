@@ -21,7 +21,7 @@
   "nav": {
     "home": "Strona główna",
     "opportunities": "Oferty",
-    "agent": "Agent Searcher",
+    "agent": "SCAI Cowork",
     "opportunityCreator": "Utwórz ofertę",
     "cowork": "Cowork",
     "interviews": "Rozmowy kwalifikacyjne",
@@ -67,7 +67,7 @@
     "applyManually": "Zaaplikuję sam"
   },
   "scai": {
-    "title": "Agent Searcher",
+    "title": "SCAI Cowork",
     "greeting": "Cześć! Jestem SCAI, twój osobisty asystent kariery.",
     "placeholder": "Zadaj mi pytanie lub poproś o wyszukanie ofert...",
     "voice": "Użyj głosu",

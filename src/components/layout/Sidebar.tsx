@@ -9,29 +9,14 @@ import { Home, Briefcase, Users, MessageSquare, DollarSign, User, Settings, Spar
 import { useMobileSidebar, closeMobileSidebar, openMobileSidebar } from '../../hooks/useMobileSidebar'
 import { computeProfileCompletion } from '../../lib/profileCompletion'
 import { useTranslation } from 'react-i18next'
-
-// Fonction pour calculer le niveau professionnel
-const getProfessionalLevel = (missionsCount: number = 0) => {
-  if (missionsCount >= 25) return { label: 'Expert', color: 'text-purple-400 bg-purple-900/30' }
-  if (missionsCount >= 10) return { label: 'Senior', color: 'text-blue-400 bg-blue-900/30' }
-  if (missionsCount >= 3) return { label: 'Mid', color: 'text-green-400 bg-green-900/30' }
-  return { label: 'Junior', color: 'text-yellow-400 bg-yellow-900/30' }
-}
-
-// Fonction pour obtenir la progression vers le niveau suivant
-const getNextLevelProgress = (missionsCount: number = 0) => {
-  if (missionsCount >= 25) return { current: missionsCount, next: null, remaining: 0, label: 'Niveau maximum atteint' }
-  if (missionsCount >= 10) return { current: missionsCount, next: 25, remaining: 25 - missionsCount, label: `Tu es à ${25 - missionsCount} missions de passer Expert` }
-  if (missionsCount >= 3) return { current: missionsCount, next: 10, remaining: 10 - missionsCount, label: `Tu es à ${10 - missionsCount} missions de passer Senior` }
-  return { current: missionsCount, next: 3, remaining: 3 - missionsCount, label: `Tu es à ${3 - missionsCount} missions de passer Mid` }
-}
+import { getProfessionalLevel, getNextLevelProgress } from '../../lib/geniusLadder'
 
 export default function Sidebar() {
   const pathname = usePathname()
   const { t } = useTranslation()
   const { profile, user } = useAuth()
-  const level = getProfessionalLevel(profile?.missions_completed || 0)
-  const nextProgress = getNextLevelProgress(profile?.missions_completed || 0)
+  const level = getProfessionalLevel(profile?.missions_completed || 0, profile?.verification_status)
+  const nextProgress = getNextLevelProgress(profile?.missions_completed || 0, profile?.verification_status)
 
   // voice_credits n'existe pas sur le profil — vit dans user_voice_credits.
   // Affichait toujours "0 crédits" sur toutes les pages avant ce correctif.
@@ -222,6 +207,7 @@ export default function Sidebar() {
                 key={item.path}
                 href={item.path}
                 onClick={closeMobileSidebar}
+                data-tour={item.path === '/agent' ? 'agent' : item.path === '/opportunities' ? 'opportunities' : item.path === '/social' ? 'social' : undefined}
                 className={`
                   flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200
                   ${isActive 

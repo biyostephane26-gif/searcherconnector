@@ -56,8 +56,40 @@ function setValue(el, value) {
   return true;
 }
 
+function fillBySelectors(selectors, value) {
+  if (!value) return 0;
+  let n = 0;
+  selectors.forEach((sel) => {
+    document.querySelectorAll(sel).forEach((el) => {
+      if (el.value) return;
+      if (setValue(el, value)) n++;
+    });
+  });
+  return n;
+}
+
+function fillAtsKnownFields(data) {
+  const first = (data.full_name || '').split(' ')[0] || '';
+  const last = (data.full_name || '').split(' ').slice(1).join(' ') || '';
+  let n = 0;
+  n += fillBySelectors(['#first_name', 'input[name="first_name"]', 'input[id*="first_name" i]', 'input[name="job_application[first_name]"]'], first);
+  n += fillBySelectors(['#last_name', 'input[name="last_name"]', 'input[id*="last_name" i]', 'input[name="job_application[last_name]"]'], last);
+  n += fillBySelectors(['#email', 'input[name="email"]', 'input[type="email"]', 'input[name="job_application[email]"]'], data.email);
+  n += fillBySelectors(['#phone', 'input[name="phone"]', 'input[type="tel"]', 'input[name="job_application[phone]"]'], data.phone);
+  n += fillBySelectors(['input[name*="linkedin" i]', 'input[placeholder*="linkedin" i]', 'input[id*="linkedin" i]'], data.linkedin_url);
+  n += fillBySelectors(['input[name*="github" i]', 'input[placeholder*="github" i]'], data.github_url);
+  n += fillBySelectors(['input[name*="website" i]', 'input[name*="portfolio" i]', 'input[name="urls[Portfolio]"]'], data.portfolio_url);
+  return n;
+}
+
+function findSubmitButton() {
+  return document.querySelector(
+    '#submit_app, #submit-application, button#submit_app, button[data-qa="btn-submit"], input[name="commit"], button[type="submit"], input[type="submit"]'
+  );
+}
+
 function fillForm(data) {
-  let filledCount = 0;
+  let filledCount = fillAtsKnownFields(data);
   const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="url"], input:not([type])');
   inputs.forEach(el => {
     if (el.value) return; // ne jamais écraser une valeur déjà saisie
@@ -106,30 +138,29 @@ async function runFill(triggeredManually) {
   const setLabel = (text) => { sharedBtn.innerHTML = ''; const span = document.createElement('span'); span.textContent = text; sharedBtn.appendChild(span); };
   setLabel('⏳ Chargement...');
 
-  chrome.storage.sync.get(['sc_token', 'sc_auto_submit'], async (data) => {
+  chrome.storage.sync.get(['sc_token', 'sc_auto_submit', 'sc_api_base'], async (data) => {
     if (!data.sc_token) {
       if (triggeredManually) showToast('Connecte d\'abord ton token via l\'icône de l\'extension.', true);
       sharedBtn.innerHTML = BTN_LABEL;
       return;
     }
+    const apiBase = data.sc_api_base || API_BASE;
     try {
-      const url = `${API_BASE}/api/extension/context?token=${encodeURIComponent(data.sc_token)}&url=${encodeURIComponent(window.location.href)}`;
+      const url = `${apiBase}/api/extension/context?token=${encodeURIComponent(data.sc_token)}&url=${encodeURIComponent(window.location.href)}`;
       const res = await fetch(url);
       const ctx = await res.json();
       if (!res.ok) { showToast(ctx.error || 'Erreur — vérifie ton token.', true); sharedBtn.innerHTML = BTN_LABEL; return; }
       const n = fillForm(ctx);
 
-      // Auto-soumission — seulement si l'utilisateur l'a activée ET que
-      // le serveur confirme que cette page est un ATS reconnu
-      // (Greenhouse/Lever). Sur toute autre page (LinkedIn, Upwork,
-      // Freelancer, site maison...), le clic final reste TOUJOURS humain
-      // — ces plateformes interdisent la soumission automatisée dans
-      // leurs conditions d'utilisation, script ou pas.
+      let mode = 'autofill';
+      let submitted = false;
       if (data.sc_auto_submit && ctx.autoSubmitAllowed && n > 0) {
-        const submitBtn = document.querySelector('button[type="submit"], input[type="submit"]');
+        const submitBtn = findSubmitButton();
         if (submitBtn) {
           await new Promise(r => setTimeout(r, 600));
           submitBtn.click();
+          submitted = true;
+          mode = 'autosubmit';
           showToast(`✓ ${n} champ(s) rempli(s) — candidature envoyée automatiquement (ATS reconnu).`);
         } else {
           showToast(`✓ ${n} champ(s) rempli(s) — bouton d'envoi introuvable, termine toi-même.`, true);
@@ -139,6 +170,18 @@ async function runFill(triggeredManually) {
       } else if (triggeredManually) {
         showToast('Aucun champ reconnu sur cette page.');
       }
+
+      fetch(`${apiBase}/api/extension/context`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: data.sc_token,
+          url: window.location.href,
+          mode,
+          success: n > 0,
+          meta: { filled: n, submitted, host: location.hostname },
+        }),
+      }).catch(() => {});
     } catch (e) {
       if (triggeredManually) showToast('Impossible de contacter Searcher Connector.', true);
     }

@@ -9,28 +9,13 @@ import Card from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import { supabase } from '../lib/supabase';
 import { getDomainIcon } from '../lib/domainIcon';
+import { getProfessionalLevel, getNextLevelProgress } from '../lib/geniusLadder';
 import {
   Camera, MapPin, Briefcase, Calendar, Link as LinkIcon,
   Settings, Edit3, Check, X, Loader2, Globe, Github, Twitter,
   FileText, Shield, ExternalLink, User, Code, PieChart, TrendingUp,
   CheckCircle2, AlertCircle, Upload, Award
 } from 'lucide-react';
-
-// Fonction pour calculer le niveau professionnel
-const getProfessionalLevel = (missionsCount: number = 0) => {
-  if (missionsCount >= 25) return { label: 'Expert', color: 'text-purple-400 bg-purple-900/30 border-purple-700/30' }
-  if (missionsCount >= 10) return { label: 'Senior', color: 'text-blue-400 bg-blue-900/30 border-blue-700/30' }
-  if (missionsCount >= 3) return { label: 'Mid', color: 'text-green-400 bg-green-900/30 border-green-700/30' }
-  return { label: 'Junior', color: 'text-yellow-400 bg-yellow-900/30 border-yellow-700/30' }
-}
-
-// Fonction pour obtenir la progression vers le niveau suivant
-const getNextLevelProgress = (missionsCount: number = 0) => {
-  if (missionsCount >= 25) return { current: missionsCount, next: null, remaining: 0, label: 'Niveau maximum atteint' }
-  if (missionsCount >= 10) return { current: missionsCount, next: 25, remaining: 25 - missionsCount, label: `Tu es à ${25 - missionsCount} missions de passer Expert` }
-  if (missionsCount >= 3) return { current: missionsCount, next: 10, remaining: 10 - missionsCount, label: `Tu es à ${10 - missionsCount} missions de passer Senior` }
-  return { current: missionsCount, next: 3, remaining: 3 - missionsCount, label: `Tu es à ${3 - missionsCount} missions de passer Mid` }
-}
 
 // ── Charte visuelle par type de profil ───────────────────────────
 const PROFILE_THEME: Record<string, {
@@ -504,9 +489,9 @@ export default function Profile() {
                   </h1>
                   <Badge status={(profile?.verification_status || 'pending') as any} />
                   {/* Badge Niveau Professionnel */}
-                  <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getProfessionalLevel(profile?.missions_completed || 0).color}`}>
+                  <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getProfessionalLevel(profile?.missions_completed || 0, profile?.verification_status).color}`}>
                     <Award size={11} />
-                    {getProfessionalLevel(profile?.missions_completed || 0).label}
+                    {getProfessionalLevel(profile?.missions_completed || 0, profile?.verification_status).label}
                   </div>
                 </div>
                 <p className={`text-xs font-bold uppercase tracking-[0.2em] ${theme.accentText} max-w-xs sm:max-w-sm md:max-w-md truncate`} title={`${profile?.profile_type?.replace('_', ' ')} • ${profile?.domain}`}>
@@ -515,7 +500,7 @@ export default function Profile() {
                 {/* Progression Niveau */}
                 <div className="mt-3 w-full max-w-md">
                   {(() => {
-                    const levelProgress = getNextLevelProgress(profile?.missions_completed || 0)
+                    const levelProgress = getNextLevelProgress(profile?.missions_completed || 0, profile?.verification_status)
                     return (
                       <>
                         <p className="text-[10px] text-gray-500 mb-1">{levelProgress.label}</p>

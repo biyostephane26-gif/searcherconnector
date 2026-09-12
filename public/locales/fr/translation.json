@@ -21,7 +21,7 @@
   "nav": {
     "home": "Accueil",
     "opportunities": "Opportunités",
-    "agent": "Agent Searcher",
+    "agent": "SCAI Cowork",
     "opportunityCreator": "Créer une Offre",
     "cowork": "Cowork",
     "interviews": "Entretiens",
@@ -67,7 +67,7 @@
     "applyManually": "Je postule moi-même"
   },
   "scai": {
-    "title": "Agent Searcher",
+    "title": "SCAI Cowork",
     "greeting": "Bonjour ! Je suis SCAI, ton assistant de carrière personnel.",
     "placeholder": "Pose-moi une question ou demande-moi de chercher des opportunités...",
     "voice": "Utiliser la voix",
@@ -84,9 +84,9 @@
     "level": "Niveau",
     "levels": {
       "junior": "Junior",
-      "mid": "Mid",
+      "confirmed": "Confirmé",
       "senior": "Senior",
-      "expert": "Expert"
+      "genius": "Genius"
     },
     "progression": "Tu es à {{count}} missions de passer {{level}}",
     "maxLevel": "Niveau maximum atteint",

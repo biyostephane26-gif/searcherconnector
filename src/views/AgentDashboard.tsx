@@ -481,7 +481,7 @@ export default function AgentDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="font-syne text-2xl font-bold text-white">Agent Searcher</h1>
+            <h1 className="font-syne text-2xl font-bold text-white">SCAI Cowork</h1>
             <p className="text-sm text-gray-400 mt-1">
               <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
               Actif 24h/24 · {pendingQueue} tâches planifiées
@@ -998,6 +998,23 @@ export default function AgentDashboard() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="bg-[#111111] border border-gray-800 rounded-xl p-5">
+              <div className="font-syne font-bold text-sm text-white mb-3">Connecteurs SCAI Cowork</div>
+              <p className="text-xs text-gray-500 mb-4">
+                SCAI Cowork s’appuie sur tes propres sessions : extension Chrome pour les formulaires, Gmail/WhatsApp pour les réponses.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <a href="/settings" className="rounded-lg border border-[#D4AF37]/30 p-3 hover:bg-[#1A1500] transition-colors">
+                  <div className="text-sm text-white font-medium">Extension Chrome</div>
+                  <div className="text-xs text-gray-500 mt-1">Token perso · autofill · ATS Greenhouse/Lever</div>
+                </a>
+                <a href="/cowork" className="rounded-lg border border-gray-800 p-3 hover:border-[#D4AF37]/30 transition-colors">
+                  <div className="text-sm text-white font-medium">Inbox email & WhatsApp</div>
+                  <div className="text-xs text-gray-500 mt-1">Relances et réponses depuis Cowork</div>
+                </a>
+              </div>
             </div>
 
           </div>
