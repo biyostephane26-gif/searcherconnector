@@ -3,6 +3,7 @@
 import { ReactNode, useEffect } from 'react'
 import { AuthProvider } from '../src/contexts/AuthContext'
 import '../src/i18n'
+import SearchLauncher from '../src/components/search/SearchLauncher'
 
 export default function Providers({ children }: { children: ReactNode }) {
   // Le thème est appliqué avant le premier rendu par le script inline de
@@ -13,5 +14,10 @@ export default function Providers({ children }: { children: ReactNode }) {
     } catch { /* localStorage peut être bloqué */ }
   }, [])
 
-  return <AuthProvider>{children}</AuthProvider>
+  return (
+    <AuthProvider>
+      {children}
+      <SearchLauncher />
+    </AuthProvider>
+  )
 }

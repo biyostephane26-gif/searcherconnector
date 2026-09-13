@@ -10,10 +10,12 @@ import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import {
   User, Shield, Bot, Trash2, ArrowRight, Clock, Zap,
-  Sun, Moon, Brain, MessageSquare, AlertTriangle, ChevronRight, Globe
+  Sun, Moon, Brain, MessageSquare, AlertTriangle, ChevronRight, Globe,
+  Search, X,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { authFetch } from '../lib/authFetch'
+import { SETTINGS_SECTIONS } from '../components/search/GlobalSearch'
 
 // ── Toggle switch réutilisable ────────────────────────────────────
 function Toggle({ value, onChange, disabled }: { value: boolean; onChange: (v: boolean) => void; disabled?: boolean }) {
@@ -29,6 +31,24 @@ export default function Settings() {
   const { t, i18n } = useTranslation()
   const { profile, user, refreshProfile } = useAuth()
   const router = useRouter()
+  // Recherche dans les paramètres (?q=… pré-rempli depuis la recherche globale)
+  const [settingsQuery, setSettingsQuery] = useState('')
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get('q')
+    if (q) setSettingsQuery(q)
+    const hash = window.location.hash.slice(1)
+    if (hash) setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300)
+  }, [])
+  const foldText = (t: string) => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  const sectionVisible = (id: string) => {
+    const term = foldText(settingsQuery.trim())
+    if (!term) return true
+    const def = SETTINGS_SECTIONS.find(sec => sec.id === id)
+    const text = def ? `${def.label} ${def.keywords}` : id === 'fondateur' ? 'fondateur founder admin' : 'liens conditions confidentialité support'
+    return foldText(text).includes(term)
+  }
+  const noSettingsMatch = !!settingsQuery.trim() &&
+    ![...SETTINGS_SECTIONS.map(sec => sec.id), 'fondateur', 'liens'].some(sectionVisible)
   // Extension navigateur + soumission ATS réelle — réservées Pro/Premium
   // (voir planConfig.ts extensionAccess), même règle que côté serveur.
   const isPaidUser = profile?.role === 'founder' || ['pro', 'premium', 'starter', 'enterprise'].includes((profile as any)?.plan || '')
@@ -301,8 +321,27 @@ export default function Settings() {
 
         <div className="p-6 lg:p-10 max-w-3xl mx-auto w-full space-y-10">
 
+          <div className="relative -mb-4">
+            <Search className="w-4 h-4 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              value={settingsQuery}
+              onChange={e => setSettingsQuery(e.target.value)}
+              placeholder="Rechercher un réglage (thème, langue, extension, mot de passe…)"
+              className="w-full bg-[#111111] border border-[#2a2a2a] rounded-xl pl-10 pr-9 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37]/60"
+              aria-label="Rechercher dans les paramètres"
+            />
+            {settingsQuery && (
+              <button onClick={() => setSettingsQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white" aria-label="Effacer">
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+          {noSettingsMatch && (
+            <p className="text-sm text-gray-500 text-center py-10">Aucun réglage ne correspond à « {settingsQuery} ».</p>
+          )}
+
           {/* ── Profil ─────────────────────────────────────────── */}
-          <section className="space-y-4">
+          <section id="profil" hidden={!sectionVisible('profil')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
               <User className="w-4 h-4" /> Profil
             </h3>
@@ -429,7 +468,7 @@ export default function Settings() {
           </section>
 
           {/* ── Apparence ──────────────────────────────────────── */}
-          <section className="space-y-4">
+          <section id="apparence" hidden={!sectionVisible('apparence')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
               <Sun className="w-4 h-4" /> Apparence
             </h3>
@@ -448,7 +487,7 @@ export default function Settings() {
           </section>
 
           {/* ── Langue ──────────────────────────────────────────── */}
-          <section className="space-y-4">
+          <section id="langue" hidden={!sectionVisible('langue')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
               <Globe className="w-4 h-4" /> Langue
             </h3>
@@ -509,7 +548,7 @@ export default function Settings() {
           </section>
 
           {/* ── Niveau de compétence évalué ──────────────────────── */}
-          <section className="space-y-4">
+          <section id="niveau" hidden={!sectionVisible('niveau')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
               <Brain className="w-4 h-4" /> Niveau évalué par SCAI
             </h3>
@@ -546,7 +585,7 @@ export default function Settings() {
           </section>
 
           {/* ── SCAI & IA ──────────────────────────────────────── */}
-          <section className="space-y-4">
+          <section id="scai" hidden={!sectionVisible('scai')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
               <Brain className="w-4 h-4" /> SCAI & Intelligence
             </h3>
@@ -572,7 +611,7 @@ export default function Settings() {
           </section>
 
           {/* ── SCAI Cowork ─────────────────────────────────── */}
-          <section className="space-y-4">
+          <section id="cowork" hidden={!sectionVisible('cowork')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
               <Bot className="w-4 h-4" /> SCAI Cowork
             </h3>
@@ -637,7 +676,7 @@ export default function Settings() {
           </section>
 
           {/* ── Extension navigateur ────────────────────────────────── */}
-          <section className="space-y-4">
+          <section id="extension" hidden={!sectionVisible('extension')} className="space-y-4">
             <h2 className="text-sm font-bold uppercase tracking-widest text-gray-500">Extension navigateur</h2>
             <Card className="p-6 space-y-4">
               <p className="text-xs text-gray-600">
@@ -697,7 +736,7 @@ export default function Settings() {
           </section>
 
           {/* ── Sécurité ───────────────────────────────────────── */}
-          <section className="space-y-4">
+          <section id="securite" hidden={!sectionVisible('securite')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
               <Shield className="w-4 h-4" /> Sécurité
             </h3>
@@ -713,7 +752,7 @@ export default function Settings() {
           </section>
 
           {/* ── Feedback & Retour d'expérience ─────────────────── */}
-          <section className="space-y-4">
+          <section id="feedback" hidden={!sectionVisible('feedback')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
               <MessageSquare className="w-4 h-4" /> Retour d'expérience
             </h3>
@@ -739,7 +778,7 @@ export default function Settings() {
 
           {/* ── Fondateur — accès spécial ──────────────────────── */}
           {isFounder && (
-            <section className="space-y-4">
+            <section id="fondateur" hidden={!sectionVisible('fondateur')} className="space-y-4">
               <h3 className="text-xs font-bold tracking-[0.3em] text-[#D4AF37] uppercase flex items-center gap-2">
                 🔱 Accès Fondateur
               </h3>
@@ -765,7 +804,7 @@ export default function Settings() {
           )}
 
           {/* ── Danger Zone ────────────────────────────────────── */}
-          <section className="space-y-4">
+          <section id="danger" hidden={!sectionVisible('danger')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-red-500 uppercase flex items-center gap-2">
               <Trash2 className="w-4 h-4" /> Zone de danger
             </h3>
@@ -781,7 +820,7 @@ export default function Settings() {
           </section>
 
           {/* ── Liens ──────────────────────────────────────────── */}
-          <section className="space-y-3 border-t border-[#1A1A1A] pt-6">
+          <section id="liens" hidden={!sectionVisible('liens')} className="space-y-3 border-t border-[#1A1A1A] pt-6">
             <div className="flex items-center gap-4 flex-wrap text-sm">
               <Link href="/guide" className="text-[#D4AF37] hover:underline">📖 Guide complet</Link>
               <span className="text-gray-700">·</span>

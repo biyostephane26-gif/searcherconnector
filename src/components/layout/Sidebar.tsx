@@ -10,6 +10,7 @@ import { useMobileSidebar, closeMobileSidebar, openMobileSidebar } from '../../h
 import { computeProfileCompletion } from '../../lib/profileCompletion'
 import { useTranslation } from 'react-i18next'
 import { getCareerLevel, getNextLevelProgress } from '../../lib/careerLevel'
+import { SearchButton } from '../search/SearchLauncher'
 
 
 export default function Sidebar() {
@@ -200,6 +201,7 @@ export default function Sidebar() {
           )}
         </div>
 
+        <SearchButton className="mb-4" />
         <nav className="space-y-1">
           {menuItems.map((item) => {
             const isActive = pathname === item.path

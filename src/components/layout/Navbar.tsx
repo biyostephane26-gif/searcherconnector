@@ -8,6 +8,7 @@ import Badge from '../ui/Badge'
 import { LogOut, Menu } from 'lucide-react'
 import NotificationBell from './NotificationBell'
 import { toggleMobileSidebar } from '../../hooks/useMobileSidebar'
+import { SearchButton } from '../search/SearchLauncher'
 
 export default function Navbar() {
   const { user, profile, signOut } = useAuth()
@@ -81,6 +82,7 @@ export default function Navbar() {
                 <span className="text-sm font-bold text-white">{profile?.full_name}</span>
                 <Badge status={(profile?.verification_status || 'pending') as any} />
               </div>
+              <SearchButton compact />
               <NotificationBell />
               
               <Link href="/profile" className="w-8 h-8 rounded-full bg-[#1A1A1A] border border-[#2a2a2a] flex items-center justify-center text-[10px] font-bold text-[#D4AF37] overflow-hidden">
