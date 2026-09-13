@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { supabaseAdmin } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { SCAIMatcher, type UserProfile, type Opportunity } from '@/lib/scai-matching'
 
 type ResponseData = {

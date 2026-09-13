@@ -3,21 +3,15 @@ import { createClient } from '@supabase/supabase-js'
 // Default values to prevent "supabaseKey is required" errors
 const DEFAULT_SUPABASE_URL = 'https://keyfjdqenfyiixmehsbj.supabase.co'
 const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtleWZqZHFlbmZ5aWl4bWVoc2JqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MDc3OTQsImV4cCI6MjA5NDM4Mzc5NH0.4PYEUSh7GxAvOKk9K5kATWP6rPbMZyAReGsDqcFkdOg'
-const DEFAULT_SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtleWZqZHFlbmZ5aWl4bWVoc2JqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODgwNzc5NCwiZXhwIjoyMDk0MzgzNzk0fQ.RF3AVeNuiwSjWCOc3EmJShappUMplFgcF8mZ3Az7qAo'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || DEFAULT_SUPABASE_SERVICE_KEY
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// Admin client with service role key for server-side operations
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-})
+// Le client admin (clé service_role) ne doit JAMAIS vivre dans ce module :
+// il est importé par des composants client, donc envoyé au navigateur.
+// Côté serveur uniquement : src/lib/supabaseAdmin.ts
 
 
 
