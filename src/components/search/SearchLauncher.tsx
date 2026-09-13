@@ -20,6 +20,7 @@ export default function SearchLauncher() {
     if (!user) return
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setOpen(o => !o) }
+      if ((e.ctrlKey || e.metaKey) && e.key === ',') { e.preventDefault(); window.location.href = '/settings' }
     }
     const onOpen = () => setOpen(true)
     window.addEventListener('keydown', onKey)

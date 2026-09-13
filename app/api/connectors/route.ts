@@ -10,12 +10,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { supabaseAdmin } from '../../../src/lib/supabaseAdmin'
 import { requireUser } from '../../../src/lib/server/requireUser'
-import { CONNECTORS, getConnector, type ConnectorState } from '../../../src/lib/connectors/catalog'
+import { CONNECTORS, getConnector, type ConnectorState, type CustomConnector } from '../../../src/lib/connectors/catalog'
 import { isPaidPlan } from '../../../src/lib/planUtils'
 
 export const dynamic = 'force-dynamic'
 
-type Prefs = { connectors?: Record<string, { enabled: boolean; connected_at: string }> } & Record<string, any>
+type Prefs = { connectors?: Record<string, { enabled: boolean; connected_at: string }>; custom_connectors?: CustomConnector[] } & Record<string, any>
 
 async function computeStates(userId: string, profile: any): Promise<ConnectorState[]> {
   const paid = isPaidPlan(profile)
@@ -29,7 +29,13 @@ async function computeStates(userId: string, profile: any): Promise<ConnectorSta
   const oauth = new Map((oauthRows || []).filter((r: any) => r.is_active).map((r: any) => [r.platform, r]))
   const hasExtension = !!tokenRow
 
-  return CONNECTORS.map((c): ConnectorState => {
+  const customStates: ConnectorState[] = (prefs.custom_connectors || []).map(c => (
+    hasExtension
+      ? { id: c.id, status: 'connected', account: c.url }
+      : { id: c.id, status: 'available', account: c.url, detail: "Nécessite l'extension Chrome pour fonctionner." }
+  ))
+
+  return [...customStates, ...CONNECTORS.map((c): ConnectorState => {
     if (c.kind === 'soon') return { id: c.id, status: 'soon' }
 
     if (c.kind === 'tool') {
@@ -78,14 +84,14 @@ async function computeStates(userId: string, profile: any): Promise<ConnectorSta
     }
 
     return { id: c.id, status: 'available' }
-  })
+  })]
 }
 
 export async function GET(req: NextRequest) {
   const auth = await requireUser(req)
   if (!auth) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
   const states = await computeStates(auth.user.id, auth.profile)
-  return NextResponse.json({ states })
+  return NextResponse.json({ states, custom: auth.profile?.search_preferences?.custom_connectors || [] })
 }
 
 function normalizeProfileValue(field: string, raw: string): string | null {
@@ -112,6 +118,30 @@ export async function POST(req: NextRequest) {
   let body: any
   try { body = await req.json() } catch { return NextResponse.json({ error: 'Corps invalide' }, { status: 400 }) }
   const { connectorId, action, value } = body || {}
+
+  // ── Connecteurs personnalisés (« Ajouter ») ─────────────────────
+  if (action === 'add_custom' || action === 'remove_custom') {
+    const prefs: Prefs = { ...(profile?.search_preferences || {}) }
+    let custom = [...(prefs.custom_connectors || [])]
+    if (action === 'add_custom') {
+      const name = String(body?.name || '').trim().slice(0, 40)
+      let url = String(body?.url || '').trim()
+      if (!/^https?:\/\//i.test(url)) url = `https://${url}`
+      try { url = new URL(url).origin } catch { return NextResponse.json({ error: 'Adresse du site invalide.' }, { status: 400 }) }
+      if (!name) return NextResponse.json({ error: 'Donne un nom au connecteur.' }, { status: 400 })
+      if (custom.length >= 20) return NextResponse.json({ error: '20 connecteurs personnalisés maximum.' }, { status: 400 })
+      if (custom.some(c => c.url === url)) return NextResponse.json({ error: 'Ce site est déjà connecté.' }, { status: 400 })
+      custom.push({ id: `custom_${crypto.randomBytes(6).toString('hex')}`, name, url, created_at: new Date().toISOString() })
+    } else {
+      custom = custom.filter(c => c.id !== connectorId)
+    }
+    const { error } = await supabaseAdmin.from('users_profiles')
+      .update({ search_preferences: { ...prefs, custom_connectors: custom } }).eq('id', user.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    const { data: fresh } = await supabaseAdmin.from('users_profiles').select('*').eq('id', user.id).single()
+    return NextResponse.json({ states: await computeStates(user.id, fresh), custom })
+  }
+
   const def = getConnector(connectorId)
   if (!def) return NextResponse.json({ error: 'Connecteur inconnu' }, { status: 404 })
   if (action !== 'connect' && action !== 'disconnect') return NextResponse.json({ error: 'Action invalide' }, { status: 400 })
@@ -197,5 +227,5 @@ export async function POST(req: NextRequest) {
 
   const { data: freshProfile } = await supabaseAdmin.from('users_profiles').select('*').eq('id', user.id).single()
   const states = await computeStates(user.id, freshProfile)
-  return NextResponse.json({ states })
+  return NextResponse.json({ states, custom: freshProfile?.search_preferences?.custom_connectors || [] })
 }

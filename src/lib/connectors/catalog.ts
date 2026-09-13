@@ -15,7 +15,7 @@
 //  soon       : prévu, pas encore disponible (affiché honnêtement)
 // =================================================================
 
-export type ConnectorKind = 'oauth' | 'extension' | 'profile' | 'phone' | 'tool' | 'soon'
+export type ConnectorKind = 'oauth' | 'extension' | 'profile' | 'phone' | 'tool' | 'soon' | 'custom'
 
 export type ConnectorCategory =
   | 'communication'
@@ -113,6 +113,12 @@ export const CONNECTORS: ConnectorDef[] = [
   freelance('peopleperhour', 'PeoplePerHour', 'peopleperhour.com', 'PP', '#FF6D00'),
   freelance('comeup',        'ComeUp',        'comeup.com',        'CU', '#6C4BF4'),
   freelance('guru',          'Guru',          'guru.com',          'G',  '#4B6FA7'),
+  freelance('contra',        'Contra',        'contra.com',        'C',  '#111111'),
+  freelance('workana',       'Workana',       'workana.com',       'Wk', '#2E6BE6'),
+  freelance('codeur',        'Codeur.com',    'codeur.com',        'Cd', '#E8513A'),
+  freelance('99designs',     '99designs',     '99designs.com',     '99', '#F26B38'),
+  freelance('dribbble',      'Dribbble',      'dribbble.com',      'Dr', '#EA4C89'),
+  freelance('twine',         'Twine',         'twine.net',         'Tw', '#5B4BDB'),
 
   // ── Réseaux pro & code ─────────────────────────────────────────
   {
@@ -185,12 +191,50 @@ export const CONNECTORS: ConnectorDef[] = [
     capabilities: ['Entretiens ajoutés à l\'agenda'],
   },
   {
+    id: 'slack', name: 'Slack', category: 'productivity', kind: 'soon',
+    tile: { label: 'S', bg: '#4A154B', fg: '#fff' },
+    description: "Recevoir les alertes d'opportunités et les réponses clients dans Slack.",
+    capabilities: ['Alertes dans un canal'],
+  },
+  {
+    id: 'canva', name: 'Canva', category: 'creation', kind: 'soon',
+    tile: { label: 'Ca', bg: '#00C4CC', fg: '#fff' },
+    description: 'Créer des visuels de portfolio à partir de tes modèles Canva.',
+    capabilities: ['Visuels à partir de modèles'],
+  },
+  {
+    id: 'figma', name: 'Figma', category: 'creation', kind: 'soon',
+    tile: { label: 'Fi', bg: '#1E1E1E', fg: '#fff' },
+    description: 'Joindre tes maquettes Figma aux propositions design.',
+    capabilities: ['Maquettes jointes aux candidatures'],
+  },
+  {
     id: 'notion', name: 'Notion', category: 'productivity', kind: 'soon',
     tile: { label: 'N', bg: '#000000', fg: '#fff' },
     description: 'Synchroniser ton suivi de missions avec une base Notion.',
     capabilities: ['Suivi de missions synchronisé'],
   },
 ]
+
+export const KIND_LABEL: Record<ConnectorKind, string> = {
+  oauth: 'Web', extension: 'Extension', profile: 'Profil', phone: 'Mobile',
+  tool: 'Intégré', soon: 'Bientôt', custom: 'Personnalisé',
+}
+
+// Connecteur ajouté par l'utilisateur (n'importe quel site : plateforme
+// freelance, ATS, site client…) — fonctionne via l'extension, dans sa session.
+export interface CustomConnector { id: string; name: string; url: string; created_at: string }
+
+export function customToDef(c: CustomConnector): ConnectorDef {
+  let host = c.url
+  try { host = new URL(c.url).hostname.replace(/^www\./, '') } catch {}
+  return {
+    id: c.id, name: c.name, category: 'freelance', kind: 'custom', platformHost: host,
+    tile: { label: c.name.slice(0, 2), bg: '#0E9F9A', fg: '#fff' },
+    description: `Connecteur personnalisé pour ${host}. SCAI pré-remplit tes candidatures sur ce site via l'extension, dans ta propre session.`,
+    capabilities: ['Pré-remplissage des formulaires sur ce site', 'Message de candidature rédigé par SCAI', "Le clic final d'envoi reste le tien"],
+  }
+}
 
 export function getConnector(id: string) {
   return CONNECTORS.find(c => c.id === id) || null
