@@ -13,6 +13,7 @@ import {
   Sun, Moon, Brain, MessageSquare, AlertTriangle, ChevronRight, Globe
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { authFetch } from '../lib/authFetch'
 
 // ── Toggle switch réutilisable ────────────────────────────────────
 function Toggle({ value, onChange, disabled }: { value: boolean; onChange: (v: boolean) => void; disabled?: boolean }) {
@@ -60,17 +61,14 @@ export default function Settings() {
 
   useEffect(() => {
     if (!user) return
-    fetch(`/api/extension/token?userId=${user.id}`).then(r => r.json()).then(d => setExtensionToken(d.token || null)).catch(() => {})
+    authFetch('/api/extension/token').then(r => r.json()).then(d => setExtensionToken(d.token || null)).catch(() => {})
   }, [user])
 
   const generateExtensionToken = async () => {
     if (!user) return
     setExtensionTokenLoading(true)
     try {
-      const r = await fetch('/api/extension/token', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id }),
-      })
+      const r = await authFetch('/api/extension/token', { method: 'POST' })
       const d = await r.json()
       setExtensionToken(d.token || null)
     } catch { /* silencieux */ }
@@ -81,7 +79,7 @@ export default function Settings() {
     if (!user) return
     setExtensionTokenLoading(true)
     try {
-      await fetch(`/api/extension/token?userId=${user.id}`, { method: 'DELETE' })
+      await authFetch('/api/extension/token', { method: 'DELETE' })
       setExtensionToken(null)
     } catch { /* silencieux */ }
     setExtensionTokenLoading(false)
