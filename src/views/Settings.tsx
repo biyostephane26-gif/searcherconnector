@@ -210,7 +210,7 @@ export default function Settings() {
     setSavedMsg(false)
     try {
       // Appel API serveur avec service_role → bypass RLS total
-      const res = await fetch('/api/profile/update', {
+      const res = await authFetch('/api/profile/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

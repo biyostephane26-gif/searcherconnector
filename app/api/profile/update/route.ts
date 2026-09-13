@@ -4,22 +4,29 @@
 // Appelé depuis Settings.tsx au lieu de Supabase direct
 // =================================================================
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { supabaseAdmin } from '../../../../src/lib/supabaseAdmin'
+import { requireUser } from '../../../../src/lib/server/requireUser'
 
-// Service role key — bypass RLS, jamais exposé au client
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
-)
+// Champs réservés au fondateur : sans ce garde-fou, n'importe qui pouvait
+// s'attribuer plan='premium' ou verification_status='genius' (ou modifier
+// le profil d'un autre compte) en envoyant simplement un userId.
+const FOUNDER_ONLY_FIELDS = ['plan', 'verification_status']
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { userId, ...fields } = body
+    const auth = await requireUser(req)
+    if (!auth) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
+    const isFounder = auth.profile?.role === 'founder'
 
-    if (!userId) {
-      return NextResponse.json({ error: 'userId manquant' }, { status: 400 })
+    const body = await req.json()
+    const { userId: requestedUserId, ...fields } = body
+
+    // Seul le fondateur peut modifier un autre compte.
+    if (requestedUserId && requestedUserId !== auth.user.id && !isFounder) {
+      return NextResponse.json({ error: 'Interdit' }, { status: 403 })
     }
+    const userId: string = isFounder && requestedUserId ? requestedUserId : auth.user.id
+    if (!isFounder) for (const f of FOUNDER_ONLY_FIELDS) delete fields[f]
 
     // D'abord récupérer le profil existant pour préserver les champs non modifiés
     const { data: existingProfile, error: fetchError } = await supabaseAdmin

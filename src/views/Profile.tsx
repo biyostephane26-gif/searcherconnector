@@ -16,6 +16,7 @@ import {
   CheckCircle2, AlertCircle, Upload, Award
 } from 'lucide-react';
 import { getCareerLevel, getNextLevelProgress } from '../lib/careerLevel'
+import { authFetch } from '../lib/authFetch'
 
 
 // ── Charte visuelle par type de profil ───────────────────────────
@@ -326,7 +327,7 @@ export default function Profile() {
     if (!user) return;
     setLoading(true);
     try {
-      const res = await fetch('/api/profile/update', {
+      const res = await authFetch('/api/profile/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
