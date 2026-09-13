@@ -12,6 +12,9 @@ import { useAgentRealtime } from '../hooks/useAgentRealtime';
 import { useVoiceInput } from '../hooks/useVoiceInput';
 import ScaiThinkingOrb from '../components/scai/ScaiThinkingOrb';
 import VoiceWaveform from '../components/scai/VoiceWaveform';
+import ConnectorsPanel from '../components/cowork/ConnectorsPanel';
+import ToolAttachment, { TOOL_META, type CoworkTool, type ToolAttachmentData } from '../components/cowork/ToolAttachment';
+import { authFetch } from '../lib/authFetch';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import {
@@ -39,7 +42,10 @@ import {
   Eye,
   Target,
   Radio,
-  Volume2
+  Volume2,
+  Plus,
+  X,
+  Plug
 } from 'lucide-react';
 
 const ACTION_ICONS: Record<string, any> = {
@@ -60,7 +66,11 @@ export default function AgentDashboard() {
   const { user, profile } = useAuth();
   const { scanning, launchScan, getEmailThreads, getSchedule, updateSchedule } = useAgent();
   const { recentActions, pendingQueue } = useAgentRealtime();
-  const [activeTab, setActiveTab] = useState<'status' | 'queue' | 'communications' | 'config'>('status');
+  const [activeTab, setActiveTab] = useState<'status' | 'queue' | 'communications' | 'connectors' | 'config'>('status');
+  // Outils Cowork (PDF, Excel, Word, image, vidéo) sélectionnés depuis le menu « + »
+  const [activeTool, setActiveTool] = useState<CoworkTool | null>(null);
+  const [showToolsMenu, setShowToolsMenu] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [queue, setQueue] = useState<any[]>([]);
   const [emails, setEmails] = useState<any[]>([]);
   const [schedule, setSchedule] = useState<any>(null);
@@ -68,7 +78,7 @@ export default function AgentDashboard() {
   const [scanMetrics, setScanMetrics] = useState<{sitesScanned:number; socialNetworksScanned:number; platformsScanned:number; feedsScanned:number; totalSources:number} | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
   const [userInstruction, setUserInstruction] = useState('');
-  const [chatHistory, setChatHistory] = useState<{role: 'agent' | 'user', content: string, thought?: string, showThought?: boolean}[]>([]);
+  const [chatHistory, setChatHistory] = useState<{role: 'agent' | 'user', content: string, thought?: string, showThought?: boolean, attachment?: ToolAttachmentData}[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   
   // Hook SCAI Voice pour transcription
@@ -467,10 +477,68 @@ export default function AgentDashboard() {
     await updateSchedule({ [key]: value });
   };
 
+  const runTool = async (tool: CoworkTool, prompt: string, source?: 'opportunities' | 'applications') => {
+    if (isProcessing) return;
+    const meta = TOOL_META[tool];
+    const userText = source
+      ? `${meta.emoji} Exporter mes ${source === 'opportunities' ? 'opportunités' : 'candidatures'} en ${meta.label}`
+      : `${meta.emoji} ${meta.label} : ${prompt}`;
+    setChatHistory(prev => [...prev, { role: 'user', content: userText }]);
+    setUserInstruction('');
+    setActiveTool(null);
+    setShowToolsMenu(false);
+    setIsProcessing(true);
+    saveChatMessage('user', userText);
+
+    try {
+      let endpoint = '/api/tools/document';
+      let body: any = { format: tool === 'excel' ? 'xlsx' : tool === 'word' ? 'docx' : 'pdf', prompt, source };
+      if (tool === 'image') { endpoint = '/api/tools/image'; body = { prompt, aspect: 'landscape' }; }
+      if (tool === 'video') { endpoint = '/api/tools/video'; body = { prompt }; }
+
+      const res = await authFetch(endpoint, { method: 'POST', body: JSON.stringify(body) });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'La génération a échoué');
+
+      let attachment: ToolAttachmentData;
+      let content: string;
+      if (tool === 'image') {
+        attachment = { kind: 'image', src: data.image, provider: data.provider, fallback: data.fallback };
+        content = 'Voici ton image.';
+      } else if (tool === 'video') {
+        attachment = { kind: 'video', job: data.job, provider: data.provider };
+        content = "Je crée ta vidéo, elle apparaîtra ici dès qu'elle est prête.";
+      } else {
+        attachment = { kind: 'file', filename: data.filename, mime: data.mime, base64: data.base64, size: data.size, title: data.title };
+        content = `Ton fichier **${data.title}** est prêt.`;
+      }
+      setChatHistory(prev => [...prev, { role: 'agent', content, attachment }]);
+      saveChatMessage('agent', `${content} (${tool === 'image' || tool === 'video' ? meta.label : data.filename})`);
+    } catch (e: any) {
+      setChatHistory(prev => [...prev, { role: 'agent', content: `⚠️ ${e.message}` }]);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const pickTool = (tool: CoworkTool) => {
+    setActiveTool(tool);
+    setShowToolsMenu(false);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
+  const submitInput = () => {
+    const text = userInstruction.trim();
+    if (!text || isProcessing) return;
+    if (activeTool) runTool(activeTool, text);
+    else handleSendMessage(text);
+  };
+
   const tabs = [
     { id: 'status', label: 'Statut Live', icon: '⚡' },
     { id: 'queue', label: `File d'attente (${pendingQueue})`, icon: '📋' },
     { id: 'communications', label: 'Emails & WA', icon: '📨' },
+    { id: 'connectors', label: 'Connecteurs', icon: '🔌' },
     { id: 'config', label: 'Configuration', icon: '⚙️' }
   ];
 
@@ -568,6 +636,7 @@ export default function AgentDashboard() {
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                           {msg.content || ''}
                         </ReactMarkdown>
+                        {msg.attachment && <ToolAttachment data={msg.attachment} />}
                       </div>
                     ) : (
                       <div className="whitespace-pre-wrap">{msg?.content || ''}</div>
@@ -602,8 +671,45 @@ export default function AgentDashboard() {
               <div ref={chatEndRef} />
             </div>
 
+            {activeTool && (
+              <div className="flex flex-wrap items-center gap-2 px-1 -mb-2">
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#D4AF37] bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-full pl-2.5 pr-1 py-1">
+                  {TOOL_META[activeTool].emoji} {TOOL_META[activeTool].label}
+                  <button onClick={() => setActiveTool(null)} className="p-0.5 rounded-full hover:bg-[#D4AF37]/20" aria-label="Retirer l'outil"><X size={12} /></button>
+                </span>
+                {activeTool === 'excel' && (
+                  <>
+                    <button onClick={() => runTool('excel', '', 'opportunities')} className="text-[11px] text-gray-400 hover:text-white hover:underline">Exporter mes opportunités</button>
+                    <button onClick={() => runTool('excel', '', 'applications')} className="text-[11px] text-gray-400 hover:text-white hover:underline">Exporter mes candidatures</button>
+                  </>
+                )}
+              </div>
+            )}
+
             {/* Input Bar */}
-            <div className="flex items-center gap-2 bg-black border border-gray-700 rounded-xl p-2 focus-within:border-[#D4AF37] transition-all">
+            <div className="relative flex items-center gap-2 bg-black border border-gray-700 rounded-xl p-2 focus-within:border-[#D4AF37] transition-all">
+              <button
+                onClick={() => setShowToolsMenu(v => !v)}
+                className={`p-2 rounded-lg transition-colors ${showToolsMenu ? 'text-[#D4AF37] bg-[#1A1A1A]' : 'text-gray-400 hover:text-[#D4AF37]'}`}
+                title="Outils et connecteurs"
+                aria-expanded={showToolsMenu}
+              >
+                <Plus size={20} />
+              </button>
+              {showToolsMenu && (
+                <div className="absolute bottom-full left-0 mb-2 w-64 bg-[#0D0D0D] border border-[#2a2a2a] rounded-xl shadow-2xl p-1.5 z-20">
+                  <p className="px-2.5 pt-1.5 pb-1 text-[10px] font-bold uppercase tracking-widest text-gray-500">Créer avec SCAI</p>
+                  {(Object.keys(TOOL_META) as CoworkTool[]).map(t => (
+                    <button key={t} onClick={() => pickTool(t)} className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm text-gray-200 hover:bg-[#1A1A1A] text-left">
+                      <span className="w-5 text-center">{TOOL_META[t].emoji}</span>{TOOL_META[t].label}
+                    </button>
+                  ))}
+                  <div className="h-px bg-[#1A1A1A] my-1" />
+                  <button onClick={() => { setShowToolsMenu(false); setActiveTab('connectors'); }} className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm text-gray-200 hover:bg-[#1A1A1A] text-left">
+                    <Plug size={16} className="text-[#D4AF37]" /> Gérer les connecteurs
+                  </button>
+                </div>
+              )}
               <input
                 type="file" 
                 id="agent-upload" 
@@ -627,17 +733,17 @@ export default function AgentDashboard() {
                 <Paperclip size={20} />
               </button>
               
-              <input 
+              <input
+                ref={inputRef}
                 type="text"
                 value={userInstruction}
                 onChange={(e) => setUserInstruction(e.target.value)}
-                placeholder={isProcessing ? "SCAI réfléchit intensément..." : "Échangez avec SCAI (votre agent d'élite)..."}
+                placeholder={isProcessing ? "SCAI travaille..." : activeTool ? TOOL_META[activeTool].placeholder : "Échangez avec SCAI (votre agent d'élite)..."}
                 disabled={isProcessing}
                 className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-white py-2"
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && userInstruction.trim()) {
-                    handleSendMessage(userInstruction);
-                  }
+                  if (e.key === 'Enter') submitInput();
+                  if (e.key === 'Escape') { setActiveTool(null); setShowToolsMenu(false); }
                 }}
               />
 
@@ -696,7 +802,7 @@ export default function AgentDashboard() {
 
               <button
                 disabled={!userInstruction.trim() || isProcessing}
-                onClick={() => handleSendMessage(userInstruction)}
+                onClick={submitInput}
                 className="p-2 bg-[#D4AF37] text-black rounded-lg disabled:opacity-50 hover:bg-[#B8962D] transition-colors"
               >
                 {isProcessing ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
@@ -935,6 +1041,11 @@ export default function AgentDashboard() {
               </div>
             ))}
           </div>
+        )}
+
+        {/* Tab: Connecteurs */}
+        {activeTab === 'connectors' && (
+          <ConnectorsPanel onUseTool={(id) => { if (id in TOOL_META) { pickTool(id as CoworkTool); window.scrollTo({ top: 0, behavior: 'smooth' }); } }} />
         )}
 
         {/* Tab: Config */}
