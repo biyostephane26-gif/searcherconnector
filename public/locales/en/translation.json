@@ -21,9 +21,9 @@
   "nav": {
     "home": "Home",
     "opportunities": "Opportunities",
-    "agent": "Agent Searcher",
+    "agent": "SCAI Cowork",
     "opportunityCreator": "Create Offer",
-    "cowork": "Cowork",
+    "cowork": "Inbox",
     "interviews": "Interviews",
     "social": "Social",
     "articles": "Articles",
@@ -67,7 +67,7 @@
     "applyManually": "I'll apply myself"
   },
   "scai": {
-    "title": "Agent Searcher",
+    "title": "SCAI Cowork",
     "greeting": "Hello! I'm SCAI, your personal career assistant.",
     "placeholder": "Ask me a question or tell me to find opportunities...",
     "voice": "Use voice",

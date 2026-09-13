@@ -574,10 +574,10 @@ export default function Settings() {
             </Card>
           </section>
 
-          {/* ── Agent Searcher ─────────────────────────────────── */}
+          {/* ── SCAI Cowork ─────────────────────────────────── */}
           <section className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
-              <Bot className="w-4 h-4" /> Agent Searcher
+              <Bot className="w-4 h-4" /> SCAI Cowork
             </h3>
             <Card className="p-6 space-y-5">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

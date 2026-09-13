@@ -43,7 +43,6 @@ export default function Opportunities() {
         .eq('user_id', user.id)
         .order('score', { ascending: false })
 
-      if (filter === 'fresh')   query = query.lt('hours_ago', 24)
       if (filter === 'applied') query = query.eq('status', 'ready_to_send')
       if (filter === 'pending') query = query.eq('status', 'pending_action')
 
@@ -61,7 +60,7 @@ export default function Opportunities() {
       setLoading(false)
     }
     fetchOpportunities()
-  }, [user, filter, profile])
+  }, [user, filter === 'applied' || filter === 'pending' ? filter : 'client', profile])
 
   const handleApply = async (id: string) => {
     const opp = opportunities.find(o => o.id === id)
@@ -183,7 +182,9 @@ export default function Opportunities() {
 
   const FILTERS = [
     { key: 'all',      label: 'Toutes' },
+    { key: 'for_you',  label: '🎯 Pour toi' },
     { key: 'fresh',    label: 'Fraîches (<24h)' },
+    { key: 'low_comp', label: '🟢 Faible concurrence' },
     { key: 'applied',  label: 'Auto-postulées' },
     { key: 'pending',  label: 'En attente' },
     { key: 'ats_auto', label: '⚡ Envoi automatique' },
@@ -202,14 +203,49 @@ export default function Opportunities() {
   // atsSubmit.ts pour le détail des raisons).
   const isAtsAuto = (opp: any) => !!detectAtsPlatform(opp.original_url || '')
 
+  // Âge réel en heures. hours_ago est figé au moment du scan : une offre
+  // scannée il y a 3 jours avec hours_ago=2 n'est plus fraîche. On part donc
+  // de published_at, sinon de hours_ago + temps écoulé depuis le scan.
+  const ageHours = (o: any): number => {
+    const now = Date.now()
+    if (o.published_at) {
+      const t = new Date(o.published_at).getTime()
+      if (!isNaN(t)) return Math.max(0, (now - t) / 3_600_000)
+    }
+    const scannedAt = o.created_at ? new Date(o.created_at).getTime() : now
+    const since = isNaN(scannedAt) ? 0 : (now - scannedAt) / 3_600_000
+    return (typeof o.hours_ago === 'number' ? o.hours_ago : Infinity) + since
+  }
+
+  // « Pour toi » : offre recommandée ou score élevé, qui recoupe le domaine
+  // ou les compétences du profil.
+  const profileTerms: string[] = [
+    ...((profile?.domains as string[] | undefined) || []),
+    ...(profile?.domain ? [profile.domain] : []),
+    ...((profile?.skills as string[] | undefined) || []),
+  ].map(t => String(t).toLowerCase().trim()).filter(t => t.length > 2)
+  const isForYou = (o: any) => {
+    if ((o.score || 0) < 60 && !o.recommended) return false
+    if (profileTerms.length === 0) return true
+    const hay = `${o.title || ''} ${o.match_reason || ''} ${o.company || ''}`.toLowerCase()
+    return o.recommended || (o.score || 0) >= 80 || profileTerms.some(t => hay.includes(t))
+  }
+
+  const LOW_COMPETITION_MAX = 15
+  const isLowCompetition = (o: any) =>
+    typeof o.applicants_count === 'number' && o.applicants_count < LOW_COMPETITION_MAX
+
   const filteredByMechanism = opportunities.filter(o => {
     if (filter === 'ats_auto') return isAtsAuto(o)
     if (filter === 'manual')   return !isAtsAuto(o)
+    if (filter === 'fresh')    return ageHours(o) < 24
+    if (filter === 'for_you')  return isForYou(o)
+    if (filter === 'low_comp') return isLowCompetition(o)
     return true
   })
 
   const sortedOpportunities = [...filteredByMechanism].sort((a, b) => {
-    if (sortBy === 'freshest')     return (a.hours_ago ?? Infinity) - (b.hours_ago ?? Infinity)
+    if (sortBy === 'freshest')     return ageHours(a) - ageHours(b)
     if (sortBy === 'highest_paid') return (b.salary_max || 0) - (a.salary_max || 0)
     if (sortBy === 'recommended') {
       if (!!b.recommended !== !!a.recommended) return b.recommended ? 1 : -1
@@ -275,6 +311,17 @@ export default function Opportunities() {
               <div className="text-center py-20 text-gray-600">
                 <div className="w-8 h-8 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
                 Chargement...
+              </div>
+            ) : opportunities.length > 0 && sortedOpportunities.length === 0 ? (
+              <div className="text-center py-16 bg-[#111111] rounded-3xl border border-dashed border-[#2a2a2a]">
+                <Search className="w-10 h-10 text-gray-700 mx-auto mb-3" />
+                <h3 className="text-base font-bold text-gray-400 mb-1">Aucune offre pour ce filtre.</h3>
+                <p className="text-sm text-gray-600 mb-5">
+                  {filter === 'low_comp' && 'Peu de plateformes affichent le nombre de postulants — relance un scan pour en trouver.'}
+                  {filter === 'for_you' && 'Complète ton domaine et tes compétences dans ton profil pour affiner la sélection.'}
+                  {filter === 'fresh' && 'Aucune offre publiée ces dernières 24h — relance un scan.'}
+                </p>
+                <button onClick={() => setFilter('all')} className="text-xs font-bold text-[#D4AF37] hover:underline">Voir toutes les offres</button>
               </div>
             ) : opportunities.length === 0 ? (
               <div className="text-center py-20 bg-[#111111] rounded-3xl border border-dashed border-[#2a2a2a]">

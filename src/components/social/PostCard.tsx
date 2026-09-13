@@ -253,7 +253,7 @@ export default function PostCard({ post, onUpdate }: PostCardProps) {
             </div>
             <button 
               onClick={() => {
-                alert(`Agent Searcher : Analyse de l'opportunité "${extractedOpportunity.title}" en cours...`);
+                alert(`SCAI Cowork : Analyse de l'opportunité "${extractedOpportunity.title}" en cours...`);
                 // Ici on pourrait rediriger vers l'agent avec les données pré-remplies
               }}
               className="w-full mt-3 py-2 bg-[#D4AF37] text-[#0A0A0A] rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-[#F5E6A3] transition-all"

@@ -42,7 +42,7 @@ Après l'installation, pour relancer l'app :
 
 1. L'app tourne sur : http://localhost:3000
 2. Crée ton compte (l'email biyostephane26@gmail.com = accès Genius)
-3. Parle à SCAI dans "Agent Searcher"
+3. Parle à SCAI dans "SCAI Cowork"
 4. Lance ton premier scan
 
 ================================================================

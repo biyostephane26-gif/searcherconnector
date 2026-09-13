@@ -481,7 +481,7 @@ export default function AgentDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="font-syne text-2xl font-bold text-white">Agent Searcher</h1>
+            <h1 className="font-syne text-2xl font-bold text-white">SCAI Cowork</h1>
             <p className="text-sm text-gray-400 mt-1">
               <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
               Actif 24h/24 · {pendingQueue} tâches planifiées

@@ -317,7 +317,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2 text-[10px] font-bold tracking-[0.3em] text-gray-500 uppercase">
                     <span className="inline-flex items-center gap-2">
                       <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                      Agent Searcher
+                      SCAI Cowork
                     </span>
                   </div>
                   <div className="text-lg font-bold text-white">

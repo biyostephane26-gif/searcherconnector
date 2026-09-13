@@ -33,7 +33,7 @@ const STEPS = [
     description: 'SCAI est au cœur de l\'app. C\'est lui qui lance les scans, analyse les résultats et travaille en ton nom. Il pose des questions stratégiques avant chaque scan pour trouver exactement ce que tu cherches.',
     highlight: '[data-tour="agent"]',
     position: 'right',
-    tip: 'Commence par parler à SCAI dans l\'onglet "Agent Searcher"',
+    tip: 'Commence par parler à SCAI dans l\'onglet "SCAI Cowork"',
   },
   {
     id: 'scan',
@@ -90,7 +90,7 @@ const STEPS = [
     id: 'done',
     icon: <CheckCircle className="w-10 h-10 text-green-400" />,
     title: 'C\'est parti 🚀',
-    description: 'Tu as tout ce qu\'il faut. Lance ton premier scan en parlant à SCAI dans "Agent Searcher". Il te posera quelques questions et commencera à travailler pour toi.',
+    description: 'Tu as tout ce qu\'il faut. Lance ton premier scan en parlant à SCAI dans "SCAI Cowork". Il te posera quelques questions et commencera à travailler pour toi.',
     highlight: null,
     position: 'center',
     cta: 'Parler à SCAI maintenant',

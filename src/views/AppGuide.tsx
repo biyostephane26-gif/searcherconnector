@@ -23,7 +23,7 @@ const FEATURES = [
     tagColor: 'text-[#D4AF37] bg-[#D4AF37]/10',
     description: 'SCAI n\'est pas un chatbot. C\'est une entité digitale autonome qui analyse ton profil, pose des questions stratégiques et prend des décisions pour toi. Il parle dans ta langue, comprend tes nuances, et travaille pendant que tu dors.',
     steps: [
-      'Va dans "Agent Searcher" dans le menu',
+      'Va dans "SCAI Cowork" dans le menu',
       'Parle à SCAI — dis-lui ce que tu cherches',
       'Il te pose 3-4 questions stratégiques (zone, type, budget)',
       'Il lance le scan et t\'informe en temps réel',
@@ -399,7 +399,7 @@ export default function AppGuide() {
               {[
                 'Crée ton compte sur searcherconnector.com',
                 'Complète l\'onboarding (domaine, pays, type de profil)',
-                'Ouvre "Agent Searcher" et parle à SCAI',
+                'Ouvre "SCAI Cowork" et parle à SCAI',
                 'SCAI te pose 3 questions → lance le scan',
                 'Consulte tes résultats dans "Opportunités"',
                 'Postule ou laisse SCAI le faire pour toi',
