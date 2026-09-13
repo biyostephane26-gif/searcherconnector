@@ -66,7 +66,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className={inter.variable}>
+    <html lang="fr" className={inter.variable} suppressHydrationWarning>
+      <head>
+        {/* Thème par défaut : clair turquoise + or. Le mode sombre est appliqué
+            avant l'affichage pour éviter un flash de couleur. */}
+        <script dangerouslySetInnerHTML={{ __html: "try{if(localStorage.getItem('sc_theme')==='dark')document.documentElement.classList.add('dark-mode')}catch(e){}" }} />
+      </head>
       <body className={inter.className}>
         <Providers>{children}</Providers>
         <InstallBanner />

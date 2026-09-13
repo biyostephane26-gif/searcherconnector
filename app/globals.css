@@ -2,102 +2,206 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Mode sombre (défaut) ─────────────────────────────────── */
+/* =================================================================
+   THÈMES
+   - Par défaut : clair, bleu turquoise + or
+   - html.dark-mode : le thème sombre historique (noir + or), inchangé
+   Les composants utilisent des couleurs Tailwind codées en dur
+   (bg-[#0A0A0A], text-[#D4AF37]…) pensées pour le sombre. Le thème clair
+   les remappe ci-dessous ; en mode sombre aucune règle ne s'applique,
+   donc le rendu reste exactement celui d'origine.
+   ================================================================= */
+
 :root {
-  --bg-primary:    #0A0A0A;
-  --bg-secondary:  #111111;
-  --bg-card:       #0D0D0D;
-  --bg-border:     #1A1A1A;
-  --bg-border-2:   #2a2a2a;
-  --text-primary:  #ffffff;
-  --text-secondary:#9ca3af;
-  --text-muted:    #6b7280;
-  --gold:          #D4AF37;
-  --gold-light:    #F5E6A3;
+  --bg-primary:      #F2F9F9;
+  --bg-secondary:    #FFFFFF;
+  --bg-card:         #FFFFFF;
+  --bg-elevated:     #E7F4F4;
+  --bg-border:       #D3E9E8;
+  --bg-border-2:     #BCDDDB;
+  --text-primary:    #0B2B30;
+  --text-secondary:  #3B5C61;
+  --text-muted:      #5F7C81;
+  --turquoise:       #0E9F9A;
+  --turquoise-deep:  #0B7F7B;
+  --turquoise-dark:  #09625F;
+  --turquoise-soft:  #D8F1F0;
+  --gold:            #D4AF37;
+  --gold-light:      #F5E6A3;
+  --gold-text:       #946F0E;
+  --gold-soft:       #FBF2D8;
+  --scroll-thumb:    linear-gradient(180deg, #14B8B2 0%, #0B7F7B 100%);
+  --scroll-thumb-hover: linear-gradient(180deg, #D4AF37 0%, #B8962D 100%);
+  --scroll-color:    #0E9F9A;
 }
 
-/* ── Mode clair ───────────────────────────────────────────── */
-html.light-mode {
-  --bg-primary:    #ffffff;
-  --bg-secondary:  #f8f9fa;
-  --bg-card:       #ffffff;
-  --bg-border:     #e9ecef;
-  --bg-border-2:   #dee2e6;
-  --text-primary:  #212529;
-  --text-secondary:#495057;
-  --text-muted:    #6c757d;
-  --gold:          #d4af37;
-  --gold-light:    #f5e6a3;
+html.dark-mode {
+  --bg-primary:      #0A0A0A;
+  --bg-secondary:    #111111;
+  --bg-card:         #0D0D0D;
+  --bg-elevated:     #1A1A1A;
+  --bg-border:       #1A1A1A;
+  --bg-border-2:     #2a2a2a;
+  --text-primary:    #ffffff;
+  --text-secondary:  #9ca3af;
+  --text-muted:      #6b7280;
+  --gold:            #D4AF37;
+  --gold-light:      #F5E6A3;
+  --scroll-thumb:    linear-gradient(180deg, #D4AF37 0%, #B8962D 100%);
+  --scroll-thumb-hover: linear-gradient(180deg, #F5E6A3 0%, #D4AF37 100%);
+  --scroll-color:    #D4AF37;
+  color-scheme: dark;
 }
 
-/* Light mode overrides — composants clés
-   Liste élargie à partir d'un comptage réel des classes Tailwind à valeur
-   arbitraire utilisées dans le code (`grep` sur bg/border/text-[#...]) —
-   avant, seules ~13 classes exactes étaient couvertes alors que le code
-   en utilise des dizaines (y compris des variantes de CASSE différentes :
-   #1A1A1A ≠ #1a1a1a en tant que nom de classe littéral, et chaque variante
-   d'opacité comme /20 /30 /50 est aussi une classe séparée). Résultat
-   avant ce correctif : une partie de l'interface passait en clair, le
-   reste restait sombre — d'où l'aspect "bizarre" signalé. */
-html.light-mode body                                   { background-color: var(--bg-primary); color: var(--text-primary); }
+html:not(.dark-mode) { color-scheme: light; }
 
-/* Fonds sombres → clairs (toutes casses + variantes) */
-html.light-mode .bg-\[\#0A0A0A\]                      { background-color: var(--bg-primary) !important; }
-html.light-mode .bg-\[\#0A0A0A\]\/50                  { background-color: color-mix(in srgb, var(--bg-primary) 50%, transparent) !important; }
-html.light-mode .bg-\[\#0A0A0A\]\/80                  { background-color: color-mix(in srgb, var(--bg-primary) 80%, transparent) !important; }
-html.light-mode .bg-\[\#0D0D0D\]                      { background-color: var(--bg-card) !important; }
-html.light-mode .bg-\[\#0f0f0f\]                       { background-color: var(--bg-card) !important; }
-html.light-mode .bg-\[\#111111\]                       { background-color: var(--bg-secondary) !important; }
-html.light-mode .bg-\[\#111111\]\/30                  { background-color: color-mix(in srgb, var(--bg-secondary) 30%, transparent) !important; }
-html.light-mode .bg-\[\#111\]                          { background-color: var(--bg-secondary) !important; }
-html.light-mode .bg-\[\#1A1A1A\],
-html.light-mode .bg-\[\#1a1a1a\],
-html.light-mode .bg-\[\#2A2A2A\],
-html.light-mode .bg-\[\#2a2a2a\]                       { background-color: var(--bg-border) !important; }
+/* ── Surfaces ─────────────────────────────────────────────────── */
+html:not(.dark-mode) body                                  { background-color: var(--bg-primary); color: var(--text-primary); }
+html:not(.dark-mode) .bg-black,
+html:not(.dark-mode) .bg-\[\#0A0A0A\],
+html:not(.dark-mode) .bg-gray-900                          { background-color: var(--bg-primary) !important; }
+html:not(.dark-mode) .bg-\[\#0A0A0A\]\/50,
+html:not(.dark-mode) .bg-\[\#0A0A0A\]\/80                  { background-color: color-mix(in srgb, var(--bg-primary) 85%, transparent) !important; }
+html:not(.dark-mode) .bg-\[\#0D0D0D\],
+html:not(.dark-mode) .bg-\[\#0f0f0f\],
+html:not(.dark-mode) .bg-\[\#111111\],
+html:not(.dark-mode) .bg-\[\#111\]                         { background-color: var(--bg-card) !important; }
+html:not(.dark-mode) .bg-\[\#111111\]\/30                  { background-color: color-mix(in srgb, var(--bg-card) 60%, transparent) !important; }
+html:not(.dark-mode) .bg-\[\#1A1A1A\],
+html:not(.dark-mode) .bg-\[\#1a1a1a\],
+html:not(.dark-mode) .bg-\[\#2A2A2A\],
+html:not(.dark-mode) .bg-\[\#2a2a2a\],
+html:not(.dark-mode) .bg-gray-800,
+html:not(.dark-mode) .bg-gray-700                          { background-color: var(--bg-elevated) !important; }
+html:not(.dark-mode) .bg-\[\#1A1A1A\]\/50                  { background-color: color-mix(in srgb, var(--bg-elevated) 60%, transparent) !important; }
+html:not(.dark-mode) .bg-black\/20,
+html:not(.dark-mode) .bg-black\/30,
+html:not(.dark-mode) .bg-black\/40                         { background-color: rgba(11, 127, 123, 0.06) !important; }
+html:not(.dark-mode) .hover\:bg-\[\#1A1A1A\]:hover,
+html:not(.dark-mode) .hover\:bg-\[\#2A2A2A\]:hover,
+html:not(.dark-mode) .hover\:bg-\[\#111\]:hover            { background-color: var(--turquoise-soft) !important; }
 
-/* Bordures sombres → claires (toutes casses + variantes) */
-html.light-mode .border-\[\#1A1A1A\]                  { border-color: var(--bg-border) !important; }
-html.light-mode .border-\[\#2a2a2a\],
-html.light-mode .border-\[\#2A2A2A\]                  { border-color: var(--bg-border-2) !important; }
-html.light-mode .border-\[\#222222\]                  { border-color: var(--bg-border-2) !important; }
-html.light-mode .border-\[\#444\]                      { border-color: var(--bg-border-2) !important; }
-html.light-mode .border-\[\#0A0A0A\]                  { border-color: var(--bg-border) !important; }
+/* Dégradés sombres des cartes → dégradés clairs */
+html:not(.dark-mode) .from-\[\#111111\],
+html:not(.dark-mode) .from-\[\#1A1A1A\],
+html:not(.dark-mode) .from-\[\#0A0A0A\]                    { --tw-gradient-from: var(--bg-card) var(--tw-gradient-from-position) !important; --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+html:not(.dark-mode) .from-\[\#1A1500\],
+html:not(.dark-mode) .from-\[\#1A1500\]\/80                { --tw-gradient-from: var(--gold-soft) var(--tw-gradient-from-position) !important; --tw-gradient-to: rgb(251 242 216 / 0) var(--tw-gradient-to-position) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+html:not(.dark-mode) .to-\[\#0D0D0D\],
+html:not(.dark-mode) .to-\[\#0d0d0d\],
+html:not(.dark-mode) .to-\[\#0A0A0A\]                      { --tw-gradient-to: var(--turquoise-soft) var(--tw-gradient-to-position) !important; }
+html:not(.dark-mode) .via-\[\#0A0A0A\]\/80                 { --tw-gradient-to: rgb(242 249 249 / 0) var(--tw-gradient-to-position) !important; --tw-gradient-stops: var(--tw-gradient-from), color-mix(in srgb, var(--bg-primary) 80%, transparent) var(--tw-gradient-via-position), var(--tw-gradient-to) !important; }
+html:not(.dark-mode) .to-\[\#1A1500\]                      { --tw-gradient-to: var(--gold-soft) var(--tw-gradient-to-position) !important; }
 
-/* Textes clairs (blanc/gris) → foncés en mode clair */
-html.light-mode .text-white                            { color: var(--text-primary) !important; }
-html.light-mode .text-gray-400                         { color: var(--text-secondary) !important; }
-html.light-mode .text-gray-500                         { color: var(--text-muted) !important; }
-html.light-mode .text-gray-600,
-html.light-mode .text-gray-700                         { color: var(--text-muted) !important; }
-html.light-mode .text-\[\#444444\],
-html.light-mode .text-\[\#888888\],
-html.light-mode .text-\[\#333333\]                    { color: var(--text-muted) !important; }
+/* ── Bordures ─────────────────────────────────────────────────── */
+html:not(.dark-mode) .border-\[\#1A1A1A\],
+html:not(.dark-mode) .border-\[\#0A0A0A\],
+html:not(.dark-mode) .border-\[\#0D0D0D\],
+html:not(.dark-mode) .border-\[\#0f0f0f\],
+html:not(.dark-mode) .border-gray-800                      { border-color: var(--bg-border) !important; }
+html:not(.dark-mode) .border-\[\#2a2a2a\],
+html:not(.dark-mode) .border-\[\#2A2A2A\],
+html:not(.dark-mode) .border-\[\#222222\],
+html:not(.dark-mode) .border-\[\#444\],
+html:not(.dark-mode) .border-gray-700,
+html:not(.dark-mode) .border-gray-600,
+html:not(.dark-mode) .border-gray-500                      { border-color: var(--bg-border-2) !important; }
+html:not(.dark-mode) .hover\:border-\[\#2a2a2a\]:hover,
+html:not(.dark-mode) .hover\:border-\[\#D4AF37\]\/30:hover { border-color: var(--turquoise) !important; }
 
-/* Accent doré — reste doré dans les deux thèmes, juste la variable qui change */
-html.light-mode .text-\[\#D4AF37\]                    { color: var(--gold) !important; }
-html.light-mode .text-\[\#D4AF37\]\/40,
-html.light-mode .text-\[\#D4AF37\]\/50,
-html.light-mode .text-\[\#D4AF37\]\/60,
-html.light-mode .text-\[\#D4AF37\]\/80                { color: var(--gold) !important; }
-html.light-mode .bg-\[\#D4AF37\]                      { background-color: var(--gold) !important; }
-html.light-mode .bg-\[\#D4AF37\]\/10,
-html.light-mode .bg-\[\#D4AF37\]\/20                  { background-color: rgba(212,175,55,0.12) !important; }
-html.light-mode .border-\[\#D4AF37\]                  { border-color: var(--gold) !important; }
-html.light-mode .border-\[\#D4AF37\]\/20,
-html.light-mode .border-\[\#D4AF37\]\/30,
-html.light-mode .border-\[\#D4AF37\]\/40,
-html.light-mode .border-\[\#D4AF37\]\/50              { border-color: rgba(212,175,55,0.35) !important; }
-/* Texte foncé sur fond doré (boutons) : contraste déjà correct, inchangé */
-html.light-mode .text-\[\#0A0A0A\]                    { color: #0A0A0A !important; }
-html.light-mode .bg-\[\#F5E6A3\],
-html.light-mode .text-\[\#F5E6A3\],
-html.light-mode .bg-\[\#B8962D\]                       { background-color: #f5e6a3; }
+/* ── Textes ───────────────────────────────────────────────────── */
+html:not(.dark-mode) .text-white,
+html:not(.dark-mode) .text-gray-200,
+html:not(.dark-mode) .text-\[\#1A1A1A\],
+html:not(.dark-mode) .text-\[\#1a1a1a\]                    { color: var(--text-primary) !important; }
+html:not(.dark-mode) .text-gray-300,
+html:not(.dark-mode) .text-gray-400                        { color: var(--text-secondary) !important; }
+html:not(.dark-mode) .text-gray-500,
+html:not(.dark-mode) .text-gray-600,
+html:not(.dark-mode) .text-\[\#888888\]                    { color: var(--text-muted) !important; }
+html:not(.dark-mode) .text-gray-700,
+html:not(.dark-mode) .text-gray-800,
+html:not(.dark-mode) .text-\[\#444444\],
+html:not(.dark-mode) .text-\[\#333333\]                    { color: #8AA3A7 !important; }
+html:not(.dark-mode) .placeholder-gray-500::placeholder,
+html:not(.dark-mode) .placeholder-gray-600::placeholder    { color: #8AA3A7 !important; }
+html:not(.dark-mode) .hover\:text-white:hover              { color: var(--turquoise-deep) !important; }
 
-html.light-mode .bg-\[\#1A1500\]                      { background-color: #fef9e7 !important; }
-html.light-mode .bg-\[\#1A1500\]\/20                  { background-color: rgba(254,249,231,0.6) !important; }
+/* ── Accent or → or foncé lisible sur fond clair ──────────────── */
+html:not(.dark-mode) .text-\[\#D4AF37\],
+html:not(.dark-mode) .text-\[\#D4AF37\]\/80,
+html:not(.dark-mode) .text-\[\#D4AF37\]\/60,
+html:not(.dark-mode) .text-\[\#D4AF37\]\/50,
+html:not(.dark-mode) .text-\[\#D4AF37\]\/40,
+html:not(.dark-mode) .text-\[\#F5E6A3\],
+html:not(.dark-mode) .hover\:text-\[\#D4AF37\]:hover       { color: var(--gold-text) !important; }
+html:not(.dark-mode) .text-\[\#D4AF37\]\/20                { color: rgba(148, 111, 14, 0.35) !important; }
+html:not(.dark-mode) .bg-\[\#D4AF37\]\/10,
+html:not(.dark-mode) .bg-\[\#D4AF37\]\/15,
+html:not(.dark-mode) .bg-\[\#D4AF37\]\/20,
+html:not(.dark-mode) .bg-\[\#1A1500\],
+html:not(.dark-mode) .bg-\[\#1A1500\]\/20,
+html:not(.dark-mode) .bg-\[\#1A1500\]\/60                  { background-color: var(--gold-soft) !important; }
+html:not(.dark-mode) .ring-\[\#1A1500\]                    { --tw-ring-color: var(--gold-soft) !important; }
 
-html.light-mode nav                                    { background-color: rgba(255,255,255,0.95) !important; border-color: var(--bg-border) !important; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-html.light-mode aside                                  { background-color: var(--bg-card) !important; border-color: var(--bg-border) !important; box-shadow: 1px 0 3px rgba(0,0,0,0.05); }
+/* ── Actions principales → turquoise (texte blanc) ─────────────── */
+html:not(.dark-mode) .bg-\[\#D4AF37\],
+html:not(.dark-mode) .bg-\[\#D4AF37\]\/70,
+html:not(.dark-mode) .bg-\[\#D4AF37\]\/50                  { background-color: var(--turquoise-deep) !important; }
+html:not(.dark-mode) .bg-\[\#D4AF37\]\/30,
+html:not(.dark-mode) .bg-\[\#D4AF37\]\/40                  { background-color: rgba(14, 159, 154, 0.3) !important; }
+html:not(.dark-mode) .hover\:bg-\[\#B8962D\]:hover,
+html:not(.dark-mode) .hover\:bg-\[\#e0bd4f\]:hover,
+html:not(.dark-mode) .hover\:bg-\[\#F5E6A3\]:hover,
+html:not(.dark-mode) .bg-\[\#B8962D\],
+html:not(.dark-mode) .bg-\[\#e0bd4f\]                      { background-color: var(--turquoise-dark) !important; }
+html:not(.dark-mode) .bg-\[\#F5E6A3\]                      { background-color: var(--gold-light) !important; }
+html:not(.dark-mode) .bg-\[\#D4AF37\].text-black,
+html:not(.dark-mode) .bg-\[\#D4AF37\].text-\[\#0A0A0A\],
+html:not(.dark-mode) .bg-\[\#D4AF37\] .text-black,
+html:not(.dark-mode) .bg-\[\#D4AF37\] .text-\[\#0A0A0A\]   { color: #FFFFFF !important; }
+html:not(.dark-mode) .text-\[\#0A0A0A\]\/50                { color: rgba(255, 255, 255, 0.7) !important; }
+html:not(.dark-mode) .border-\[\#D4AF37\]                  { border-color: var(--turquoise) !important; }
+html:not(.dark-mode) .border-\[\#D4AF37\]\/20,
+html:not(.dark-mode) .border-\[\#D4AF37\]\/30,
+html:not(.dark-mode) .border-\[\#D4AF37\]\/40,
+html:not(.dark-mode) .border-\[\#D4AF37\]\/50,
+html:not(.dark-mode) .border-\[\#D4AF37\]\/60              { border-color: rgba(14, 159, 154, 0.35) !important; }
+html:not(.dark-mode) .focus\:border-\[\#D4AF37\]:focus,
+html:not(.dark-mode) .focus-within\:border-\[\#D4AF37\]:focus-within,
+html:not(.dark-mode) .focus\:border-\[\#D4AF37\]\/60:focus { border-color: var(--turquoise) !important; }
+html:not(.dark-mode) .accent-\[\#D4AF37\]                  { accent-color: var(--turquoise-deep) !important; }
+
+/* ── Navigation ───────────────────────────────────────────────── */
+html:not(.dark-mode) nav                                   { background-color: rgba(255, 255, 255, 0.92) !important; border-color: var(--bg-border) !important; box-shadow: 0 1px 0 var(--bg-border), 0 4px 16px rgba(11, 127, 123, 0.06); }
+html:not(.dark-mode) aside                                 { background-color: var(--bg-card) !important; border-color: var(--bg-border) !important; box-shadow: 1px 0 0 var(--bg-border); }
+
+/* Cartes : légère ombre pour détacher le blanc du fond turquoise pâle */
+html:not(.dark-mode) .rounded-2xl.bg-\[\#111111\],
+html:not(.dark-mode) .rounded-xl.bg-\[\#111111\],
+html:not(.dark-mode) .rounded-2xl.bg-\[\#0D0D0D\],
+html:not(.dark-mode) .rounded-3xl.bg-\[\#111111\]          { box-shadow: 0 1px 2px rgba(11, 43, 48, 0.04), 0 4px 14px rgba(11, 127, 123, 0.05); }
+
+/* Prose (markdown) */
+html:not(.dark-mode) .prose-invert                         { --tw-prose-body: var(--text-primary); --tw-prose-headings: var(--text-primary); --tw-prose-bold: var(--text-primary); --tw-prose-links: var(--turquoise-deep); --tw-prose-bullets: var(--turquoise); --tw-prose-code: var(--text-primary); --tw-prose-quotes: var(--text-secondary); }
+
+/* Texte blanc volontaire sur fonds colorés (badges, boutons d'état) */
+html:not(.dark-mode) [class*="bg-red-5"].text-white,
+html:not(.dark-mode) [class*="bg-red-6"].text-white,
+html:not(.dark-mode) [class*="bg-green-5"].text-white,
+html:not(.dark-mode) [class*="bg-green-6"].text-white,
+html:not(.dark-mode) [class*="bg-emerald-5"].text-white,
+html:not(.dark-mode) [class*="bg-emerald-6"].text-white,
+html:not(.dark-mode) [class*="bg-blue-5"].text-white,
+html:not(.dark-mode) [class*="bg-blue-6"].text-white,
+html:not(.dark-mode) [class*="bg-purple-5"].text-white,
+html:not(.dark-mode) [class*="bg-purple-6"].text-white,
+html:not(.dark-mode) [class*="bg-indigo-5"].text-white,
+html:not(.dark-mode) [class*="bg-indigo-6"].text-white,
+html:not(.dark-mode) [class*="bg-orange-5"].text-white,
+html:not(.dark-mode) [class*="bg-pink-5"].text-white,
+html:not(.dark-mode) [class*="bg-\[\#25D366\]"].text-white,
+html:not(.dark-mode) [class*="bg-\[\#0A66C2\]"].text-white { color: #FFFFFF !important; }
 
 body {
   background-color: var(--bg-primary);
@@ -110,7 +214,7 @@ body {
   padding-top: 64px;
 }
 
-/* Scrollbar stylée dorée */
+/* Scrollbar aux couleurs du thème */
 ::-webkit-scrollbar {
   width: 12px;
 }
@@ -121,19 +225,19 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #D4AF37 0%, #B8962D 100%);
+  background: var(--scroll-thumb);
   border-radius: 6px;
   border: 2px solid var(--bg-primary);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #F5E6A3 0%, #D4AF37 100%);
+  background: var(--scroll-thumb-hover);
 }
 
 /* Pour Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #D4AF37 var(--bg-primary);
+  scrollbar-color: var(--scroll-color) var(--bg-primary);
 }
 
 .glow-gold {

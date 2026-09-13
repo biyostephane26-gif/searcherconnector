@@ -121,23 +121,22 @@ export default function Settings() {
   }, [profile])
 
   // Préférences UI
-  const [lightMode, setLightMode]       = useState(false)
+  const [darkMode, setDarkMode]         = useState(false)
   const [scaiLearning, setScaiLearning] = useState(true)
 
   // Charger les préférences depuis localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('sc_light_mode') === 'true'
-    setLightMode(saved)
-    // Appliquer immédiatement au rechargement de la page
-    document.documentElement.classList.toggle('light-mode', saved)
+    // Thème par défaut : clair (turquoise + or). 'dark' = thème sombre historique.
+    const saved = localStorage.getItem('sc_theme') === 'dark'
+    setDarkMode(saved)
+    document.documentElement.classList.toggle('dark-mode', saved)
     setScaiLearning(localStorage.getItem('sc_scai_learning') !== 'false')
   }, [])
 
-  const toggleLightMode = (val: boolean) => {
-    setLightMode(val)
-    localStorage.setItem('sc_light_mode', String(val))
-    // Basculer la classe sur <html> — les variables CSS font le reste
-    document.documentElement.classList.toggle('light-mode', val)
+  const toggleDarkMode = (val: boolean) => {
+    setDarkMode(val)
+    localStorage.setItem('sc_theme', val ? 'dark' : 'light')
+    document.documentElement.classList.toggle('dark-mode', val)
   }
 
   const toggleScaiLearning = async (val: boolean) => {
@@ -437,13 +436,13 @@ export default function Settings() {
             <Card className="p-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  {lightMode ? <Sun className="w-5 h-5 text-[#D4AF37]" /> : <Moon className="w-5 h-5 text-gray-500" />}
+                  {darkMode ? <Moon className="w-5 h-5 text-[#D4AF37]" /> : <Sun className="w-5 h-5 text-[#D4AF37]" />}
                   <div>
-                    <div className="font-medium text-white text-sm">{lightMode ? 'Mode clair' : 'Mode sombre'}</div>
-                    <p className="text-xs text-gray-600">Basculer entre fond noir et fond blanc</p>
+                    <div className="font-medium text-white text-sm">{darkMode ? 'Mode sombre' : 'Mode clair (turquoise & or)'}</div>
+                    <p className="text-xs text-gray-600">Active le mode sombre (noir &amp; or)</p>
                   </div>
                 </div>
-                <Toggle value={lightMode} onChange={toggleLightMode} />
+                <Toggle value={darkMode} onChange={toggleDarkMode} />
               </div>
             </Card>
           </section>
