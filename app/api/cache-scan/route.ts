@@ -19,6 +19,7 @@ import { normalizeMissionKey, evaluateMissionFreshness, CAP_SC_PAR_INSTANCE } fr
 import { isPaidPlan } from '../../../src/lib/planUtils'
 import { scrapeLinkedIn, scrapeUpwork, scrapeTwitter, HAS_HUMANIST_SCRAPERS } from '../../../src/lib/scraper/humanist'
 import { sendOpportunityAlert } from '../../../src/lib/email'
+import { generateJson } from '../../../src/lib/server/aiText'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -247,14 +248,14 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
   // la colonne pour que le cœur du produit survive à une migration manquante.
   let { data: users, error: usersError } = await supabase
     .from('users_profiles')
-    .select('id, domain, domains, plan, profile_type, email, full_name, skill_level, role')
+    .select('id, domain, domains, plan, profile_type, email, full_name, skill_level, skills, role')
     .not('domain', 'is', null)
 
   if (usersError) {
     console.warn('[cache-scan] select users avec skill_level échoué (migration manquante ?) — retry sans:', usersError.message)
     const retry = await supabase
       .from('users_profiles')
-      .select('id, domain, domains, plan, profile_type, email, full_name, role')
+      .select('id, domain, domains, plan, profile_type, email, full_name, skills, role')
       .not('domain', 'is', null)
     users = retry.data as any
   }
@@ -412,7 +413,15 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
         recommended:      levelMatch.recommended,
       })
 
-      if (score >= 85) {
+      // Seuil de NOTIFICATION (pas d'affichage — l'offre reste visible dans
+      // la liste dès score>0) volontairement plus strict que le seuil
+      // d'insertion : un score élevé obtenu par un SEUL mot-clé + un gros
+      // boost fraîcheur ne suffit plus — il faut au moins 2 mots-clés du
+      // domaine, ET aucun signal négatif de niveau ou de type. Objectif :
+      // l'utilisateur n'est dérangé (notif + email) que pour du vrai fort
+      // potentiel, pas pour une coïncidence de mots-clés sur une offre fraîche.
+      const strongSignal = hits >= 2 && levelMatch.boost >= 0 && typeDelta >= 0
+      if (score >= 85 && strongSignal) {
         notified++
         notificationRows.push({
           user_id:         u.id,
@@ -432,6 +441,7 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
           alertsByUser.get(u.id)!.opportunities.push({
             title: item.title, score, source: item.source_platform,
             hours_ago: Math.round(hoursAgo), url: item.original_url,
+            company: item.company || null,
           })
         }
 
@@ -489,15 +499,68 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
     }
   }
 
+  // ── Double vérification IA avant de déranger l'utilisateur ─────────
+  // Le seuil numérique (score>=85, ≥2 mots-clés, niveau/type non négatifs)
+  // filtre déjà le gros du bruit, mais reste un algorithme de mots-clés :
+  // il ne "comprend" pas qu'une offre "Data Analyst - Excel avancé" ne
+  // convient pas vraiment à un "Data Engineer - pipelines Spark". Un
+  // groupe restreint (≤12) de candidats à la notification, DÉJÀ filtrés
+  // par le seuil numérique, passe par UN appel Groq par utilisateur —
+  // jamais un appel par offre — qui ne peut que RETIRER des candidats,
+  // jamais en ajouter. Si l'IA échoue ou timeout, on notifie quand même
+  // sur la seule base du seuil numérique : jamais de notification perdue
+  // à cause d'un aléa IA.
+  const usersById = new Map(users.map((u: any) => [u.id, u]))
+  await Promise.all(Array.from(alertsByUser.entries()).map(async ([userId, alert]) => {
+    if (alert.opportunities.length === 0) return
+    const u: any = usersById.get(userId)
+    const domain = u?.domain || (u?.domains || [])[0] || ''
+    const skills = Array.isArray(u?.skills) ? u.skills.join(', ') : ''
+    try {
+      const kept = await Promise.race([
+        generateJson<{ keep: string[] }>(
+`Tu es un filtre de pertinence strict pour un profil freelance/emploi.
+Profil : domaine "${domain}"${skills ? `, compétences : ${skills}` : ''}.
+Voici des offres jugées "fort potentiel" par un algorithme de mots-clés — certaines peuvent être hors-sujet malgré le mot-clé partagé.
+Réponds UNIQUEMENT en JSON : {"keep": string[]} avec les titres EXACTS (recopiés tels quels) des offres réellement pertinentes pour CE profil précis. Retire toute offre hors-sujet, dans une autre spécialité, ou trop générique pour ce profil.
+
+Offres :
+${alert.opportunities.map((o: any, i: number) => `${i + 1}. "${o.title}"${o.company ? ' — ' + o.company : ''}`).join('\n')}`,
+          v => Array.isArray(v?.keep),
+          { maxTokens: 500 },
+        ),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout filtre IA')), 8000)),
+      ])
+      const keepTitles = new Set(kept.keep.map(t => t.trim().toLowerCase()))
+      if (keepTitles.size > 0) {
+        alert.opportunities = alert.opportunities.filter((o: any) => keepTitles.has(o.title.trim().toLowerCase()))
+      }
+      // keepTitles vide → réponse IA inexploitable, on ne filtre rien (fail-open).
+    } catch (e: any) {
+      console.warn('[cache-scan] filtre IA notifications ignoré (fail-open):', e.message)
+    }
+  }))
+
+  // Les notifications en base suivent le même filtre — par URL d'offre,
+  // seule clé stable commune aux deux structures.
+  const survivingUrlsByUser = new Map(
+    Array.from(alertsByUser.entries()).map(([userId, alert]) => [userId, new Set(alert.opportunities.map((o: any) => o.url))])
+  )
+  const filteredNotificationRows = notificationRows.filter(row => {
+    const urls = survivingUrlsByUser.get(row.user_id)
+    return !urls || urls.has(row.action_url) // pas d'email pour cet user → pas de filtre IA appliqué, on garde
+  })
+
   // ── Email groupé pour les matchs à fort potentiel ─────────────────
   // Non-bloquant : un échec d'envoi ne doit jamais faire échouer le scan.
   for (const alert of alertsByUser.values()) {
+    if (alert.opportunities.length === 0) continue
     sendOpportunityAlert(alert).catch(e => console.warn('[cache-scan] email alert failed:', e.message))
   }
-  if (notificationRows.length > 0) {
-    const { error } = await supabase.from('notifications').insert(notificationRows)
+  if (filteredNotificationRows.length > 0) {
+    const { error } = await supabase.from('notifications').insert(filteredNotificationRows)
     if (error) console.warn('[cache-scan] insert notifications failed:', error.message)
   }
 
-  return { matched, notified }
+  return { matched, notified: filteredNotificationRows.length }
 }

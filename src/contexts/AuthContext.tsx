@@ -83,6 +83,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  // Synchronisation temps réel : tout changement de la ligne (webhook de
+  // paiement qui active un plan, le fondateur qui modifie un statut, une
+  // autre session/onglet) se répercute immédiatement, sans attendre un
+  // refreshProfile() manuel ni un rechargement de page.
+  useEffect(() => {
+    if (!user) return
+    const channel = supabase
+      .channel(`profile-sync-${user.id}`)
+      .on('postgres_changes', {
+        event: 'UPDATE', schema: 'public', table: 'users_profiles', filter: `id=eq.${user.id}`,
+      }, (payload) => setProfile(payload.new as Profile))
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [user?.id])
+
   async function signUp(email: string, password: string) {
     const result = await supabase.auth.signUp({ email, password })
     

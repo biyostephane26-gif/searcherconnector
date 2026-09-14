@@ -1,4 +1,5 @@
 import Groq from 'groq-sdk';
+import { getCareerLevel } from './careerLevel';
 
 // ═══════════════════════════════════════════════════════════════
 // CHARGEMENT DES CLÉS
@@ -198,6 +199,7 @@ export function genererSystemPrompt(userId: string, userProfile: any = {}) {
     || founderEmails.includes((userProfile.email || '').toLowerCase());
 
   const nom         = userProfile.full_name    || null;
+  const prenom      = nom ? nom.trim().split(/\s+/)[0] : null;
   const domain      = userProfile.domain       || null;
   const profileType = userProfile.profile_type || null;
   const country     = userProfile.country      || null;
@@ -206,6 +208,19 @@ export function genererSystemPrompt(userId: string, userProfile: any = {}) {
   const verif       = userProfile.verification_status || 'pending';
   const bio         = userProfile.bio          || null;
   const portfolio   = userProfile.portfolio_url || userProfile.github_url || userProfile.linkedin_url || null;
+  const skills: string[] = Array.isArray(userProfile.skills) ? userProfile.skills : [];
+  const missions    = userProfile.missions_completed || 0;
+  const career      = getCareerLevel(missions, verif);
+  const opportunitiesCount     = typeof userProfile.opportunitiesCount === 'number' ? userProfile.opportunitiesCount : null;
+  const pendingApplications    = typeof userProfile.pendingApplications === 'number' ? userProfile.pendingApplications : null;
+  const readyToSendCount       = typeof userProfile.readyToSendCount === 'number' ? userProfile.readyToSendCount : null;
+
+  // Heure serveur — utilisée pour que SCAI salue avec "bonjour"/"bonsoir"
+  // au lieu d'un message figé, comme le ferait un vrai collègue.
+  const now = new Date();
+  const heureLocale = now.getUTCHours(); // approximation ; pas de fuseau par profil en base
+  const momentJournee = heureLocale < 5 ? 'nuit' : heureLocale < 12 ? 'matin' : heureLocale < 18 ? 'après-midi' : 'soir';
+  const salutation = momentJournee === 'matin' ? 'Bonjour' : momentJournee === 'nuit' ? 'Bonsoir' : momentJournee === 'soir' ? 'Bonsoir' : 'Bonjour';
   // Le fondateur n'a aucune restriction, quel que soit son `plan` en base.
   const isPaid      = estProprietaire || ['pro', 'premium', 'starter', 'enterprise'].includes(plan);
 
@@ -252,8 +267,10 @@ PHRASES INTERDITES :
 ══════════════════════════════════════════════
 CE QUE SCAI SAIT SUR L'UTILISATEUR EN CE MOMENT
 ══════════════════════════════════════════════
-Nom          : ${nom || '— non renseigné'}
+Nom          : ${nom || '— non renseigné'} (prénom : ${prenom || '?'})
 Domaine      : ${domain || '❌ MANQUANT — à demander avant tout scan'}
+Compétences  : ${skills.length ? skills.join(', ') : '— aucune renseignée'}
+Statut       : ${career.label} (${missions} mission(s) terminée(s))
 Type profil  : ${profileType || '❌ MANQUANT (emploi/freelance)'}
 Pays         : ${country || '❌ MANQUANT — nécessaire pour la zone de scan'}
 Ville        : ${city || '— non renseignée'}
@@ -261,7 +278,15 @@ Plan actuel  : ${plan}${verif === 'genius' ? ' 🔱 GENIUS' : verif === 'verifie
 Bio          : ${bio ? '✅ Présente' : '⚠️ Vide — recommander de la remplir'}
 Portfolio    : ${portfolio ? '✅ Renseigné' : '⚠️ Aucun lien externe'}
 Fréquence    : ${scanFrequency}
+${opportunitiesCount !== null ? `Opportunités en base : ${opportunitiesCount}${pendingApplications ? `, dont ${pendingApplications} en attente d'action` : ''}${readyToSendCount ? `, ${readyToSendCount} prête(s) à envoyer` : ''}` : ''}
 ${profilComplet ? '✅ Profil suffisant pour lancer un scan' : `❌ Profil incomplet — champs manquants : ${missingFields.join(', ')}`}
+
+══════════════════════════════════════════════
+SALUTATION ET MÉMOIRE — RÈGLES STRICTES
+══════════════════════════════════════════════
+- Heure serveur actuelle : il est le ${momentJournee} → si c'est le tout premier message de la conversation (historique vide côté utilisateur), commence par "${salutation} ${prenom || ''}" (naturel, pas mécanique — pas besoin de le répéter à CHAQUE message).
+- Tu as accès à TOUT ce qui précède sur cet utilisateur (nom, domaine, compétences, statut, pays, plan, offres en base) — utilise ces infos pour personnaliser, ne redemande JAMAIS une info déjà listée ci-dessus.
+- Si l'utilisateur te donne une info nouvelle (métier, compétence, ville, préférence) pendant la conversation, considère-la acquise IMMÉDIATEMENT pour le reste de l'échange — elle sera sauvegardée automatiquement dans son profil dès qu'elle est détectée.
 
 ══════════════════════════════════════════════
 CE QU'EST UN SCAN (explique si on te demande)

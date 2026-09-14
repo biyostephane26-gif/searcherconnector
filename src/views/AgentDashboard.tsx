@@ -2,6 +2,7 @@
 
 // v1.0.3 - Added Chat Persistence & Strategic Relevance
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { supabase } from '../lib/supabase';
@@ -63,7 +64,7 @@ const ACTION_ICONS: Record<string, any> = {
 };
 
 export default function AgentDashboard() {
-  const { user, profile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const { scanning, launchScan, getEmailThreads, getSchedule, updateSchedule } = useAgent();
   const { recentActions, pendingQueue } = useAgentRealtime();
   const [activeTab, setActiveTab] = useState<'status' | 'queue' | 'communications' | 'connectors' | 'config'>('status');
@@ -71,13 +72,50 @@ export default function AgentDashboard() {
   const [activeTool, setActiveTool] = useState<CoworkTool | null>(null);
   const [showToolsMenu, setShowToolsMenu] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Ouverture directe depuis la recherche globale ou la page /connectors
+  // (?tab=connectors, ?tool=pdf…) — appliqué une seule fois au montage.
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const tab = searchParams?.get('tab');
+    const tool = searchParams?.get('tool');
+    if (tab === 'connectors') setActiveTab('connectors');
+    if (tool && (Object.keys(TOOL_META) as string[]).includes(tool)) {
+      setActiveTab('status');
+      setActiveTool(tool as CoworkTool);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [queue, setQueue] = useState<any[]>([]);
   const [emails, setEmails] = useState<any[]>([]);
   const [schedule, setSchedule] = useState<any>(null);
   const [scanLog, setScanLog] = useState<string[]>([]);
   const [scanMetrics, setScanMetrics] = useState<{sitesScanned:number; socialNetworksScanned:number; platformsScanned:number; feedsScanned:number; totalSources:number} | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
-  const [userInstruction, setUserInstruction] = useState('');
+  // Brouillon persistant — si l'utilisateur ferme SCAI Cowork (ou change
+  // d'onglet) avant d'envoyer, le texte tapé est restauré à la réouverture,
+  // par utilisateur (clé namespacée), jamais perdu comme un vrai brouillon.
+  const draftKey = user ? `sc_agent_draft_${user.id}` : null;
+  const [userInstruction, setUserInstructionRaw] = useState('');
+  const setUserInstruction = (next: string | ((prev: string) => string)) => {
+    setUserInstructionRaw(prev => {
+      const value = typeof next === 'function' ? (next as (p: string) => string)(prev) : next;
+      if (draftKey) {
+        try { value.trim() ? localStorage.setItem(draftKey, value) : localStorage.removeItem(draftKey) } catch { /* stockage indisponible */ }
+      }
+      return value;
+    });
+  };
+  // Recharge le brouillon dès que `user` est prêt (le lazy init ci-dessus
+  // ne connaît pas encore l'id au tout premier rendu serveur/client).
+  useEffect(() => {
+    if (!draftKey) return;
+    try {
+      const saved = localStorage.getItem(draftKey);
+      if (saved) setUserInstructionRaw(saved);
+    } catch { /* stockage indisponible */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draftKey]);
   const [chatHistory, setChatHistory] = useState<{role: 'agent' | 'user', content: string, thought?: string, showThought?: boolean, attachment?: ToolAttachmentData}[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   
@@ -333,6 +371,9 @@ export default function AgentDashboard() {
 
         if (Object.keys(updates).length > 0) {
           await supabase.from('users_profiles').update(updates).eq('id', user.id);
+          // Répercussion immédiate — ne pas attendre la sync temps réel
+          // (postgres_changes) ni un rechargement de page.
+          await refreshProfile();
         }
       }
 

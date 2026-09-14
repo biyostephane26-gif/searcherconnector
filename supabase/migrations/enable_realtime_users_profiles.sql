@@ -1,0 +1,14 @@
+-- =================================================================
+-- Active la réplication temps réel sur users_profiles.
+-- =================================================================
+-- Sans ceci, la synchronisation en direct du profil (AuthContext.tsx,
+-- canal `profile-sync-<userId>`) ne reçoit jamais d'événement : un
+-- changement de plan par webhook Stripe/Flutterwave, une action du
+-- fondateur, ou une modification depuis un autre onglet n'apparaît
+-- qu'après un rechargement manuel de la page. Testé en direct sur la
+-- base réelle avant ce correctif : la souscription s'abonne (status
+-- SUBSCRIBED) mais aucun postgres_changes n'arrive tant que la table
+-- n'est pas dans la publication supabase_realtime.
+-- À exécuter une fois dans l'éditeur SQL Supabase (aucun accès direct
+-- à la base depuis l'environnement de build).
+ALTER PUBLICATION supabase_realtime ADD TABLE users_profiles;

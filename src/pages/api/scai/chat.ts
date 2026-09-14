@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getScaiSessions } from '../../../lib/mongo';
 import { fetchGroqWithRotation, genererSystemPrompt } from '../../../lib/scaiUtils';
 import { checkRateLimit } from '../../../lib/rateLimiter';
+import { supabaseAdmin } from '../../../lib/supabaseAdmin';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -21,6 +22,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const idPropre = userId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
     const sessionsCollection = await getScaiSessions();
+
+    // Contexte live (best-effort, jamais bloquant) : donne à SCAI une vraie
+    // photo de l'état de l'utilisateur plutôt que le seul profil statique —
+    // condition nécessaire pour qu'il personnalise vraiment ses réponses.
+    try {
+      const [{ count: opportunitiesCount }, { count: pendingApplications }, { count: readyToSendCount }] = await Promise.race([
+        Promise.all([
+          supabaseAdmin.from('opportunities').select('id', { count: 'exact', head: true }).eq('user_id', userId),
+          supabaseAdmin.from('opportunities').select('id', { count: 'exact', head: true }).eq('user_id', userId).eq('status', 'pending_action'),
+          supabaseAdmin.from('opportunities').select('id', { count: 'exact', head: true }).eq('user_id', userId).eq('status', 'ready_to_send'),
+        ]),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout contexte live')), 2500)),
+      ]) as any;
+      userProfile.opportunitiesCount  = opportunitiesCount ?? null;
+      userProfile.pendingApplications = pendingApplications ?? null;
+      userProfile.readyToSendCount    = readyToSendCount ?? null;
+    } catch { /* SCAI répond quand même sans ce contexte plutôt que de bloquer */ }
 
     // Toggle "Apprentissage SCAI" (Settings) — désactivé = conversation
     // éphémère, pas d'historique chargé ni sauvegardé (confidentialité réelle).
