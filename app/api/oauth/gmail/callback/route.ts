@@ -6,12 +6,8 @@
 // =================================================================
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { supabaseAdmin as supabase } from '../../../../../src/lib/supabaseAdmin'
+import { verifyOAuthState } from '../../../../../src/lib/server/oauthState'
 
 const GOOGLE_CLIENT_ID     = process.env.GOOGLE_CLIENT_ID || ''
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || ''
@@ -21,7 +17,7 @@ const REDIRECT_URI = `${APP_URL}/api/oauth/gmail/callback`
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const code    = searchParams.get('code')
-  const userId  = searchParams.get('state') // renvoyé tel quel par Google
+  const userId  = verifyOAuthState(searchParams.get('state'))
   const errParam = searchParams.get('error')
 
   if (errParam || !code || !userId) {

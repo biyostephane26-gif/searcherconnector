@@ -12,8 +12,16 @@ import { supabaseAdmin } from '../../../src/lib/supabaseAdmin'
 import { requireUser } from '../../../src/lib/server/requireUser'
 import { CONNECTORS, getConnector, type ConnectorState, type CustomConnector } from '../../../src/lib/connectors/catalog'
 import { isPaidPlan } from '../../../src/lib/planUtils'
+import { signOAuthState } from '../../../src/lib/server/oauthState'
 
 export const dynamic = 'force-dynamic'
+
+// Un seul endroit pour tous les fournisseurs OAuth (Gmail, GitHub...) —
+// ajouter un fournisseur = une ligne ici, pas un bloc if dupliqué.
+const OAUTH_PROVIDERS: Record<string, { platform: string; envVars: [string, string]; connectPath: string }> = {
+  gmail:  { platform: 'gmail',  envVars: ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'], connectPath: '/api/oauth/gmail/connect' },
+  github: { platform: 'github', envVars: ['GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET'], connectPath: '/api/oauth/github/connect' },
+}
 
 type Prefs = { connectors?: Record<string, { enabled: boolean; connected_at: string }>; custom_connectors?: CustomConnector[] } & Record<string, any>
 
@@ -43,11 +51,12 @@ async function computeStates(userId: string, profile: any): Promise<ConnectorSta
       return { id: c.id, status: 'builtin' }
     }
 
-    if (c.id === 'gmail') {
-      const row: any = oauth.get('gmail')
+    if (OAUTH_PROVIDERS[c.id]) {
+      const { platform, envVars } = OAUTH_PROVIDERS[c.id]
+      const row: any = oauth.get(platform)
       if (row) return { id: c.id, status: 'connected', account: row.platform_username }
-      if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-        return { id: c.id, status: 'config_required', detail: 'GOOGLE_CLIENT_ID et GOOGLE_CLIENT_SECRET absents du serveur.' }
+      if (!process.env[envVars[0]] || !process.env[envVars[1]]) {
+        return { id: c.id, status: 'config_required', detail: `${envVars[0]} et ${envVars[1]} absents du serveur.` }
       }
       return { id: c.id, status: 'available' }
     }
@@ -153,15 +162,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: `${def.name} est réservé aux plans Pro et Premium.`, requiresUpgrade: true }, { status: 403 })
   }
 
-  // ── Gmail (OAuth) ───────────────────────────────────────────────
-  if (def.id === 'gmail') {
+  // ── Fournisseurs OAuth (Gmail, GitHub...) ────────────────────────
+  if (OAUTH_PROVIDERS[def.id]) {
+    const { platform, envVars, connectPath } = OAUTH_PROVIDERS[def.id]
     if (action === 'disconnect') {
-      await supabaseAdmin.from('oauth_connections').update({ is_active: false }).eq('user_id', user.id).eq('platform', 'gmail')
+      await supabaseAdmin.from('oauth_connections').update({ is_active: false }).eq('user_id', user.id).eq('platform', platform)
     } else {
-      if (!process.env.GOOGLE_CLIENT_ID) {
-        return NextResponse.json({ error: 'Gmail n\'est pas encore configuré sur le serveur (GOOGLE_CLIENT_ID manquant).' }, { status: 503 })
+      if (!process.env[envVars[0]]) {
+        return NextResponse.json({ error: `${def.name} n'est pas encore configuré sur le serveur (${envVars[0]} manquant).` }, { status: 503 })
       }
-      return NextResponse.json({ redirect: `/api/oauth/gmail/connect?userId=${user.id}` })
+      // state signé à partir de la session déjà vérifiée ci-dessus — jamais
+      // un userId en clair que n'importe qui pourrait rejouer avec son
+      // propre compte pour le lier au profil de quelqu'un d'autre.
+      return NextResponse.json({ redirect: `${connectPath}?state=${signOAuthState(user.id)}` })
     }
   }
 

@@ -21,8 +21,11 @@ const SCOPES = [
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
-  const userId = searchParams.get('userId')
-  if (!userId) return NextResponse.json({ error: 'userId requis' }, { status: 400 })
+  // `state` arrive déjà signé depuis /api/connectors (session vérifiée
+  // avant génération) — cette route relaie seulement, elle ne décide
+  // jamais elle-même de qui se connecte.
+  const state = searchParams.get('state')
+  if (!state) return NextResponse.json({ error: 'state manquant' }, { status: 400 })
 
   if (!GOOGLE_CLIENT_ID) {
     return NextResponse.json({
@@ -37,7 +40,7 @@ export async function GET(req: NextRequest) {
     scope:         SCOPES,
     access_type:   'offline',   // nécessaire pour obtenir un refresh_token
     prompt:        'consent',   // force le refresh_token à chaque connexion
-    state:         userId,       // on récupère userId au retour
+    state,
   })
 
   return NextResponse.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`)

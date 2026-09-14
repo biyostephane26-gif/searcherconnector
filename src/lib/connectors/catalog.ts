@@ -129,9 +129,8 @@ export const CONNECTORS: ConnectorDef[] = [
     capabilities: ['Lien de profil ajouté à tes candidatures', 'Pré-remplissage Easy Apply via l\'extension'],
   },
   {
-    id: 'github', name: 'GitHub', category: 'professional', kind: 'profile',
+    id: 'github', name: 'GitHub', category: 'professional', kind: 'oauth',
     tile: { label: 'GH', bg: '#181717', fg: '#fff' },
-    profileField: 'github_url', profilePlaceholder: 'ton-pseudo-github',
     description: 'SCAI analyse tes dépôts publics pour mettre en avant tes vrais projets auprès des clients.',
     capabilities: ['Lecture de tes dépôts publics', 'Projets phares cités dans tes candidatures', 'Langages détectés pour le matching'],
   },
