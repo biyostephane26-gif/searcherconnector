@@ -283,6 +283,23 @@ export default function Profile() {
   const [verifyMsg, setVerifyMsg] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Statistiques réelles — comme un profil Upwork/Toptal affiche son
+  // "Job Success Score" directement sur le profil, pas seulement dans
+  // une page de facturation séparée.
+  const [stats, setStats] = useState({ sent: 0, interviews: 0, offers: 0 })
+  useEffect(() => {
+    if (!user) return
+    supabase.from('applications_tracking').select('status, interview_date, offer_amount').eq('user_id', user.id)
+      .then(({ data }) => {
+        const rows = data || []
+        setStats({
+          sent: rows.length,
+          interviews: rows.filter(r => r.status === 'interview' || r.interview_date).length,
+          offers: rows.filter(r => r.status === 'offer' || r.status === 'hired' || r.offer_amount).length,
+        })
+      })
+  }, [user])
+
   // Charte visuelle selon le type de profil
   const theme = PROFILE_THEME[profile?.profile_type || 'freelance'] || PROFILE_THEME.freelance
   const ThemeIcon = theme.icon
@@ -552,7 +569,7 @@ export default function Profile() {
                     </div>
                     <div className="flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                       <Calendar size={14} className="text-[#D4AF37]" />
-                      Membre depuis 2024
+                      Membre depuis {profile?.created_at ? new Date(profile.created_at).getFullYear() : '—'}
                     </div>
                   </div>
                 </Card>
@@ -589,7 +606,7 @@ export default function Profile() {
                       </div>
                       <div>
                         <h4 className="text-white font-bold text-sm">{profile?.domain || 'Professionnel'}</h4>
-                        <p className="text-gray-500 text-xs">Indépendant · {new Date().getFullYear() - 2} – Présent</p>
+                        <p className="text-gray-500 text-xs">Indépendant · Présent</p>
                         <p className="text-gray-400 text-xs mt-2 leading-relaxed">{profile.bio.slice(0, 200)}</p>
                       </div>
                     </Card>
@@ -604,6 +621,24 @@ export default function Profile() {
 
             {/* Right Column: Skills & Social */}
             <div className="lg:col-span-4 space-y-10">
+              <section>
+                <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em] mb-4">Statistiques</h3>
+                <Card className="p-6 grid grid-cols-3 gap-3 text-center">
+                  <div>
+                    <p className="text-xl font-black text-white">{profile?.missions_completed || 0}</p>
+                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Missions</p>
+                  </div>
+                  <div>
+                    <p className="text-xl font-black text-white">{stats.sent}</p>
+                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Candidatures</p>
+                  </div>
+                  <div>
+                    <p className="text-xl font-black text-white">{stats.sent > 0 ? Math.round(((stats.interviews + stats.offers) / stats.sent) * 100) : 0}%</p>
+                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Taux réponse</p>
+                  </div>
+                </Card>
+              </section>
+
               <section>
                 <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em] mb-4">Compétences Clés</h3>
                 <Card className="p-6">
