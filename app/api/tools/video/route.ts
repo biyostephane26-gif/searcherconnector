@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { requireUser } from '../../../../src/lib/server/requireUser'
 import { isPaidPlan } from '../../../../src/lib/planUtils'
+import { logToolUsage } from '../../../../src/lib/server/logToolUsage'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -59,6 +60,7 @@ export async function POST(req: NextRequest) {
     if (!res) continue
     const data = await res.json().catch(() => ({}))
     if (res.ok && data?.id) {
+      logToolUsage(auth.user.id, 'video', 'OpenAI Sora 2')
       return NextResponse.json({ job: signJob(auth.user.id, { p: 'openai', id: data.id, k }), provider: 'OpenAI Sora 2' })
     }
     const code = data?.error?.code
@@ -76,6 +78,7 @@ export async function POST(req: NextRequest) {
     if (!res) continue
     const data = await res.json().catch(() => ({}))
     if (res.ok && data?.name) {
+      logToolUsage(auth.user.id, 'video', 'Google Veo 3.1')
       return NextResponse.json({ job: signJob(auth.user.id, { p: 'veo', id: data.name, k }), provider: 'Google Veo 3.1' })
     }
     errors.push(`veo ${res.status}`)

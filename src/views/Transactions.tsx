@@ -10,10 +10,19 @@ import { planConfig } from '../lib/planConfig'
 import { planTier } from '../lib/planUtils'
 import {
   Receipt, FileBarChart, Download, Loader2, CreditCard, CheckCircle2, XCircle, Clock,
-  TrendingUp, Send, Calendar, Award, DollarSign,
+  TrendingUp, Send, Calendar, Award, DollarSign, Gauge, Mic, FileText, ImageIcon, Video,
+  Sparkles, Zap, Bell, Wallet,
 } from 'lucide-react'
 
-type Tab = 'transactions' | 'report'
+type Tab = 'transactions' | 'usage' | 'report'
+
+const TOOL_META: Record<string, { label: string; icon: JSX.Element }> = {
+  scai_tool_pdf:   { label: 'Documents PDF',   icon: <FileText className="w-3.5 h-3.5" /> },
+  scai_tool_xlsx:  { label: 'Classeurs Excel', icon: <FileText className="w-3.5 h-3.5" /> },
+  scai_tool_docx:  { label: 'Documents Word',  icon: <FileText className="w-3.5 h-3.5" /> },
+  scai_tool_image: { label: 'Images générées', icon: <ImageIcon className="w-3.5 h-3.5" /> },
+  scai_tool_video: { label: 'Mini-vidéos',     icon: <Video className="w-3.5 h-3.5" /> },
+}
 
 const STATUS_UI: Record<string, { label: string; cls: string; icon: JSX.Element }> = {
   completed: { label: 'Payé', cls: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30', icon: <CheckCircle2 className="w-3.5 h-3.5" /> },
@@ -34,15 +43,30 @@ export default function Transactions() {
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState<'pdf' | 'xlsx' | null>(null)
   const [genError, setGenError] = useState<string | null>(null)
+  const [voiceCredits, setVoiceCredits] = useState<number | null>(null)
+  const [toolUsage, setToolUsage] = useState<Record<string, number>>({})
+  const [notifCountToday, setNotifCountToday] = useState<number>(0)
 
   useEffect(() => {
     if (!user) return
+    const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0)
+    const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0)
     Promise.all([
       supabase.from('payment_attempts').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
       supabase.from('applications_tracking').select('*').eq('user_id', user.id).order('applied_at', { ascending: false }),
-    ]).then(([p, a]) => {
+      supabase.from('user_voice_credits').select('credits_remaining').eq('user_id', user.id).maybeSingle(),
+      supabase.from('searcher_logs').select('action_type').eq('user_id', user.id).gte('created_at', monthStart.toISOString()),
+      supabase.from('notifications').select('id', { count: 'exact', head: true }).eq('user_id', user.id).gte('created_at', dayStart.toISOString()),
+    ]).then(([p, a, vc, logs, notif]) => {
       setPayments(p.data || [])
       setApplications(a.data || [])
+      setVoiceCredits(vc.data?.credits_remaining ?? null)
+      const tally: Record<string, number> = {}
+      for (const l of logs.data || []) {
+        if (l.action_type?.startsWith('scai_tool_')) tally[l.action_type] = (tally[l.action_type] || 0) + 1
+      }
+      setToolUsage(tally)
+      setNotifCountToday(notif.count || 0)
       setLoading(false)
     })
   }, [user])
@@ -87,6 +111,7 @@ export default function Transactions() {
           <div className="flex gap-1 bg-[#111111] border border-[#2a2a2a] rounded-full p-1">
             {[
               { id: 'transactions' as Tab, label: 'Transactions', icon: Receipt },
+              { id: 'usage' as Tab, label: 'Utilisation', icon: Gauge },
               { id: 'report' as Tab, label: 'Rapport d’activité', icon: FileBarChart },
             ].map(t => (
               <button
@@ -153,6 +178,83 @@ export default function Transactions() {
                       )
                     })}
                   </div>
+                )}
+              </Card>
+            </>
+          )}
+
+          {tab === 'usage' && (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Card className="p-5">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Mic className="w-4 h-4 text-[#D4AF37]" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">SCAI Voice</p>
+                  </div>
+                  <p className="text-xl font-bold text-white">{voiceCredits ?? '—'}</p>
+                  <p className="text-xs text-gray-500 mt-1">crédits restants aujourd'hui · {plan.voiceCreditsPerDay}/jour sur ton plan</p>
+                </Card>
+                <Card className="p-5">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Bell className="w-4 h-4 text-[#D4AF37]" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Notifications</p>
+                  </div>
+                  <p className="text-xl font-bold text-white">{notifCountToday} <span className="text-sm text-gray-500 font-normal">/ {plan.notifBudget}</span></p>
+                  <p className="text-xs text-gray-500 mt-1">reçues aujourd'hui</p>
+                </Card>
+                <Card className="p-5">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Zap className="w-4 h-4 text-[#D4AF37]" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Auto-candidature</p>
+                  </div>
+                  <p className="text-xl font-bold text-white">{plan.autoApplyPerDay}<span className="text-sm text-gray-500 font-normal">/jour max</span></p>
+                  <p className="text-xs text-gray-500 mt-1">sur ton plan {plan.label}</p>
+                </Card>
+              </div>
+
+              <Card className="p-5">
+                <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[#D4AF37]" /> Outils SCAI Cowork — ce mois-ci
+                </h3>
+                <p className="text-xs text-gray-500 mb-4">Documents, images et vidéos générés directement dans le chat.</p>
+                {Object.keys(toolUsage).length === 0 ? (
+                  <p className="text-sm text-gray-500 py-4 text-center">Aucun outil utilisé ce mois-ci — essaie le bouton « + » dans SCAI Cowork.</p>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {Object.entries(TOOL_META).map(([key, meta]) => (
+                      <div key={key} className="flex items-center gap-2.5 bg-[#111111] border border-[#1A1A1A] rounded-xl px-3 py-2.5">
+                        <span className="text-[#D4AF37]">{meta.icon}</span>
+                        <div>
+                          <p className="text-sm font-bold text-white">{toolUsage[key] || 0}</p>
+                          <p className="text-[10px] text-gray-500">{meta.label}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Card>
+
+              <Card className="p-5">
+                <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                  <Wallet className="w-4 h-4 text-[#D4AF37]" /> Ce qu'inclut ton plan {plan.label}
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                  {[
+                    { label: 'Scans manuels', value: `${plan.scansPerSession}/session` },
+                    { label: 'Sources accessibles', value: plan.maxSources.toLocaleString('fr-FR') },
+                    { label: 'Opportunity Creator', value: `${plan.opportunityCreatorPerDay}/jour` },
+                    { label: 'Crédits SCAI/mois', value: plan.monthlyCredits },
+                  ].map(item => (
+                    <div key={item.label}>
+                      <p className="text-lg font-bold text-[#D4AF37]">{item.value}</p>
+                      <p className="text-[10px] text-gray-500 mt-1">{item.label}</p>
+                    </div>
+                  ))}
+                </div>
+                {tier !== 'premium' && (
+                  <a href="/pricing" className="mt-5 flex items-center justify-center gap-1.5 text-xs font-bold text-[#D4AF37] hover:underline">
+                    Débloquer plus avec un plan supérieur <TrendingUp className="w-3.5 h-3.5" />
+                  </a>
                 )}
               </Card>
             </>
