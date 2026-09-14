@@ -200,6 +200,7 @@ export default function Onboarding() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user?.id }),
+        keepalive: true, // survit à la navigation immédiate vers /dashboard
       }).catch(() => {})
 
       // Vérification IA asynchrone (ne pas attendre)
@@ -209,10 +210,14 @@ export default function Onboarding() {
         verificationStatus = 'genius'
       } else {
         // Lancer vérification en arrière-plan
+        // keepalive : sans lui, certains navigateurs annulent cette requête
+        // dès le router.push('/dashboard') juste après — la vérification IA
+        // ne se terminait jamais pour une partie des inscriptions.
         fetch(`${window.location.origin}/api/verify-profile`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId: user?.id }),
+          keepalive: true,
         }).catch(() => {})
         
         // Attribution rapide selon critères simples

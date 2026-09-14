@@ -34,7 +34,7 @@ async function callAI(prompt: string): Promise<string> {
       const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-        body: JSON.stringify({ model: 'llama-3.1-8b-instant', temperature: 0.4, max_tokens: 600,
+        body: JSON.stringify({ model: 'openai/gpt-oss-20b', temperature: 0.4, max_tokens: 600,
           messages: [{ role: 'user', content: prompt.slice(0, 1500) }] }),
         signal: AbortSignal.timeout(10000),
       });

@@ -54,7 +54,7 @@ async function callGroq(messages: any[]): Promise<string | null> {
 
     try {
       const response = await groqClients[idx].chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
+        model: 'openai/gpt-oss-120b',
         temperature: 0.7,
         max_tokens: 1500,
         top_p: 0.9,

@@ -1,5 +1,10 @@
 // Génération de texte côté serveur : Groq (rotation des clés) puis Gemini.
-const GROQ_MODEL = 'llama-3.3-70b-versatile'
+// GROQ_MODEL : llama-3.3-70b-versatile a été retiré du catalogue Groq
+// (retournait 404 sur toutes les clés, vérifié en direct le 2026-09-14 —
+// TOUS les appels Groq de l'app échouaient silencieusement et retombaient
+// sur Gemini/l'heuristique locale sans jamais remonter d'erreur visible).
+// openai/gpt-oss-120b : même qualité de sortie JSON, ~2s de latence.
+const GROQ_MODEL = 'openai/gpt-oss-120b'
 const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash']
 
 function keys(prefix: string, max = 10) {

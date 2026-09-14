@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { callGeminiDirect } from '../../../src/lib/scaiUtils'
+import { generateJson } from '../../../src/lib/server/aiText'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -117,21 +117,18 @@ PROFIL ANALYSÉ :
 Réponds UNIQUEMENT en JSON valide, une seule ligne :
 {"status":"verified","reason":"Explication courte en français"}`
 
-    const response = await callGeminiDirect(prompt)
-
-    if (response) {
-      try {
-        const s = response.indexOf('{')
-        const e = response.lastIndexOf('}')
-        if (s !== -1 && e !== -1) {
-          const parsed = JSON.parse(response.slice(s, e + 1))
-          if (['genius', 'verified', 'pending', 'refused'].includes(parsed.status)) {
-            status = parsed.status
-            reason = parsed.reason || ''
-          }
-        }
-      } catch { /* garder pending */ }
-    }
+    // Groq (rapide, ~1-2s) en priorité, Gemini en repli — au lieu du seul
+    // Gemini d'origine, avec relance automatique si le JSON est mal formé.
+    // Verdict en quelques secondes plutôt que de dépendre d'un seul moteur.
+    try {
+      const parsed = await generateJson<{ status: string; reason?: string }>(
+        prompt,
+        v => ['genius', 'verified', 'pending', 'refused'].includes(v?.status),
+        { maxTokens: 200 },
+      )
+      status = parsed.status
+      reason = parsed.reason || ''
+    } catch { /* garder pending — le filet de sécurité heuristique prend le relais */ }
 
     // Fallback local si Gemini indisponible — adapté par type de profil
     if (status === 'pending') {
