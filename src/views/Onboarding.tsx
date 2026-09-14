@@ -29,7 +29,7 @@ const CATEGORIES = [
   'Autre'
 ]
 
-const EXPERIENCE_LEVELS = ['Junior', 'Mid', 'Senior']
+const EXPERIENCE_LEVELS = ['Junior', 'Confirmé', 'Senior']
 const JOB_TYPES = ['CDI', 'CDD', 'Remote', 'Hybride']
 const FREELANCE_AVAILABILITIES = ['One-shot', 'Long terme', 'Les deux']
 const CURRENCIES = ['USD', 'EUR', 'XAF', 'XOF', 'GBP', 'JPY']
@@ -354,8 +354,8 @@ export default function Onboarding() {
             </Card>
             
             <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Back</GoldButton>
-              <GoldButton onClick={handleNext} fullWidth disabled={!formData.experienceLevel} loading={loading}>Next</GoldButton>
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Précédent</GoldButton>
+              <GoldButton onClick={handleNext} fullWidth disabled={!formData.experienceLevel} loading={loading}>Suivant</GoldButton>
             </div>
           </div>
         )
@@ -392,8 +392,8 @@ export default function Onboarding() {
             </Card>
             
             <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Back</GoldButton>
-              <GoldButton onClick={handleNext} fullWidth disabled={formData.jobTypes.length === 0} loading={loading}>Next</GoldButton>
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Précédent</GoldButton>
+              <GoldButton onClick={handleNext} fullWidth disabled={formData.jobTypes.length === 0} loading={loading}>Suivant</GoldButton>
             </div>
           </div>
         )
@@ -442,8 +442,8 @@ export default function Onboarding() {
             </Card>
             
             <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Back</GoldButton>
-              <GoldButton onClick={handleNext} fullWidth disabled={formData.salaryMin <= 0} loading={loading}>Next</GoldButton>
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Précédent</GoldButton>
+              <GoldButton onClick={handleNext} fullWidth disabled={formData.salaryMin <= 0} loading={loading}>Suivant</GoldButton>
             </div>
           </div>
         )
@@ -482,7 +482,7 @@ export default function Onboarding() {
             </Card>
             
             <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth disabled={loading}>Back</GoldButton>
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth disabled={loading}>Précédent</GoldButton>
               <GoldButton onClick={handleSubmit} fullWidth loading={loading}>
                 Terminer l'onboarding
               </GoldButton>
@@ -567,8 +567,8 @@ export default function Onboarding() {
             </Card>
             
             <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Back</GoldButton>
-              <GoldButton onClick={handleNext} fullWidth disabled={formData.dailyRate <= 0} loading={loading}>Next</GoldButton>
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Précédent</GoldButton>
+              <GoldButton onClick={handleNext} fullWidth disabled={formData.dailyRate <= 0} loading={loading}>Suivant</GoldButton>
             </div>
           </div>
         )
@@ -599,8 +599,8 @@ export default function Onboarding() {
             </Card>
             
             <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Back</GoldButton>
-              <GoldButton onClick={handleNext} fullWidth disabled={!formData.availability} loading={loading}>Next</GoldButton>
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Précédent</GoldButton>
+              <GoldButton onClick={handleNext} fullWidth disabled={!formData.availability} loading={loading}>Suivant</GoldButton>
             </div>
           </div>
         )
@@ -655,8 +655,8 @@ export default function Onboarding() {
             </Card>
             
             <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Back</GoldButton>
-              <GoldButton onClick={handleNext} fullWidth loading={loading}>Next</GoldButton>
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Précédent</GoldButton>
+              <GoldButton onClick={handleNext} fullWidth loading={loading}>Suivant</GoldButton>
             </div>
           </div>
         )
@@ -694,7 +694,7 @@ export default function Onboarding() {
             </Card>
             
             <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth disabled={loading}>Back</GoldButton>
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth disabled={loading}>Précédent</GoldButton>
               <GoldButton onClick={handleSubmit} fullWidth loading={loading}>
                 Terminer l'onboarding
               </GoldButton>
@@ -711,8 +711,8 @@ export default function Onboarding() {
       <div className="max-w-2xl mx-auto">
         <div className="mb-12">
           <div className="flex justify-between text-[10px] tracking-widest text-gray-500 font-bold uppercase mb-2">
-            <span>Step {step} of {totalSteps}</span>
-            <span>{Math.round((step / totalSteps) * 100)}% Complete</span>
+            <span>Étape {step} sur {totalSteps}</span>
+            <span>{Math.round((step / totalSteps) * 100)}% complété</span>
           </div>
           <div className="h-1 bg-[#1A1A1A] rounded-full overflow-hidden">
             <div 
