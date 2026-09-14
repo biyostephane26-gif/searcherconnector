@@ -15,6 +15,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
 import { planTier } from '../../lib/planUtils';
 import { planConfig } from '../../lib/planConfig';
+import { requireUserPages } from '../../lib/server/requireUser';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -190,15 +191,20 @@ async function findCompanies(service: string, zone: string, country: string): Pr
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
 
-  const { userId, zone = 'local', limit = 10 } = req.body;
-  if (!userId) return res.status(400).json({ error: 'userId requis' });
+  // userId ne vient plus du corps de la requête — n'importe qui connaissant
+  // l'id d'un autre utilisateur pouvait lancer des scans en son nom,
+  // consommer son quota, et polluer sa table opportunity_leads.
+  const auth = await requireUserPages(req);
+  if (!auth) return res.status(401).json({ error: 'Non authentifié' });
+  const { zone = 'local', limit = 10 } = req.body;
+  const userId = auth.user.id;
 
   const startedAt = Date.now();
   const log: string[] = [];
 
   try {
     // ── Profil utilisateur ────────────────────────────────────────
-    const { data: profile } = await supabaseAdmin.from('users_profiles').select('*').eq('id', userId).single();
+    const profile = auth.profile;
     if (!profile) return res.status(404).json({ error: 'Profil introuvable' });
 
     // ── Quota Opportunity Creator par plan (Pro 3/j · Premium 10/j) ──

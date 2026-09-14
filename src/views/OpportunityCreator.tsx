@@ -7,6 +7,7 @@ import Navbar from '../components/layout/Navbar'
 import Card from '../components/ui/Card'
 import GoldButton from '../components/ui/GoldButton'
 import { Search, Target, Send, Loader2, Star, TrendingUp, AlertCircle, ExternalLink, Copy, CheckCheck, Lock } from 'lucide-react'
+import { authFetch } from '../lib/authFetch'
 
 const LEAD_GOAL = 50
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -39,7 +40,7 @@ export default function OpportunityCreator() {
     if (!user) return
     setLeadsLoading(true)
     try {
-      const r = await fetch(`/api/opportunity-leads?userId=${user.id}`)
+      const r = await authFetch('/api/opportunity-leads')
       const data = await r.json()
       if (r.ok) setLeads(data.leads || [])
     } catch { /* silencieux */ }
@@ -50,9 +51,8 @@ export default function OpportunityCreator() {
   const updateLeadStatus = async (leadId: string, status: string) => {
     setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status } : l))
     try {
-      await fetch('/api/opportunity-leads', {
+      await authFetch('/api/opportunity-leads', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ leadId, status }),
       })
     } catch { /* déjà mis à jour en optimiste, réessai silencieux ignoré */ }
@@ -62,10 +62,9 @@ export default function OpportunityCreator() {
     if (!user) return
     setLoading(true); setError(''); setResult(null)
     try {
-      const r = await fetch('/api/opportunity-creator', {
+      const r = await authFetch('/api/opportunity-creator', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, zone, limit: 30 }),
+        body: JSON.stringify({ zone, limit: 30 }),
       })
       const data = await r.json()
       if (!r.ok) throw new Error(data.error)
