@@ -67,6 +67,12 @@ export default function AgentDashboard() {
   const { user, profile, refreshProfile } = useAuth();
   const { scanning, launchScan, getEmailThreads, getSchedule, updateSchedule } = useAgent();
   const { recentActions, pendingQueue } = useAgentRealtime();
+  // Écran d'accueil (aucune conversation en cours) : grande salutation
+  // selon l'heure locale, comme le fait Cowork — pas un message figé.
+  const firstName = (profile?.full_name || '').trim().split(/\s+/)[0] || '';
+  const hour = new Date().getHours();
+  const greeting = hour < 5 ? 'Bonsoir' : hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
+  const greetingEmoji = hour < 5 ? '🌙' : hour < 18 ? '☀️' : '🌙';
   const [activeTab, setActiveTab] = useState<'status' | 'queue' | 'communications' | 'connectors' | 'config'>('status');
   // Outils Cowork (PDF, Excel, Word, image, vidéo) sélectionnés depuis le menu « + »
   const [activeTool, setActiveTool] = useState<CoworkTool | null>(null);
@@ -598,135 +604,11 @@ export default function AgentDashboard() {
     { id: 'config', label: 'Configuration', icon: '⚙️' }
   ];
 
-  return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-4xl mx-auto px-6 py-6">
-
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="font-syne text-2xl font-bold text-white">SCAI Cowork</h1>
-            <p className="text-sm text-gray-400 mt-1">
-              <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
-              Actif 24h/24 · {pendingQueue} tâches planifiées
-            </p>
-          </div>
-          <button
-            onClick={() => handleScan()}
-            disabled={scanning}
-            className="flex items-center gap-2 bg-[#D4AF37] text-black px-5 py-2.5 rounded-lg font-syne font-bold text-sm hover:bg-[#B8962D] disabled:opacity-50 transition-colors"
-          >
-            {scanning ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
-            {scanning ? 'Scan en cours...' : 'Lancer un scan'}
-          </button>
-        </div>
-
-        {/* Stats Summary */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: 'Intelligence Index', value: 'SCAI v1.2', icon: <Zap size={14} className="text-[#D4AF37]" /> },
-            { label: 'Web Coverage', value: '100% Global', icon: <Clock size={14} className="text-blue-500" /> },
-            { label: 'Active Missions', value: recentActions?.filter((a: any) => a.action_type === 'auto_apply').length || 0, icon: <CheckCircle size={14} className="text-green-500" /> },
-            { label: 'Strategic Value', value: 'High Potential', icon: <Mail size={14} className="text-purple-500" /> },
-          ].map((stat, i) => (
-            <div key={i} className="bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-col gap-1">
-              <div className="flex items-center gap-2 text-[10px] text-gray-500 font-syne uppercase tracking-wider">
-                {stat.icon} {stat.label}
-              </div>
-              <div className="text-lg font-bold text-white font-syne">{stat.value}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Agent Command Center */}
-        <div className="bg-[#111111] border border-gray-800 rounded-2xl p-4 mb-8 shadow-2xl">
-          <div className="flex flex-col gap-4">
-            {/* Chat History Preview */}
-            <div className="flex justify-between items-center mb-2 px-2">
-              <span className="text-[10px] font-syne font-bold uppercase tracking-[0.2em] text-gray-500">Flux de Pensée Stratégique</span>
-              <div className="flex items-center gap-2">
-                {showClearConfirm && (
-                  <span className="text-[10px] text-red-400">Confirmer ?</span>
-                )}
-                <button 
-                  onClick={clearChat}
-                  className={`transition-colors ${showClearConfirm ? 'text-red-500 hover:text-red-400' : 'text-gray-600 hover:text-red-500'}`}
-                  title={showClearConfirm ? "Cliquer pour confirmer" : "Effacer l'historique"}
-                >
-                  <Trash2 size={12} />
-                </button>
-                {showClearConfirm && (
-                  <button onClick={() => setShowClearConfirm(false)} className="text-[10px] text-gray-600 hover:text-white">
-                    Annuler
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-4 max-h-96 overflow-y-auto mb-4 scrollbar-hide pr-2">
-              {chatHistory && chatHistory.map((msg: any, i: number) => (
-                <div key={i} className={"flex " + (msg?.role === 'user' ? 'justify-end' : 'justify-start')}>
-                  <div className={"max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm " + (
-                    msg?.role === 'user' 
-                      ? 'bg-[#D4AF37] text-black font-medium rounded-tr-none' 
-                      : 'bg-[#111111] border border-gray-800 text-gray-200 rounded-tl-none'
-                  )}>
-                    {msg?.role === 'agent' ? (
-                      <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed">
-                        {msg.thought && (
-                          <div className="mb-2">
-                            <button 
-                              onClick={() => toggleThought(i)}
-                              className="flex items-center gap-1 text-[8px] uppercase tracking-widest text-[#D4AF37]/40 hover:text-[#D4AF37]/80 font-syne transition-colors"
-                            >
-                              {msg.showThought ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
-                              Processus de réflexion stratégique
-                            </button>
-                            {msg.showThought && (
-                              <div className="text-[9px] text-[#D4AF37]/60 mt-2 p-2 bg-black/30 rounded border-l border-[#D4AF37]/20 italic font-light animate-in fade-in slide-in-from-top-1 duration-300">
-                                {msg.thought}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {msg.content || ''}
-                        </ReactMarkdown>
-                        {msg.attachment && <ToolAttachment data={msg.attachment} />}
-                      </div>
-                    ) : (
-                      <div className="whitespace-pre-wrap">{msg?.content || ''}</div>
-                    )}
-                  </div>
-                </div>
-              ))}
-              {isProcessing && (
-                <div className="flex justify-start">
-                  <div className="bg-[#111111] border border-gray-800 text-[#D4AF37] rounded-2xl rounded-tl-none px-4 py-3 text-xs flex flex-col gap-2 shadow-lg min-w-[200px]">
-                    <div className="flex items-center gap-2">
-                      <ScaiThinkingOrb size={16} />
-                      <span className="font-syne font-bold uppercase tracking-widest text-[9px]">
-                        {isVoiceNoteProcessing ? 'SCAI écoute et réfléchit...' : 'SCAI réfléchit intensément...'}
-                      </span>
-                    </div>
-                    <div className="h-1 w-full bg-gray-900 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#D4AF37] animate-[shimmer_2s_infinite] w-1/2"></div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {isScaiSpeaking && (
-                <div className="flex justify-start">
-                  <div className="bg-[#111111] border border-[#D4AF37]/30 text-[#D4AF37] rounded-2xl rounded-tl-none px-4 py-3 flex items-center gap-3 shadow-lg">
-                    <Volume2 size={14} className="animate-pulse" />
-                    <VoiceWaveform source={speakingAudioEl} variant="speaking" />
-                    <span className="font-syne font-bold uppercase tracking-widest text-[9px]">SCAI parle...</span>
-                  </div>
-                </div>
-              )}
-              <div ref={chatEndRef} />
-            </div>
-
+  // Extrait pour être rendu à deux endroits : l'écran d'accueil (aucun
+  // historique) et la conversation active — même état, mêmes handlers,
+  // un seul endroit à maintenir.
+  const renderComposer = () => (
+    <>
             {activeTool && (
               <div className="flex flex-wrap items-center gap-2 px-1 -mb-2">
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#D4AF37] bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-full pl-2.5 pr-1 py-1">
@@ -873,8 +755,190 @@ export default function AgentDashboard() {
                 <FileText size={12} /> Documents CV/Portfolio
               </div>
             </div>
+    </>
+  )
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <div className="max-w-4xl mx-auto px-6 py-6">
+
+        {chatHistory.length === 0 ? (
+          /* ── Écran d'accueil — grande salutation + saisie centrée + activité récente,
+             affiché tant qu'aucune conversation n'a démarré ─────────────────────── */
+          <div className="flex flex-col items-center pt-10 pb-8">
+            <div className="text-4xl mb-3">{greetingEmoji}</div>
+            <h1 className="font-syne text-2xl md:text-3xl font-bold text-white mb-8 text-center">
+              {greeting}{firstName ? ` ${firstName}` : ''}
+            </h1>
+
+            <div className="w-full max-w-2xl bg-[#111111] border border-gray-800 rounded-2xl p-4 shadow-2xl">
+              {renderComposer()}
+            </div>
+
+            <div className="w-full max-w-2xl flex items-center justify-between mt-4 px-1">
+              <button
+                onClick={() => handleScan()}
+                disabled={scanning}
+                className="flex items-center gap-2 text-xs text-gray-400 hover:text-[#D4AF37] disabled:opacity-50 transition-colors"
+              >
+                {scanning ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}
+                {scanning ? 'Scan en cours...' : 'Lancer un scan'}
+              </button>
+              <span className="text-xs text-gray-500">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5 animate-pulse" />
+                Actif 24h/24 · {pendingQueue} tâche{pendingQueue > 1 ? 's' : ''} planifiée{pendingQueue > 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {recentActions && recentActions.length > 0 && (
+              <div className="w-full max-w-2xl mt-10">
+                <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">Activité récente</p>
+                <div className="space-y-2">
+                  {recentActions.slice(0, 4).map((a: any) => (
+                    <div key={a.id} className="flex items-center gap-3 bg-[#111111] border border-gray-800 rounded-xl px-4 py-3">
+                      <span className="shrink-0">{ACTION_ICONS[a.action_type] || <Zap size={14} className="text-[#D4AF37]" />}</span>
+                      <p className="text-sm text-gray-300 truncate flex-1">{a.result || a.action_type.replace(/_/g, ' ')}</p>
+                      <span className="text-[10px] text-gray-500 shrink-0">
+                        {formatDistanceToNow(new Date(a.created_at), { addSuffix: true, locale: fr })}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+        <>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="font-syne text-2xl font-bold text-white">SCAI Cowork</h1>
+            <p className="text-sm text-gray-400 mt-1">
+              <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
+              Actif 24h/24 · {pendingQueue} tâches planifiées
+            </p>
+          </div>
+          <button
+            onClick={() => handleScan()}
+            disabled={scanning}
+            className="flex items-center gap-2 bg-[#D4AF37] text-black px-5 py-2.5 rounded-lg font-syne font-bold text-sm hover:bg-[#B8962D] disabled:opacity-50 transition-colors"
+          >
+            {scanning ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
+            {scanning ? 'Scan en cours...' : 'Lancer un scan'}
+          </button>
+        </div>
+
+        {/* Stats Summary */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {[
+            { label: 'Opportunités trouvées', value: recentActions?.filter((a: any) => a.action_type === 'search_scan').length || 0, icon: <Search size={14} className="text-[#D4AF37]" /> },
+            { label: 'Notifications', value: pendingQueue, icon: <Clock size={14} className="text-blue-500" /> },
+            { label: 'Candidatures auto', value: recentActions?.filter((a: any) => a.action_type === 'auto_apply').length || 0, icon: <CheckCircle size={14} className="text-green-500" /> },
+            { label: 'Actions récentes', value: recentActions?.length || 0, icon: <Mail size={14} className="text-purple-500" /> },
+          ].map((stat, i) => (
+            <div key={i} className="bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-col gap-1">
+              <div className="flex items-center gap-2 text-[10px] text-gray-500 font-syne uppercase tracking-wider">
+                {stat.icon} {stat.label}
+              </div>
+              <div className="text-lg font-bold text-white font-syne">{stat.value}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Agent Command Center */}
+        <div className="bg-[#111111] border border-gray-800 rounded-2xl p-4 mb-8 shadow-2xl">
+          <div className="flex flex-col gap-4">
+            {/* Chat History Preview */}
+            <div className="flex justify-between items-center mb-2 px-2">
+              <span className="text-[10px] font-syne font-bold uppercase tracking-[0.2em] text-gray-500">Flux de Pensée Stratégique</span>
+              <div className="flex items-center gap-2">
+                {showClearConfirm && (
+                  <span className="text-[10px] text-red-400">Confirmer ?</span>
+                )}
+                <button
+                  onClick={clearChat}
+                  className={`transition-colors ${showClearConfirm ? 'text-red-500 hover:text-red-400' : 'text-gray-600 hover:text-red-500'}`}
+                  title={showClearConfirm ? "Cliquer pour confirmer" : "Effacer l'historique"}
+                >
+                  <Trash2 size={12} />
+                </button>
+                {showClearConfirm && (
+                  <button onClick={() => setShowClearConfirm(false)} className="text-[10px] text-gray-600 hover:text-white">
+                    Annuler
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-4 max-h-96 overflow-y-auto mb-4 scrollbar-hide pr-2">
+              {chatHistory && chatHistory.map((msg: any, i: number) => (
+                <div key={i} className={"flex " + (msg?.role === 'user' ? 'justify-end' : 'justify-start')}>
+                  <div className={"max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm " + (
+                    msg?.role === 'user' 
+                      ? 'bg-[#D4AF37] text-black font-medium rounded-tr-none' 
+                      : 'bg-[#111111] border border-gray-800 text-gray-200 rounded-tl-none'
+                  )}>
+                    {msg?.role === 'agent' ? (
+                      <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed">
+                        {msg.thought && (
+                          <div className="mb-2">
+                            <button 
+                              onClick={() => toggleThought(i)}
+                              className="flex items-center gap-1 text-[8px] uppercase tracking-widest text-[#D4AF37]/40 hover:text-[#D4AF37]/80 font-syne transition-colors"
+                            >
+                              {msg.showThought ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
+                              Processus de réflexion stratégique
+                            </button>
+                            {msg.showThought && (
+                              <div className="text-[9px] text-[#D4AF37]/60 mt-2 p-2 bg-black/30 rounded border-l border-[#D4AF37]/20 italic font-light animate-in fade-in slide-in-from-top-1 duration-300">
+                                {msg.thought}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {msg.content || ''}
+                        </ReactMarkdown>
+                        {msg.attachment && <ToolAttachment data={msg.attachment} />}
+                      </div>
+                    ) : (
+                      <div className="whitespace-pre-wrap">{msg?.content || ''}</div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {isProcessing && (
+                <div className="flex justify-start">
+                  <div className="bg-[#111111] border border-gray-800 text-[#D4AF37] rounded-2xl rounded-tl-none px-4 py-3 text-xs flex flex-col gap-2 shadow-lg min-w-[200px]">
+                    <div className="flex items-center gap-2">
+                      <ScaiThinkingOrb size={16} />
+                      <span className="font-syne font-bold uppercase tracking-widest text-[9px]">
+                        {isVoiceNoteProcessing ? 'SCAI écoute et réfléchit...' : 'SCAI réfléchit intensément...'}
+                      </span>
+                    </div>
+                    <div className="h-1 w-full bg-gray-900 rounded-full overflow-hidden">
+                      <div className="h-full bg-[#D4AF37] animate-[shimmer_2s_infinite] w-1/2"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {isScaiSpeaking && (
+                <div className="flex justify-start">
+                  <div className="bg-[#111111] border border-[#D4AF37]/30 text-[#D4AF37] rounded-2xl rounded-tl-none px-4 py-3 flex items-center gap-3 shadow-lg">
+                    <Volume2 size={14} className="animate-pulse" />
+                    <VoiceWaveform source={speakingAudioEl} variant="speaking" />
+                    <span className="font-syne font-bold uppercase tracking-widest text-[9px]">SCAI parle...</span>
+                  </div>
+                </div>
+              )}
+              <div ref={chatEndRef} />
+            </div>
+
+            {renderComposer()}
           </div>
         </div>
+        </>
+        )}
 
         {/* Tabs */}
         <div className="flex gap-0 mb-6 border-b border-gray-800">
