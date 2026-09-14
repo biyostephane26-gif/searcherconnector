@@ -17,6 +17,7 @@ export default function Groups() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [category, setCategory] = useState<string>('all');
 
   // Formulaire création
   const [newGroup, setNewGroup] = useState({
@@ -212,28 +213,57 @@ export default function Groups() {
             </Card>
           ) : (
             <div className="space-y-8">
-              <div className="relative max-w-md">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
-                <input
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#111111] border border-[#2a2a2a] rounded-full pl-12 pr-4 py-3 text-sm text-white focus:outline-none focus:border-[#D4AF37] transition-all"
-                  placeholder="Rechercher un groupe..."
-                />
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="relative max-w-md flex-1">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 w-4 h-4" />
+                  <input
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    className="w-full bg-[#111111] border border-[#2a2a2a] rounded-full pl-12 pr-4 py-3 text-sm text-white focus:outline-none focus:border-[#D4AF37] transition-all"
+                    placeholder="Rechercher un groupe..."
+                  />
+                </div>
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+                  {[
+                    { id: 'all', label: 'Toutes' },
+                    { id: 'tech', label: 'Technologie' },
+                    { id: 'marketing', label: 'Marketing' },
+                    { id: 'finance', label: 'Finance' },
+                    { id: 'freelance', label: 'Freelance' },
+                    { id: 'investissement', label: 'Investissement' },
+                  ].map(c => (
+                    <button
+                      key={c.id}
+                      onClick={() => setCategory(c.id)}
+                      className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border transition-colors ${
+                        category === c.id ? 'bg-[#D4AF37] text-black border-[#D4AF37]' : 'bg-[#111111] text-gray-400 border-[#2a2a2a] hover:text-white'
+                      }`}
+                    >
+                      {c.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[1, 2, 3].map(i => <div key={i} className="h-64 bg-[#111111] rounded-2xl animate-pulse" />)}
                 </div>
-              ) : groups.length === 0 ? (
-                <div className="text-center py-20">
-                  <Users size={48} className="mx-auto text-gray-800 mb-4" />
-                  <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Aucun groupe trouvé</p>
+              ) : groups.filter(g => (category === 'all' || g.category === category) && g.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
+                <div className="text-center py-20 border border-dashed border-[#1A1A1A] rounded-2xl">
+                  <Users size={40} className="mx-auto text-gray-700 mb-4" />
+                  <p className="text-gray-400 font-semibold text-sm mb-1">Aucun groupe ne correspond à ta recherche.</p>
+                  <p className="text-gray-600 text-xs mb-5">Sois le premier à lancer une communauté sur ce sujet.</p>
+                  <button
+                    onClick={() => setActiveTab('create')}
+                    className="inline-flex items-center gap-2 bg-[#D4AF37] text-black font-bold text-xs px-4 py-2.5 rounded-full hover:bg-[#e0bd4f] transition-colors"
+                  >
+                    <Plus size={14} /> Créer un groupe
+                  </button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {groups.filter(g => g.name.toLowerCase().includes(searchQuery.toLowerCase())).map((group) => (
+                  {groups.filter(g => (category === 'all' || g.category === category) && g.name.toLowerCase().includes(searchQuery.toLowerCase())).map((group) => (
                     <Card 
                       key={group.id} 
                       onClick={() => router.push(`/groups/${group.id}`)}

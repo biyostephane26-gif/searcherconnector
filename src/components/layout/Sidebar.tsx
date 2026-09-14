@@ -8,7 +8,7 @@ import { supabase } from '../../lib/supabase'
 import {
   Home, Briefcase, Users, MessageSquare, DollarSign, User, Settings, Sparkles, Shield, BookOpen,
   PlusCircle, Inbox, Mic, X, Plus, Plug, ClipboardList, ChevronsUpDown, Globe, HelpCircle,
-  MessageCircleHeart, CreditCard, Download, LogOut, BookMarked, Gauge,
+  MessageCircleHeart, CreditCard, Download, LogOut, BookMarked, Gauge, Receipt,
 } from 'lucide-react'
 import { useMobileSidebar, closeMobileSidebar, openMobileSidebar } from '../../hooks/useMobileSidebar'
 import { computeProfileCompletion } from '../../lib/profileCompletion'
@@ -70,7 +70,6 @@ export default function Sidebar() {
     {
       title: 'Réseau',
       items: [
-        { icon: <Users className="w-4 h-4" />, label: t('nav.social'), path: '/social' },
         { icon: <Shield className="w-4 h-4" />, label: t('nav.groups'), path: '/groups' },
         { icon: <BookOpen className="w-4 h-4" />, label: t('nav.articles'), path: '/articles' },
       ],
@@ -81,7 +80,7 @@ export default function Sidebar() {
         { icon: <Plug className="w-4 h-4" />, label: 'Connecteurs', path: '/connectors' },
         { icon: <PlusCircle className="w-4 h-4" />, label: t('nav.opportunityCreator'), path: '/opportunity-creator' },
         { icon: <BookMarked className="w-4 h-4" />, label: t('nav.interviews'), path: '/interview-preps' },
-        { icon: <DollarSign className="w-4 h-4" />, label: t('nav.salary'), path: '/salary' },
+        { icon: <Receipt className="w-4 h-4" />, label: 'Transactions & Rapports', path: '/transactions' },
       ],
     },
   ]
