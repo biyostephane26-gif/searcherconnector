@@ -536,6 +536,11 @@ export default function AgentDashboard() {
       let body: any = { format: tool === 'excel' ? 'xlsx' : tool === 'word' ? 'docx' : 'pdf', prompt, source };
       if (tool === 'image') { endpoint = '/api/tools/image'; body = { prompt, aspect: 'landscape' }; }
       if (tool === 'video') { endpoint = '/api/tools/video'; body = { prompt }; }
+      if (tool === 'opportunity') {
+        endpoint = '/api/opportunity-creator';
+        const zone = /international|monde|global|world/i.test(prompt) ? 'international' : 'local';
+        body = { zone, limit: 15 };
+      }
 
       const res = await authFetch(endpoint, { method: 'POST', body: JSON.stringify(body) });
       const data = await res.json();
@@ -549,12 +554,18 @@ export default function AgentDashboard() {
       } else if (tool === 'video') {
         attachment = { kind: 'video', job: data.job, provider: data.provider };
         content = "Je crée ta vidéo, elle apparaîtra ici dès qu'elle est prête.";
+      } else if (tool === 'opportunity') {
+        const leads = data.top_targets || [];
+        attachment = { kind: 'opportunity', leads };
+        content = leads.length > 0
+          ? `J'ai trouvé **${leads.length} entreprise(s)** qui pourraient avoir besoin de tes services (${data.total_leads} au total dans ton pipeline). Voici les messages d'approche prêts à envoyer :`
+          : `Aucune nouvelle entreprise trouvée cette fois (${data.total_found || 0} scannées, déjà toutes dans ton pipeline). Réessaie plus tard ou avec une zone internationale.`;
       } else {
         attachment = { kind: 'file', filename: data.filename, mime: data.mime, base64: data.base64, size: data.size, title: data.title };
         content = `Ton fichier **${data.title}** est prêt.`;
       }
       setChatHistory(prev => [...prev, { role: 'agent', content, attachment }]);
-      saveChatMessage('agent', `${content} (${tool === 'image' || tool === 'video' ? meta.label : data.filename})`);
+      saveChatMessage('agent', `${content} (${tool === 'image' || tool === 'video' || tool === 'opportunity' ? meta.label : data.filename})`);
     } catch (e: any) {
       setChatHistory(prev => [...prev, { role: 'agent', content: `⚠️ ${e.message}` }]);
     } finally {
@@ -565,6 +576,10 @@ export default function AgentDashboard() {
   const pickTool = (tool: CoworkTool) => {
     setActiveTool(tool);
     setShowToolsMenu(false);
+    // « Créer une opportunité » n'a besoin d'aucun texte pour fonctionner —
+    // pré-remplir pour qu'Entrée suffise, tout en restant modifiable
+    // ("international" pour élargir la zone).
+    if (tool === 'opportunity') setUserInstruction('local');
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 

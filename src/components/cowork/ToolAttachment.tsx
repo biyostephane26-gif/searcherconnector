@@ -1,23 +1,25 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Download, FileSpreadsheet, FileText, FileType2, Loader2, AlertTriangle } from 'lucide-react'
+import { Download, FileSpreadsheet, FileText, FileType2, Loader2, AlertTriangle, Building2, Copy, Check, ExternalLink } from 'lucide-react'
 import { authFetch, downloadBase64 } from '../../lib/authFetch'
 
-export type CoworkTool = 'pdf' | 'excel' | 'word' | 'image' | 'video'
+export type CoworkTool = 'pdf' | 'excel' | 'word' | 'image' | 'video' | 'opportunity'
 
 export const TOOL_META: Record<CoworkTool, { label: string; emoji: string; placeholder: string }> = {
-  pdf:   { label: 'PDF',        emoji: '📄', placeholder: 'Décris le PDF à créer (CV, devis, rapport…)' },
-  excel: { label: 'Excel',      emoji: '📊', placeholder: 'Décris le tableau à créer (budget, planning…)' },
-  word:  { label: 'Word',       emoji: '📝', placeholder: 'Décris le document à rédiger (proposition, lettre…)' },
-  image: { label: 'Image',      emoji: '🖼️', placeholder: 'Décris l\'image à générer' },
-  video: { label: 'Mini-vidéo', emoji: '🎬', placeholder: 'Décris la courte vidéo à générer' },
+  pdf:         { label: 'PDF',              emoji: '📄', placeholder: 'Décris le PDF à créer (CV, devis, rapport…)' },
+  excel:       { label: 'Excel',            emoji: '📊', placeholder: 'Décris le tableau à créer (budget, planning…)' },
+  word:        { label: 'Word',             emoji: '📝', placeholder: 'Décris le document à rédiger (proposition, lettre…)' },
+  image:       { label: 'Image',            emoji: '🖼️', placeholder: 'Décris l\'image à générer' },
+  video:       { label: 'Mini-vidéo',       emoji: '🎬', placeholder: 'Décris la courte vidéo à générer' },
+  opportunity: { label: 'Créer une opportunité', emoji: '🎯', placeholder: 'Zone à cibler (local ou international) — laisse vide pour local' },
 }
 
 export type ToolAttachmentData =
   | { kind: 'file'; filename: string; mime: string; base64: string; size: number; title: string }
   | { kind: 'image'; src: string; provider: string; fallback?: boolean }
   | { kind: 'video'; job: string; provider: string }
+  | { kind: 'opportunity'; leads: Array<{ company_name: string; website?: string; digital_score: number; issues_detected: string[]; mockup_textuel: string; message_approche: string }> }
 
 const fileIcon = (mime: string) =>
   mime.includes('sheet') ? <FileSpreadsheet className="w-6 h-6 text-emerald-400" />
@@ -61,7 +63,55 @@ export default function ToolAttachment({ data }: { data: ToolAttachmentData }) {
     )
   }
 
+  if (data.kind === 'opportunity') return <OpportunityAttachment leads={data.leads} />
+
   return <VideoAttachment job={data.job} provider={data.provider} />
+}
+
+function OpportunityAttachment({ leads }: { leads: Extract<ToolAttachmentData, { kind: 'opportunity' }>['leads'] }) {
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null)
+  if (leads.length === 0) {
+    return (
+      <p className="mt-3 text-xs text-gray-500 bg-black/30 border border-[#2a2a2a] rounded-xl p-3">
+        Aucune nouvelle entreprise trouvée cette fois — réessaie plus tard ou avec une autre zone.
+      </p>
+    )
+  }
+  return (
+    <div className="mt-3 space-y-3">
+      {leads.slice(0, 5).map((lead, i) => (
+        <div key={i} className="bg-black/30 border border-[#2a2a2a] rounded-xl p-3.5">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <Building2 className="w-4 h-4 text-[#D4AF37] shrink-0" />
+              <span className="text-sm font-semibold text-white truncate">{lead.company_name}</span>
+              {lead.website && (
+                <a href={lead.website} target="_blank" rel="noreferrer" className="text-gray-500 hover:text-[#D4AF37] shrink-0">
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+            </div>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#2a2a2a] text-gray-400 shrink-0">
+              Score digital {lead.digital_score}/100
+            </span>
+          </div>
+          {lead.issues_detected?.length > 0 && (
+            <p className="text-[11px] text-gray-500 mb-2">{lead.issues_detected.slice(0, 2).join(' · ')}</p>
+          )}
+          <p className="text-xs text-gray-300 whitespace-pre-wrap mb-2">{lead.message_approche}</p>
+          <button
+            onClick={() => { navigator.clipboard.writeText(lead.message_approche); setCopiedIdx(i); setTimeout(() => setCopiedIdx(null), 1500) }}
+            className="flex items-center gap-1.5 text-[11px] font-bold text-[#D4AF37] hover:underline"
+          >
+            {copiedIdx === i ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />} Copier le message
+          </button>
+        </div>
+      ))}
+      <a href="/opportunity-creator" className="inline-flex items-center gap-1 text-xs font-bold text-[#D4AF37] hover:underline">
+        Voir tout le pipeline <ExternalLink className="w-3 h-3" />
+      </a>
+    </div>
+  )
 }
 
 function VideoAttachment({ job, provider }: { job: string; provider: string }) {
