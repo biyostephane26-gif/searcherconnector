@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
     .limit(10)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  if (!tasks || tasks.length === 0) return NextResponse.json({ processed: 0 })
+  if (!tasks || tasks.length === 0) return NextResponse.json({ processed: 0, debug_tasksReturned: tasks?.length ?? null, debug_isArray: Array.isArray(tasks) })
 
   let processed = 0
   for (const task of tasks) {
