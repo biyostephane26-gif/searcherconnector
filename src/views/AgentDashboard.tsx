@@ -17,6 +17,7 @@ import ConnectorsPanel from '../components/cowork/ConnectorsPanel';
 import OutputsPanel from '../components/cowork/OutputsPanel';
 import ProjectsPanel from '../components/cowork/ProjectsPanel';
 import ToolAttachment, { TOOL_META, type CoworkTool, type ToolAttachmentData } from '../components/cowork/ToolAttachment';
+import { CONNECTORS } from '../lib/connectors/catalog';
 import { authFetch } from '../lib/authFetch';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
@@ -48,7 +49,12 @@ import {
   Volume2,
   Plus,
   X,
-  Plug
+  Plug,
+  PanelRightClose,
+  PanelRightOpen,
+  FolderKanban,
+  CalendarClock,
+  Settings2
 } from 'lucide-react';
 
 const ACTION_ICONS: Record<string, any> = {
@@ -75,11 +81,26 @@ export default function AgentDashboard() {
   const hour = new Date().getHours();
   const greeting = hour < 5 ? 'Bonsoir' : hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
   const greetingEmoji = hour < 5 ? '🌙' : hour < 18 ? '☀️' : '🌙';
-  const [activeTab, setActiveTab] = useState<'status' | 'queue' | 'communications' | 'outputs' | 'projects' | 'connectors' | 'config'>('status');
+  const [activeTab, setActiveTab] = useState<'status' | 'queue' | 'communications' | 'projects' | 'connectors' | 'config'>('status');
   // Outils Cowork (PDF, Excel, Word, image, vidéo) sélectionnés depuis le menu « + »
   const [activeTool, setActiveTool] = useState<CoworkTool | null>(null);
   const [showToolsMenu, setShowToolsMenu] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Panneau droit persistant (Sorties + Contexte) façon Cowork — repliable
+  // en grand écran, tiroir superposé en dessous de xl.
+  const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
+  const [connectedConnectors, setConnectedConnectors] = useState<string[]>([]);
+  useEffect(() => {
+    if (!user) return;
+    authFetch('/api/connectors').then(async r => {
+      const d = await r.json();
+      if (!r.ok) return;
+      const connectedIds = (d.states || []).filter((s: any) => s.status === 'connected').map((s: any) => s.id);
+      setConnectedConnectors(connectedIds.map((id: string) => CONNECTORS.find(c => c.id === id)?.name || id));
+    }).catch(() => {});
+  }, [user]);
 
   // Ouverture directe depuis la recherche globale ou la page /connectors
   // (?tab=connectors, ?tool=pdf…) — appliqué une seule fois au montage.
@@ -602,10 +623,15 @@ export default function AgentDashboard() {
     { id: 'status', label: 'Statut Live', icon: '⚡' },
     { id: 'queue', label: `File d'attente (${pendingQueue})`, icon: '📋' },
     { id: 'communications', label: 'Emails & WA', icon: '📨' },
-    { id: 'outputs', label: 'Sorties', icon: '📁' },
-    { id: 'projects', label: 'Projets', icon: '🗂️' },
-    { id: 'connectors', label: 'Connecteurs', icon: '🔌' },
-    { id: 'config', label: 'Programmé', icon: '📅' }
+  ];
+
+  // Rail gauche façon Cowork (Nouveau / Projets / Programmé / Connecteurs /
+  // Personnaliser) — navigation persistante, plus des onglets qui se
+  // mélangent avec le statut du chat.
+  const railItems: { id: typeof activeTab; label: string; icon: JSX.Element }[] = [
+    { id: 'projects', label: 'Projets', icon: <FolderKanban size={16} /> },
+    { id: 'config', label: 'Programmé', icon: <CalendarClock size={16} /> },
+    { id: 'connectors', label: 'Connecteurs', icon: <Plug size={16} /> },
   ];
 
   // Extrait pour être rendu à deux endroits : l'écran d'accueil (aucun
@@ -762,11 +788,71 @@ export default function AgentDashboard() {
     </>
   )
 
-  return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="max-w-4xl mx-auto px-6 py-6">
+  // Panneau droit persistant façon Cowork — Sorties + Contexte, visible en
+  // permanence à côté de la conversation (pas un onglet qu'on bascule).
+  const renderRightPanel = (opts?: { onClose?: () => void }) => (
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800 shrink-0">
+        <span className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500">Progression</span>
+        {opts?.onClose ? (
+          <button onClick={opts.onClose} className="text-gray-500 hover:text-white transition-colors"><X size={16} /></button>
+        ) : (
+          <button onClick={() => setRightPanelOpen(false)} className="text-gray-500 hover:text-white transition-colors" title="Replier le panneau">
+            <PanelRightClose size={16} />
+          </button>
+        )}
+      </div>
+      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <OutputsPanel />
+        <div>
+          <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">Contexte</p>
+          {connectedConnectors.length === 0 ? (
+            <p className="text-xs text-gray-600">Aucun connecteur actif — SCAI travaille avec ton profil seul.</p>
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              {connectedConnectors.map(name => (
+                <span key={name} className="text-[11px] bg-[#111111] border border-gray-800 rounded-full px-2.5 py-1 text-gray-300">{name}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
 
-        {chatHistory.length === 0 ? (
+  return (
+    <div className="min-h-screen bg-black text-white flex">
+
+      {/* Rail gauche persistant façon Cowork — Nouveau / Projets / Programmé / Connecteurs / Personnaliser */}
+      <aside className="hidden lg:flex w-52 shrink-0 border-r border-gray-800 flex-col gap-1 p-3">
+        <button
+          onClick={() => { setActiveTab('status'); clearChat(); }}
+          className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-syne font-bold text-black bg-[#D4AF37] hover:bg-[#B8962D] transition-colors mb-3"
+        >
+          <Plus size={16} /> Nouveau
+        </button>
+        <nav className="flex flex-col gap-1">
+          {railItems.map(item => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left ${
+                activeTab === item.id ? 'bg-[#1A1A1A] text-[#D4AF37]' : 'text-gray-400 hover:text-white hover:bg-[#111111]'
+              }`}
+            >
+              {item.icon} {item.label}
+            </button>
+          ))}
+          <a href="/settings" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-[#111111] transition-colors">
+            <Settings2 size={16} /> Personnaliser
+          </a>
+        </nav>
+      </aside>
+
+      <div className="flex-1 min-w-0 px-4 sm:px-6 py-6">
+      <div className="max-w-3xl mx-auto">
+
+        {activeTab === 'status' && (chatHistory.length === 0 ? (
           /* ── Écran d'accueil — grande salutation + saisie centrée + activité récente,
              affiché tant qu'aucune conversation n'a démarré ─────────────────────── */
           <div className="flex flex-col items-center pt-10 pb-8">
@@ -976,23 +1062,47 @@ export default function AgentDashboard() {
           </div>
         </div>
         </>
-        )}
+        ))}
 
         {/* Tabs */}
-        <div className="flex gap-0 mb-6 border-b border-gray-800">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 py-2.5 text-sm transition-colors border-b-2 -mb-px ${
-                activeTab === tab.id
-                  ? 'text-[#D4AF37] border-[#D4AF37]'
-                  : 'text-gray-500 border-transparent hover:text-white'
-              }`}
-            >
-              {tab.icon} {tab.label}
-            </button>
-          ))}
+        <div className="flex items-center gap-0 mb-6 border-b border-gray-800">
+          <div className="flex gap-0 flex-1 overflow-x-auto">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`px-4 py-2.5 text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'text-[#D4AF37] border-[#D4AF37]'
+                    : 'text-gray-500 border-transparent hover:text-white'
+                }`}
+              >
+                {tab.icon} {tab.label}
+              </button>
+            ))}
+            {/* En dessous de lg, le rail gauche est masqué — ses entrées
+               rejoignent donc la barre d'onglets pour rester accessibles. */}
+            {railItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`lg:hidden flex items-center gap-1.5 px-4 py-2.5 text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                  activeTab === item.id
+                    ? 'text-[#D4AF37] border-[#D4AF37]'
+                    : 'text-gray-500 border-transparent hover:text-white'
+                }`}
+              >
+                {item.icon} {item.label}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => setMobilePanelOpen(true)}
+            className="xl:hidden shrink-0 p-2 text-gray-400 hover:text-[#D4AF37] transition-colors"
+            title="Sorties & Contexte"
+          >
+            <PanelRightOpen size={18} />
+          </button>
         </div>
 
         {/* Tab: Status Live */}
@@ -1201,9 +1311,6 @@ export default function AgentDashboard() {
           </div>
         )}
 
-        {/* Tab: Sorties */}
-        {activeTab === 'outputs' && <OutputsPanel />}
-
         {/* Tab: Projets */}
         {activeTab === 'projects' && <ProjectsPanel />}
 
@@ -1302,6 +1409,33 @@ export default function AgentDashboard() {
         )}
 
       </div>
+      </div>
+
+      {/* Panneau droit persistant façon Cowork — Sorties + Contexte */}
+      {rightPanelOpen ? (
+        <aside className="hidden xl:flex w-80 shrink-0 border-l border-gray-800 flex-col">
+          {renderRightPanel()}
+        </aside>
+      ) : (
+        <button
+          onClick={() => setRightPanelOpen(true)}
+          className="hidden xl:flex fixed right-4 top-6 z-10 p-2 bg-[#111111] border border-gray-800 rounded-lg text-gray-400 hover:text-[#D4AF37] transition-colors"
+          title="Ouvrir Sorties & Contexte"
+        >
+          <PanelRightOpen size={18} />
+        </button>
+      )}
+
+      {/* Tiroir mobile/tablette pour le panneau droit (en dessous de xl) */}
+      {mobilePanelOpen && (
+        <div className="fixed inset-0 z-40 xl:hidden">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setMobilePanelOpen(false)} />
+          <div className="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-black border-l border-gray-800">
+            {renderRightPanel({ onClose: () => setMobilePanelOpen(false) })}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
