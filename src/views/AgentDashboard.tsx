@@ -15,6 +15,7 @@ import ScaiThinkingOrb from '../components/scai/ScaiThinkingOrb';
 import VoiceWaveform from '../components/scai/VoiceWaveform';
 import ConnectorsPanel from '../components/cowork/ConnectorsPanel';
 import OutputsPanel from '../components/cowork/OutputsPanel';
+import ProjectsPanel from '../components/cowork/ProjectsPanel';
 import ToolAttachment, { TOOL_META, type CoworkTool, type ToolAttachmentData } from '../components/cowork/ToolAttachment';
 import { authFetch } from '../lib/authFetch';
 import { formatDistanceToNow } from 'date-fns';
@@ -74,7 +75,7 @@ export default function AgentDashboard() {
   const hour = new Date().getHours();
   const greeting = hour < 5 ? 'Bonsoir' : hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
   const greetingEmoji = hour < 5 ? '🌙' : hour < 18 ? '☀️' : '🌙';
-  const [activeTab, setActiveTab] = useState<'status' | 'queue' | 'communications' | 'outputs' | 'connectors' | 'config'>('status');
+  const [activeTab, setActiveTab] = useState<'status' | 'queue' | 'communications' | 'outputs' | 'projects' | 'connectors' | 'config'>('status');
   // Outils Cowork (PDF, Excel, Word, image, vidéo) sélectionnés depuis le menu « + »
   const [activeTool, setActiveTool] = useState<CoworkTool | null>(null);
   const [showToolsMenu, setShowToolsMenu] = useState(false);
@@ -602,8 +603,9 @@ export default function AgentDashboard() {
     { id: 'queue', label: `File d'attente (${pendingQueue})`, icon: '📋' },
     { id: 'communications', label: 'Emails & WA', icon: '📨' },
     { id: 'outputs', label: 'Sorties', icon: '📁' },
+    { id: 'projects', label: 'Projets', icon: '🗂️' },
     { id: 'connectors', label: 'Connecteurs', icon: '🔌' },
-    { id: 'config', label: 'Configuration', icon: '⚙️' }
+    { id: 'config', label: 'Programmé', icon: '📅' }
   ];
 
   // Extrait pour être rendu à deux endroits : l'écran d'accueil (aucun
@@ -1202,14 +1204,40 @@ export default function AgentDashboard() {
         {/* Tab: Sorties */}
         {activeTab === 'outputs' && <OutputsPanel />}
 
+        {/* Tab: Projets */}
+        {activeTab === 'projects' && <ProjectsPanel />}
+
         {/* Tab: Connecteurs */}
         {activeTab === 'connectors' && (
           <ConnectorsPanel onUseTool={(id) => { if (id in TOOL_META) { pickTool(id as CoworkTool); window.scrollTo({ top: 0, behavior: 'smooth' }); } }} />
         )}
 
-        {/* Tab: Config */}
+        {/* Tab: Programmé */}
         {activeTab === 'config' && schedule && (
           <div className="space-y-4">
+
+            {(() => {
+              const lastScan = recentActions?.find((a: any) => a.action_type === 'search_scan')
+              if (!lastScan) return (
+                <div className="bg-[#111111] border border-gray-800 rounded-xl p-4 flex items-center gap-3">
+                  <Clock size={16} className="text-gray-500 shrink-0" />
+                  <p className="text-sm text-gray-400">Aucun scan encore effectué — le premier tournera dès que tu lances SCAI ou dans les {schedule.scan_frequency_hours}h.</p>
+                </div>
+              )
+              const next = new Date(new Date(lastScan.created_at).getTime() + schedule.scan_frequency_hours * 3600_000)
+              const isDue = next.getTime() <= Date.now()
+              return (
+                <div className="bg-[#111111] border border-gray-800 rounded-xl p-4 flex items-center gap-3">
+                  <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse shrink-0" />
+                  <p className="text-sm text-gray-300">
+                    {isDue ? 'Prochain scan : imminent (dès la prochaine vérification)' : (
+                      <>Prochain scan planifié {formatDistanceToNow(next, { addSuffix: true, locale: fr })}</>
+                    )}
+                    <span className="text-gray-500"> · dernier scan {formatDistanceToNow(new Date(lastScan.created_at), { addSuffix: true, locale: fr })}</span>
+                  </p>
+                </div>
+              )
+            })()}
 
             <div className="bg-[#111111] border border-gray-800 rounded-xl p-5">
               <div className="font-syne font-bold text-sm text-white mb-4">⏰ Fréquence de scan</div>
