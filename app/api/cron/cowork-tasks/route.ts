@@ -51,22 +51,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 
-  if (req.nextUrl.searchParams.get('debug') === '1') {
-    const all = await supabaseAdmin.from('cowork_tasks').select('*')
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-    return NextResponse.json({ debug: true, url, count: all.data?.length ?? null, error: all.error?.message ?? null, sample: all.data?.[0] ?? null })
-  }
-  if (req.nextUrl.searchParams.get('seed') === '1') {
-    const ins = await supabaseAdmin.from('cowork_tasks').insert({
-      user_id: '31149537-cda3-4c9b-81ae-f91884ee2d48',
-      title: 'TEST_TASK_VIA_APP_DELETE_ME',
-      steps: [{ tool: 'pdf', prompt: 'Un court test PDF', status: 'pending' }],
-      current_step: 0,
-      status: 'running',
-    }).select('id').single()
-    return NextResponse.json({ seeded: true, id: ins.data?.id ?? null, error: ins.error?.message ?? null })
-  }
-
   const { data: tasks, error } = await supabaseAdmin
     .from('cowork_tasks')
     .select('id, user_id, steps, current_step, status')
@@ -75,7 +59,7 @@ export async function GET(req: NextRequest) {
     .limit(10)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  if (!tasks || tasks.length === 0) return NextResponse.json({ processed: 0, debug_tasksReturned: tasks?.length ?? null, debug_isArray: Array.isArray(tasks) })
+  if (!tasks || tasks.length === 0) return NextResponse.json({ processed: 0 })
 
   let processed = 0
   for (const task of tasks) {
