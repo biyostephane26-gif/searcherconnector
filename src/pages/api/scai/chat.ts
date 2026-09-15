@@ -1,8 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getScaiSessions } from '../../../lib/mongo';
-import { fetchGroqWithRotation, genererSystemPrompt } from '../../../lib/scaiUtils';
+import { fetchGroqWithRotation, fetchGeminiVision, genererSystemPrompt } from '../../../lib/scaiUtils';
 import { checkRateLimit } from '../../../lib/rateLimiter';
 import { supabaseAdmin } from '../../../lib/supabaseAdmin';
+
+// Une image collée/envoyée dans le chat en base64 dépasse vite la limite
+// par défaut (1 Mo) du body parser des routes Pages Router.
+export const config = { api: { bodyParser: { sizeLimit: '8mb' } } };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -10,9 +14,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { userId, message, userProfile = {} } = req.body;
+    const { userId, message, userProfile = {}, image } = req.body;
     if (!userId || !message) {
       return res.status(400).json({ error: "userId et message sont requis." });
+    }
+    // Image collée/envoyée dans le chat (data URL) — limite raisonnable
+    // côté requête pour ne pas saturer le body parser par défaut de Next.
+    if (image && typeof image === 'string' && image.length > 8_000_000) {
+      return res.status(413).json({ error: 'Image trop lourde (max ~6 Mo).' });
     }
 
     // Anti-spam : 20 messages / minute max par utilisateur (protège les clés Groq/Gemini)
@@ -70,10 +79,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ];
 
     // 4. ENVOI À GROQ avec fallback Gemini automatique
+    // (ou analyse Gemini Vision directement si une image accompagne le message —
+    // Groq ne traite pas d'images sur ce modèle)
     // Timeout de 30s sur l'appel IA pour ne pas bloquer le serveur
     let reponseSCAI: string
     try {
-      const aiPromise = fetchGroqWithRotation(fenetreEnvoi)
+      const aiPromise = (image && typeof image === 'string')
+        ? fetchGeminiVision(fenetreEnvoi, image)
+        : fetchGroqWithRotation(fenetreEnvoi)
       const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('Timeout IA — les moteurs ont pris trop de temps. Réessaie.')), 30000)
       )
@@ -109,6 +122,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         suggest_scan = true;
         reponseNettoyee = reponseNettoyee.replace(scanTokenMatch[0], '').trim();
       }
+    }
+
+    // ── Détecter le token [TOOL_READY:{...}] — SCAI demande un vrai outil
+    // (PDF/Excel/Word/image/vidéo/prospection) au lieu d'halluciner un résultat ──
+    let tool_call: { tool: string; prompt: string } | null = null;
+    const toolTokenMatch = reponseNettoyee.match(/\[TOOL_READY:(\{[^\]]+\})\]/i);
+    if (toolTokenMatch) {
+      try {
+        const parsed = JSON.parse(toolTokenMatch[1]);
+        const validTools = ['pdf', 'excel', 'word', 'image', 'video', 'opportunity'];
+        if (validTools.includes(parsed.tool) && typeof parsed.prompt === 'string') {
+          tool_call = { tool: parsed.tool, prompt: parsed.prompt };
+        }
+      } catch (_) { /* token malformé — on ignore, pas d'outil déclenché */ }
+      reponseNettoyee = reponseNettoyee.replace(toolTokenMatch[0], '').trim();
     }
 
     // Détection de fallback : si l'utilisateur lui-même demande le scan explicitement
@@ -167,12 +195,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
     }
 
-    return res.status(200).json({ 
-      success: true, 
+    return res.status(200).json({
+      success: true,
       response: reponseNettoyee,
       suggest_scan,
       scan_params,          // { zone, has_budget, profile_type, domain } — le client l'utilise pour lancer le scan
       detected_updates,     // mises à jour de profil détectées dans le message utilisateur
+      tool_call,            // { tool, prompt } — le client déclenche le vrai outil (PDF/image/vidéo/…) si présent
     });
   } catch (err: any) {
     const errMsg = err?.message || 'Erreur inconnue'

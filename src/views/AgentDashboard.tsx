@@ -145,7 +145,19 @@ export default function AgentDashboard() {
     } catch { /* stockage indisponible */ }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draftKey]);
-  const [chatHistory, setChatHistory] = useState<{role: 'agent' | 'user', content: string, thought?: string, showThought?: boolean, attachment?: ToolAttachmentData}[]>([]);
+  const [chatHistory, setChatHistory] = useState<{role: 'agent' | 'user', content: string, thought?: string, showThought?: boolean, attachment?: ToolAttachmentData, image?: string}[]>([]);
+  // Image collée (Ctrl+V) ou téléversée, en attente d'envoi — SCAI l'analyse
+  // réellement via Gemini Vision, ce n'est pas un accusé de réception factice.
+  const [attachedImage, setAttachedImage] = useState<string | null>(null);
+  const attachImageFile = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setChatHistory(prev => [...prev, { role: 'agent', content: "Je ne sais analyser que des images pour l'instant dans le chat (captures d'écran, portfolio...). Pour un CV/document, utilise plutôt ton [Profil](/profile)." }]);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setAttachedImage(reader.result as string);
+    reader.readAsDataURL(file);
+  };
   const [isProcessing, setIsProcessing] = useState(false);
   
   // Hook SCAI Voice pour transcription
@@ -325,26 +337,28 @@ export default function AgentDashboard() {
     // Désormais géré automatiquement par MongoDB côté backend !
   };
 
-  const handleSendMessage = async (text: string) => {
-    if (!text.trim() || !user) return;
-    
-    const userMsg = { role: 'user' as const, content: text };
+  const handleSendMessage = async (text: string, image?: string) => {
+    if ((!text.trim() && !image) || !user) return;
+
+    const userMsg = { role: 'user' as const, content: text, image };
     setChatHistory(prev => [...prev, userMsg]);
     setUserInstruction('');
+    setAttachedImage(null);
     setIsProcessing(true);
-    
+
     // Sauvegarder le message utilisateur
     await saveChatMessage('user', text);
 
     try {
       // On récupère l'historique mis à jour pour l'envoi
       const currentMessages = [...chatHistory, userMsg];
-      
+
       const res = await fetch('/api/scai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user.id,
+          image,
           message: text,
           userProfile: profile
         }),
@@ -357,32 +371,27 @@ export default function AgentDashboard() {
       const data = await res.json();
 
       // Mettre à jour le chat avec la réponse
-      if (data && data.response) {
-        let content = data.response;
-        let scanParams: any = null;
-        
-        // Détecter le token SCAN_READY
-        const scanMatch = content.match(/\[SCAN_READY:(.*?)\]/);
-        if (scanMatch) {
-          try {
-            scanParams = JSON.parse(scanMatch[1]);
-            content = content.replace(scanMatch[0], ''); // Enlever le token du message
-          } catch (e) {
-            console.error('Erreur parsing SCAN_READY:', e);
-          }
+      // (le token SCAN_READY / TOOL_READY est déjà extrait côté serveur —
+      // data.response arrive nettoyé, data.scan_params / data.tool_call
+      // portent l'intention détectée. Une réponse réduite au seul token
+      // devient une chaîne vide ici — ce n'est pas une erreur : le
+      // résultat réel du vrai outil suit juste en dessous.)
+      if (data && data.success !== false && typeof data.response === 'string') {
+        if (data.response.trim()) {
+          setChatHistory(prev => [...prev, { role: 'agent' as const, content: data.response }]);
         }
-
-        const agentMsg = { 
-          role: 'agent' as const, 
-          content: content
-        };
-        setChatHistory(prev => [...prev, agentMsg]);
-        
-        if (scanParams) {
-          setPendingScanConfirm(scanParams);
+        if (data.suggest_scan && data.scan_params) {
+          setPendingScanConfirm(data.scan_params);
         }
       } else {
-        throw new Error('Format de réponse IA invalide');
+        throw new Error(data?.error || 'Format de réponse IA invalide');
+      }
+
+      // SCAI a déterminé qu'un vrai outil (PDF/Excel/Word/image/vidéo/
+      // prospection) doit se déclencher — même moteur que le menu « + »,
+      // pas de texte inventé : le résultat réel arrive dans la foulée.
+      if (data.tool_call?.tool && data.tool_call?.prompt) {
+        await runTool(data.tool_call.tool, data.tool_call.prompt, undefined, { skipUserEcho: true });
       }
 
       // Si l'IA a détecté des mises à jour de profil (domaine, pays, préférences)
@@ -547,18 +556,20 @@ export default function AgentDashboard() {
     await updateSchedule({ [key]: value });
   };
 
-  const runTool = async (tool: CoworkTool, prompt: string, source?: 'opportunities' | 'applications') => {
-    if (isProcessing) return;
+  const runTool = async (tool: CoworkTool, prompt: string, source?: 'opportunities' | 'applications', opts?: { skipUserEcho?: boolean }) => {
+    if (isProcessing && !opts?.skipUserEcho) return;
     const meta = TOOL_META[tool];
-    const userText = source
-      ? `${meta.emoji} Exporter mes ${source === 'opportunities' ? 'opportunités' : 'candidatures'} en ${meta.label}`
-      : `${meta.emoji} ${meta.label} : ${prompt}`;
-    setChatHistory(prev => [...prev, { role: 'user', content: userText }]);
+    if (!opts?.skipUserEcho) {
+      const userText = source
+        ? `${meta.emoji} Exporter mes ${source === 'opportunities' ? 'opportunités' : 'candidatures'} en ${meta.label}`
+        : `${meta.emoji} ${meta.label} : ${prompt}`;
+      setChatHistory(prev => [...prev, { role: 'user', content: userText }]);
+      saveChatMessage('user', userText);
+    }
     setUserInstruction('');
     setActiveTool(null);
     setShowToolsMenu(false);
     setIsProcessing(true);
-    saveChatMessage('user', userText);
 
     try {
       let endpoint = '/api/tools/document';
@@ -614,9 +625,9 @@ export default function AgentDashboard() {
 
   const submitInput = () => {
     const text = userInstruction.trim();
-    if (!text || isProcessing) return;
+    if ((!text && !attachedImage) || isProcessing) return;
     if (activeTool) runTool(activeTool, text);
-    else handleSendMessage(text);
+    else handleSendMessage(text || 'Analyse cette image.', attachedImage || undefined);
   };
 
   const tabs = [
@@ -639,6 +650,21 @@ export default function AgentDashboard() {
   // un seul endroit à maintenir.
   const renderComposer = () => (
     <>
+            {attachedImage && (
+              <div className="flex items-center gap-2 px-1 -mb-2">
+                <div className="relative">
+                  <img src={attachedImage} alt="Image à envoyer" className="w-14 h-14 object-cover rounded-lg border border-gray-700" />
+                  <button
+                    onClick={() => setAttachedImage(null)}
+                    className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-black border border-gray-600 flex items-center justify-center text-gray-300 hover:text-white hover:border-red-500"
+                    aria-label="Retirer l'image"
+                  >
+                    <X size={10} />
+                  </button>
+                </div>
+                <span className="text-[11px] text-gray-500">Image prête — décris ce que tu veux savoir, ou envoie tel quel.</span>
+              </div>
+            )}
             {activeTool && (
               <div className="flex flex-wrap items-center gap-2 px-1 -mb-2">
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#D4AF37] bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-full pl-2.5 pr-1 py-1">
@@ -679,24 +705,20 @@ export default function AgentDashboard() {
                 </div>
               )}
               <input
-                type="file" 
-                id="agent-upload" 
-                className="hidden" 
-                multiple
+                type="file"
+                id="agent-upload"
+                className="hidden"
+                accept="image/*"
                 onChange={(e) => {
-                  const files = e.target.files;
-                  if (files?.length) {
-                    setChatHistory(prev => [...prev, { role: 'user', content: `[Téléversement de ${files.length} fichier(s)]` }]);
-                    setTimeout(() => {
-                      setChatHistory(prev => [...prev, { role: 'agent', content: "Merci pour ces documents. Je vais les analyser pour affiner votre profil et vos opportunités." }]);
-                    }, 1000);
-                  }
+                  const file = e.target.files?.[0];
+                  if (file) attachImageFile(file);
+                  e.target.value = '';
                 }}
               />
-              <button 
+              <button
                 onClick={() => document.getElementById('agent-upload')?.click()}
                 className="p-2 text-gray-400 hover:text-[#D4AF37] transition-colors"
-                title="Téléverser un document, photo ou vidéo"
+                title="Envoyer une image à analyser (capture d'écran, portfolio...)"
               >
                 <Paperclip size={20} />
               </button>
@@ -712,6 +734,11 @@ export default function AgentDashboard() {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') submitInput();
                   if (e.key === 'Escape') { setActiveTool(null); setShowToolsMenu(false); }
+                }}
+                onPaste={(e) => {
+                  const item = Array.from(e.clipboardData.items).find(i => i.type.startsWith('image/'));
+                  const file = item?.getAsFile();
+                  if (file) { e.preventDefault(); attachImageFile(file); }
                 }}
               />
 
@@ -827,10 +854,19 @@ export default function AgentDashboard() {
       <aside className="hidden lg:flex w-52 shrink-0 border-r border-gray-800 flex-col gap-1 p-3">
         <button
           onClick={() => { setActiveTab('status'); clearChat(); }}
-          className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-syne font-bold text-black bg-[#D4AF37] hover:bg-[#B8962D] transition-colors mb-3"
+          className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-syne font-bold transition-colors ${
+            showClearConfirm ? 'bg-red-500 text-white hover:bg-red-600' : 'text-black bg-[#D4AF37] hover:bg-[#B8962D]'
+          }`}
         >
-          <Plus size={16} /> Nouveau
+          <Plus size={16} /> {showClearConfirm ? 'Confirmer ?' : 'Nouveau'}
         </button>
+        {showClearConfirm ? (
+          <button onClick={() => setShowClearConfirm(false)} className="text-[11px] text-gray-500 hover:text-white text-left px-1 mb-2">
+            Annuler — garder la conversation
+          </button>
+        ) : (
+          <div className="mb-2" />
+        )}
         <nav className="flex flex-col gap-1">
           {railItems.map(item => (
             <button
@@ -1026,7 +1062,10 @@ export default function AgentDashboard() {
                         {msg.attachment && <ToolAttachment data={msg.attachment} />}
                       </div>
                     ) : (
-                      <div className="whitespace-pre-wrap">{msg?.content || ''}</div>
+                      <div>
+                        {msg?.image && <img src={msg.image} alt="Image envoyée" className="rounded-lg max-w-full max-h-64 mb-2" />}
+                        {msg?.content && <div className="whitespace-pre-wrap">{msg.content}</div>}
+                      </div>
                     )}
                   </div>
                 </div>

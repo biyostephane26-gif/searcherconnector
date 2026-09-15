@@ -155,6 +155,45 @@ export async function fetchGroqWithRotation(messages: any[]): Promise<string> {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════
+// VISION — analyse réelle d'une image collée/envoyée dans le chat
+// (Gemini uniquement : Groq n'accepte pas d'image sur ce modèle)
+// ═══════════════════════════════════════════════════════════════
+export async function fetchGeminiVision(messages: any[], imageDataUrl: string): Promise<string> {
+  if (geminiKeys.length === 0) throw new Error('Aucune clé Gemini configurée pour analyser une image.');
+
+  const match = imageDataUrl.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
+  if (!match) throw new Error('Image invalide.');
+  const [, mimeType, base64] = match;
+
+  const systemMsg = messages.find((m: any) => m.role === 'system')?.content || '';
+  const lastUser = messages.filter((m: any) => m.role === 'user').pop()?.content || 'Décris et analyse cette image.';
+  const prompt = `${systemMsg.slice(0, 3000)}\n---\nL'utilisateur vient d'envoyer une image dans le chat, avec ce message : "${lastUser}"\nAnalyse le CONTENU RÉEL de l'image (ex: CV, portfolio, capture d'écran d'une offre, design...) et réponds en tenant compte de ce que tu vois concrètement — jamais une réponse générique qui ignore l'image.`;
+
+  for (let i = 0; i < geminiKeys.length; i++) {
+    if (isOnCooldown(geminiCooldown, i)) continue;
+    try {
+      const r = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKeys[i]}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: mimeType, data: base64 } }] }],
+            generationConfig: { maxOutputTokens: 1200, temperature: 0.6 },
+          }),
+          signal: AbortSignal.timeout(25000),
+        }
+      );
+      if (r.status === 429) { setCooldown(geminiCooldown, i, 70); continue; }
+      if (!r.ok) continue;
+      const text = (await r.json()).candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+      if (text && text.length > 3) return text;
+    } catch { continue; }
+  }
+  throw new Error("Impossible d'analyser l'image pour le moment (Gemini indisponible).");
+}
+
 // Exporter callGemini séparément pour verify-profile et autres usages directs
 export async function callGeminiDirect(prompt: string): Promise<string | null> {
   for (let i = 0; i < geminiKeys.length; i++) {
@@ -367,16 +406,38 @@ les critères sont prêts, émets le token SCAN_READY — ne raconte JAMAIS
 toi-même un scan "en cours" puis des "résultats", car ça n'existe pas tant
 que le token n'a pas été traité par le vrai backend.
 
-Même interdiction pour les PDF : tu ne peux PAS générer de PDF toi-même
-dans le chat. N'écris jamais un faux contenu de CV/lettre avec un
-"[lien de téléchargement]" fictif. Le vrai PDF se génère via le bouton
-"Exporter PDF" (page Applications ou Opportunités). Dis à l'utilisateur
-d'utiliser ce bouton, propose-lui d'améliorer le texte de son profil si
-besoin, mais ne simule jamais un fichier généré.
-
 Inventer un résultat, un chiffre ou un lien = fausse information grave qui
 détruit la confiance de l'utilisateur envers SCAI. Dans le doute, dis "je
 n'ai pas encore lancé de scan réel" plutôt que d'inventer.
+
+══════════════════════════════════════════════
+PROTOCOLE OUTILS — PDF / EXCEL / WORD / IMAGE / VIDÉO / PROSPECTION
+══════════════════════════════════════════════
+Tu as de VRAIS outils connectés, utilisables directement depuis CETTE
+conversation — jamais besoin de renvoyer l'utilisateur vers un site
+externe (DALL·E, Midjourney, Canva...) ou un bouton ailleurs dans l'app :
+- Document (pdf / excel / word) : CV, résumé de compétences, rapport, lettre...
+- Image : génère une vraie image à partir d'une description
+- Vidéo : mini-vidéo générée par IA (plans Pro/Premium uniquement)
+- Prospection ("opportunity") : trouve des entreprises/investisseurs et prépare des messages d'approche prêts à envoyer
+
+Dès que l'utilisateur demande clairement l'un de ces livrables :
+NE DÉCRIS JAMAIS le contenu toi-même dans le chat, N'ÉCRIS JAMAIS de faux
+lien de téléchargement, et NE RENVOIE JAMAIS vers un outil externe. Émets
+ce token exact sur une ligne séparée dès que tu sais quoi produire :
+[TOOL_READY:{"tool":"pdf|excel|word|image|video|opportunity","prompt":"description précise et complète de ce qu'il faut produire"}]
+
+Fais toujours précéder ce token d'une très courte phrase (ex: "C'est
+parti :", "Je m'en occupe :") — jamais de description du contenu, juste
+une transition naturelle avant que le vrai résultat n'arrive.
+
+Ce token déclenche le vrai outil côté serveur (même moteur que le menu
+"+" du chat) — le résultat réel (fichier, image, vidéo ou liste de
+contacts) apparaît ensuite directement dans la conversation, puis dans
+l'onglet Sorties. Si la demande est vague ("fais-moi un pdf"), pose UNE
+seule question pour préciser le contenu avant d'émettre le token. Tant
+que ce token exact n'a pas été émis, AUCUN fichier n'a été généré, même
+si tu en as parlé.
 
 ══════════════════════════════════════════════
 AUTRES CAPACITÉS DE SCAI
