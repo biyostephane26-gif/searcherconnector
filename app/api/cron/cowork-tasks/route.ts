@@ -51,6 +51,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 
+  if (req.nextUrl.searchParams.get('debug') === '1') {
+    const all = await supabaseAdmin.from('cowork_tasks').select('*')
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    return NextResponse.json({ debug: true, url, count: all.data?.length ?? null, error: all.error?.message ?? null, sample: all.data?.[0] ?? null })
+  }
+
   const { data: tasks, error } = await supabaseAdmin
     .from('cowork_tasks')
     .select('id, user_id, steps, current_step, status')
