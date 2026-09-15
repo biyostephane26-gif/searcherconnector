@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireUser } from '../../../../src/lib/server/requireUser'
 import { logToolUsage } from '../../../../src/lib/server/logToolUsage'
+import { saveImageOutput } from '../../../../src/lib/server/saveCoworkOutput'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 90
@@ -95,5 +96,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Aucun générateur d\'images disponible pour le moment.', details: errors }, { status: 502 })
   }
   logToolUsage(auth.user.id, 'image', provider)
+  saveImageOutput(auth.user.id, prompt.slice(0, 60), image).catch(() => {})
   return NextResponse.json({ image, provider, fallback: provider.startsWith('Pollinations'), details: errors })
 }

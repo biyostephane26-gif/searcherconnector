@@ -14,6 +14,7 @@ import { useVoiceInput } from '../hooks/useVoiceInput';
 import ScaiThinkingOrb from '../components/scai/ScaiThinkingOrb';
 import VoiceWaveform from '../components/scai/VoiceWaveform';
 import ConnectorsPanel from '../components/cowork/ConnectorsPanel';
+import OutputsPanel from '../components/cowork/OutputsPanel';
 import ToolAttachment, { TOOL_META, type CoworkTool, type ToolAttachmentData } from '../components/cowork/ToolAttachment';
 import { authFetch } from '../lib/authFetch';
 import { formatDistanceToNow } from 'date-fns';
@@ -73,7 +74,7 @@ export default function AgentDashboard() {
   const hour = new Date().getHours();
   const greeting = hour < 5 ? 'Bonsoir' : hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
   const greetingEmoji = hour < 5 ? '🌙' : hour < 18 ? '☀️' : '🌙';
-  const [activeTab, setActiveTab] = useState<'status' | 'queue' | 'communications' | 'connectors' | 'config'>('status');
+  const [activeTab, setActiveTab] = useState<'status' | 'queue' | 'communications' | 'outputs' | 'connectors' | 'config'>('status');
   // Outils Cowork (PDF, Excel, Word, image, vidéo) sélectionnés depuis le menu « + »
   const [activeTool, setActiveTool] = useState<CoworkTool | null>(null);
   const [showToolsMenu, setShowToolsMenu] = useState(false);
@@ -600,6 +601,7 @@ export default function AgentDashboard() {
     { id: 'status', label: 'Statut Live', icon: '⚡' },
     { id: 'queue', label: `File d'attente (${pendingQueue})`, icon: '📋' },
     { id: 'communications', label: 'Emails & WA', icon: '📨' },
+    { id: 'outputs', label: 'Sorties', icon: '📁' },
     { id: 'connectors', label: 'Connecteurs', icon: '🔌' },
     { id: 'config', label: 'Configuration', icon: '⚙️' }
   ];
@@ -775,7 +777,25 @@ export default function AgentDashboard() {
               {renderComposer()}
             </div>
 
-            <div className="w-full max-w-2xl flex items-center justify-between mt-4 px-1">
+            <div className="w-full max-w-2xl flex items-center justify-center gap-3 mt-4">
+              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Mode</span>
+              <div className="inline-flex items-center bg-[#1A1A1A] rounded-full p-0.5 text-[11px] font-bold" title="Manuel : SCAI prépare, tu valides. Auto : SCAI candidate seule dès qu'une offre dépasse le seuil.">
+                <button
+                  onClick={() => handleScheduleChange('auto_apply_enabled', false)}
+                  className={`px-3.5 py-1.5 rounded-full transition-colors ${!schedule?.auto_apply_enabled ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'}`}
+                >
+                  Manuel
+                </button>
+                <button
+                  onClick={() => handleScheduleChange('auto_apply_enabled', true)}
+                  className={`px-3.5 py-1.5 rounded-full transition-colors ${schedule?.auto_apply_enabled ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'}`}
+                >
+                  Auto
+                </button>
+              </div>
+            </div>
+
+            <div className="w-full max-w-2xl flex items-center justify-between mt-3 px-1">
               <button
                 onClick={() => handleScan()}
                 disabled={scanning}
@@ -818,14 +838,30 @@ export default function AgentDashboard() {
               Actif 24h/24 · {pendingQueue} tâches planifiées
             </p>
           </div>
-          <button
-            onClick={() => handleScan()}
-            disabled={scanning}
-            className="flex items-center gap-2 bg-[#D4AF37] text-black px-5 py-2.5 rounded-lg font-syne font-bold text-sm hover:bg-[#B8962D] disabled:opacity-50 transition-colors"
-          >
-            {scanning ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
-            {scanning ? 'Scan en cours...' : 'Lancer un scan'}
-          </button>
+          <div className="flex items-center gap-3">
+            <div className="inline-flex items-center bg-[#1A1A1A] rounded-full p-0.5 text-[11px] font-bold" title="Manuel : SCAI prépare, tu valides. Auto : SCAI candidate seule dès qu'une offre dépasse le seuil.">
+              <button
+                onClick={() => handleScheduleChange('auto_apply_enabled', false)}
+                className={`px-3 py-1.5 rounded-full transition-colors ${!schedule?.auto_apply_enabled ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'}`}
+              >
+                Manuel
+              </button>
+              <button
+                onClick={() => handleScheduleChange('auto_apply_enabled', true)}
+                className={`px-3 py-1.5 rounded-full transition-colors ${schedule?.auto_apply_enabled ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'}`}
+              >
+                Auto
+              </button>
+            </div>
+            <button
+              onClick={() => handleScan()}
+              disabled={scanning}
+              className="flex items-center gap-2 bg-[#D4AF37] text-black px-5 py-2.5 rounded-lg font-syne font-bold text-sm hover:bg-[#B8962D] disabled:opacity-50 transition-colors"
+            >
+              {scanning ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
+              {scanning ? 'Scan en cours...' : 'Lancer un scan'}
+            </button>
+          </div>
         </div>
 
         {/* Stats Summary */}
@@ -1162,6 +1198,9 @@ export default function AgentDashboard() {
             ))}
           </div>
         )}
+
+        {/* Tab: Sorties */}
+        {activeTab === 'outputs' && <OutputsPanel />}
 
         {/* Tab: Connecteurs */}
         {activeTab === 'connectors' && (

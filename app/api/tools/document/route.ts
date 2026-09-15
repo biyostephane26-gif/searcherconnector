@@ -12,6 +12,7 @@ import { supabaseAdmin } from '../../../../src/lib/supabaseAdmin'
 import { requireUser } from '../../../../src/lib/server/requireUser'
 import { generateJson } from '../../../../src/lib/server/aiText'
 import { logToolUsage } from '../../../../src/lib/server/logToolUsage'
+import { saveFileOutput } from '../../../../src/lib/server/saveCoworkOutput'
 import { buildPdf, buildXlsx, buildDocx, type DocSpec, type WorkbookSpec } from '../../../../src/lib/server/documentBuilders'
 
 export const dynamic = 'force-dynamic'
@@ -135,6 +136,7 @@ Demande : ${prompt}`, v => typeof v?.title === 'string' && Array.isArray(v?.sect
     }
 
     logToolUsage(auth.user.id, format, title)
+    saveFileOutput(auth.user.id, format, title, buffer, MIME[format]).catch(() => {})
     return NextResponse.json({
       title,
       filename: `${slug(title)}.${format}`,

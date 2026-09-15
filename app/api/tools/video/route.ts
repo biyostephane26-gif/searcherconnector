@@ -13,6 +13,8 @@ import crypto from 'crypto'
 import { requireUser } from '../../../../src/lib/server/requireUser'
 import { isPaidPlan } from '../../../../src/lib/planUtils'
 import { logToolUsage } from '../../../../src/lib/server/logToolUsage'
+import { saveVideoOutputPending } from '../../../../src/lib/server/saveCoworkOutput'
+import { supabaseAdmin } from '../../../../src/lib/supabaseAdmin'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -61,7 +63,9 @@ export async function POST(req: NextRequest) {
     const data = await res.json().catch(() => ({}))
     if (res.ok && data?.id) {
       logToolUsage(auth.user.id, 'video', 'OpenAI Sora 2')
-      return NextResponse.json({ job: signJob(auth.user.id, { p: 'openai', id: data.id, k }), provider: 'OpenAI Sora 2' })
+      const job = signJob(auth.user.id, { p: 'openai', id: data.id, k })
+      saveVideoOutputPending(auth.user.id, prompt.slice(0, 60), job, 'OpenAI Sora 2').catch(() => {})
+      return NextResponse.json({ job, provider: 'OpenAI Sora 2' })
     }
     const code = data?.error?.code
     errors.push(`openai ${res.status}${code ? ` ${code}` : ''}`)
@@ -79,7 +83,9 @@ export async function POST(req: NextRequest) {
     const data = await res.json().catch(() => ({}))
     if (res.ok && data?.name) {
       logToolUsage(auth.user.id, 'video', 'Google Veo 3.1')
-      return NextResponse.json({ job: signJob(auth.user.id, { p: 'veo', id: data.name, k }), provider: 'Google Veo 3.1' })
+      const job = signJob(auth.user.id, { p: 'veo', id: data.name, k })
+      saveVideoOutputPending(auth.user.id, prompt.slice(0, 60), job, 'Google Veo 3.1').catch(() => {})
+      return NextResponse.json({ job, provider: 'Google Veo 3.1' })
     }
     errors.push(`veo ${res.status}`)
     if (res.status === 429 && errors.filter(e => e.startsWith('veo 429')).length >= 2) break
@@ -94,10 +100,18 @@ export async function POST(req: NextRequest) {
   }, { status: 502 })
 }
 
+// Répercute l'état final dans cowork_outputs — c'est ce que le panneau
+// Sorties lit ; sans ça il resterait affiché "en cours" indéfiniment.
+function syncOutputStatus(userId: string, jobToken: string, status: 'ready' | 'failed') {
+  supabaseAdmin.from('cowork_outputs').update({ status }).eq('user_id', userId).eq('status', 'processing')
+    .contains('meta', { job: jobToken }).then(() => {}, () => {})
+}
+
 export async function GET(req: NextRequest) {
   const auth = await requireUser(req)
   if (!auth) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
-  const job = readJob(auth.user.id, req.nextUrl.searchParams.get('job') || '')
+  const rawJob = req.nextUrl.searchParams.get('job') || ''
+  const job = readJob(auth.user.id, rawJob)
   if (!job) return NextResponse.json({ error: 'Job invalide' }, { status: 400 })
   const download = req.nextUrl.searchParams.get('download') === '1'
 
@@ -112,6 +126,7 @@ export async function GET(req: NextRequest) {
     const res = await fetch(`https://api.openai.com/v1/videos/${job.id}`, { headers: { Authorization: `Bearer ${key}` } })
     const data = await res.json().catch(() => ({}))
     const status = data?.status === 'completed' ? 'completed' : data?.status === 'failed' ? 'failed' : 'processing'
+    if (status !== 'processing') syncOutputStatus(auth.user.id, rawJob, status === 'completed' ? 'ready' : 'failed')
     return NextResponse.json({ status, progress: data?.progress ?? null, error: data?.error?.message || null })
   }
 
@@ -121,8 +136,11 @@ export async function GET(req: NextRequest) {
   const data = await res.json().catch(() => ({}))
   if (!data?.done) return NextResponse.json({ status: 'processing' })
   const uri = data?.response?.generateVideoResponse?.generatedSamples?.[0]?.video?.uri
-  if (!uri) return NextResponse.json({ status: 'failed', error: data?.error?.message || 'Aucune vidéo produite' })
-  if (!download) return NextResponse.json({ status: 'completed' })
+  if (!uri) {
+    syncOutputStatus(auth.user.id, rawJob, 'failed')
+    return NextResponse.json({ status: 'failed', error: data?.error?.message || 'Aucune vidéo produite' })
+  }
+  if (!download) { syncOutputStatus(auth.user.id, rawJob, 'ready'); return NextResponse.json({ status: 'completed' }) }
   const file = await fetch(`${uri}${uri.includes('?') ? '&' : '?'}key=${key}`)
   if (!file.ok || !file.body) return NextResponse.json({ error: 'Vidéo introuvable' }, { status: 404 })
   return new NextResponse(file.body, { headers: { 'Content-Type': 'video/mp4', 'Content-Disposition': 'inline; filename="scai-video.mp4"' } })
