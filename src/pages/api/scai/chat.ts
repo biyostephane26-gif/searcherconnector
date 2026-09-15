@@ -139,6 +139,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       reponseNettoyee = reponseNettoyee.replace(toolTokenMatch[0], '').trim();
     }
 
+    // ── Détecter le token [PLAN_READY:{...}] — SCAI planifie plusieurs
+    // actions réelles enchaînées, exécutées en arrière-plan par le
+    // scheduler (cowork_tasks), même après fermeture de la conversation ──
+    let plan_created: { id: string; title: string } | null = null;
+    const planTokenMatch = reponseNettoyee.match(/\[PLAN_READY:(\{[\s\S]+\})\]/i);
+    if (planTokenMatch) {
+      try {
+        const parsed = JSON.parse(planTokenMatch[1]);
+        const validTools = ['pdf', 'excel', 'word', 'image', 'opportunity'];
+        const steps = Array.isArray(parsed.steps)
+          ? parsed.steps.filter((s: any) => validTools.includes(s?.tool) && typeof s?.prompt === 'string').map((s: any) => ({ tool: s.tool, prompt: s.prompt, status: 'pending' }))
+          : [];
+        if (steps.length > 0) {
+          const title = String(parsed.title || 'Tâche SCAI').slice(0, 150);
+          const { data: task } = await supabaseAdmin
+            .from('cowork_tasks')
+            .insert({ user_id: userId, title, steps, current_step: 0, status: 'running' })
+            .select('id, title').single();
+          if (task) plan_created = { id: task.id, title: task.title };
+        }
+      } catch (_) { /* token malformé — pas de plan créé */ }
+      reponseNettoyee = reponseNettoyee.replace(planTokenMatch[0], '').trim();
+    }
+
     // Détection de fallback : si l'utilisateur lui-même demande le scan explicitement
     const messageLower = message.toLowerCase();
     const userForceScan = messageLower.includes('lance le scan') 
@@ -202,6 +226,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       scan_params,          // { zone, has_budget, profile_type, domain } — le client l'utilise pour lancer le scan
       detected_updates,     // mises à jour de profil détectées dans le message utilisateur
       tool_call,            // { tool, prompt } — le client déclenche le vrai outil (PDF/image/vidéo/…) si présent
+      plan_created,         // { id, title } — tâche multi-étapes créée, exécutée en arrière-plan (cowork_tasks)
     });
   } catch (err: any) {
     const errMsg = err?.message || 'Erreur inconnue'

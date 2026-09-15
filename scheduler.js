@@ -206,6 +206,27 @@ async function runVoiceCreditsReset() {
 // Chaque jour à 00:05
 cron.schedule('5 0 * * *', runVoiceCreditsReset);
 
+// ── Moteur de tâches Cowork multi-étapes ────────────────────────────
+// SCAI peut planifier plusieurs actions réelles enchaînées (ex: prospecter
+// PUIS générer un PDF du résultat) via le token [PLAN_READY:...] — ce
+// tick fait avancer chaque tâche "running" d'une étape, même si
+// l'utilisateur a fermé le chat entre-temps (voir cowork_tasks en base).
+async function runCoworkTasksTick() {
+  try {
+    const res = await fetch(`${INTERNAL_URL}/api/cron/cowork-tasks`, {
+      headers: { Authorization: `Bearer ${CRON_SECRET}` },
+      signal: AbortSignal.timeout(120000),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (data.processed) console.log(`🤖 [Tâches Cowork] statut ${res.status} — ${data.processed} étape(s) exécutée(s) sur ${data.tasksChecked ?? '?'} tâche(s) actives`);
+  } catch (e) {
+    console.warn('⚠️ [Tâches Cowork] échec:', e.message);
+  }
+}
+// Toutes les minutes — les étapes (génération PDF/image/prospection)
+// prennent quelques secondes à quelques dizaines de secondes chacune.
+cron.schedule('* * * * *', runCoworkTasksTick);
+
 // ── Anti-veille (Render free tier) ──────────────────────────────────
 // Render endort le service après ~15min sans requête entrante → le
 // premier visiteur attend ~15s de réveil, ce qui ressemble à "rien ne
@@ -225,4 +246,4 @@ async function runSelfPing() {
 }
 cron.schedule('*/10 * * * *', runSelfPing);
 
-console.log('🚀 Scheduler démarré : scan 10/30/60min, rotation humaniste ~35min, rapport hebdo lundi 9h, polling Gmail 15min, nettoyage cache 1h, expiration plans 1h, reset crédits SCAI quotidien.');
+console.log('🚀 Scheduler démarré : scan 10/30/60min, rotation humaniste ~35min, rapport hebdo lundi 9h, polling Gmail 15min, nettoyage cache 1h, expiration plans 1h, reset crédits SCAI quotidien, tâches Cowork multi-étapes chaque minute.');

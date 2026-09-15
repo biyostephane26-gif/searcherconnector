@@ -16,6 +16,7 @@ import VoiceWaveform from '../components/scai/VoiceWaveform';
 import ConnectorsPanel from '../components/cowork/ConnectorsPanel';
 import OutputsPanel from '../components/cowork/OutputsPanel';
 import ProjectsPanel from '../components/cowork/ProjectsPanel';
+import TasksPanel from '../components/cowork/TasksPanel';
 import ToolAttachment, { TOOL_META, type CoworkTool, type ToolAttachmentData } from '../components/cowork/ToolAttachment';
 import { CONNECTORS } from '../lib/connectors/catalog';
 import { authFetch } from '../lib/authFetch';
@@ -392,6 +393,13 @@ export default function AgentDashboard() {
       // pas de texte inventé : le résultat réel arrive dans la foulée.
       if (data.tool_call?.tool && data.tool_call?.prompt) {
         await runTool(data.tool_call.tool, data.tool_call.prompt, undefined, { skipUserEcho: true });
+      }
+
+      // SCAI a planifié plusieurs actions réelles enchaînées — elles
+      // s'exécutent en arrière-plan (cowork_tasks), visibles dans le
+      // panneau Progression même si le chat est fermé entre-temps.
+      if (data.plan_created?.id) {
+        setChatHistory(prev => [...prev, { role: 'agent', content: `🗂️ Tâche lancée : **${data.plan_created.title}** — suis sa progression dans le panneau Progression, à droite.` }]);
       }
 
       // Si l'IA a détecté des mises à jour de profil (domaine, pays, préférences)
@@ -830,6 +838,7 @@ export default function AgentDashboard() {
         )}
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <TasksPanel />
         <OutputsPanel />
         <div>
           <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">Contexte</p>
