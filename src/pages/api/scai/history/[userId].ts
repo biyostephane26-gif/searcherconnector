@@ -14,10 +14,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const idPropre = userId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
     const sessionsCollection = await getScaiSessions();
-    
-    // 1. RÉCUPÉRATION
-    const doc = await sessionsCollection.findOne({ userId: idPropre });
-    
+    const conversationId = String(req.query.conversationId || 'default').slice(0, 100);
+
+    // 1. RÉCUPÉRATION — même logique de migration douce que /api/scai/chat :
+    // "default" retombe sur l'ancien document sans conversationId s'il existe.
+    let doc = await sessionsCollection.findOne({ userId: idPropre, conversationId });
+    if (!doc && conversationId === 'default') {
+      doc = await sessionsCollection.findOne({ userId: idPropre, conversationId: { $exists: false } });
+    }
+
     // Rétrocompatibilité avec l'ancien champ "historique" s'il existe
     const messages = doc && doc.messages ? doc.messages : (doc && doc.historique ? doc.historique : []);
     

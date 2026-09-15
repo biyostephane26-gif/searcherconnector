@@ -53,9 +53,12 @@ import {
   Plug,
   PanelRightClose,
   PanelRightOpen,
+  PanelLeftClose,
+  PanelLeftOpen,
   FolderKanban,
   CalendarClock,
-  Settings2
+  Settings2,
+  MessageSquareText,
 } from 'lucide-react';
 
 const ACTION_ICONS: Record<string, any> = {
@@ -86,11 +89,12 @@ export default function AgentDashboard() {
   // Outils Cowork (PDF, Excel, Word, image, vidéo) sélectionnés depuis le menu « + »
   const [activeTool, setActiveTool] = useState<CoworkTool | null>(null);
   const [showToolsMenu, setShowToolsMenu] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Panneau droit persistant (Sorties + Contexte) façon Cowork — repliable
   // en grand écran, tiroir superposé en dessous de xl.
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [leftRailOpen, setLeftRailOpen] = useState(true);
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false);
   const [connectedConnectors, setConnectedConnectors] = useState<string[]>([]);
   useEffect(() => {
@@ -133,6 +137,9 @@ export default function AgentDashboard() {
       if (draftKey) {
         try { value.trim() ? localStorage.setItem(draftKey, value) : localStorage.removeItem(draftKey) } catch { /* stockage indisponible */ }
       }
+      // Remet la zone de texte à sa hauteur d'une ligne après un envoi —
+      // sinon elle reste agrandie visuellement même une fois vidée.
+      if (!value && inputRef.current) inputRef.current.style.height = 'auto';
       return value;
     });
   };
@@ -147,6 +154,28 @@ export default function AgentDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draftKey]);
   const [chatHistory, setChatHistory] = useState<{role: 'agent' | 'user', content: string, thought?: string, showThought?: boolean, attachment?: ToolAttachmentData, image?: string}[]>([]);
+  // Multi-conversation façon Cowork — "Nouveau" ouvre une conversation
+  // fraîche SANS effacer les précédentes, retrouvables dans la liste
+  // "Discussions". Persisté par utilisateur pour survivre au rechargement.
+  const conversationKey = user ? `sc_active_conversation_${user.id}` : null;
+  const [activeConversationId, setActiveConversationId] = useState<string>('default');
+  const [conversations, setConversations] = useState<{ id: string; title: string; updatedAt: string | null; messageCount: number }[]>([]);
+  useEffect(() => {
+    if (!conversationKey) return;
+    try {
+      const saved = localStorage.getItem(conversationKey);
+      if (saved) setActiveConversationId(saved);
+    } catch { /* stockage indisponible */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationKey]);
+  const loadConversations = async () => {
+    if (!user) return;
+    try {
+      const res = await fetch(`/api/scai/conversations/${user.id}`);
+      const data = await res.json();
+      if (data?.success) setConversations(data.conversations || []);
+    } catch { /* liste non critique */ }
+  };
   // Image collée (Ctrl+V) ou téléversée, en attente d'envoi — SCAI l'analyse
   // réellement via Gemini Vision, ce n'est pas un accusé de réception factice.
   const [attachedImage, setAttachedImage] = useState<string | null>(null);
@@ -159,8 +188,35 @@ export default function AgentDashboard() {
     reader.onload = () => setAttachedImage(reader.result as string);
     reader.readAsDataURL(file);
   };
+  // Éléments (vidéos/images) ajoutés pour un montage — chacun est
+  // téléversé immédiatement (bucket public) car ffmpeg télécharge par
+  // URL, pas de fichier local possible côté serveur.
+  const [montageClips, setMontageClips] = useState<{ url: string; name: string }[]>([]);
+  const [montageUploading, setMontageUploading] = useState(false);
+  const addMontageFiles = async (files: FileList | File[]) => {
+    const arr = Array.from(files).filter(f => f.type.startsWith('video/') || f.type.startsWith('image/')).slice(0, Math.max(0, 12 - montageClips.length));
+    if (arr.length === 0) return;
+    setMontageUploading(true);
+    for (const file of arr) {
+      try {
+        const dataUrl: string = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        const res = await authFetch('/api/tools/upload-clip', { method: 'POST', body: JSON.stringify({ data: dataUrl }) });
+        const data = await res.json();
+        if (res.ok && data.url) setMontageClips(prev => [...prev, { url: data.url, name: file.name }]);
+        else setChatHistory(prev => [...prev, { role: 'agent', content: `⚠️ Échec du téléversement de ${file.name} : ${data.error || 'erreur inconnue'}` }]);
+      } catch {
+        setChatHistory(prev => [...prev, { role: 'agent', content: `⚠️ Échec du téléversement de ${file.name}` }]);
+      }
+    }
+    setMontageUploading(false);
+  };
   const [isProcessing, setIsProcessing] = useState(false);
-  
+
   // Hook SCAI Voice pour transcription
   const { isRecording, transcript, toggle: toggleRecording, error: voiceError } = useVoiceInput({
     onTranscript: (text) => {
@@ -277,24 +333,35 @@ export default function AgentDashboard() {
 
   const [showClearConfirm, setShowClearConfirm] = useState(false)
 
-  const clearChat = async () => {
+  // Ouvre une conversation neuve — l'ancienne reste intacte en base,
+  // retrouvable dans la liste "Discussions" (rail gauche). Ne supprime
+  // rien : c'est la confusion précise que l'ancien clearChat causait
+  // (un seul document par utilisateur, écrasé à chaque "Nouveau").
+  const startNewConversation = () => {
+    if (!user) return
+    const id = (crypto as any).randomUUID ? crypto.randomUUID() : `conv_${Date.now()}_${Math.random().toString(36).slice(2)}`
+    setActiveConversationId(id)
+    try { if (conversationKey) localStorage.setItem(conversationKey, id) } catch { /* stockage indisponible */ }
+    setChatHistory([])
+    setShowClearConfirm(false)
+  }
+
+  // Supprime la conversation ACTIVE uniquement (icône corbeille dans
+  // l'en-tête du chat) puis en ouvre une nouvelle — n'affecte jamais les
+  // autres discussions de l'utilisateur.
+  const deleteActiveConversation = async () => {
     if (!user) return
     if (!showClearConfirm) { setShowClearConfirm(true); return }
     setShowClearConfirm(false)
     try {
-      const res = await fetch(`/api/scai/reset/${user.id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: 'reset' })
-      })
-      if (res.ok) {
-        setChatHistory([{ role: 'agent', content: "Historique effacé. Prêt pour une nouvelle mission." }])
-      }
-    } catch { /* silent */ }
+      await fetch(`/api/scai/conversations/${user.id}?conversationId=${encodeURIComponent(activeConversationId)}`, { method: 'DELETE' })
+    } catch { /* on repart sur une nouvelle conversation même si la suppression échoue */ }
+    startNewConversation()
+    loadConversations()
   }
 
   const toggleThought = (index: number) => {
-    setChatHistory(prev => prev.map((msg, i) => 
+    setChatHistory(prev => prev.map((msg, i) =>
       i === index ? { ...msg, showThought: !msg.showThought } : msg
     ));
   };
@@ -306,33 +373,6 @@ export default function AgentDashboard() {
   useEffect(() => {
     scrollToBottom();
   }, [chatHistory]);
-
-  // Charger l'historique de chat depuis MongoDB quand l'utilisateur se connecte
-  useEffect(() => {
-    if (!user) return;
-    const loadHistory = async () => {
-      try {
-        const res = await fetch(`/api/scai/history/${user.id}`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.history && data.history.length > 0) {
-            // Convertir le rôle "assistant" en "agent" pour l'interface
-            const mappedHistory = data.history.map((m: any) => ({
-              role: m.role === 'assistant' ? 'agent' : m.role,
-              content: m.content
-            }));
-            setChatHistory(mappedHistory);
-          }
-        }
-      } catch {
-        // Échec silencieux, on garde l'historique vide par défaut
-      }
-    };
-    loadHistory();
-  }, [user]);
 
   const saveChatMessage = async (role: 'agent' | 'user', content: string, thought?: string) => {
     // Désormais géré automatiquement par MongoDB côté backend !
@@ -359,6 +399,7 @@ export default function AgentDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: user.id,
+          conversationId: activeConversationId,
           image,
           message: text,
           userProfile: profile
@@ -447,23 +488,35 @@ export default function AgentDashboard() {
       }])
     } finally {
       setIsProcessing(false)
+      loadConversations() // titre/horodatage de la discussion mis à jour dans la liste
     }
   };
 
   useEffect(() => {
     if (!user) return; // Attendre que user soit disponible
     loadData();
-    loadChatHistory();
+    loadConversations();
   }, [user?.id]); // Dépendre de user.id et non user (évite les re-renders infinis)
+
+  // Recharge l'historique à chaque changement de conversation active —
+  // "Nouveau" et le clic sur une discussion dans la liste passent tous
+  // les deux par activeConversationId, jamais par un flag séparé.
+  useEffect(() => {
+    if (!user) return;
+    loadChatHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, activeConversationId]);
 
   const loadChatHistory = async () => {
     if (!user) return;
     try {
-      const res = await fetch(`/api/scai/history/${user.id}`);
+      const res = await fetch(`/api/scai/history/${user.id}?conversationId=${encodeURIComponent(activeConversationId)}`);
       if (!res.ok) throw new Error("Erreur fetch history");
-      
+
       const data = await res.json();
-      
+
+      // Historique vide → écran d'accueil (Hero), pas un message figé :
+      // la salutation dynamique ("Bonjour {prénom}") vit déjà dans le Hero.
       if (data && data.success && data.history && data.history.length > 0) {
         setChatHistory(data.history.map((m: any) => ({
           role: m.role === 'assistant' ? 'agent' : m.role,
@@ -471,14 +524,11 @@ export default function AgentDashboard() {
           showThought: false
         })));
       } else {
-        // Message initial si historique vide
-        const initialMsg = { role: 'agent' as const, content: "Bonjour. Je suis SCAI, votre intelligence artificielle stratégique. Comment puis-je vous accompagner dans votre croissance aujourd'hui ?", showThought: false };
-        setChatHistory([initialMsg]);
+        setChatHistory([]);
       }
     } catch (error) {
       console.error('Error loading chat history:', error);
-      const initialMsg = { role: 'agent' as const, content: "Bonjour. Je suis SCAI, votre intelligence artificielle stratégique. Comment puis-je vous accompagner dans votre croissance aujourd'hui ?", showThought: false };
-      setChatHistory([initialMsg]);
+      setChatHistory([]);
     }
   };
 
@@ -564,7 +614,7 @@ export default function AgentDashboard() {
     await updateSchedule({ [key]: value });
   };
 
-  const runTool = async (tool: CoworkTool, prompt: string, source?: 'opportunities' | 'applications', opts?: { skipUserEcho?: boolean }) => {
+  const runTool = async (tool: CoworkTool, prompt: string, source?: 'opportunities' | 'applications', opts?: { skipUserEcho?: boolean; clips?: string[] }) => {
     if (isProcessing && !opts?.skipUserEcho) return;
     const meta = TOOL_META[tool];
     if (!opts?.skipUserEcho) {
@@ -584,6 +634,7 @@ export default function AgentDashboard() {
       let body: any = { format: tool === 'excel' ? 'xlsx' : tool === 'word' ? 'docx' : 'pdf', prompt, source };
       if (tool === 'image') { endpoint = '/api/tools/image'; body = { prompt, aspect: 'landscape' }; }
       if (tool === 'video') { endpoint = '/api/tools/video'; body = { prompt }; }
+      if (tool === 'montage') { endpoint = '/api/tools/video'; body = { clips: opts?.clips || [], title: prompt || 'Montage SCAI' }; }
       if (tool === 'opportunity') {
         endpoint = '/api/opportunity-creator';
         const zone = /international|monde|global|world/i.test(prompt) ? 'international' : 'local';
@@ -602,6 +653,9 @@ export default function AgentDashboard() {
       } else if (tool === 'video') {
         attachment = { kind: 'video', job: data.job, provider: data.provider };
         content = "Je crée ta vidéo, elle apparaîtra ici dès qu'elle est prête.";
+      } else if (tool === 'montage') {
+        attachment = { kind: 'video', fileUrl: data.fileUrl, provider: data.provider };
+        content = `Ton montage **${data.title}** est prêt.`;
       } else if (tool === 'opportunity') {
         const leads = data.top_targets || [];
         attachment = { kind: 'opportunity', leads };
@@ -613,7 +667,7 @@ export default function AgentDashboard() {
         content = `Ton fichier **${data.title}** est prêt.`;
       }
       setChatHistory(prev => [...prev, { role: 'agent', content, attachment }]);
-      saveChatMessage('agent', `${content} (${tool === 'image' || tool === 'video' || tool === 'opportunity' ? meta.label : data.filename})`);
+      saveChatMessage('agent', `${content} (${tool === 'image' || tool === 'video' || tool === 'montage' || tool === 'opportunity' ? meta.label : data.filename})`);
     } catch (e: any) {
       setChatHistory(prev => [...prev, { role: 'agent', content: `⚠️ ${e.message}` }]);
     } finally {
@@ -633,6 +687,13 @@ export default function AgentDashboard() {
 
   const submitInput = () => {
     const text = userInstruction.trim();
+    if (activeTool === 'montage') {
+      if (montageClips.length < 2 || isProcessing) return;
+      const clips = montageClips.map(c => c.url);
+      runTool('montage', text, undefined, { clips });
+      setMontageClips([]);
+      return;
+    }
     if ((!text && !attachedImage) || isProcessing) return;
     if (activeTool) runTool(activeTool, text);
     else handleSendMessage(text || 'Analyse cette image.', attachedImage || undefined);
@@ -687,6 +748,33 @@ export default function AgentDashboard() {
                 )}
               </div>
             )}
+            {activeTool === 'montage' && (
+              <div className="flex flex-wrap items-center gap-2 px-1 -mb-1">
+                {montageClips.map((c, i) => (
+                  <span key={i} className="inline-flex items-center gap-1 text-[11px] text-gray-300 bg-[#1A1A1A] border border-gray-700 rounded-full pl-2.5 pr-1 py-1 max-w-[140px]">
+                    <span className="truncate">{c.name}</span>
+                    <button onClick={() => setMontageClips(prev => prev.filter((_, j) => j !== i))} className="p-0.5 rounded-full hover:bg-white/10 shrink-0" aria-label="Retirer">
+                      <X size={10} />
+                    </button>
+                  </span>
+                ))}
+                <input
+                  type="file" id="montage-upload" className="hidden" multiple accept="video/*,image/*"
+                  onChange={(e) => { if (e.target.files) addMontageFiles(e.target.files); e.target.value = '' }}
+                />
+                <button
+                  onClick={() => document.getElementById('montage-upload')?.click()}
+                  disabled={montageUploading || montageClips.length >= 12}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#D4AF37] hover:text-[#B8962D] disabled:opacity-40 transition-colors"
+                >
+                  {montageUploading ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
+                  {montageUploading ? 'Envoi...' : 'Ajouter'}
+                </button>
+                {montageClips.length > 0 && montageClips.length < 2 && (
+                  <span className="text-[11px] text-gray-500">Ajoute au moins un 2ᵉ élément</span>
+                )}
+              </div>
+            )}
 
             {/* Input Bar */}
             <div className="relative flex items-center gap-2 bg-black border border-gray-700 rounded-xl p-2 focus-within:border-[#D4AF37] transition-all">
@@ -731,16 +819,21 @@ export default function AgentDashboard() {
                 <Paperclip size={20} />
               </button>
               
-              <input
+              <textarea
                 ref={inputRef}
-                type="text"
+                rows={1}
                 value={userInstruction}
-                onChange={(e) => setUserInstruction(e.target.value)}
-                placeholder={isProcessing ? "SCAI travaille..." : activeTool ? TOOL_META[activeTool].placeholder : "Échangez avec SCAI (votre agent d'élite)..."}
+                onChange={(e) => {
+                  setUserInstruction(e.target.value)
+                  const el = e.target
+                  el.style.height = 'auto'
+                  el.style.height = `${Math.min(el.scrollHeight, 160)}px`
+                }}
+                placeholder={isProcessing ? "SCAI travaille..." : activeTool ? TOOL_META[activeTool].placeholder : "Échangez avec SCAI (votre agent d'élite)... (Maj+Entrée pour un saut de ligne)"}
                 disabled={isProcessing}
-                className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-white py-2"
+                className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-white py-2 resize-none leading-normal max-h-40 overflow-y-auto"
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') submitInput();
+                  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitInput(); }
                   if (e.key === 'Escape') { setActiveTool(null); setShowToolsMenu(false); }
                 }}
                 onPaste={(e) => {
@@ -859,40 +952,71 @@ export default function AgentDashboard() {
   return (
     <div className="min-h-screen bg-black text-white flex">
 
-      {/* Rail gauche persistant façon Cowork — Nouveau / Projets / Programmé / Connecteurs / Personnaliser */}
-      <aside className="hidden lg:flex w-52 shrink-0 border-r border-gray-800 flex-col gap-1 p-3">
-        <button
-          onClick={() => { setActiveTab('status'); clearChat(); }}
-          className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-syne font-bold transition-colors ${
-            showClearConfirm ? 'bg-red-500 text-white hover:bg-red-600' : 'text-black bg-[#D4AF37] hover:bg-[#B8962D]'
-          }`}
-        >
-          <Plus size={16} /> {showClearConfirm ? 'Confirmer ?' : 'Nouveau'}
-        </button>
-        {showClearConfirm ? (
-          <button onClick={() => setShowClearConfirm(false)} className="text-[11px] text-gray-500 hover:text-white text-left px-1 mb-2">
-            Annuler — garder la conversation
-          </button>
-        ) : (
-          <div className="mb-2" />
-        )}
-        <nav className="flex flex-col gap-1">
-          {railItems.map(item => (
+      {/* Rail gauche persistant façon Cowork — Nouveau / Projets / Programmé / Connecteurs / Personnaliser / Discussions */}
+      {leftRailOpen ? (
+        <aside className="hidden lg:flex w-56 shrink-0 border-r border-gray-800 flex-col p-3">
+          <div className="flex items-center gap-2 mb-3">
             <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left ${
-                activeTab === item.id ? 'bg-[#1A1A1A] text-[#D4AF37]' : 'text-gray-400 hover:text-white hover:bg-[#111111]'
-              }`}
+              onClick={() => { setActiveTab('status'); startNewConversation(); }}
+              className="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-syne font-bold text-black bg-[#D4AF37] hover:bg-[#B8962D] transition-colors"
             >
-              {item.icon} {item.label}
+              <Plus size={16} /> Nouveau
             </button>
-          ))}
-          <a href="/settings" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-[#111111] transition-colors">
-            <Settings2 size={16} /> Personnaliser
-          </a>
-        </nav>
-      </aside>
+            <button
+              onClick={() => setLeftRailOpen(false)}
+              className="p-2 text-gray-500 hover:text-white transition-colors shrink-0"
+              title="Replier le rail"
+            >
+              <PanelLeftClose size={16} />
+            </button>
+          </div>
+          <nav className="flex flex-col gap-1">
+            {railItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left ${
+                  activeTab === item.id ? 'bg-[#1A1A1A] text-[#D4AF37]' : 'text-gray-400 hover:text-white hover:bg-[#111111]'
+                }`}
+              >
+                {item.icon} {item.label}
+              </button>
+            ))}
+            <a href="/settings" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-[#111111] transition-colors">
+              <Settings2 size={16} /> Personnaliser
+            </a>
+          </nav>
+
+          {conversations.length > 0 && (
+            <div className="mt-5 flex-1 min-h-0 flex flex-col">
+              <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-600 mb-1.5 px-2">Discussions</p>
+              <div className="flex-1 overflow-y-auto space-y-0.5">
+                {conversations.map(conv => (
+                  <button
+                    key={conv.id}
+                    onClick={() => { setActiveTab('status'); setActiveConversationId(conv.id); try { if (conversationKey) localStorage.setItem(conversationKey, conv.id) } catch {} }}
+                    className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-colors ${
+                      conv.id === activeConversationId ? 'bg-[#1A1A1A] text-white' : 'text-gray-500 hover:text-white hover:bg-[#111111]'
+                    }`}
+                    title={conv.title}
+                  >
+                    <MessageSquareText size={13} className="shrink-0" />
+                    <span className="text-xs truncate">{conv.title}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </aside>
+      ) : (
+        <button
+          onClick={() => setLeftRailOpen(true)}
+          className="hidden lg:flex fixed left-4 top-6 z-10 p-2 bg-[#111111] border border-gray-800 rounded-lg text-gray-400 hover:text-[#D4AF37] transition-colors"
+          title="Ouvrir le rail"
+        >
+          <PanelLeftOpen size={18} />
+        </button>
+      )}
 
       <div className="flex-1 min-w-0 px-4 sm:px-6 py-6">
       <div className="max-w-3xl mx-auto">
@@ -1022,12 +1146,12 @@ export default function AgentDashboard() {
               <span className="text-[10px] font-syne font-bold uppercase tracking-[0.2em] text-gray-500">Flux de Pensée Stratégique</span>
               <div className="flex items-center gap-2">
                 {showClearConfirm && (
-                  <span className="text-[10px] text-red-400">Confirmer ?</span>
+                  <span className="text-[10px] text-red-400">Supprimer cette discussion ?</span>
                 )}
                 <button
-                  onClick={clearChat}
+                  onClick={deleteActiveConversation}
                   className={`transition-colors ${showClearConfirm ? 'text-red-500 hover:text-red-400' : 'text-gray-600 hover:text-red-500'}`}
-                  title={showClearConfirm ? "Cliquer pour confirmer" : "Effacer l'historique"}
+                  title={showClearConfirm ? "Cliquer pour confirmer" : "Supprimer cette discussion"}
                 >
                   <Trash2 size={12} />
                 </button>

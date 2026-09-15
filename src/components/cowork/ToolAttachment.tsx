@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Download, FileSpreadsheet, FileText, FileType2, Loader2, AlertTriangle, Building2, Copy, Check, ExternalLink } from 'lucide-react'
 import { authFetch, downloadBase64 } from '../../lib/authFetch'
 
-export type CoworkTool = 'pdf' | 'excel' | 'word' | 'image' | 'video' | 'opportunity'
+export type CoworkTool = 'pdf' | 'excel' | 'word' | 'image' | 'video' | 'montage' | 'opportunity'
 
 export const TOOL_META: Record<CoworkTool, { label: string; emoji: string; placeholder: string }> = {
   pdf:         { label: 'PDF',              emoji: '📄', placeholder: 'Décris le PDF à créer (CV, devis, rapport…)' },
@@ -12,13 +12,14 @@ export const TOOL_META: Record<CoworkTool, { label: string; emoji: string; place
   word:        { label: 'Word',             emoji: '📝', placeholder: 'Décris le document à rédiger (proposition, lettre…)' },
   image:       { label: 'Image',            emoji: '🖼️', placeholder: 'Décris l\'image à générer' },
   video:       { label: 'Mini-vidéo',       emoji: '🎬', placeholder: 'Décris la courte vidéo à générer' },
+  montage:     { label: 'Montage vidéo',    emoji: '🎞️', placeholder: 'Ajoute au moins 2 vidéos/images (trombone), puis une légende optionnelle' },
   opportunity: { label: 'Créer une opportunité', emoji: '🎯', placeholder: 'Zone à cibler (local ou international) — laisse vide pour local' },
 }
 
 export type ToolAttachmentData =
   | { kind: 'file'; filename: string; mime: string; base64: string; size: number; title: string }
   | { kind: 'image'; src: string; provider: string; fallback?: boolean }
-  | { kind: 'video'; job: string; provider: string }
+  | { kind: 'video'; job?: string; fileUrl?: string; provider: string }
   | { kind: 'opportunity'; leads: Array<{ company_name: string; website?: string; digital_score: number; issues_detected: string[]; mockup_textuel: string; message_approche: string }> }
 
 const fileIcon = (mime: string) =>
@@ -65,7 +66,7 @@ export default function ToolAttachment({ data }: { data: ToolAttachmentData }) {
 
   if (data.kind === 'opportunity') return <OpportunityAttachment leads={data.leads} />
 
-  return <VideoAttachment job={data.job} provider={data.provider} />
+  return <VideoAttachment job={data.job} fileUrl={data.fileUrl} provider={data.provider} />
 }
 
 function OpportunityAttachment({ leads }: { leads: Extract<ToolAttachmentData, { kind: 'opportunity' }>['leads'] }) {
@@ -114,13 +115,14 @@ function OpportunityAttachment({ leads }: { leads: Extract<ToolAttachmentData, {
   )
 }
 
-function VideoAttachment({ job, provider }: { job: string; provider: string }) {
-  const [status, setStatus] = useState<'processing' | 'completed' | 'failed'>('processing')
+function VideoAttachment({ job, fileUrl, provider }: { job?: string; fileUrl?: string; provider: string }) {
+  const [status, setStatus] = useState<'processing' | 'completed' | 'failed'>(fileUrl ? 'completed' : 'processing')
   const [progress, setProgress] = useState<number | null>(null)
-  const [url, setUrl] = useState<string | null>(null)
+  const [url, setUrl] = useState<string | null>(fileUrl || null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (fileUrl || !job) return // montage déjà prêt — pas de job à interroger
     let stopped = false
     let timer: ReturnType<typeof setTimeout>
     const poll = async () => {

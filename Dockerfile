@@ -3,6 +3,10 @@ FROM mcr.microsoft.com/playwright:v1.49.0-jammy
 
 WORKDIR /app
 
+# ffmpeg — montage vidéo réel (assemblage de plusieurs clips/images fournis
+# par l'utilisateur) : gratuit, auto-hébergé, pas de compte/API tiers.
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
+
 # Copy package files
 COPY package*.json ./
 

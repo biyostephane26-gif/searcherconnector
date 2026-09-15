@@ -14,10 +14,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { userId, message, userProfile = {}, image } = req.body;
+    const { userId, message, userProfile = {}, image, conversationId: rawConvId } = req.body;
     if (!userId || !message) {
       return res.status(400).json({ error: "userId et message sont requis." });
     }
+    // "default" pour la rétrocompatibilité — anciens clients qui
+    // n'envoient pas encore conversationId retombent sur l'unique
+    // conversation historique de l'utilisateur, jamais perdue.
+    const conversationId = String(rawConvId || 'default').slice(0, 100);
     // Image collée/envoyée dans le chat (data URL) — limite raisonnable
     // côté requête pour ne pas saturer le body parser par défaut de Next.
     if (image && typeof image === 'string' && image.length > 8_000_000) {
@@ -53,8 +57,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // éphémère, pas d'historique chargé ni sauvegardé (confidentialité réelle).
     const learningEnabled = userProfile?.search_preferences?.scai_learning !== false;
 
-    // 1. RÉCUPÉRATION : Chercher le document de l'utilisateur
-    const doc = learningEnabled ? await sessionsCollection.findOne({ userId: idPropre }) : null;
+    // 1. RÉCUPÉRATION : Chercher le document de CETTE conversation (un
+    // utilisateur peut avoir plusieurs conversations en parallèle, comme
+    // "Nouveau" dans Cowork — jamais un seul document par utilisateur).
+    let doc = learningEnabled ? await sessionsCollection.findOne({ userId: idPropre, conversationId }) : null;
+    // Migration douce : avant le multi-conversation, un utilisateur n'avait
+    // qu'un seul document (sans conversationId). Le premier accès à
+    // "default" retrouve cet historique existant plutôt que de le rendre
+    // invisible — la mise à jour plus bas lui ajoute conversationId.
+    if (!doc && learningEnabled && conversationId === 'default') {
+      doc = await sessionsCollection.findOne({ userId: idPropre, conversationId: { $exists: false } });
+    }
+    const isNewConversation = !doc;
 
     // Récupérer le tableau 'messages' (ou 'historique' pour rétrocompatibilité), sinon initialiser à vide
     let messages = doc && doc.messages ? doc.messages : (doc && doc.historique ? doc.historique : []);
@@ -70,13 +84,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // 2. AJOUT DU MESSAGE USER
     messages.push({ role: 'user', content: message });
 
-    // 3. PRÉPARATION DE LA FENÊTRE D'ENVOI (System + 6 derniers messages)
+    // 3. PRÉPARATION DE LA FENÊTRE D'ENVOI (System + historique récent)
+    // Avant : seulement les 6 derniers messages, quelle que soit la
+    // longueur réelle de la conversation — SCAI "oubliait" et redemandait
+    // les mêmes infos après 2-3 échanges. On prend maintenant autant de
+    // messages récents que le budget de caractères le permet (~12000
+    // caractères ≈ 3000-4000 tokens, largement dans la fenêtre de
+    // contexte de gpt-oss-120b/Gemini), plafonné à 60 messages pour
+    // éviter un cas pathologique (messages énormes en rafale).
     const systemMsg = messages[0];
     const echanges = messages.slice(1);
-    const fenetreEnvoi = [
-      systemMsg,
-      ...echanges.slice(-6)
-    ];
+    const MAX_CONTEXT_CHARS = 12000;
+    const MAX_CONTEXT_MESSAGES = 60;
+    const fenetreMessages: typeof echanges = [];
+    let charBudget = MAX_CONTEXT_CHARS;
+    for (let i = echanges.length - 1; i >= 0 && fenetreMessages.length < MAX_CONTEXT_MESSAGES; i--) {
+      const len = (echanges[i]?.content || '').length;
+      if (fenetreMessages.length > 0 && charBudget - len < 0) break;
+      charBudget -= len;
+      fenetreMessages.unshift(echanges[i]);
+    }
+    const fenetreEnvoi = [systemMsg, ...fenetreMessages];
 
     // 4. ENVOI À GROQ avec fallback Gemini automatique
     // (ou analyse Gemini Vision directement si une image accompagne le message —
@@ -199,21 +227,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // 5. AJOUT DE LA RÉPONSE IA (version nettoyée sans le token)
     messages.push({ role: 'assistant', content: reponseNettoyee });
 
-    // 6. SAUVEGARDE GLOBALE — historique PERMANENT, jamais effacé
-    // On garde TOUT l'historique — pas de limite de taille
-    // L'utilisateur peut retrouver ses conversations les plus anciennes
-    // (sauf si l'utilisateur a désactivé "Apprentissage SCAI" dans Settings)
+    // 6. SAUVEGARDE — historique PERMANENT de CETTE conversation, jamais
+    // effacé (on garde tout, pas de limite de taille). Le filtre cible le
+    // document exact (par _id si trouvé via la migration "default", sinon
+    // par userId+conversationId) — l'ancien filtre {userId} seul aurait
+    // fusionné toutes les conversations d'un même utilisateur en une
+    // seule, ce qui est exactement le bug que le multi-conversation
+    // corrige (sauf si l'utilisateur a désactivé "Apprentissage SCAI").
     if (learningEnabled) {
+      const filter = doc?._id ? { _id: doc._id } : { userId: idPropre, conversationId };
+      const title = doc?.title || message.trim().slice(0, 60) || 'Nouvelle discussion';
       await sessionsCollection.updateOne(
-        { userId: idPropre },
+        filter,
         {
           $set: {
+            userId: idPropre,
+            conversationId,
+            title,
             messages: messages,
             derniereVue: new Date().toISOString(),
-            // Méta pour le monitoring
             lastActive: new Date().toISOString(),
             messageCount: messages.filter((m: any) => m.role !== 'system').length,
-          }
+          },
+          $setOnInsert: { createdAt: new Date().toISOString() },
         },
         { upsert: true }
       );

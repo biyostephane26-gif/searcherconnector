@@ -47,6 +47,20 @@ export async function saveVideoOutputPending(userId: string, title: string, job:
   return row?.id || null
 }
 
+// Montage vidéo : contrairement à Sora/Veo (fichier récupéré à la demande
+// via le fournisseur), le fichier assemblé par ffmpeg est déjà entre nos
+// mains — on le stocke directement, pas de job à interroger plus tard.
+export async function saveVideoOutputReady(userId: string, title: string, buffer: Buffer) {
+  const path = `cowork-outputs/${userId}/${Date.now()}-${slug(title)}.mp4`
+  const { error: upErr } = await supabaseAdmin.storage.from('DOCUMENTS').upload(path, buffer, { contentType: 'video/mp4', upsert: false })
+  if (upErr) { console.warn('[cowork-outputs] upload vidéo échoué (non bloquant):', upErr.message); return null }
+  const { data } = supabaseAdmin.storage.from('DOCUMENTS').getPublicUrl(path)
+  const { data: row } = await supabaseAdmin.from('cowork_outputs')
+    .insert({ user_id: userId, kind: 'video', title, file_url: data.publicUrl, status: 'ready' })
+    .select('id').single()
+  return row?.id || null
+}
+
 function slug(s: string) {
   return (s || 'fichier').normalize('NFD').replace(/[̀-ͯ]/g, '')
     .replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase().slice(0, 50) || 'fichier'
