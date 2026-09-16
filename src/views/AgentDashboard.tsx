@@ -968,7 +968,7 @@ export default function AgentDashboard() {
               )}
 
               <button
-                disabled={!userInstruction.trim() || isProcessing}
+                disabled={(!userInstruction.trim() && attachedImages.length === 0 && !(activeTool === 'montage' && montageClips.length >= 2)) || isProcessing}
                 onClick={submitInput}
                 className="p-2 bg-[#D4AF37] text-black rounded-lg disabled:opacity-50 hover:bg-[#B8962D] transition-colors"
               >
