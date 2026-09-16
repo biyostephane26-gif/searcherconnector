@@ -29,6 +29,8 @@ type VoiceResponse = {
   suggest_scan?: boolean;
   scan_params?: any;
   detected_updates?: any;
+  tool_call?: { tool: string; prompt: string } | null;
+  plan_created?: { id: string; title: string } | null;
   error?: string;
 };
 
@@ -49,8 +51,12 @@ export default async function handler(
   }
 
   try {
-    const { userId, userProfile = {}, mode = 'full' } = req.body;
-    
+    const { userId, userProfile = {}, mode = 'full', conversationId: rawConvId } = req.body;
+    // Même valeur par défaut que /api/scai/chat — une note vocale doit
+    // atterrir dans la conversation ACTIVE de l'utilisateur, pas dans un
+    // document séparé sans conversationId (voir processChat plus bas).
+    const conversationId = String(rawConvId || 'default').slice(0, 100);
+
     // Mode 1: Speech-to-Text ONLY (transcribe audio)
     if (mode === 'stt' && req.body.audio) {
       const transcription = await transcribeAudio(req.body.audio);
@@ -79,14 +85,14 @@ export default async function handler(
     }
 
     if (!finalText && !userId) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'userId et texte/audio requis' 
+      return res.status(400).json({
+        success: false,
+        error: 'userId et texte/audio requis'
       });
     }
 
     // Step 1: Get LLM response (reuse existing chat logic)
-    const chatResponse = await processChat(userId, finalText, userProfile);
+    const chatResponse = await processChat(userId, finalText, userProfile, conversationId);
     
     // Step 2: Generate voice response (if TTS enabled)
     let audioBuffer: Buffer | null = null;
@@ -108,7 +114,9 @@ export default async function handler(
         audioBuffer: audioBuffer.toString('base64'),
         suggest_scan: chatResponse.suggest_scan,
         scan_params: chatResponse.scan_params,
-        detected_updates: chatResponse.detected_updates
+        detected_updates: chatResponse.detected_updates,
+        tool_call: chatResponse.tool_call,
+        plan_created: chatResponse.plan_created
       });
     }
 
@@ -118,7 +126,9 @@ export default async function handler(
       response: chatResponse.response,
       suggest_scan: chatResponse.suggest_scan,
       scan_params: chatResponse.scan_params,
-      detected_updates: chatResponse.detected_updates
+      detected_updates: chatResponse.detected_updates,
+      tool_call: chatResponse.tool_call,
+      plan_created: chatResponse.plan_created
     });
 
   } catch (error: any) {
@@ -155,9 +165,16 @@ async function transcribeAudio(audioData: any): Promise<string> {
     const formData = new FormData();
     formData.append('file', audioBlob, 'audio.webm');
     formData.append('model', 'whisper-large-v3-turbo');
-    // Pas de paramètre "language" forcé — Whisper détecte automatiquement
-    // parmi ~99 langues. Avant, tout était transcrit comme si c'était du
-    // français, ce qui cassait la reconnaissance pour toute autre langue.
+    // Langue forcée en français : l'auto-détection se trompait parfois sur
+    // les notes vocales courtes (bruit de fond, silence en début d'enreg.)
+    // et transcrivait dans une autre langue, ce qui donnait un texte qui ne
+    // correspondait plus du tout à ce qui avait été dit. Le produit est
+    // francophone donc ce choix est correct pour la quasi-totalité des cas.
+    formData.append('language', 'fr');
+    // "prompt" sert d'indice de vocabulaire à Whisper (noms propres, jargon
+    // métier) sans forcer le contenu — améliore la reconnaissance de "SCAI",
+    // "Searcher Connector", "cowork", "prospection", etc.
+    formData.append('prompt', 'SCAI, Searcher Connector, cowork, prospection, freelance, opportunités, scan, PDF, Excel.');
 
     const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
       method: 'POST',
@@ -235,15 +252,22 @@ async function textToSpeech(text: string): Promise<Buffer> {
 // ──────────────────────────────────────────────────────────────
 // CHAT PROCESSING (reuse existing logic)
 // ──────────────────────────────────────────────────────────────
-async function processChat(userId: string, message: string, userProfile: any = {}) {
+async function processChat(userId: string, message: string, userProfile: any = {}, conversationId: string = 'default') {
   const idPropre = userId.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_');
   const sessionsCollection = await getScaiSessions();
 
   // Toggle "Mémoire des conversations" (Settings) — désactivé = éphémère
   const learningEnabled = userProfile?.search_preferences?.scai_learning !== false;
 
-  // 1. RÉCUPÉRATION : Chercher le document de l'utilisateur
-  const doc = learningEnabled ? await sessionsCollection.findOne({ userId: idPropre }) : null;
+  // 1. RÉCUPÉRATION : Chercher le document de CETTE conversation — même
+  // logique que /api/scai/chat. Avant, le filtre {userId} seul (sans
+  // conversationId) pouvait faire atterrir une note vocale dans une
+  // conversation au hasard, voire créer un doublon en collision avec le
+  // multi-conversation du chat texte.
+  let doc = learningEnabled ? await sessionsCollection.findOne({ userId: idPropre, conversationId }) : null;
+  if (!doc && learningEnabled && conversationId === 'default') {
+    doc = await sessionsCollection.findOne({ userId: idPropre, conversationId: { $exists: false } });
+  }
   let messages = doc && doc.messages ? doc.messages : (doc && doc.historique ? doc.historique : []);
 
   if (messages.length === 0 || messages[0].role !== 'system') {
@@ -292,25 +316,77 @@ async function processChat(userId: string, message: string, userProfile: any = {
     }
   }
 
+  // 4. Parse [TOOL_READY:{...}] — sans ça, une note vocale demandant un
+  // PDF/Excel/image/vidéo affichait le token brut au lieu de déclencher
+  // le vrai outil (seul SCAN_READY était géré ici avant ce correctif).
+  let tool_call: { tool: string; prompt: string } | null = null;
+  const toolTokenMatch = reponseNettoyee.match(/\[TOOL_READY:(\{[^\]]+\})\]/i);
+  if (toolTokenMatch) {
+    try {
+      const parsed = JSON.parse(toolTokenMatch[1]);
+      const validTools = ['pdf', 'excel', 'word', 'image', 'video', 'opportunity'];
+      if (validTools.includes(parsed.tool) && typeof parsed.prompt === 'string') {
+        tool_call = { tool: parsed.tool, prompt: parsed.prompt };
+      }
+    } catch (_) { /* token malformé — pas d'outil déclenché */ }
+    reponseNettoyee = reponseNettoyee.replace(toolTokenMatch[0], '').trim();
+  }
+
+  // 5. Parse [PLAN_READY:{...}] — tâche multi-étapes en arrière-plan
+  let plan_created: { id: string; title: string } | null = null;
+  const planTokenMatch = reponseNettoyee.match(/\[PLAN_READY:(\{[\s\S]+\})\]/i);
+  if (planTokenMatch) {
+    try {
+      const parsed = JSON.parse(planTokenMatch[1]);
+      const validTools = ['pdf', 'excel', 'word', 'image', 'video', 'scan', 'opportunity'];
+      const steps = Array.isArray(parsed.steps)
+        ? parsed.steps.filter((s: any) => validTools.includes(s?.tool) && typeof s?.prompt === 'string').map((s: any) => ({ tool: s.tool, prompt: s.prompt, status: 'pending' }))
+        : [];
+      if (steps.length > 0) {
+        const title = String(parsed.title || 'Tâche SCAI').slice(0, 150);
+        const { supabaseAdmin } = await import('../../../lib/supabaseAdmin');
+        const { data: task } = await supabaseAdmin
+          .from('cowork_tasks')
+          .insert({ user_id: userId, title, steps, current_step: 0, status: 'running' })
+          .select('id, title').single();
+        if (task) plan_created = { id: task.id, title: task.title };
+      }
+    } catch (_) { /* token malformé — pas de plan créé */ }
+    reponseNettoyee = reponseNettoyee.replace(planTokenMatch[0], '').trim();
+  }
+
   messages.push({ role: 'assistant', content: reponseNettoyee });
 
-  if (learningEnabled) await sessionsCollection.updateOne(
-    { userId: idPropre },
-    {
-      $set: {
-        messages: messages,
-        derniereVue: new Date().toISOString(),
-        lastActive: new Date().toISOString(),
-        messageCount: messages.filter((m: any) => m.role !== 'system').length,
-      }
-    },
-    { upsert: true }
-  );
+  if (learningEnabled) {
+    // Même filtre que /api/scai/chat : par _id si trouvé via la migration
+    // "default", sinon par userId+conversationId — jamais {userId} seul.
+    const filter = doc?._id ? { _id: doc._id } : { userId: idPropre, conversationId };
+    const firstUserMessage = messages.find((m: any) => m.role === 'user')?.content || message;
+    const title = doc?.title || firstUserMessage.trim().slice(0, 60) || 'Nouvelle discussion';
+    await sessionsCollection.updateOne(
+      filter,
+      {
+        $set: {
+          userId: idPropre,
+          conversationId,
+          title,
+          messages: messages,
+          derniereVue: new Date().toISOString(),
+          lastActive: new Date().toISOString(),
+          messageCount: messages.filter((m: any) => m.role !== 'system').length,
+        },
+        $setOnInsert: { createdAt: new Date().toISOString() },
+      },
+      { upsert: true }
+    );
+  }
 
   return {
     response: reponseNettoyee,
     suggest_scan,
     scan_params,
-    detected_updates: {}
+    detected_updates: {},
+    tool_call,
+    plan_created
   };
 }

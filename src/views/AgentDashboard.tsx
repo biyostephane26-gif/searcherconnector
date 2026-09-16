@@ -247,7 +247,12 @@ export default function AgentDashboard() {
   const startVoiceNote = async () => {
     if (isVoiceNoteRecording || isVoiceNoteProcessing) return;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // echoCancellation/noiseSuppression/autoGainControl : sans ça, le
+      // micro capture le bruit ambiant brut, ce qui dégrade nettement la
+      // transcription Whisper (notes vocales mal retranscrites).
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+      });
       const recorder = new MediaRecorder(stream);
       voiceNoteChunksRef.current = [];
       voiceNoteStartRef.current = Date.now();
@@ -297,7 +302,7 @@ export default function AgentDashboard() {
       const res = await fetch('/api/scai/voice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, userProfile: profile, audio: audioBase64, mode: 'full' }),
+        body: JSON.stringify({ userId: user.id, userProfile: profile, audio: audioBase64, mode: 'full', conversationId: activeConversationId }),
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Erreur note vocale');
@@ -309,6 +314,14 @@ export default function AgentDashboard() {
       if (data.response) {
         setChatHistory(prev => [...prev, { role: 'agent', content: data.response }]);
         await saveChatMessage('agent', data.response);
+      }
+      // Même protocole que le chat texte : une note vocale peut aussi
+      // déclencher un vrai outil ou une tâche multi-étapes en arrière-plan.
+      if (data.tool_call?.tool && data.tool_call?.prompt) {
+        await runTool(data.tool_call.tool, data.tool_call.prompt, undefined, { skipUserEcho: true });
+      }
+      if (data.plan_created?.id) {
+        setChatHistory(prev => [...prev, { role: 'agent', content: `🗂️ Tâche lancée : **${data.plan_created.title}** — suis sa progression dans le panneau Progression, à droite.` }]);
       }
 
       if (data.audioBuffer) {
@@ -831,7 +844,7 @@ export default function AgentDashboard() {
                 }}
                 placeholder={isProcessing ? "SCAI travaille..." : activeTool ? TOOL_META[activeTool].placeholder : "Échangez avec SCAI (votre agent d'élite)... (Maj+Entrée pour un saut de ligne)"}
                 disabled={isProcessing}
-                className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-white py-2 resize-none leading-normal max-h-40 overflow-y-auto"
+                className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-white py-2 resize-none leading-normal max-h-40 overflow-y-auto caret-[#D4AF37]"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitInput(); }
                   if (e.key === 'Escape') { setActiveTool(null); setShowToolsMenu(false); }
@@ -957,6 +970,14 @@ export default function AgentDashboard() {
         )}
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        {isProcessing && (
+          <div className="bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-xl p-3 flex items-center gap-2.5">
+            <ScaiThinkingOrb size={16} />
+            <p className="text-xs text-[#D4AF37] font-syne font-semibold">
+              {activeTool ? `${TOOL_META[activeTool].emoji} ${TOOL_META[activeTool].label} en cours...` : isVoiceNoteProcessing ? 'SCAI écoute et réfléchit...' : 'SCAI réfléchit...'}
+            </p>
+          </div>
+        )}
         <div>
           <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">Aperçu</p>
           <div className="grid grid-cols-2 gap-2">
@@ -991,16 +1012,53 @@ export default function AgentDashboard() {
             ))}
           </div>
         </div>
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500">Journal des actions</p>
+            <span className="text-[10px] text-gray-600">{recentActions?.length || 0}</span>
+          </div>
+          {!recentActions || recentActions.length === 0 ? (
+            <p className="text-xs text-gray-600">Aucune action pour l'instant. Lance un scan pour commencer.</p>
+          ) : (
+            <div className="space-y-1.5 max-h-64 overflow-y-auto">
+              {recentActions.slice(0, 20).map((action: any) => (
+                <div key={action.id} className="flex items-start gap-2 bg-[#111111] border border-gray-800 rounded-lg px-2.5 py-2">
+                  <span className="shrink-0 mt-0.5">{ACTION_ICONS[action.action_type] || <Zap size={12} className="text-[#D4AF37]" />}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[11px] text-gray-300 line-clamp-2">{action.result}</p>
+                    <p className="text-[10px] text-gray-600 mt-0.5">
+                      {action.created_at ? formatDistanceToNow(new Date(action.created_at), { addSuffix: true, locale: fr }) : 'À l\'instant'}
+                    </p>
+                  </div>
+                  {action.success ? (
+                    <CheckCircle size={11} className="text-green-500 shrink-0 mt-0.5" />
+                  ) : (
+                    <XCircle size={11} className="text-red-500 shrink-0 mt-0.5" />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         <TasksPanel />
         <OutputsPanel />
         <div>
           <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">Contexte</p>
           {connectedConnectors.length === 0 ? (
-            <p className="text-xs text-gray-600">Aucun connecteur actif — SCAI travaille avec ton profil seul.</p>
+            <button onClick={() => setActiveTab('connectors')} className="text-xs text-gray-600 hover:text-[#D4AF37] transition-colors text-left">
+              Aucun connecteur actif — SCAI travaille avec ton profil seul. Connecter un outil →
+            </button>
           ) : (
             <div className="flex flex-wrap gap-1.5">
               {connectedConnectors.map(name => (
-                <span key={name} className="text-[11px] bg-[#111111] border border-gray-800 rounded-full px-2.5 py-1 text-gray-300">{name}</span>
+                <button
+                  key={name}
+                  onClick={() => setActiveTab('connectors')}
+                  className="text-[11px] bg-[#111111] border border-gray-800 rounded-full px-2.5 py-1 text-gray-300 hover:border-[#D4AF37]/50 hover:text-white transition-colors"
+                  title="Gérer les connecteurs"
+                >
+                  {name}
+                </button>
               ))}
             </div>
           )}
@@ -1010,7 +1068,7 @@ export default function AgentDashboard() {
   )
 
   return (
-    <div className="min-h-screen bg-black text-white flex">
+    <div className="h-screen bg-black text-white flex overflow-hidden">
 
       {/* Rail gauche persistant façon Cowork — Nouveau / Projets / Programmé / Connecteurs / Personnaliser / Discussions */}
       {leftRailOpen ? (
@@ -1078,13 +1136,13 @@ export default function AgentDashboard() {
         </button>
       )}
 
-      <div className="flex-1 min-w-0 px-4 sm:px-6 py-6">
-      <div className="max-w-3xl mx-auto">
+      <div className="flex-1 min-w-0 h-full flex flex-col overflow-hidden">
 
-        {activeTab === 'status' && (chatHistory.length === 0 ? (
+        {activeTab === 'status' && chatHistory.length === 0 && (
           /* ── Écran d'accueil — grande salutation + saisie centrée + activité récente,
              affiché tant qu'aucune conversation n'a démarré ─────────────────────── */
-          <div className="flex flex-col items-center pt-10 pb-8">
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
+          <div className="max-w-3xl mx-auto flex flex-col items-center pt-10 pb-8">
             <div className="text-4xl mb-3">{greetingEmoji}</div>
             <h1 className="font-syne text-2xl md:text-3xl font-bold text-white mb-8 text-center">
               {greeting}{firstName ? ` ${firstName}` : ''}
@@ -1118,25 +1176,30 @@ export default function AgentDashboard() {
               </div>
             )}
           </div>
-        ) : (
+          </div>
+        )}
+
+        {activeTab === 'status' && chatHistory.length > 0 && (
         <>
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="font-syne text-2xl font-bold text-white">SCAI Cowork</h1>
-            <p className="text-sm text-gray-400 mt-1">
-              <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
-              Actif 24h/24 · {pendingQueue} tâches planifiées
-            </p>
+        {/* Header — hauteur fixe, ne défile jamais */}
+        <div className="shrink-0 px-4 sm:px-6 pt-6 pb-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-syne text-2xl font-bold text-white">SCAI Cowork</h1>
+              <p className="text-sm text-gray-400 mt-1">
+                <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
+                Actif 24h/24 · {pendingQueue} tâches planifiées
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Agent Command Center */}
-        <div className="bg-[#111111] border border-gray-800 rounded-2xl p-4 mb-8 shadow-2xl">
-          <div className="flex flex-col gap-4">
+        {/* Messages — seule zone qui défile, plein cadre comme dans Claude
+           Cowork (pas de carte encadrée qui réduit le chat à un petit carré) */}
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6">
+          <div className="flex flex-col gap-4 pb-4">
             {/* Chat History Preview */}
-            <div className="flex justify-between items-center mb-2 px-2">
-              <span className="text-[10px] font-syne font-bold uppercase tracking-[0.2em] text-gray-500">Flux de Pensée Stratégique</span>
+            <div className="flex justify-end items-center -mb-2">
               <div className="flex items-center gap-2">
                 {showClearConfirm && (
                   <span className="text-[10px] text-red-400">Supprimer cette discussion ?</span>
@@ -1156,7 +1219,65 @@ export default function AgentDashboard() {
               </div>
             </div>
 
-            <div className="space-y-4 max-h-96 overflow-y-auto mb-4 scrollbar-hide pr-2">
+            {/* Statut du scan en cours — visible directement dans la
+               conversation qui l'a déclenché, plutôt qu'un onglet séparé
+               qui aurait fait doublon avec le chat lui-même. */}
+            {pendingScanConfirm && (
+              <div className="bg-black/40 border border-[#D4AF37]/30 rounded-xl p-4 mb-4">
+                <div className="font-syne text-sm font-bold text-[#D4AF37] mb-3">⚡ Prêt pour le scan</div>
+                <div className="text-xs text-gray-400 mb-3">
+                  Zone cible : {pendingScanConfirm.zone || 'continental'} ·
+                  Budget plateformes : {pendingScanConfirm.has_budget ? 'Oui' : 'Non'}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      handleScan(pendingScanConfirm.zone);
+                      setPendingScanConfirm(null);
+                    }}
+                    disabled={scanning}
+                    className="flex-1 bg-[#D4AF37] text-black px-4 py-2 rounded-lg font-syne font-bold text-sm hover:bg-[#B8962D] disabled:opacity-50 transition-colors"
+                  >
+                    Oui, lancer le scan
+                  </button>
+                  <button
+                    onClick={() => setPendingScanConfirm(null)}
+                    className="flex-1 bg-transparent border border-gray-700 text-gray-400 px-4 py-2 rounded-lg font-syne font-bold text-sm hover:border-gray-500 hover:text-white transition-colors"
+                  >
+                    Pas maintenant
+                  </button>
+                </div>
+              </div>
+            )}
+            {scanLog.length > 0 && (
+              <div className="bg-black/40 border border-[#D4AF37]/30 rounded-xl p-4 mb-4">
+                <div className="font-syne text-sm font-bold text-[#D4AF37] mb-3">⚡ Scan en cours</div>
+                {scanLog.map((line, i) => (
+                  <div key={i} className="text-xs text-gray-300 py-1 border-b border-gray-800/50 last:border-0 font-mono">
+                    <span className="text-gray-600 mr-2">{new Date().toLocaleTimeString('fr-FR')}</span>
+                    {line}
+                  </div>
+                ))}
+              </div>
+            )}
+            {scanMetrics && (
+              <div className="mb-4">
+                <ScanMetrics
+                  sitesScanned={scanMetrics.sitesScanned}
+                  socialNetworksScanned={scanMetrics.socialNetworksScanned}
+                  platformsScanned={scanMetrics.platformsScanned}
+                  feedsScanned={scanMetrics.feedsScanned}
+                  totalSources={scanMetrics.totalSources}
+                />
+              </div>
+            )}
+            {scanError && (
+              <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-sm text-red-300 mb-4">
+                {scanError}
+              </div>
+            )}
+
+            <div className="space-y-4">
               {chatHistory && chatHistory.map((msg: any, i: number) => (
                 <div key={i} className={"flex " + (msg?.role === 'user' ? 'justify-end' : 'justify-start')}>
                   <div className={"max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm " + (
@@ -1198,16 +1319,8 @@ export default function AgentDashboard() {
               ))}
               {isProcessing && (
                 <div className="flex justify-start">
-                  <div className="bg-[#111111] border border-gray-800 text-[#D4AF37] rounded-2xl rounded-tl-none px-4 py-3 text-xs flex flex-col gap-2 shadow-lg min-w-[200px]">
-                    <div className="flex items-center gap-2">
-                      <ScaiThinkingOrb size={16} />
-                      <span className="font-syne font-bold uppercase tracking-widest text-[9px]">
-                        {isVoiceNoteProcessing ? 'SCAI écoute et réfléchit...' : 'SCAI réfléchit intensément...'}
-                      </span>
-                    </div>
-                    <div className="h-1 w-full bg-gray-900 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#D4AF37] animate-[shimmer_2s_infinite] w-1/2"></div>
-                    </div>
+                  <div className="bg-[#111111] border border-gray-800 rounded-2xl rounded-tl-none px-4 py-3 shadow-lg">
+                    <ScaiThinkingOrb size={28} />
                   </div>
                 </div>
               )}
@@ -1222,13 +1335,21 @@ export default function AgentDashboard() {
               )}
               <div ref={chatEndRef} />
             </div>
+          </div>
+        </div>
 
+        {/* Composer — hauteur fixe, toujours visible en bas comme dans Claude Cowork */}
+        <div className="shrink-0 px-4 sm:px-6 pb-6 pt-3">
+          <div className="bg-[#111111] border border-gray-800 rounded-2xl p-4 shadow-2xl">
             {renderComposer()}
           </div>
         </div>
         </>
-        ))}
+        )}
 
+        {activeTab !== 'status' && (
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6">
+        <div className="max-w-3xl mx-auto">
         {/* Tabs — repris dans le panneau droit "Vues" en desktop (xl+) ;
            visibles ici seulement en dessous, où ce panneau est masqué. */}
         <div className="xl:hidden flex items-center gap-0 mb-6 border-b border-gray-800">
@@ -1270,104 +1391,6 @@ export default function AgentDashboard() {
             <PanelRightOpen size={18} />
           </button>
         </div>
-
-        {/* Tab: Status Live */}
-        {activeTab === 'status' && (
-          <div className="space-y-4">
-            {/* Confirmation de scan */}
-            {pendingScanConfirm && (
-              <div className="bg-[#111111] border border-[#D4AF37]/30 rounded-xl p-4">
-                <div className="font-syne text-sm font-bold text-[#D4AF37] mb-3">⚡ Prêt pour le scan</div>
-                <div className="text-xs text-gray-400 mb-3">
-                  Zone cible : {pendingScanConfirm.zone || 'continental'} · 
-                  Budget plateformes : {pendingScanConfirm.has_budget ? 'Oui' : 'Non'}
-                </div>
-                <div className="flex gap-2">
-                  <button 
-                    onClick={() => {
-                      handleScan(pendingScanConfirm.zone);
-                      setPendingScanConfirm(null);
-                    }}
-                    disabled={scanning}
-                    className="flex-1 bg-[#D4AF37] text-black px-4 py-2 rounded-lg font-syne font-bold text-sm hover:bg-[#B8962D] disabled:opacity-50 transition-colors"
-                  >
-                    Oui, lancer le scan
-                  </button>
-                  <button 
-                    onClick={() => setPendingScanConfirm(null)}
-                    className="flex-1 bg-transparent border border-gray-700 text-gray-400 px-4 py-2 rounded-lg font-syne font-bold text-sm hover:border-gray-500 hover:text-white transition-colors"
-                  >
-                    Pas maintenant
-                  </button>
-                </div>
-              </div>
-            )}
-            {/* Scan log */}
-            {scanLog.length > 0 && (
-              <div className="bg-[#111111] border border-[#D4AF37]/30 rounded-xl p-4">
-                <div className="font-syne text-sm font-bold text-[#D4AF37] mb-3">⚡ Scan en cours</div>
-                {scanLog.map((line, i) => (
-                  <div key={i} className="text-xs text-gray-300 py-1 border-b border-gray-800/50 last:border-0 font-mono">
-                    <span className="text-gray-600 mr-2">{new Date().toLocaleTimeString('fr-FR')}</span>
-                    {line}
-                  </div>
-                ))}
-              </div>
-            )}
-            {scanMetrics && (
-                <div className="my-4">
-                  <ScanMetrics
-                    sitesScanned={scanMetrics.sitesScanned}
-                    socialNetworksScanned={scanMetrics.socialNetworksScanned}
-                    platformsScanned={scanMetrics.platformsScanned}
-                    feedsScanned={scanMetrics.feedsScanned}
-                    totalSources={scanMetrics.totalSources}
-                  />
-                </div>
-              )}
-            {scanError && (
-              <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-sm text-red-300">
-                {scanError}
-              </div>
-            )}
-
-            {/* Recent actions */}
-            <div className="bg-[#111111] border border-gray-800 rounded-xl overflow-hidden">
-              <div className="px-4 py-3 border-b border-gray-800 flex items-center justify-between">
-                <span className="font-syne font-bold text-sm text-white">Journal des actions</span>
-                <span className="text-xs text-gray-500">{recentActions?.length || 0} actions récentes</span>
-              </div>
-              {!recentActions || recentActions.length === 0 ? (
-                <div className="p-8 text-center text-gray-600 text-sm">
-                  Aucune action pour l'instant. Lancez un scan pour commencer.
-                </div>
-              ) : (
-                recentActions.map((action: any) => (
-                  <div key={action.id} className="flex items-start gap-3 px-4 py-3 border-b border-gray-800/50 last:border-0 hover:bg-black/30">
-                    <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center border border-gray-800">
-                      {ACTION_ICONS[action.action_type] || <Zap size={14} className="text-[#D4AF37]" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm text-white">{action.result}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">
-                        {action.created_at ? formatDistanceToNow(new Date(action.created_at), { addSuffix: true, locale: fr }) : 'À l\'instant'}
-                        {action.execution_ms > 0 && ` · ${(action.execution_ms / 1000).toFixed(1)}s`}
-                      </div>
-                    </div>
-                    {action.auto_promo_sent && (
-                      <span className="text-xs text-[#D4AF37]/60 flex-shrink-0">● promo</span>
-                    )}
-                    {action.success ? (
-                      <CheckCircle size={14} className="text-green-500 flex-shrink-0 mt-1" />
-                    ) : (
-                      <XCircle size={14} className="text-red-500 flex-shrink-0 mt-1" />
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Tab: Queue */}
         {activeTab === 'queue' && (
@@ -1574,7 +1597,10 @@ export default function AgentDashboard() {
           </div>
         )}
 
-      </div>
+        </div>
+        </div>
+        )}
+
       </div>
 
       {/* Panneau droit persistant façon Cowork — Sorties + Contexte */}

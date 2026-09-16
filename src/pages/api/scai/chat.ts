@@ -236,7 +236,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // corrige (sauf si l'utilisateur a désactivé "Apprentissage SCAI").
     if (learningEnabled) {
       const filter = doc?._id ? { _id: doc._id } : { userId: idPropre, conversationId };
-      const title = doc?.title || message.trim().slice(0, 60) || 'Nouvelle discussion';
+      // Le titre reflète le TOUT PREMIER message de la conversation, pas
+      // le message du moment — sinon une conversation migrée depuis
+      // l'ancien modèle (un seul document par utilisateur) prenait le
+      // titre du dernier message envoyé après le déploiement, jamais
+      // celui de son vrai sujet d'origine.
+      const firstUserMessage = messages.find((m: any) => m.role === 'user')?.content || message;
+      const title = doc?.title || firstUserMessage.trim().slice(0, 60) || 'Nouvelle discussion';
       await sessionsCollection.updateOne(
         filter,
         {
