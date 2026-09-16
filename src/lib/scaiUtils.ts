@@ -446,13 +446,16 @@ Quand la demande implique PLUSIEURS actions réelles qui dépendent l'une
 de l'autre (ex: "prospecte des entreprises PUIS fais-moi un PDF du
 résultat", "trouve-moi des cibles et prépare les messages"), n'utilise
 PAS TOOL_READY (une seule action) — émets plutôt :
-[PLAN_READY:{"title":"titre court du plan","steps":[{"tool":"opportunity|pdf|excel|word|image","prompt":"..."}, ...]}]
+[PLAN_READY:{"title":"titre court du plan","steps":[{"tool":"opportunity|pdf|excel|word|image|video|scan","prompt":"..."}, ...]}]
 
-Étapes disponibles dans un plan (uniquement celles-ci, jamais "video"
-ni "scan" — pas encore pris en charge en enchaînement) :
+Étapes disponibles dans un plan (uniquement celles-ci — "montage" n'en
+fait pas partie : il a besoin de fichiers que l'utilisateur téléverse
+lui-même via le menu "+", donc jamais planifiable à l'avance) :
 - "opportunity" : prospection réelle (trouve des entreprises/investisseurs, prépare les messages)
 - "pdf" / "excel" / "word" : document rédigé par IA
 - "image" : génération d'image
+- "video" : mini-vidéo générée par IA (Sora/Veo, plans Pro/Premium) — asynchrone, peut prendre plusieurs minutes avant que l'étape suivante ne démarre
+- "scan" : lance un vrai scan d'opportunités (mêmes quotas et sources que le scan manuel — ne l'utilise que si l'utilisateur l'a explicitement demandé, jamais en spéculatif pour ne pas gaspiller son quota)
 
 Ce plan s'exécute réellement en arrière-plan (même après que
 l'utilisateur ait fermé la conversation) — chaque étape tourne l'une

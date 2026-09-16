@@ -905,12 +905,38 @@ export default function AgentDashboard() {
               </button>
             </div>
             
-            <div className="flex gap-4 px-2">
-              <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
-                <Camera size={12} /> Photos/Vidéos acceptées
+            <div className="flex items-center justify-between px-2 flex-wrap gap-2">
+              <div className="flex gap-4">
+                <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                  <Camera size={12} /> Photos/Vidéos acceptées
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                  <FileText size={12} /> Documents CV/Portfolio
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
-                <FileText size={12} /> Documents CV/Portfolio
+              <div className="flex items-center gap-2">
+                <div className="inline-flex items-center bg-[#1A1A1A] rounded-full p-0.5 text-[10px] font-bold" title="Manuel : SCAI prépare, tu valides. Auto : SCAI candidate seule dès qu'une offre dépasse le seuil.">
+                  <button
+                    onClick={() => handleScheduleChange('auto_apply_enabled', false)}
+                    className={`px-2.5 py-1 rounded-full transition-colors ${!schedule?.auto_apply_enabled ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'}`}
+                  >
+                    Manuel
+                  </button>
+                  <button
+                    onClick={() => handleScheduleChange('auto_apply_enabled', true)}
+                    className={`px-2.5 py-1 rounded-full transition-colors ${schedule?.auto_apply_enabled ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'}`}
+                  >
+                    Auto
+                  </button>
+                </div>
+                <button
+                  onClick={() => handleScan()}
+                  disabled={scanning}
+                  className="flex items-center gap-1.5 text-[10px] text-gray-400 hover:text-[#D4AF37] disabled:opacity-50 transition-colors"
+                >
+                  {scanning ? <Loader2 size={11} className="animate-spin" /> : <Play size={11} />}
+                  {scanning ? 'Scan en cours...' : 'Lancer un scan'}
+                </button>
               </div>
             </div>
     </>
@@ -931,6 +957,40 @@ export default function AgentDashboard() {
         )}
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <div>
+          <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">Aperçu</p>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { label: 'Opportunités', value: recentActions?.filter((a: any) => a.action_type === 'search_scan').length || 0, icon: <Search size={12} className="text-[#D4AF37]" /> },
+              { label: 'Notifications', value: pendingQueue, icon: <Clock size={12} className="text-blue-500" /> },
+              { label: 'Candidatures auto', value: recentActions?.filter((a: any) => a.action_type === 'auto_apply').length || 0, icon: <CheckCircle size={12} className="text-green-500" /> },
+              { label: 'Actions récentes', value: recentActions?.length || 0, icon: <Mail size={12} className="text-purple-500" /> },
+            ].map((stat, i) => (
+              <div key={i} className="bg-[#111111] border border-gray-800 rounded-lg p-2.5 flex flex-col gap-0.5">
+                <div className="flex items-center gap-1.5 text-[9px] text-gray-500 font-syne uppercase tracking-wider">
+                  {stat.icon} {stat.label}
+                </div>
+                <div className="text-base font-bold text-white font-syne">{stat.value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">Vues</p>
+          <div className="flex flex-col gap-1">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-left transition-colors ${
+                  activeTab === tab.id ? 'bg-[#1A1A1A] text-[#D4AF37]' : 'text-gray-400 hover:text-white hover:bg-[#111111]'
+                }`}
+              >
+                <span>{tab.icon}</span> {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <TasksPanel />
         <OutputsPanel />
         <div>
@@ -1034,33 +1094,7 @@ export default function AgentDashboard() {
               {renderComposer()}
             </div>
 
-            <div className="w-full max-w-2xl flex items-center justify-center gap-3 mt-4">
-              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Mode</span>
-              <div className="inline-flex items-center bg-[#1A1A1A] rounded-full p-0.5 text-[11px] font-bold" title="Manuel : SCAI prépare, tu valides. Auto : SCAI candidate seule dès qu'une offre dépasse le seuil.">
-                <button
-                  onClick={() => handleScheduleChange('auto_apply_enabled', false)}
-                  className={`px-3.5 py-1.5 rounded-full transition-colors ${!schedule?.auto_apply_enabled ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'}`}
-                >
-                  Manuel
-                </button>
-                <button
-                  onClick={() => handleScheduleChange('auto_apply_enabled', true)}
-                  className={`px-3.5 py-1.5 rounded-full transition-colors ${schedule?.auto_apply_enabled ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'}`}
-                >
-                  Auto
-                </button>
-              </div>
-            </div>
-
-            <div className="w-full max-w-2xl flex items-center justify-between mt-3 px-1">
-              <button
-                onClick={() => handleScan()}
-                disabled={scanning}
-                className="flex items-center gap-2 text-xs text-gray-400 hover:text-[#D4AF37] disabled:opacity-50 transition-colors"
-              >
-                {scanning ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}
-                {scanning ? 'Scan en cours...' : 'Lancer un scan'}
-              </button>
+            <div className="w-full max-w-2xl flex items-center justify-center mt-3">
               <span className="text-xs text-gray-500">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5 animate-pulse" />
                 Actif 24h/24 · {pendingQueue} tâche{pendingQueue > 1 ? 's' : ''} planifiée{pendingQueue > 1 ? 's' : ''}
@@ -1095,47 +1129,6 @@ export default function AgentDashboard() {
               Actif 24h/24 · {pendingQueue} tâches planifiées
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="inline-flex items-center bg-[#1A1A1A] rounded-full p-0.5 text-[11px] font-bold" title="Manuel : SCAI prépare, tu valides. Auto : SCAI candidate seule dès qu'une offre dépasse le seuil.">
-              <button
-                onClick={() => handleScheduleChange('auto_apply_enabled', false)}
-                className={`px-3 py-1.5 rounded-full transition-colors ${!schedule?.auto_apply_enabled ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'}`}
-              >
-                Manuel
-              </button>
-              <button
-                onClick={() => handleScheduleChange('auto_apply_enabled', true)}
-                className={`px-3 py-1.5 rounded-full transition-colors ${schedule?.auto_apply_enabled ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'}`}
-              >
-                Auto
-              </button>
-            </div>
-            <button
-              onClick={() => handleScan()}
-              disabled={scanning}
-              className="flex items-center gap-2 bg-[#D4AF37] text-black px-5 py-2.5 rounded-lg font-syne font-bold text-sm hover:bg-[#B8962D] disabled:opacity-50 transition-colors"
-            >
-              {scanning ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
-              {scanning ? 'Scan en cours...' : 'Lancer un scan'}
-            </button>
-          </div>
-        </div>
-
-        {/* Stats Summary */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: 'Opportunités trouvées', value: recentActions?.filter((a: any) => a.action_type === 'search_scan').length || 0, icon: <Search size={14} className="text-[#D4AF37]" /> },
-            { label: 'Notifications', value: pendingQueue, icon: <Clock size={14} className="text-blue-500" /> },
-            { label: 'Candidatures auto', value: recentActions?.filter((a: any) => a.action_type === 'auto_apply').length || 0, icon: <CheckCircle size={14} className="text-green-500" /> },
-            { label: 'Actions récentes', value: recentActions?.length || 0, icon: <Mail size={14} className="text-purple-500" /> },
-          ].map((stat, i) => (
-            <div key={i} className="bg-[#111111] border border-gray-800 rounded-xl p-3 flex flex-col gap-1">
-              <div className="flex items-center gap-2 text-[10px] text-gray-500 font-syne uppercase tracking-wider">
-                {stat.icon} {stat.label}
-              </div>
-              <div className="text-lg font-bold text-white font-syne">{stat.value}</div>
-            </div>
-          ))}
         </div>
 
         {/* Agent Command Center */}
@@ -1236,14 +1229,15 @@ export default function AgentDashboard() {
         </>
         ))}
 
-        {/* Tabs */}
-        <div className="flex items-center gap-0 mb-6 border-b border-gray-800">
+        {/* Tabs — repris dans le panneau droit "Vues" en desktop (xl+) ;
+           visibles ici seulement en dessous, où ce panneau est masqué. */}
+        <div className="xl:hidden flex items-center gap-0 mb-6 border-b border-gray-800">
           <div className="flex gap-0 flex-1 overflow-x-auto">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`px-4 py-2.5 text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                className={`xl:hidden px-4 py-2.5 text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'text-[#D4AF37] border-[#D4AF37]'
                     : 'text-gray-500 border-transparent hover:text-white'

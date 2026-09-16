@@ -14,6 +14,31 @@ const STEP_ICON: Record<Step['status'], JSX.Element> = {
   failed: <XCircle className="w-3 h-3 text-red-400" />,
 }
 
+// Petit indicateur horizontal (●—●—○) résumant la progression d'un
+// coup d'œil, avant le détail étape par étape en dessous.
+function StepDots({ steps }: { steps: Step[] }) {
+  return (
+    <div className="flex items-center">
+      {steps.map((step, i) => (
+        <div key={i} className="flex items-center">
+          <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center shrink-0 ${
+            step.status === 'done' ? 'bg-green-500' :
+            step.status === 'failed' ? 'bg-red-500' :
+            step.status === 'running' ? 'bg-[#D4AF37] animate-pulse' :
+            'bg-gray-700'
+          }`}>
+            {step.status === 'done' && <CheckCircle2 className="w-2.5 h-2.5 text-black" />}
+            {step.status === 'failed' && <XCircle className="w-2.5 h-2.5 text-black" />}
+          </div>
+          {i < steps.length - 1 && (
+            <div className={`w-4 h-0.5 shrink-0 ${step.status === 'done' ? 'bg-green-500' : 'bg-gray-700'}`} />
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function TasksPanel() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
@@ -61,6 +86,11 @@ export default function TasksPanel() {
                 </button>
               )}
             </div>
+            {task.steps.length > 1 && (
+              <div className="mt-2">
+                <StepDots steps={task.steps} />
+              </div>
+            )}
             <div className="space-y-1 mt-2">
               {task.steps.map((step, i) => (
                 <div key={i} className="flex items-center gap-1.5 text-[11px] text-gray-400">

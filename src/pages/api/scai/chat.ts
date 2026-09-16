@@ -175,7 +175,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (planTokenMatch) {
       try {
         const parsed = JSON.parse(planTokenMatch[1]);
-        const validTools = ['pdf', 'excel', 'word', 'image', 'opportunity'];
+        const validTools = ['pdf', 'excel', 'word', 'image', 'video', 'scan', 'opportunity'];
         const steps = Array.isArray(parsed.steps)
           ? parsed.steps.filter((s: any) => validTools.includes(s?.tool) && typeof s?.prompt === 'string').map((s: any) => ({ tool: s.tool, prompt: s.prompt, status: 'pending' }))
           : [];
