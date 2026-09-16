@@ -49,7 +49,7 @@ export default function TalentSearch() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex">
       <Sidebar />
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex-1 flex flex-col min-w-0 lg:ml-64">
         <Navbar />
         <div className="flex-1 overflow-y-auto p-6 lg:p-10 max-w-5xl mx-auto w-full space-y-8">
 

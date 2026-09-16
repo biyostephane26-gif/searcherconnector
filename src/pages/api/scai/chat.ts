@@ -3,6 +3,7 @@ import { getScaiSessions } from '../../../lib/mongo';
 import { fetchGroqWithRotation, fetchGeminiVision, genererSystemPrompt } from '../../../lib/scaiUtils';
 import { checkRateLimit } from '../../../lib/rateLimiter';
 import { supabaseAdmin } from '../../../lib/supabaseAdmin';
+import { saveChatImageInput } from '../../../lib/server/saveCoworkOutput';
 
 // Une image collée/envoyée dans le chat en base64 dépasse vite la limite
 // par défaut (1 Mo) du body parser des routes Pages Router.
@@ -14,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { userId, message, userProfile = {}, image, conversationId: rawConvId } = req.body;
+    const { userId, message, userProfile = {}, image, images: rawImages, conversationId: rawConvId } = req.body;
     if (!userId || !message) {
       return res.status(400).json({ error: "userId et message sont requis." });
     }
@@ -22,10 +23,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // n'envoient pas encore conversationId retombent sur l'unique
     // conversation historique de l'utilisateur, jamais perdue.
     const conversationId = String(rawConvId || 'default').slice(0, 100);
-    // Image collée/envoyée dans le chat (data URL) — limite raisonnable
-    // côté requête pour ne pas saturer le body parser par défaut de Next.
-    if (image && typeof image === 'string' && image.length > 8_000_000) {
-      return res.status(413).json({ error: 'Image trop lourde (max ~6 Mo).' });
+    // "images" (tableau, plusieurs images collées/envoyées d'un coup) avec
+    // repli sur l'ancien champ "image" (singulier) pour compatibilité.
+    const images: string[] = Array.isArray(rawImages) ? rawImages.filter((i: any) => typeof i === 'string') : (image ? [image] : []);
+    // Data URLs (base64) — limite raisonnable côté requête pour ne pas
+    // saturer le body parser (8 Mo au total, voir `config` plus haut).
+    const imagesTotalSize = images.reduce((sum, i) => sum + i.length, 0);
+    if (imagesTotalSize > 7_500_000) {
+      return res.status(413).json({ error: 'Images trop lourdes (max ~6 Mo au total).' });
     }
 
     // Anti-spam : 20 messages / minute max par utilisateur (protège les clés Groq/Gemini)
@@ -81,8 +86,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       messages[0].content = genererSystemPrompt(userId, userProfile);
     }
 
-    // 2. AJOUT DU MESSAGE USER
-    messages.push({ role: 'user', content: message });
+    // 2. AJOUT DU MESSAGE USER — les images collées sont uploadées vers un
+    // stockage permanent (jamais le base64 brut) pour que le message garde
+    // son image après un rechargement de la conversation ; avant, l'image
+    // ne vivait qu'en base64 côté client et disparaissait au reload alors
+    // que le texte, lui, était bien sauvegardé.
+    let persistedImageUrls: string[] = [];
+    if (images.length > 0) {
+      persistedImageUrls = (await Promise.all(images.map(img => saveChatImageInput(userId, img).catch(() => null))))
+        .filter((u): u is string => !!u);
+    }
+    const userMessage: any = { role: 'user', content: message };
+    if (persistedImageUrls.length > 0) userMessage.images = persistedImageUrls;
+    messages.push(userMessage);
 
     // 3. PRÉPARATION DE LA FENÊTRE D'ENVOI (System + historique récent)
     // Avant : seulement les 6 derniers messages, quelle que soit la
@@ -104,7 +120,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       charBudget -= len;
       fenetreMessages.unshift(echanges[i]);
     }
-    const fenetreEnvoi = [systemMsg, ...fenetreMessages];
+    // Ne garder QUE role/content pour l'appel IA — les messages stockés
+    // portent aussi parfois `images`/`attachment` (pièces jointes) que
+    // Groq/Gemini n'attendent pas dans ce format et pourraient rejeter.
+    const fenetreEnvoi = [systemMsg, ...fenetreMessages].map(m => ({ role: m.role, content: m.content }));
 
     // 4. ENVOI À GROQ avec fallback Gemini automatique
     // (ou analyse Gemini Vision directement si une image accompagne le message —
@@ -112,8 +131,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Timeout de 30s sur l'appel IA pour ne pas bloquer le serveur
     let reponseSCAI: string
     try {
-      const aiPromise = (image && typeof image === 'string')
-        ? fetchGeminiVision(fenetreEnvoi, image)
+      const aiPromise = images.length > 0
+        ? fetchGeminiVision(fenetreEnvoi, images)
         : fetchGroqWithRotation(fenetreEnvoi)
       const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('Timeout IA — les moteurs ont pris trop de temps. Réessaie.')), 30000)

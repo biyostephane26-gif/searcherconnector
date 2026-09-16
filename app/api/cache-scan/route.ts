@@ -358,28 +358,29 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
       if (isSourceCategoryMismatch((u as any).profile_type, item.source_category)) continue
 
       // ── Barème fraîcheur (identique à scan.ts scoreLocally) ──────
-      // Payant : <6h ultra frais (+50) ... >14j trop vieux (-50)
-      // Gratuit : boost plus faible, même logique
+      // Magnitudes rééquilibrées (voir scan.ts) : les boosts cumulés
+      // dépassaient largement 100, donc presque toutes les offres
+      // finissaient écrasées au plafond ("100/100" partout, plus aucun tri).
       const isPaidUser = isPaidPlan(u as any)
       let freshnessBoost = 0
       if (isPaidUser) {
-        if (hoursAgo < 6) freshnessBoost = 50
-        else if (hoursAgo < 12) freshnessBoost = 40
-        else if (hoursAgo < 24) freshnessBoost = 30
-        else if (hoursAgo < 48) freshnessBoost = 20
-        else if (hoursAgo > 336) freshnessBoost = -50
+        if (hoursAgo < 6) freshnessBoost = 22
+        else if (hoursAgo < 12) freshnessBoost = 18
+        else if (hoursAgo < 24) freshnessBoost = 14
+        else if (hoursAgo < 48) freshnessBoost = 8
+        else if (hoursAgo > 336) freshnessBoost = -22
       } else {
-        if (hoursAgo < 6) freshnessBoost = 12
-        else if (hoursAgo < 24) freshnessBoost = 6
-        else if (hoursAgo > 336) freshnessBoost = -12
+        if (hoursAgo < 6) freshnessBoost = 8
+        else if (hoursAgo < 24) freshnessBoost = 4
+        else if (hoursAgo > 336) freshnessBoost = -8
       }
 
       // ── Boost "peu de candidats" — seulement si la donnée est connue ──
       // (la plupart des sources n'exposent pas ce chiffre : absent ≠ zéro)
       let applicantsBoost = 0
       if (typeof item.applicants_count === 'number') {
-        if (item.applicants_count < 10) applicantsBoost = 60
-        else if (item.applicants_count < 20) applicantsBoost = 30
+        if (item.applicants_count < 10) applicantsBoost = 22
+        else if (item.applicants_count < 20) applicantsBoost = 12
       }
 
       // ── Niveau de compétence — boost/malus selon l'adéquation ────────
@@ -392,7 +393,9 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
       // mission correspondait vraiment à ce que l'utilisateur cherche.
       const typeDelta = typeMatchDelta((u as any).profile_type, hay)
 
-      const score = Math.max(0, Math.min(100, 40 + hits * 20 + freshnessBoost + applicantsBoost + levelMatch.boost + typeDelta))
+      // Base et "hits" réduits + plafonnés (comme scan.ts) — non capé, un
+      // simple matching de 3 mots-clés suffisait à lui seul à saturer 100.
+      const score = Math.max(0, Math.min(100, 20 + Math.min(hits * 12, 30) + freshnessBoost + applicantsBoost + levelMatch.boost + typeDelta))
       matched++
 
       opportunityRows.push({

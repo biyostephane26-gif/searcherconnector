@@ -74,7 +74,7 @@ async function tryPollinations(prompt: string, w: number, h: number, errors: str
 
 export async function generateImageForUser(
   userId: string, params: { prompt: string; aspect?: string }
-): Promise<{ image: string; provider: string; fallback: boolean } | { error: string; details: string[] }> {
+): Promise<{ image: string; fileUrl: string; provider: string; fallback: boolean } | { error: string; details: string[] }> {
   const prompt = String(params.prompt || '').trim().slice(0, 2000)
   if (prompt.length < 3) return { error: "Décris l'image à créer.", details: [] }
   const size = SIZES[(params.aspect as keyof typeof SIZES) || 'square'] || SIZES.square
@@ -89,6 +89,8 @@ export async function generateImageForUser(
     return { error: "Aucun générateur d'images disponible pour le moment.", details: errors }
   }
   logToolUsage(userId, 'image', provider)
-  saveImageOutput(userId, prompt.slice(0, 60), image).catch(() => {})
-  return { image, provider, fallback: provider.startsWith('Pollinations') }
+  // Attendu, pas fire-and-forget : sans l'URL publique, l'image affichée
+  // dans le chat n'existait qu'en base64 côté client — perdue au reload.
+  const output = await saveImageOutput(userId, prompt.slice(0, 60), image).catch(() => null)
+  return { image, fileUrl: output?.url || '', provider, fallback: provider.startsWith('Pollinations') }
 }

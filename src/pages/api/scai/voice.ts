@@ -278,10 +278,11 @@ async function processChat(userId: string, message: string, userProfile: any = {
 
   messages.push({ role: 'user', content: message });
 
-  // 2. ENVOI À GROQ
+  // 2. ENVOI À GROQ — ne garder que role/content : les messages stockés
+  // portent parfois `images`/`attachment` que Groq n'attend pas.
   const systemMsg = messages[0];
   const echanges = messages.slice(1);
-  const fenetreEnvoi = [systemMsg, ...echanges.slice(-6)];
+  const fenetreEnvoi = [systemMsg, ...echanges.slice(-6)].map((m: any) => ({ role: m.role, content: m.content }));
 
   let reponseSCAI: string;
   try {

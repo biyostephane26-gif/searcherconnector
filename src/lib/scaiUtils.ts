@@ -159,16 +159,21 @@ export async function fetchGroqWithRotation(messages: any[]): Promise<string> {
 // VISION — analyse réelle d'une image collée/envoyée dans le chat
 // (Gemini uniquement : Groq n'accepte pas d'image sur ce modèle)
 // ═══════════════════════════════════════════════════════════════
-export async function fetchGeminiVision(messages: any[], imageDataUrl: string): Promise<string> {
+export async function fetchGeminiVision(messages: any[], imageDataUrls: string | string[]): Promise<string> {
   if (geminiKeys.length === 0) throw new Error('Aucune clé Gemini configurée pour analyser une image.');
 
-  const match = imageDataUrl.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
-  if (!match) throw new Error('Image invalide.');
-  const [, mimeType, base64] = match;
+  const urls = Array.isArray(imageDataUrls) ? imageDataUrls : [imageDataUrls];
+  const imageParts = urls.map(url => {
+    const match = url.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
+    if (!match) throw new Error('Image invalide.');
+    const [, mimeType, base64] = match;
+    return { inline_data: { mime_type: mimeType, data: base64 } };
+  });
 
   const systemMsg = messages.find((m: any) => m.role === 'system')?.content || '';
   const lastUser = messages.filter((m: any) => m.role === 'user').pop()?.content || 'Décris et analyse cette image.';
-  const prompt = `${systemMsg.slice(0, 3000)}\n---\nL'utilisateur vient d'envoyer une image dans le chat, avec ce message : "${lastUser}"\nAnalyse le CONTENU RÉEL de l'image (ex: CV, portfolio, capture d'écran d'une offre, design...) et réponds en tenant compte de ce que tu vois concrètement — jamais une réponse générique qui ignore l'image.`;
+  const plural = imageParts.length > 1;
+  const prompt = `${systemMsg.slice(0, 3000)}\n---\nL'utilisateur vient d'envoyer ${plural ? `${imageParts.length} images` : 'une image'} dans le chat, avec ce message : "${lastUser}"\nAnalyse le CONTENU RÉEL ${plural ? 'de chaque image' : "de l'image"} (ex: CV, portfolio, capture d'écran d'une offre, design...) et réponds en tenant compte de ce que tu vois concrètement — jamais une réponse générique qui ignore ${plural ? 'les images' : "l'image"}.`;
 
   for (let i = 0; i < geminiKeys.length; i++) {
     if (isOnCooldown(geminiCooldown, i)) continue;
@@ -179,7 +184,7 @@ export async function fetchGeminiVision(messages: any[], imageDataUrl: string): 
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: mimeType, data: base64 } }] }],
+            contents: [{ parts: [{ text: prompt }, ...imageParts] }],
             generationConfig: { maxOutputTokens: 1200, temperature: 0.6 },
           }),
           signal: AbortSignal.timeout(25000),
@@ -254,10 +259,17 @@ export function genererSystemPrompt(userId: string, userProfile: any = {}) {
   const pendingApplications    = typeof userProfile.pendingApplications === 'number' ? userProfile.pendingApplications : null;
   const readyToSendCount       = typeof userProfile.readyToSendCount === 'number' ? userProfile.readyToSendCount : null;
 
-  // Heure serveur — utilisée pour que SCAI salue avec "bonjour"/"bonsoir"
-  // au lieu d'un message figé, comme le ferait un vrai collègue.
-  const now = new Date();
-  const heureLocale = now.getUTCHours(); // approximation ; pas de fuseau par profil en base
+  // Heure LOCALE DE L'UTILISATEUR (envoyée par le client, voir
+  // `localHour` dans le body de /api/scai/chat et /api/scai/voice) —
+  // utilisée pour que SCAI salue avec "bonjour"/"bonsoir" au lieu d'un
+  // message figé, comme le ferait un vrai collègue. Avant, on utilisait
+  // l'heure UTC du serveur comme approximation : pour un utilisateur au
+  // Cameroun (UTC+1) ou ailleurs, le décalage faisait dire "bon après-midi"
+  // en pleine soirée. Repli sur l'heure UTC serveur seulement si le client
+  // n'a pas envoyé la sienne (ancien client, ou appel interne sans profil).
+  const heureLocale = typeof userProfile.localHour === 'number' && userProfile.localHour >= 0 && userProfile.localHour <= 23
+    ? userProfile.localHour
+    : new Date().getUTCHours();
   const momentJournee = heureLocale < 5 ? 'nuit' : heureLocale < 12 ? 'matin' : heureLocale < 18 ? 'après-midi' : 'soir';
   const salutation = momentJournee === 'matin' ? 'Bonjour' : momentJournee === 'nuit' ? 'Bonsoir' : momentJournee === 'soir' ? 'Bonsoir' : 'Bonjour';
   // Le fondateur n'a aucune restriction, quel que soit son `plan` en base.

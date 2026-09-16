@@ -18,6 +18,7 @@ import OutputsPanel from '../components/cowork/OutputsPanel';
 import ProjectsPanel from '../components/cowork/ProjectsPanel';
 import TasksPanel from '../components/cowork/TasksPanel';
 import ToolAttachment, { TOOL_META, type CoworkTool, type ToolAttachmentData } from '../components/cowork/ToolAttachment';
+import ImageAnnotator from '../components/cowork/ImageAnnotator';
 import { CONNECTORS } from '../lib/connectors/catalog';
 import { authFetch } from '../lib/authFetch';
 import { formatDistanceToNow } from 'date-fns';
@@ -153,7 +154,7 @@ export default function AgentDashboard() {
     } catch { /* stockage indisponible */ }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draftKey]);
-  const [chatHistory, setChatHistory] = useState<{role: 'agent' | 'user', content: string, thought?: string, showThought?: boolean, attachment?: ToolAttachmentData, image?: string}[]>([]);
+  const [chatHistory, setChatHistory] = useState<{role: 'agent' | 'user', content: string, thought?: string, showThought?: boolean, attachment?: ToolAttachmentData, images?: string[]}[]>([]);
   // Multi-conversation façon Cowork — "Nouveau" ouvre une conversation
   // fraîche SANS effacer les précédentes, retrouvables dans la liste
   // "Discussions". Persisté par utilisateur pour survivre au rechargement.
@@ -176,16 +177,20 @@ export default function AgentDashboard() {
       if (data?.success) setConversations(data.conversations || []);
     } catch { /* liste non critique */ }
   };
-  // Image collée (Ctrl+V) ou téléversée, en attente d'envoi — SCAI l'analyse
-  // réellement via Gemini Vision, ce n'est pas un accusé de réception factice.
-  const [attachedImage, setAttachedImage] = useState<string | null>(null);
+  // Images collées (Ctrl+V, une ou plusieurs à la fois) ou téléversées, en
+  // attente d'envoi — SCAI les analyse réellement via Gemini Vision, ce
+  // n'est pas un accusé de réception factice. Tableau (pas une seule
+  // valeur) : coller une 2e image effaçait la 1re avant ce correctif.
+  const [attachedImages, setAttachedImages] = useState<string[]>([]);
+  const [editingImageIndex, setEditingImageIndex] = useState<number | null>(null);
+  const MAX_ATTACHED_IMAGES = 4;
   const attachImageFile = (file: File) => {
     if (!file.type.startsWith('image/')) {
       setChatHistory(prev => [...prev, { role: 'agent', content: "Je ne sais analyser que des images pour l'instant dans le chat (captures d'écran, portfolio...). Pour un CV/document, utilise plutôt ton [Profil](/profile)." }]);
       return;
     }
     const reader = new FileReader();
-    reader.onload = () => setAttachedImage(reader.result as string);
+    reader.onload = () => setAttachedImages(prev => prev.length >= MAX_ATTACHED_IMAGES ? prev : [...prev, reader.result as string]);
     reader.readAsDataURL(file);
   };
   // Éléments (vidéos/images) ajoutés pour un montage — chacun est
@@ -302,7 +307,7 @@ export default function AgentDashboard() {
       const res = await fetch('/api/scai/voice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, userProfile: profile, audio: audioBase64, mode: 'full', conversationId: activeConversationId }),
+        body: JSON.stringify({ userId: user.id, userProfile: { ...profile, localHour: new Date().getHours() }, audio: audioBase64, mode: 'full', conversationId: activeConversationId }),
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Erreur note vocale');
@@ -391,13 +396,39 @@ export default function AgentDashboard() {
     // Désormais géré automatiquement par MongoDB côté backend !
   };
 
-  const handleSendMessage = async (text: string, image?: string) => {
-    if ((!text.trim() && !image) || !user) return;
+  // Sauvegarde un message généré par un outil (PDF/image/vidéo/opportunité),
+  // avec sa pièce jointe — contrairement au chat texte, ces résultats ne
+  // passent jamais par /api/scai/chat donc rien ne les persistait avant.
+  // On ne garde QUE les champs légers (url/job, jamais base64/data URI) pour
+  // ne pas alourdir indéfiniment le document MongoDB de la conversation.
+  const persistToolMessage = async (content: string, attachment?: ToolAttachmentData) => {
+    if (!user) return;
+    let lightAttachment: ToolAttachmentData | undefined = attachment;
+    if (attachment?.kind === 'file') {
+      lightAttachment = { kind: 'file', filename: attachment.filename, mime: attachment.mime, url: attachment.url, size: attachment.size, title: attachment.title };
+    } else if (attachment?.kind === 'image') {
+      lightAttachment = { kind: 'image', url: attachment.url, provider: attachment.provider, fallback: attachment.fallback };
+    }
+    try {
+      // "assistant" (pas "agent", qui n'est que le libellé local du state
+      // React) — c'est le rôle attendu par Groq/Gemini quand ce document
+      // Mongo est relu pour reconstituer le contexte envoyé à l'IA au tour
+      // suivant. Un rôle inconnu ferait rejeter tout l'appel par l'API.
+      await fetch(`/api/scai/history/${user.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversationId: activeConversationId, role: 'assistant', content, attachment: lightAttachment }),
+      });
+    } catch { /* non-bloquant — le fichier reste dans le panneau Sorties même si ce message n'est pas sauvegardé */ }
+  };
 
-    const userMsg = { role: 'user' as const, content: text, image };
+  const handleSendMessage = async (text: string, images?: string[]) => {
+    if ((!text.trim() && !images?.length) || !user) return;
+
+    const userMsg = { role: 'user' as const, content: text, images };
     setChatHistory(prev => [...prev, userMsg]);
     setUserInstruction('');
-    setAttachedImage(null);
+    setAttachedImages([]);
     setIsProcessing(true);
 
     // Sauvegarder le message utilisateur
@@ -413,9 +444,9 @@ export default function AgentDashboard() {
         body: JSON.stringify({
           userId: user.id,
           conversationId: activeConversationId,
-          image,
+          images,
           message: text,
-          userProfile: profile
+          userProfile: { ...profile, localHour: new Date().getHours() }
         }),
       });
 
@@ -534,7 +565,9 @@ export default function AgentDashboard() {
         setChatHistory(data.history.map((m: any) => ({
           role: m.role === 'assistant' ? 'agent' : m.role,
           content: m.content,
-          showThought: false
+          showThought: false,
+          attachment: m.attachment,
+          images: m.images
         })));
       } else {
         setChatHistory([]);
@@ -661,7 +694,7 @@ export default function AgentDashboard() {
       let attachment: ToolAttachmentData;
       let content: string;
       if (tool === 'image') {
-        attachment = { kind: 'image', src: data.image, provider: data.provider, fallback: data.fallback };
+        attachment = { kind: 'image', src: data.image, url: data.fileUrl, provider: data.provider, fallback: data.fallback };
         content = 'Voici ton image.';
       } else if (tool === 'video') {
         attachment = { kind: 'video', job: data.job, provider: data.provider };
@@ -676,11 +709,11 @@ export default function AgentDashboard() {
           ? `J'ai trouvé **${leads.length} entreprise(s)** qui pourraient avoir besoin de tes services (${data.total_leads} au total dans ton pipeline). Voici les messages d'approche prêts à envoyer :`
           : `Aucune nouvelle entreprise trouvée cette fois (${data.total_found || 0} scannées, déjà toutes dans ton pipeline). Réessaie plus tard ou avec une zone internationale.`;
       } else {
-        attachment = { kind: 'file', filename: data.filename, mime: data.mime, base64: data.base64, size: data.size, title: data.title };
+        attachment = { kind: 'file', filename: data.filename, mime: data.mime, base64: data.base64, url: data.fileUrl, size: data.size, title: data.title };
         content = `Ton fichier **${data.title}** est prêt.`;
       }
       setChatHistory(prev => [...prev, { role: 'agent', content, attachment }]);
-      saveChatMessage('agent', `${content} (${tool === 'image' || tool === 'video' || tool === 'montage' || tool === 'opportunity' ? meta.label : data.filename})`);
+      persistToolMessage(content, attachment);
     } catch (e: any) {
       setChatHistory(prev => [...prev, { role: 'agent', content: `⚠️ ${e.message}` }]);
     } finally {
@@ -707,9 +740,9 @@ export default function AgentDashboard() {
       setMontageClips([]);
       return;
     }
-    if ((!text && !attachedImage) || isProcessing) return;
+    if ((!text && attachedImages.length === 0) || isProcessing) return;
     if (activeTool) runTool(activeTool, text);
-    else handleSendMessage(text || 'Analyse cette image.', attachedImage || undefined);
+    else handleSendMessage(text || 'Analyse cette image.', attachedImages.length > 0 ? attachedImages : undefined);
   };
 
   const tabs = [
@@ -732,20 +765,41 @@ export default function AgentDashboard() {
   // un seul endroit à maintenir.
   const renderComposer = () => (
     <>
-            {attachedImage && (
-              <div className="flex items-center gap-2 px-1 -mb-2">
-                <div className="relative">
-                  <img src={attachedImage} alt="Image à envoyer" className="w-14 h-14 object-cover rounded-lg border border-gray-700" />
-                  <button
-                    onClick={() => setAttachedImage(null)}
-                    className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-black border border-gray-600 flex items-center justify-center text-gray-300 hover:text-white hover:border-red-500"
-                    aria-label="Retirer l'image"
-                  >
-                    <X size={10} />
-                  </button>
-                </div>
-                <span className="text-[11px] text-gray-500">Image prête — décris ce que tu veux savoir, ou envoie tel quel.</span>
+            {attachedImages.length > 0 && (
+              <div className="flex items-center gap-2 px-1 -mb-2 flex-wrap">
+                {attachedImages.map((img, i) => (
+                  <div key={i} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setEditingImageIndex(i)}
+                      className="block"
+                      title="Cliquer pour annoter (entourer, dessiner, écrire dessus)"
+                    >
+                      <img src={img} alt="Image à envoyer" className="w-14 h-14 object-cover rounded-lg border border-gray-700 hover:border-[#D4AF37] transition-colors" />
+                    </button>
+                    <button
+                      onClick={() => setAttachedImages(prev => prev.filter((_, j) => j !== i))}
+                      className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-black border border-gray-600 flex items-center justify-center text-gray-300 hover:text-white hover:border-red-500"
+                      aria-label="Retirer l'image"
+                    >
+                      <X size={10} />
+                    </button>
+                  </div>
+                ))}
+                <span className="text-[11px] text-gray-500">
+                  {attachedImages.length} image{attachedImages.length > 1 ? 's' : ''} prête{attachedImages.length > 1 ? 's' : ''} — clique sur une image pour l'annoter, ou décris ce que tu veux savoir.
+                </span>
               </div>
+            )}
+            {editingImageIndex !== null && (
+              <ImageAnnotator
+                src={attachedImages[editingImageIndex]}
+                onClose={() => setEditingImageIndex(null)}
+                onSave={(dataUrl) => {
+                  setAttachedImages(prev => prev.map((img, i) => i === editingImageIndex ? dataUrl : img));
+                  setEditingImageIndex(null);
+                }}
+              />
             )}
             {activeTool && (
               <div className="flex flex-wrap items-center gap-2 px-1 -mb-2">
@@ -818,9 +872,9 @@ export default function AgentDashboard() {
                 id="agent-upload"
                 className="hidden"
                 accept="image/*"
+                multiple
                 onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) attachImageFile(file);
+                  if (e.target.files) Array.from(e.target.files).forEach(attachImageFile);
                   e.target.value = '';
                 }}
               />
@@ -850,9 +904,13 @@ export default function AgentDashboard() {
                   if (e.key === 'Escape') { setActiveTool(null); setShowToolsMenu(false); }
                 }}
                 onPaste={(e) => {
-                  const item = Array.from(e.clipboardData.items).find(i => i.type.startsWith('image/'));
-                  const file = item?.getAsFile();
-                  if (file) { e.preventDefault(); attachImageFile(file); }
+                  // Toutes les images du presse-papiers, pas seulement la
+                  // première — avant, coller une 2e image effaçait la 1re.
+                  const items = Array.from(e.clipboardData.items).filter(i => i.type.startsWith('image/'));
+                  if (items.length > 0) {
+                    e.preventDefault();
+                    items.forEach(i => { const file = i.getAsFile(); if (file) attachImageFile(file); });
+                  }
                 }}
               />
 
@@ -1310,7 +1368,13 @@ export default function AgentDashboard() {
                       </div>
                     ) : (
                       <div>
-                        {msg?.image && <img src={msg.image} alt="Image envoyée" className="rounded-lg max-w-full max-h-64 mb-2" />}
+                        {msg?.images && msg.images.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-2">
+                            {msg.images.map((img, i) => (
+                              <img key={i} src={img} alt="Image envoyée" className="rounded-lg max-w-[45%] max-h-64 object-cover" />
+                            ))}
+                          </div>
+                        )}
                         {msg?.content && <div className="whitespace-pre-wrap">{msg.content}</div>}
                       </div>
                     )}

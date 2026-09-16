@@ -19,7 +19,7 @@ export async function saveFileOutput(userId: string, kind: 'pdf' | 'xlsx' | 'doc
   const { data: row } = await supabaseAdmin.from('cowork_outputs')
     .insert({ user_id: userId, kind, title, file_url: data.publicUrl, status: 'ready' })
     .select('id').single()
-  return row?.id || null
+  return row ? { id: row.id as string, url: data.publicUrl } : null
 }
 
 export async function saveImageOutput(userId: string, title: string, dataUri: string) {
@@ -34,7 +34,7 @@ export async function saveImageOutput(userId: string, title: string, dataUri: st
   const { data: row } = await supabaseAdmin.from('cowork_outputs')
     .insert({ user_id: userId, kind: 'image', title, file_url: data.publicUrl, status: 'ready' })
     .select('id').single()
-  return row?.id || null
+  return row ? { id: row.id as string, url: data.publicUrl } : null
 }
 
 // Vidéo : job encore en cours au moment de la création — la ligne est
@@ -58,7 +58,25 @@ export async function saveVideoOutputReady(userId: string, title: string, buffer
   const { data: row } = await supabaseAdmin.from('cowork_outputs')
     .insert({ user_id: userId, kind: 'video', title, file_url: data.publicUrl, status: 'ready' })
     .select('id').single()
-  return row?.id || null
+  return row ? { id: row.id as string, url: data.publicUrl } : null
+}
+
+// Image collée/envoyée PAR L'UTILISATEUR dans le chat (pas une sortie de
+// SCAI) — stockée pour que le message garde son image après un rechargement
+// de la conversation (avant, seul le texte du message était persisté ;
+// l'image, gardée en base64 côté client seulement, disparaissait).
+// N'écrit PAS dans cowork_outputs (le panneau Sorties ne doit lister que ce
+// que SCAI a produit, pas ce que l'utilisateur a fourni en entrée).
+export async function saveChatImageInput(userId: string, dataUri: string): Promise<string | null> {
+  const match = dataUri.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/)
+  if (!match) return null
+  const ext = match[1].split('/')[1] || 'png'
+  const buffer = Buffer.from(match[2], 'base64')
+  const path = `chat-inputs/${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+  const { error: upErr } = await supabaseAdmin.storage.from('DOCUMENTS').upload(path, buffer, { contentType: match[1], upsert: false })
+  if (upErr) { console.warn('[chat-inputs] upload échoué (non bloquant):', upErr.message); return null }
+  const { data } = supabaseAdmin.storage.from('DOCUMENTS').getPublicUrl(path)
+  return data.publicUrl
 }
 
 function slug(s: string) {

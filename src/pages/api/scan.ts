@@ -968,29 +968,34 @@ function scoreLocally(items: any[], profile: any, isPaid: boolean): any[] {
     if (isSourceCategoryMismatch(type, r.sourceCategory)) return null;
     let score = 20;
 
+    // Barème rééquilibré — les boosts additifs (fraîcheur, peu de candidats,
+    // domaine) empilés dépassaient très largement 100 dès qu'une offre
+    // cumulait 2-3 signaux positifs, donc presque tout finissait écrasé au
+    // plafond : le score ne triait plus rien ("100/100" partout). Magnitudes
+    // réduites pour que seule une offre VRAIMENT exceptionnelle (tous les
+    // signaux à la fois) atteigne 100 ; les autres s'étalent naturellement.
     const dHits = terms.filter(t=>t.length>3&&hay.includes(t)).length;
-    score += Math.min(dHits * 20, 45);
+    score += Math.min(dHits * 12, 30);
     score += typeMatchDelta(type, hay);
 
     const ah = ageH(r.date);
-    // 🚨 Filtrage ULTRA pour PROFILS PAYANTS : < 48h (2 jours) !
     if (isPaid) {
-      if (ah < 6)    score += 50; // <6h → ULTRA BOOST !
-      else if (ah < 12)   score += 40;
-      else if (ah < 24)   score += 30;
-      else if (ah < 48)   score += 20; // <48h → still good
-      else if (ah > 336)  score -= 50; // >2 semaines → trop vieux
+      if (ah < 6)    score += 22;
+      else if (ah < 12)   score += 18;
+      else if (ah < 24)   score += 14;
+      else if (ah < 48)   score += 8;
+      else if (ah > 336)  score -= 22; // >2 semaines → trop vieux
     } else {
-      if (ah < 6)    score += 12;
-      else if (ah < 24)   score += 6;
-      else if (ah > 336)  score -= 12;
+      if (ah < 6)    score += 8;
+      else if (ah < 24)   score += 4;
+      else if (ah > 336)  score -= 8;
     }
 
-    // 🚨 Boost pour offres avec <10 candidats !
+    // Boost pour offres avec peu de candidats
     if (r.applicants_count !== undefined && r.applicants_count < 10) {
-      score += 60; // MEGA BOOST !
+      score += 22;
     } else if (r.applicants_count !== undefined && r.applicants_count < 20) {
-      score += 30;
+      score += 12;
     }
 
     // Boost sources fiables (inclure sources investor/business)
@@ -1000,14 +1005,14 @@ function scoreLocally(items: any[], profile: any, isPaid: boolean): any[] {
       'api:remotive','api:himalayas','api:arbeitnow','api:adzuna','ats:greenhouse','ats:lever',
       'exa.ai','tavily','brave','producthunt','wellfound','crunchbase','techcabal','reddit:startups','reddit:entrepreneur'
     ];
-    if (trustedSources.some(s=>src.includes(s))) score += 10;
+    if (trustedSources.some(s=>src.includes(s))) score += 8;
 
-    // Boost FORT pour les sources à revenus élevés (priorité dans les slots gratuits)
+    // Boost pour les sources à revenus élevés (priorité dans les slots gratuits)
     // Ces sources ont les missions avec les meilleurs budgets → l'utilisateur peut payer l'abonnement
     const highValueSources = [
       'upwork','malt','freelancer','peopleperhour','contra','toptal','remotive','himalayas','crunchbase','wellfound','producthunt'
     ];
-    if (highValueSources.some(s=>src.includes(s))) score += 18;
+    if (highValueSources.some(s=>src.includes(s))) score += 12;
 
     // Niveau de compétence requis vs niveau réel de l'utilisateur (évalué
     // par IA, voir skill-matching.ts) — même logique que cache-scan/route.ts

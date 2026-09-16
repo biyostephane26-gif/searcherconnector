@@ -73,7 +73,7 @@ function profileContext(profile: any) {
 
 export async function generateDocumentForUser(
   userId: string, profile: any, params: { format: DocumentFormat; prompt?: string; source?: string }
-): Promise<{ title: string; filename: string; mime: string; base64: string; size: number } | { error: string }> {
+): Promise<{ title: string; filename: string; mime: string; base64: string; size: number; fileUrl: string } | { error: string }> {
   const format = params.format
   if (!DOCUMENT_MIME[format]) return { error: 'Format attendu : pdf, xlsx ou docx' }
   const prompt = String(params.prompt || '').trim().slice(0, 4000)
@@ -128,13 +128,18 @@ Demande : ${prompt}`, v => typeof v?.title === 'string' && Array.isArray(v?.sect
     }
 
     logToolUsage(userId, format, title)
-    saveFileOutput(userId, format, title, buffer, DOCUMENT_MIME[format]).catch(() => {})
+    // Attendu (pas fire-and-forget) : le chat a besoin de l'URL publique
+    // pour que le fichier reste visible/téléchargeable après un rechargement
+    // de la conversation — avant, seul le base64 (jamais persisté en base)
+    // était renvoyé, donc le fichier "disparaissait" du chat au reload.
+    const output = await saveFileOutput(userId, format, title, buffer, DOCUMENT_MIME[format]).catch(() => null)
     return {
       title,
       filename: `${slug(title)}.${format}`,
       mime: DOCUMENT_MIME[format],
       base64: buffer.toString('base64'),
       size: buffer.length,
+      fileUrl: output?.url || '',
     }
   } catch (e: any) {
     console.error('[tools/document]', e?.message)

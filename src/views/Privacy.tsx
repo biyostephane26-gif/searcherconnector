@@ -9,7 +9,7 @@ export default function Privacy() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex">
       <Sidebar />
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex-1 flex flex-col min-w-0 lg:ml-64">
         <Navbar />
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-3xl mx-auto px-6 py-12 space-y-10 text-gray-300">

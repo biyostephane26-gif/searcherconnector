@@ -17,8 +17,12 @@ export const TOOL_META: Record<CoworkTool, { label: string; emoji: string; place
 }
 
 export type ToolAttachmentData =
-  | { kind: 'file'; filename: string; mime: string; base64: string; size: number; title: string }
-  | { kind: 'image'; src: string; provider: string; fallback?: boolean }
+  // base64 : présent seulement juste après la génération (téléchargement
+  // immédiat, pas de round-trip réseau) — url : lien Supabase Storage
+  // permanent, seul champ encore présent après un rechargement de la
+  // conversation (voir persistToolMessage côté AgentDashboard).
+  | { kind: 'file'; filename: string; mime: string; base64?: string; url?: string; size: number; title: string }
+  | { kind: 'image'; src?: string; url?: string; provider: string; fallback?: boolean }
   | { kind: 'video'; job?: string; fileUrl?: string; provider: string }
   | { kind: 'opportunity'; leads: Array<{ company_name: string; website?: string; digital_score: number; issues_detected: string[]; mockup_textuel: string; message_approche: string }> }
 
@@ -36,27 +40,40 @@ export default function ToolAttachment({ data }: { data: ToolAttachmentData }) {
           <p className="text-sm font-semibold text-white truncate">{data.title}</p>
           <p className="text-[11px] text-gray-500 truncate">{data.filename} · {Math.max(1, Math.round(data.size / 1024))} Ko</p>
         </div>
-        <button
-          onClick={() => downloadBase64(data.base64, data.filename, data.mime)}
-          className="flex items-center gap-1.5 text-xs font-bold bg-[#D4AF37] text-black px-3 py-2 rounded-lg hover:bg-[#e0bd4f]"
-        >
-          <Download className="w-3.5 h-3.5" /> Télécharger
-        </button>
+        {data.base64 ? (
+          <button
+            onClick={() => downloadBase64(data.base64!, data.filename, data.mime)}
+            className="flex items-center gap-1.5 text-xs font-bold bg-[#D4AF37] text-black px-3 py-2 rounded-lg hover:bg-[#e0bd4f]"
+          >
+            <Download className="w-3.5 h-3.5" /> Télécharger
+          </button>
+        ) : data.url ? (
+          <a
+            href={data.url} download={data.filename}
+            className="flex items-center gap-1.5 text-xs font-bold bg-[#D4AF37] text-black px-3 py-2 rounded-lg hover:bg-[#e0bd4f]"
+          >
+            <Download className="w-3.5 h-3.5" /> Télécharger
+          </a>
+        ) : (
+          <span className="text-[11px] text-red-400">Fichier indisponible</span>
+        )}
       </div>
     )
   }
 
   if (data.kind === 'image') {
-    const ext = data.src.startsWith('data:image/png') ? 'png' : 'jpg'
+    const shown = data.src || data.url
+    const ext = data.src?.startsWith('data:image/png') ? 'png' : 'jpg'
+    if (!shown) return <p className="mt-3 text-xs text-red-400">Image indisponible</p>
     return (
       <div className="mt-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={data.src} alt="Image générée par SCAI" className="rounded-xl border border-[#2a2a2a] max-h-96 w-auto" />
+        <img src={shown} alt="Image générée par SCAI" className="rounded-xl border border-[#2a2a2a] max-h-96 w-auto" />
         <div className="flex items-center justify-between mt-2 gap-3">
           <span className="text-[11px] text-gray-500">
             Généré avec {data.provider}{data.fallback ? ' — qualité réduite, les générateurs premium n\'ont plus de crédit' : ''}
           </span>
-          <a href={data.src} download={`scai-image.${ext}`} className="flex items-center gap-1 text-xs font-bold text-[#D4AF37] hover:underline">
+          <a href={data.url || data.src} download={`scai-image.${ext}`} className="flex items-center gap-1 text-xs font-bold text-[#D4AF37] hover:underline">
             <Download className="w-3.5 h-3.5" /> Télécharger
           </a>
         </div>

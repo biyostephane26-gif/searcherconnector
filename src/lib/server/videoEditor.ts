@@ -96,15 +96,10 @@ export async function assembleVideoForUser(
 
     const buffer = await fs.readFile(outputPath)
     logToolUsage(userId, 'video', 'Montage ffmpeg')
-    const outputId = await saveVideoOutputReady(userId, title, buffer)
-    if (!outputId) return { error: 'Montage réalisé mais impossible à sauvegarder — réessaie.' }
+    const output = await saveVideoOutputReady(userId, title, buffer)
+    if (!output) return { error: 'Montage réalisé mais impossible à sauvegarder — réessaie.' }
 
-    // La ligne vient d'être créée par saveVideoOutputReady — on relit son
-    // file_url public plutôt que de reconstruire l'URL nous-mêmes ici.
-    const { supabaseAdmin } = await import('../supabaseAdmin')
-    const { data } = await supabaseAdmin.from('cowork_outputs').select('file_url').eq('id', outputId).single()
-
-    return { title, fileUrl: data?.file_url || '' }
+    return { title, fileUrl: output.url }
   } catch (e: any) {
     console.error('[videoEditor]', e?.message)
     return { error: `Montage impossible : ${e?.message || 'erreur inconnue'}` }

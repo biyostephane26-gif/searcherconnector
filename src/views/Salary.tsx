@@ -102,7 +102,7 @@ export default function Salary() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex">
       <Sidebar />
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex-1 flex flex-col min-w-0 lg:ml-64">
         <header className="h-16 border-b border-[#1A1A1A] flex items-center justify-between px-6 bg-[#0A0A0A]/50 backdrop-blur-md sticky top-0 z-30">
           <h2 className="text-lg font-bold text-white tracking-tight">Salary Intelligence</h2>
           <div className="flex items-center gap-2 text-[10px] tracking-widest text-[#D4AF37] font-bold uppercase">
