@@ -10,7 +10,20 @@
 // script ne soumet jamais rien hors de ce cas précis.
 // =================================================================
 
-const API_BASE = 'https://searcherconnector.onrender.com';
+// L'appel réseau lui-même vit dans background.js (service worker) — un
+// content script tourne dans le contexte de la page hôte, et certains
+// sites (Upwork notamment) bloquent son fetch() sortant via leur CSP
+// même avec host_permissions accordées. Le service worker n'est jamais
+// soumis à la CSP d'un site tiers.
+function fetchContext(token, pageUrl) {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({ type: 'SC_FETCH_CONTEXT', token, pageUrl }, (resp) => {
+      if (chrome.runtime.lastError) { reject(new Error(chrome.runtime.lastError.message)); return; }
+      if (!resp) { reject(new Error('Pas de réponse du service worker.')); return; }
+      resolve(resp);
+    });
+  });
+}
 
 function looksLikeApplicationForm() {
   const hasEmailInput = !!document.querySelector('input[type="email"], input[name*="email" i], input[id*="email" i]');
@@ -113,10 +126,9 @@ async function runFill(triggeredManually) {
       return;
     }
     try {
-      const url = `${API_BASE}/api/extension/context?token=${encodeURIComponent(data.sc_token)}&url=${encodeURIComponent(window.location.href)}`;
-      const res = await fetch(url);
-      const ctx = await res.json();
-      if (!res.ok) { showToast(ctx.error || 'Erreur — vérifie ton token.', true); sharedBtn.innerHTML = BTN_LABEL; return; }
+      const resp = await fetchContext(data.sc_token, window.location.href);
+      const ctx = resp.data;
+      if (!resp.ok) { showToast(ctx?.error || resp.error || 'Erreur — vérifie ton token.', true); sharedBtn.innerHTML = BTN_LABEL; return; }
       const n = fillForm(ctx);
 
       // Auto-soumission — seulement si l'utilisateur l'a activée ET que
@@ -204,8 +216,8 @@ async function tryReadListings() {
   chrome.storage.sync.get(['sc_token'], async (data) => {
     if (!data.sc_token) return;
     try {
-      const cfgRes = await fetch(`${API_BASE}/api/extension/listing-configs`);
-      const { configs } = await cfgRes.json();
+      const cfgResp = await new Promise(resolve => chrome.runtime.sendMessage({ type: 'SC_FETCH_LISTING_CONFIGS' }, resolve));
+      const configs = cfgResp?.data?.configs;
       const cfg = (configs || []).find(c => { try { return new RegExp(c.listingUrlPattern, 'i').test(location.href); } catch { return false; } });
       if (!cfg) return;
 
@@ -213,13 +225,9 @@ async function tryReadListings() {
       if (items.length === 0) return;
       listingReadOnce = true;
 
-      const res = await fetch(`${API_BASE}/api/extension/submit-listings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: data.sc_token, platform: cfg.platform, items }),
-      });
-      const out = await res.json().catch(() => ({}));
-      if (res.ok && out.inserted > 0) {
+      const submitResp = await new Promise(resolve => chrome.runtime.sendMessage({ type: 'SC_SUBMIT_LISTINGS', token: data.sc_token, platform: cfg.platform, items }, resolve));
+      const out = submitResp?.data || {};
+      if (submitResp?.ok && out.inserted > 0) {
         showToast(`✓ ${out.inserted} mission(s) partagée(s) avec Searcher Connector depuis ${cfg.platform}.`);
       }
     } catch { /* silencieux — ne jamais gêner la navigation de l'utilisateur */ }
