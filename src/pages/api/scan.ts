@@ -1446,6 +1446,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     log.push(`🚀 SCAN v6.1 | ${profile.full_name} | ${profileType} | zone: ${zone} | budget: ${hasBudgetEff} | plan: ${plan}`);
 
+    // ── Anti-doublons ──────────────────────────────────────────────
+    // `excludeSeenByUserId` (cache-manager.ts) s'appuie sur
+    // user_seen_opportunities, une table jamais alimentée nulle part
+    // dans le code — son filtre était donc silencieusement inopérant
+    // (0 ligne exclue à chaque scan). Résultat mesuré en base : ~52%
+    // des lignes de la table opportunities étaient des doublons exacts
+    // (même utilisateur, même original_url, réinsérée à chaque scan).
+    // Fix direct et robuste, valable pour les deux chemins d'insertion
+    // ci-dessous (Cache Pool ET scan complet) : on exclut simplement ce
+    // que l'utilisateur a déjà en base, par URL exacte.
+    const { data: existingRows } = await dbClient
+      .from('opportunities')
+      .select('original_url')
+      .eq('user_id', userId)
+      .not('original_url', 'is', null);
+    const existingUrls = new Set((existingRows || []).map((r: any) => (r.original_url || '').split('?')[0]));
+
     // ── Try Cache Pool First ─────────────────────────────────────
     // Catégories du cache partagé pertinentes pour les domaines de
     // l'utilisateur (jusqu'à 3), alimenté par le scan de fond —
@@ -1492,8 +1509,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
 
         // ── Scoring local (zéro appel réseau) ─────────────────────────
-        const scored = scoreLocally(fresh, profile, isPaid);
-        log.push(`\n✅ ${scored.length} opportunités scorées depuis le Cache Pool`);
+        const scoredAll = scoreLocally(fresh, profile, isPaid);
+        const scored = scoredAll.filter((o: any) => !existingUrls.has((o.original_url || '').split('?')[0]));
+        log.push(`\n✅ ${scored.length} opportunités scorées depuis le Cache Pool (${scoredAll.length - scored.length} doublon(s) déjà en base ignoré(s))`);
         log.push(`🕐 Durée totale: ${((Date.now() - startedAt) / 1000).toFixed(1)}s`);
 
         // ── Sauvegarde Supabase ───────────────────────────────────────
@@ -1683,8 +1701,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     // ── Scoring local (zéro appel réseau) ─────────────────────────
-    const scored = scoreLocally(fresh, profile, isPaid);
-    log.push(`\n✅ ${scored.length} opportunités scorées (score >= 25)`);
+    const scoredAll = scoreLocally(fresh, profile, isPaid);
+    const scored = scoredAll.filter((o: any) => !existingUrls.has((o.original_url || '').split('?')[0]));
+    log.push(`\n✅ ${scored.length} opportunités scorées (score >= 25) — ${scoredAll.length - scored.length} doublon(s) déjà en base ignoré(s)`);
     log.push(`🕐 Durée totale: ${((Date.now() - startedAt) / 1000).toFixed(1)}s`);
 
     // ── Sauvegarde Supabase ───────────────────────────────────────
