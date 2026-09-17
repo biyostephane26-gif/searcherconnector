@@ -173,10 +173,18 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Tentative 3 : PayDunya (Afrique de l'Ouest) ───────────────
+    // Corrigé le 2026-09-17 après test en direct : l'ancienne URL
+    // (/api/v1/softorder/create) renvoyait une 404 — PayDunya n'a jamais
+    // eu cette route. La bonne route est /checkout-invoice/create, et le
+    // lien de paiement arrive dans `response_text` (pas `hosted_invoice`,
+    // qui n'existe pas dans la réponse réelle de l'API) — vérifié avec
+    // les vraies clés live : la combinaison des deux bugs faisait
+    // toujours tomber PayDunya en échec silencieux vers le mode manuel,
+    // même avec des identifiants live valides.
     const paydunyaToken = process.env.PAYDUNYA_MASTER_KEY || ''
     if (paydunyaToken) {
       try {
-        const pdRes = await fetch('https://app.paydunya.com/api/v1/softorder/create', {
+        const pdRes = await fetch('https://app.paydunya.com/api/v1/checkout-invoice/create', {
           method:  'POST',
           headers: {
             'Content-Type':         'application/json',
@@ -202,10 +210,10 @@ export async function POST(req: NextRequest) {
           }),
         })
         const pdData = await pdRes.json()
-        if (pdData.response_code === '00' && pdData.hosted_invoice) {
+        if (pdData.response_code === '00' && pdData.response_text) {
           return NextResponse.json({
             success:     true,
-            payment_url: pdData.hosted_invoice,
+            payment_url: pdData.response_text,
             method:      'paydunya',
           })
         }
