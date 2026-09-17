@@ -40,6 +40,7 @@ import { cache } from '../../lib/scraper/cache-manager';
 import { matchCategories, matchCategoriesForUser } from '../../lib/scraper/categories';
 import { detectRequiredLevel, computeLevelMatch } from '../../lib/scraper/skill-matching';
 import { typeMatchDelta, isHardTypeMismatch, isSourceCategoryMismatch } from '../../lib/scraper/typeSignals';
+import { aiFilterOpportunities } from '../../lib/scraper/aiOpportunityFilter';
 import { checkRateLimit } from '../../lib/rateLimiter';
 import { planTier } from '../../lib/planUtils';
 import { planConfig } from '../../lib/planConfig';
@@ -1510,8 +1511,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // ── Scoring local (zéro appel réseau) ─────────────────────────
         const scoredAll = scoreLocally(fresh, profile, isPaid);
-        const scored = scoredAll.filter((o: any) => !existingUrls.has((o.original_url || '').split('?')[0]));
-        log.push(`\n✅ ${scored.length} opportunités scorées depuis le Cache Pool (${scoredAll.length - scored.length} doublon(s) déjà en base ignoré(s))`);
+        const mechFiltered = scoredAll.filter((o: any) => !existingUrls.has((o.original_url || '').split('?')[0]));
+        log.push(`\n✅ ${mechFiltered.length} opportunités scorées depuis le Cache Pool (${scoredAll.length - mechFiltered.length} doublon(s) déjà en base ignoré(s))`);
+
+        // ── Filtre IA : quasi-doublons + pertinence réelle ──────────
+        // En plus du mécanique ci-dessus (URL exacte, sûr et gratuit),
+        // un passage IA groupé (1 seul appel) repère ce que le mot-clé
+        // ne peut pas voir : même mission republiée ailleurs sous un
+        // autre titre, ou match par coïncidence hors-sujet.
+        const aiResult = await aiFilterOpportunities(mechFiltered, profile);
+        const scored = aiResult.kept;
+        if (aiResult.removedLog.length > 0) log.push(...aiResult.removedLog);
+        if (aiResult.removedCount > 0) log.push(`🤖 Filtre IA : ${aiResult.removedCount} retirée(s) (doublon/hors-sujet)`);
         log.push(`🕐 Durée totale: ${((Date.now() - startedAt) / 1000).toFixed(1)}s`);
 
         // ── Sauvegarde Supabase ───────────────────────────────────────
@@ -1702,8 +1713,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // ── Scoring local (zéro appel réseau) ─────────────────────────
     const scoredAll = scoreLocally(fresh, profile, isPaid);
-    const scored = scoredAll.filter((o: any) => !existingUrls.has((o.original_url || '').split('?')[0]));
-    log.push(`\n✅ ${scored.length} opportunités scorées (score >= 25) — ${scoredAll.length - scored.length} doublon(s) déjà en base ignoré(s)`);
+    const mechFiltered = scoredAll.filter((o: any) => !existingUrls.has((o.original_url || '').split('?')[0]));
+    log.push(`\n✅ ${mechFiltered.length} opportunités scorées (score >= 25) — ${scoredAll.length - mechFiltered.length} doublon(s) déjà en base ignoré(s)`);
+
+    // ── Filtre IA : quasi-doublons + pertinence réelle (voir Cache Pool ci-dessus) ──
+    const aiResult = await aiFilterOpportunities(mechFiltered, profile);
+    const scored = aiResult.kept;
+    if (aiResult.removedLog.length > 0) log.push(...aiResult.removedLog);
+    if (aiResult.removedCount > 0) log.push(`🤖 Filtre IA : ${aiResult.removedCount} retirée(s) (doublon/hors-sujet)`);
     log.push(`🕐 Durée totale: ${((Date.now() - startedAt) / 1000).toFixed(1)}s`);
 
     // ── Sauvegarde Supabase ───────────────────────────────────────
