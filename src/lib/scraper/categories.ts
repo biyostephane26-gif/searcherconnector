@@ -73,3 +73,38 @@ export function extractKeywordsForUser(domains: string[] | undefined, domain: st
   }
   return Array.from(merged)
 }
+
+// ── Catégorie d'UNE opportunité (pas d'un utilisateur) ────────────
+// matchCategories() ci-dessus répond à "quelles catégories intéressent
+// cet utilisateur ?" — celle-ci répond à "de quelle catégorie relève
+// CETTE offre précise ?", à partir de son propre titre. Utilisé pour
+// classer/filtrer la page Opportunités par catégorie, sans dépendre
+// d'une colonne `category` en base (calculé à l'affichage).
+export const CATEGORY_LABELS: Record<string, string> = {
+  'dev-engineering':   'Développement',
+  'design':            'Design',
+  'marketing-growth':  'Marketing',
+  'data-ai':           'Data & IA',
+  'product':           'Produit',
+  'sales-bizdev':      'Vente & Business',
+  'finance':           'Finance',
+  'devops-cloud':      'DevOps & Cloud',
+  'writing-content':   'Rédaction',
+  'customer-support':  'Support client',
+  'hr-recruiting':     'RH & Recrutement',
+  'freelance-general': 'Freelance (général)',
+  'startup-funding':   'Startup & Levées',
+  'admin-office':      'Administratif',
+  'other':             'Autre',
+}
+
+export function categorizeOpportunityTitle(title: string, extra?: string): string {
+  const words = extractSimpleKeywords(`${title || ''} ${extra || ''}`)
+  if (words.length === 0) return 'other'
+  const scored = Object.entries(CATEGORIES).map(([cat, kws]) => {
+    const catTokens = extractSimpleKeywords(kws.join(' '))
+    const hits = words.filter(w => catTokens.some(c => c.slice(0, 4) === w.slice(0, 4))).length
+    return { cat, hits }
+  }).filter(s => s.hits > 0).sort((a, b) => b.hits - a.hits)
+  return scored[0]?.cat || 'other'
+}

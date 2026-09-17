@@ -12,6 +12,7 @@ import { Search, Zap, X, ExternalLink, CheckCircle, XCircle, AlertTriangle, Glob
 import { usePDF } from '../hooks/usePDF'
 import { computeProfileCompletion } from '../lib/profileCompletion'
 import { detectAtsPlatform } from '../lib/scraper/atsPlatformDetect'
+import { categorizeOpportunityTitle, CATEGORY_LABELS } from '../lib/scraper/categories'
 
 export default function Opportunities() {
   const { user, profile } = useAuth()
@@ -20,6 +21,7 @@ export default function Opportunities() {
   const [opportunities, setOpportunities] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+  const [categoryFilter, setCategoryFilter] = useState('all')
   const [sortBy, setSortBy] = useState<'recommended' | 'freshest' | 'highest_paid'>('recommended')
   const [selected, setSelected] = useState<any>(null)        // opportunité sélectionnée
   const [readiness, setReadiness] = useState<any>(null)      // score de préparation
@@ -235,7 +237,20 @@ export default function Opportunities() {
   const isLowCompetition = (o: any) =>
     typeof o.applicants_count === 'number' && o.applicants_count < LOW_COMPETITION_MAX
 
+  // Catégorie calculée à l'affichage à partir du titre (pas de colonne
+  // `category` en base sur `opportunities` — voir categorizeOpportunityTitle).
+  const categoryOf = (o: any) => categorizeOpportunityTitle(o.title || '', o.match_reason || '')
+  const categoryCounts: Record<string, number> = {}
+  for (const o of opportunities) {
+    const cat = categoryOf(o)
+    categoryCounts[cat] = (categoryCounts[cat] || 0) + 1
+  }
+  const availableCategories: [string, number][] = Object.keys(categoryCounts)
+    .map(cat => [cat, categoryCounts[cat]] as [string, number])
+    .sort((a, b) => b[1] - a[1])
+
   const filteredByMechanism = opportunities.filter(o => {
+    if (categoryFilter !== 'all' && categoryOf(o) !== categoryFilter) return false
     if (filter === 'ats_auto') return isAtsAuto(o)
     if (filter === 'manual')   return !isAtsAuto(o)
     if (filter === 'fresh')    return ageHours(o) < 24
@@ -296,6 +311,25 @@ export default function Opportunities() {
               ))}
             </div>
 
+            {/* Catégorie — calculée à partir du titre de chaque offre, ne
+                montre que les catégories réellement présentes dans les
+                résultats de l'utilisateur (pas les 14 en dur à chaque fois). */}
+            {availableCategories.length > 1 && (
+              <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1 scrollbar-hide">
+                <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest flex-shrink-0">Catégorie :</span>
+                <select
+                  value={categoryFilter}
+                  onChange={e => setCategoryFilter(e.target.value)}
+                  className="bg-[#111] border border-[#2a2a2a] text-xs font-bold text-white rounded-full px-3 py-1.5 focus:outline-none focus:border-[#D4AF37]/60"
+                >
+                  <option value="all">Toutes catégories ({opportunities.length})</option>
+                  {availableCategories.map(([cat, count]) => (
+                    <option key={cat} value={cat}>{CATEGORY_LABELS[cat] || cat} ({count})</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             {/* Tri */}
             <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
               <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest flex-shrink-0">Trier :</span>
@@ -321,7 +355,7 @@ export default function Opportunities() {
                   {filter === 'for_you' && 'Complète ton domaine et tes compétences dans ton profil pour affiner la sélection.'}
                   {filter === 'fresh' && 'Aucune offre publiée ces dernières 24h — relance un scan.'}
                 </p>
-                <button onClick={() => setFilter('all')} className="text-xs font-bold text-[#D4AF37] hover:underline">Voir toutes les offres</button>
+                <button onClick={() => { setFilter('all'); setCategoryFilter('all') }} className="text-xs font-bold text-[#D4AF37] hover:underline">Voir toutes les offres</button>
               </div>
             ) : opportunities.length === 0 ? (
               <div className="text-center py-20 bg-[#111111] rounded-3xl border border-dashed border-[#2a2a2a]">
