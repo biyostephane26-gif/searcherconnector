@@ -27,7 +27,24 @@ export interface ListingConfig {
 
 // Registre vide intentionnellement — voir note ci-dessus. Chaque entrée
 // est ajoutée après vérification manuelle sur un compte réel.
-export const LISTING_CONFIGS: ListingConfig[] = [];
+export const LISTING_CONFIGS: ListingConfig[] = [
+  // Vérifié le 2026-09-17 via Claude in Chrome, sur un compte LinkedIn
+  // réel connecté (recherche "freelance developer") — 25 cartes trouvées,
+  // sélecteurs confirmés par lecture directe du DOM rendu. Les classes
+  // "job-card-list__*" et "scaffold-layout__*" sont les classes
+  // sémantiques stables de LinkedIn ; les hash CSS-in-JS voisins
+  // (générés à chaque build) sont volontairement ignorés — ils changent
+  // sans préavis. Pas de date de publication affichée dans la liste
+  // (dateSelector vide) : seulement sur la page de détail de l'offre.
+  {
+    platform: 'LinkedIn',
+    listingUrlPattern: 'linkedin\\.com\\/jobs\\/(search|collections)',
+    itemSelector: 'li.scaffold-layout__list-item',
+    titleSelector: 'a.job-card-list__title--link',
+    linkSelector: 'a.job-card-list__title--link',
+    dateSelector: '',
+  },
+];
 
 export function findListingConfig(url: string): ListingConfig | null {
   for (const cfg of LISTING_CONFIGS) {

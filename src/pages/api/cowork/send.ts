@@ -9,6 +9,7 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
+import { getValidGmailAccessToken } from '../../../lib/server/gmailToken';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -79,11 +80,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let error_detail = '';
 
     if (channel === 'gmail') {
-      // Récupérer le token Gmail OAuth
-      const { data: oauth } = await supabaseAdmin.from('oauth_connections')
-        .select('access_token_encrypted').eq('user_id', userId).eq('platform', 'gmail').single();
-      if (!oauth) return res.status(400).json({ error: 'Gmail non connecté. Connecte ton compte Gmail dans Cowork.' });
-      sent = await sendGmail(to, subject || `Opportunité via Searcher Connector`, message, oauth.access_token_encrypted);
+      // Jeton rafraîchi si besoin — un access_token OAuth expire au bout
+      // d'1h ; avant ce correctif, rien ne le renouvelait ici et l'envoi
+      // cassait silencieusement 1h après la connexion.
+      const accessToken = await getValidGmailAccessToken(userId);
+      if (!accessToken) return res.status(400).json({ error: 'Gmail non connecté (ou jeton expiré). Reconnecte ton compte Gmail dans Cowork.' });
+      sent = await sendGmail(to, subject || `Opportunité via Searcher Connector`, message, accessToken);
     }
 
     if (channel === 'whatsapp') {

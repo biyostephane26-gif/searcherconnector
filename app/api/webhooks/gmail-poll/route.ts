@@ -10,29 +10,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendMessageAlert } from '../../../../src/lib/email'
+import { getValidGmailAccessToken } from '../../../../src/lib/server/gmailToken'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-const GOOGLE_CLIENT_ID     = process.env.GOOGLE_CLIENT_ID || ''
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || ''
-
-async function refreshAccessToken(refreshToken: string): Promise<string | null> {
-  try {
-    const r = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id: GOOGLE_CLIENT_ID, client_secret: GOOGLE_CLIENT_SECRET,
-        refresh_token: refreshToken, grant_type: 'refresh_token',
-      }),
-    })
-    const data = await r.json()
-    return data.access_token || null
-  } catch { return null }
-}
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || ''
 
 // Extrait "email@domaine.com" depuis "Nom <email@domaine.com>" ou un email brut
 function extractEmailAddress(raw: string): string {
@@ -62,18 +47,8 @@ export async function POST(req: NextRequest) {
     let newMessagesTotal = 0
 
     for (const conn of connections) {
-      let accessToken = conn.access_token_encrypted
-
-      // Rafraîchir le token s'il est expiré
-      if (conn.token_expires_at && new Date(conn.token_expires_at) < new Date() && conn.refresh_token_encrypted) {
-        const refreshed = await refreshAccessToken(conn.refresh_token_encrypted)
-        if (!refreshed) continue // token invalide — on saute ce compte cette fois
-        accessToken = refreshed
-        await supabase.from('oauth_connections').update({
-          access_token_encrypted: refreshed,
-          token_expires_at: new Date(Date.now() + 3600 * 1000).toISOString(),
-        }).eq('id', conn.id)
-      }
+      const accessToken = await getValidGmailAccessToken(conn.user_id)
+      if (!accessToken) continue // token invalide/révoqué — on saute ce compte cette fois
 
       // Messages reçus dans les dernières 24h (évite de scanner tout l'historique)
       const listRes = await fetch(
