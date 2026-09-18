@@ -55,4 +55,21 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     })();
     return true;
   }
+
+  if (msg?.type === 'SC_FETCH_VERIFICATION_CODE') {
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/extension/verification-code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: msg.token }),
+        });
+        const data = await res.json().catch(() => ({}));
+        sendResponse({ ok: res.ok, data });
+      } catch (e) {
+        sendResponse({ ok: false, error: String(e?.message || e) });
+      }
+    })();
+    return true;
+  }
 });

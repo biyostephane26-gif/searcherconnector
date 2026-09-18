@@ -234,6 +234,43 @@ async function tryReadListings() {
   });
 }
 
+// =================================================================
+// CODE DE VÉRIFICATION PAR EMAIL — complète l'auto-soumission déjà
+// réelle (ATS + extension) : pendant une inscription (Upwork,
+// Freelancer.com...), si le site envoie un code par email, on va le
+// chercher dans le Gmail déjà connecté de l'utilisateur au lieu de le
+// laisser aller le copier-coller lui-même. Une seule tentative par
+// page (verificationCodeAttempted) — jamais de sondage répété qui
+// spammerait l'API Gmail. Exclut volontairement "code postal", "code
+// promo", "code parrainage" : seul un mot-clé de VÉRIFICATION déclenche
+// la recherche, jamais un "code" générique.
+let verificationCodeAttempted = false;
+function findVerificationCodeInput() {
+  const candidates = document.querySelectorAll('input[type="text"], input[type="number"], input[type="tel"], input:not([type])');
+  return Array.from(candidates).find(el => {
+    if (el.value || el.disabled || el.readOnly) return false;
+    const text = fieldLabelText(el);
+    return /verification|verify|confirm|v[ée]rifi|otp\b|one[- ]?time/i.test(text);
+  });
+}
+function tryFillVerificationCode() {
+  if (verificationCodeAttempted) return;
+  const codeInput = findVerificationCodeInput();
+  if (!codeInput) return;
+  verificationCodeAttempted = true;
+  chrome.storage.sync.get(['sc_token'], async (data) => {
+    if (!data.sc_token) return;
+    try {
+      const resp = await new Promise(resolve => chrome.runtime.sendMessage({ type: 'SC_FETCH_VERIFICATION_CODE', token: data.sc_token }, resolve));
+      const code = resp?.data?.code;
+      if (code && !codeInput.value) {
+        setValue(codeInput, code);
+        showToast(`✓ Code de vérification récupéré automatiquement depuis Gmail.`);
+      }
+    } catch { /* silencieux — l'utilisateur peut toujours le saisir lui-même */ }
+  });
+}
+
 let autoFilledOnce = false;
 
 if (looksLikeApplicationForm()) {
@@ -242,6 +279,7 @@ if (looksLikeApplicationForm()) {
   runFill(false);
 }
 tryReadListings();
+tryFillVerificationCode();
 
 // Certains sites (React/Vue) construisent le formulaire après le chargement
 // initial — on réessaie sur les mutations du DOM, avec un throttle simple.
@@ -257,5 +295,6 @@ const observer = new MutationObserver(() => {
     if (!autoFilledOnce) { autoFilledOnce = true; runFill(false); }
   }
   if (!listingReadOnce) tryReadListings();
+  if (!verificationCodeAttempted) tryFillVerificationCode();
 });
 observer.observe(document.body, { childList: true, subtree: true });
