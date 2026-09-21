@@ -8,6 +8,14 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+// Sans ça, Next.js voit une route sans API "dynamique" évidente (pas de
+// headers()/cookies()) et la fige en statique AU MOMENT DU BUILD — le
+// chiffre reste alors gelé pour toujours, quel que soit le vrai contenu
+// de la base ensuite. C'est exactement pourquoi la clé service_role
+// corrigée ne suffisait pas : la réponse servie était un instantané figé
+// depuis avant le correctif, jamais réellement recalculée en production.
+export const dynamic = 'force-dynamic'
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
