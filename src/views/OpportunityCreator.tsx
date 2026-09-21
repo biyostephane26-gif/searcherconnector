@@ -8,6 +8,7 @@ import Card from '../components/ui/Card'
 import GoldButton from '../components/ui/GoldButton'
 import { Search, Target, Send, Loader2, Star, TrendingUp, AlertCircle, ExternalLink, Copy, CheckCheck, Lock } from 'lucide-react'
 import { authFetch } from '../lib/authFetch'
+import { isPaidPlan } from '../lib/planUtils'
 
 const LEAD_GOAL = 50
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -31,7 +32,7 @@ export default function OpportunityCreator() {
   const [leadsLoading, setLeadsLoading] = useState(true)
 
   // Paywall pour free users
-  const isFree = !profile?.plan || profile.plan === 'free'
+  const isFree = !isPaidPlan(profile)
   const [showPaywall, setShowPaywall] = useState(isFree)
 
   // ── Charger le pipeline persistant au montage — c'est l'actif qui

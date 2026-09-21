@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import Card from '@/components/ui/Card'
 import GoldButton from '@/components/ui/GoldButton'
+import { isPaidPlan } from '@/lib/planUtils'
 import {
   Zap, TrendingUp, Filter, Bot, Clock, Users, Briefcase, ArrowRight, ChevronRight, Shield, Lock, Unlock } from 'lucide-react'
 
@@ -46,7 +47,7 @@ export default function PremiumOpportunitiesDashboard() {
   const [totalMatching, setTotalMatching] = useState(0)
   const [activeTab, setActiveTab] = useState<string | null>(null)
 
-  const isPremium = ['pro', 'premium', 'enterprise', 'starter'].includes(profile?.plan || '') || profile?.role === 'founder' || profile?.verification_status === 'genius'
+  const isPremium = isPaidPlan(profile) || profile?.verification_status === 'genius'
 
   useEffect(() => {
     fetchOpportunities()

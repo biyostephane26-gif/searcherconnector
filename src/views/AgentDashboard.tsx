@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { supabase } from '../lib/supabase';
+import { isPaidPlan } from '../lib/planUtils';
 import ScanMetrics from '../components/ScanMetrics';
 import { useAuth } from '../contexts/AuthContext';
 import { useAgent } from '../hooks/useAgent';
@@ -921,7 +922,7 @@ export default function AgentDashboard() {
               <button 
                 onClick={() => {
                   // Paywall SCAI Voice pour free users (le fondateur n'a aucune restriction)
-                  const isFree = profile?.role !== 'founder' && (!profile?.plan || profile.plan === 'free')
+                  const isFree = !isPaidPlan(profile)
                   if (isFree) {
                     alert('🎤 SCAI Voice est réservé aux membres Premium. Upgrade pour parler directement avec SCAI.')
                     window.location.href = '/pricing'

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '../../contexts/AuthContext'
 import Card from '../ui/Card'
 import GoldButton from '../ui/GoldButton'
+import { isPaidPlan } from '../../lib/planUtils'
 import { Zap, Lock, Unlock, TrendingUp, Shield } from 'lucide-react'
 
 interface FreeUserLimitBannerProps {
@@ -19,7 +20,7 @@ export default function FreeUserLimitBanner({
   const router = useRouter()
   const { profile } = useAuth()
 
-  const isPremium = ['pro', 'premium', 'enterprise', 'starter'].includes(profile?.plan || '') || profile?.role === 'founder' || profile?.verification_status === 'genius'
+  const isPremium = isPaidPlan(profile) || profile?.verification_status === 'genius'
   const hiddenOpportunities = Math.max(0, totalMatchingOpportunities - visibleOpportunities)
   const hiddenPercentage = Math.round((hiddenOpportunities / totalMatchingOpportunities) * 100)
 

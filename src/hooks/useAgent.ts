@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { AgentSchedule, EmailThread } from '../types';
+import { isPaidPlan } from '../lib/planUtils';
 
 export function useAgent() {
   const { user } = useAuth();
@@ -79,7 +80,7 @@ export function useAgent() {
           userId:    user.id,
           zone,
           has_budget: (profile as any).has_budget || (profile.search_preferences as any)?.has_budget || false,
-          scan_type:  ['starter','pro','enterprise'].includes(profile.plan || 'free') ? 'deep' : 'quick',
+          scan_type:  isPaidPlan(profile) ? 'deep' : 'quick',
         }),
       });
 

@@ -8,6 +8,7 @@ import Card from '../components/ui/Card'
 import GoldButton from '../components/ui/GoldButton'
 import { Mail, MessageSquare, Send, Clock, CheckCircle, XCircle, AlertCircle, ExternalLink, Loader2, Inbox, RefreshCw, Lock, Users, Sparkles, Award, TrendingUp, BriefcaseIcon } from 'lucide-react'
 import { generateEmailDraft } from '../lib/gemini'
+import { isPaidPlan } from '../lib/planUtils'
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   sent:              { label: 'Envoyé',          color: 'text-gray-400' },
@@ -36,8 +37,10 @@ export default function Cowork() {
   const [loadingSuggestions, setLoadingSuggestions] = useState(false)
   const [viewMode, setViewMode] = useState<'inbox' | 'matches'>('inbox')
   
-  // Paywall pour free users (le fondateur n'a aucune restriction)
-  const isFree = profile?.role !== 'founder' && (!profile?.plan || profile.plan === 'free')
+  // Paywall pour free users (le fondateur n'a aucune restriction).
+  // Passe par isPaidPlan() de planUtils.ts (pas un check local) pour que le
+  // BETA_FREE_FOR_ALL déclaré là-bas s'applique aussi ici automatiquement.
+  const isFree = !isPaidPlan(profile)
   const [showPaywall, setShowPaywall] = useState(false)
 
   const loadInbox = async () => {

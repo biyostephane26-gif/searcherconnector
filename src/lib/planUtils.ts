@@ -19,7 +19,16 @@ type PlanCheckable = { plan?: string | null; role?: string | null } | null | und
 // pour les comptes non encore migrés — ils comptent comme payants.
 export const PAID_PLANS = ['pro', 'premium', 'starter', 'enterprise']
 
+// Période bêta : TOUT est gratuit pour TOUT LE MONDE (annoncé sur /pricing).
+// Un seul interrupteur ici plutôt que patcher chaque paywall un par un —
+// c'est justement en le vérifiant paywall par paywall qu'on avait raté
+// Cowork Inbox, qui restait verrouillé derrière "Premium" malgré la bêta
+// gratuite. Repasser à false désactivera à nouveau les restrictions partout
+// où isPaidPlan()/planTier() sont utilisés.
+export const BETA_FREE_FOR_ALL = true
+
 export function isPaidPlan(profile: PlanCheckable): boolean {
+  if (BETA_FREE_FOR_ALL) return true
   if (!profile) return false
   if (profile.role === 'founder') return true
   return PAID_PLANS.includes(profile.plan || '')
@@ -33,6 +42,7 @@ export function isFounderRole(profile: PlanCheckable): boolean {
 // (Après la migration rename_plans_free_pro_premium.sql : 'pro' = palier
 // milieu, 'premium' = palier top. 'enterprise' legacy → premium.)
 export function planTier(profile: PlanCheckable): 'free' | 'pro' | 'premium' {
+  if (BETA_FREE_FOR_ALL) return 'premium'
   if (profile?.role === 'founder') return 'premium'
   const p = profile?.plan || 'free'
   if (p === 'premium' || p === 'enterprise') return 'premium'

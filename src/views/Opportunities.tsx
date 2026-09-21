@@ -13,6 +13,7 @@ import { usePDF } from '../hooks/usePDF'
 import { computeProfileCompletion } from '../lib/profileCompletion'
 import { detectAtsPlatform } from '../lib/scraper/atsPlatformDetect'
 import { categorizeOpportunityTitle, CATEGORY_LABELS } from '../lib/scraper/categories'
+import { isPaidPlan } from '../lib/planUtils'
 
 export default function Opportunities() {
   const { user, profile } = useAuth()
@@ -52,7 +53,7 @@ export default function Opportunities() {
       
       // FREEMIUM: limiter à 10 opportunités pour free users (6 accessibles + 4 premium floutées affichées)
       if (data) {
-        const isFree = !profile?.plan || profile.plan === 'free'
+        const isFree = !isPaidPlan(profile)
         if (isFree && data.length > 10) {
           setOpportunities(data.slice(0, 10))
         } else {
@@ -69,7 +70,7 @@ export default function Opportunities() {
     if (!opp || !user) return
     
     // BLOQUER pour free users
-    const isFree = !profile?.plan || profile.plan === 'free'
+    const isFree = !isPaidPlan(profile)
     if (isFree) {
       alert('⚠️ Fonctionnalité réservée aux membres Premium. Upgrade pour que SCAI rédige tes candidatures automatiquement.')
       router.push('/pricing')
@@ -392,7 +393,7 @@ export default function Opportunities() {
                 ))}
 
                 {/* 4 opportunités premium floutées pour free users */}
-                {(!profile?.plan || profile.plan === 'free') && opportunities.length > 6 && (
+                {!isPaidPlan(profile) && opportunities.length > 6 && (
                   <>
                     {sortedOpportunities.slice(6, 10).map((opp) => (
                       <div key={opp.id} className="relative">
@@ -410,7 +411,7 @@ export default function Opportunities() {
                 )}
 
                 {/* Premium users voient tout */}
-                {profile?.plan && profile.plan !== 'free' && sortedOpportunities.slice(6).map((opp) => (
+                {isPaidPlan(profile) && sortedOpportunities.slice(6).map((opp) => (
                   <div key={opp.id} onClick={() => handleSelectOpp(opp)}
                     className={`cursor-pointer rounded-2xl border transition-all ${selected?.id === opp.id ? 'border-[#D4AF37]/50 bg-[#1A1500]/20' : 'border-[#1A1A1A] hover:border-[#2a2a2a]'}`}>
                     <OpportunityCard opportunity={opp} onApply={handleApply} referralCode={profile?.referral_code} />
