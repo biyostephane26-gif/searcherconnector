@@ -68,13 +68,16 @@ export default function TasksPanel() {
     try { await authFetch(`/api/cowork/tasks?id=${id}`, { method: 'DELETE' }) } catch { /* déjà mis à jour côté UI */ }
   }
 
-  if (loading || tasks.length === 0) return null
+  if (loading) return null
 
   return (
     <div>
       <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3 flex items-center gap-1.5">
         <ListChecks size={12} /> Tâches
       </p>
+      {tasks.length === 0 ? (
+        <p className="text-xs text-gray-600">Aucune tâche en cours. Demande à SCAI de faire quelque chose pour toi et suis sa progression ici.</p>
+      ) : (
       <div className="space-y-2">
         {tasks.map(task => (
           <div key={task.id} className="bg-[#111111] border border-gray-800 rounded-xl px-3 py-2.5">
@@ -104,6 +107,7 @@ export default function TasksPanel() {
           </div>
         ))}
       </div>
+      )}
     </div>
   )
 }
