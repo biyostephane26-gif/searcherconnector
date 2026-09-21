@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { isPaidPlan } from '../lib/planUtils';
 import ScanMetrics from '../components/ScanMetrics';
@@ -81,11 +82,16 @@ export default function AgentDashboard() {
   const { user, profile, refreshProfile } = useAuth();
   const { scanning, launchScan, getEmailThreads, getSchedule, updateSchedule } = useAgent();
   const { recentActions, pendingQueue } = useAgentRealtime();
+  const { t, i18n } = useTranslation();
   // Écran d'accueil (aucune conversation en cours) : grande salutation
   // selon l'heure locale, comme le fait Cowork — pas un message figé.
+  // Traduite via i18n (t()) au lieu d'un mot français en dur, pour que la
+  // langue choisie dans Settings (ou détectée par le navigateur) s'applique
+  // vraiment ici — avant, "Bonjour"/"Bonsoir" restait figé en français peu
+  // importe la langue active.
   const firstName = (profile?.full_name || '').trim().split(/\s+/)[0] || '';
   const hour = new Date().getHours();
-  const greeting = hour < 5 ? 'Bonsoir' : hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
+  const greeting = hour < 5 ? t('scai.greetingNight') : hour < 12 ? t('scai.greetingMorning') : hour < 18 ? t('scai.greetingAfternoon') : t('scai.greetingEvening');
   const greetingEmoji = hour < 5 ? '🌙' : hour < 18 ? '☀️' : '🌙';
   const [activeTab, setActiveTab] = useState<'status' | 'queue' | 'communications' | 'projects' | 'connectors' | 'config'>('status');
   // Outils Cowork (PDF, Excel, Word, image, vidéo) sélectionnés depuis le menu « + »
@@ -308,7 +314,7 @@ export default function AgentDashboard() {
       const res = await fetch('/api/scai/voice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, userProfile: { ...profile, localHour: new Date().getHours() }, audio: audioBase64, mode: 'full', conversationId: activeConversationId }),
+        body: JSON.stringify({ userId: user.id, userProfile: { ...profile, localHour: new Date().getHours(), uiLanguage: i18n.language }, audio: audioBase64, mode: 'full', conversationId: activeConversationId }),
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Erreur note vocale');
@@ -447,7 +453,7 @@ export default function AgentDashboard() {
           conversationId: activeConversationId,
           images,
           message: text,
-          userProfile: { ...profile, localHour: new Date().getHours() }
+          userProfile: { ...profile, localHour: new Date().getHours(), uiLanguage: i18n.language }
         }),
       });
 

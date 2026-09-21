@@ -1,6 +1,19 @@
 import Groq from 'groq-sdk';
 import { getCareerLevel } from './careerLevel';
 
+// Codes i18next (voir src/i18n/index.ts) → nom de la langue en français,
+// pour instruire le modèle sur la langue du tout premier message (avant
+// que l'utilisateur ait lui-même écrit quoi que ce soit à analyser).
+const LANGUAGE_NAMES: Record<string, string> = {
+  fr: 'français', en: 'anglais', pt: 'portugais', es: 'espagnol', de: 'allemand',
+  it: 'italien', nl: 'néerlandais', ru: 'russe', pl: 'polonais', uk: 'ukrainien',
+  ro: 'roumain', el: 'grec', tr: 'turc', sv: 'suédois', ar: 'arabe', he: 'hébreu',
+  fa: 'persan', hi: 'hindi', bn: 'bengali', ur: 'ourdou', 'zh-CN': 'chinois',
+  ja: 'japonais', ko: 'coréen', vi: 'vietnamien', id: 'indonésien', th: 'thaï',
+  tl: 'philippin', sw: 'swahili', ha: 'haoussa', am: 'amharique', yo: 'yoruba',
+  zu: 'zoulou', ig: 'igbo',
+}
+
 // ═══════════════════════════════════════════════════════════════
 // CHARGEMENT DES CLÉS
 // ═══════════════════════════════════════════════════════════════
@@ -271,7 +284,12 @@ export function genererSystemPrompt(userId: string, userProfile: any = {}) {
     ? userProfile.localHour
     : new Date().getUTCHours();
   const momentJournee = heureLocale < 5 ? 'nuit' : heureLocale < 12 ? 'matin' : heureLocale < 18 ? 'après-midi' : 'soir';
-  const salutation = momentJournee === 'matin' ? 'Bonjour' : momentJournee === 'nuit' ? 'Bonsoir' : momentJournee === 'soir' ? 'Bonsoir' : 'Bonjour';
+  // Langue de l'interface choisie par l'utilisateur (Settings) ou détectée
+  // par le navigateur, envoyée par le client (voir `uiLanguage` dans le
+  // body de /api/scai/chat et /api/scai/voice) — sans ça, ce premier
+  // message était TOUJOURS "Bonjour" en français, même pour un testeur qui
+  // a choisi l'anglais ou l'espagnol dans ses paramètres.
+  const nomLangue = LANGUAGE_NAMES[userProfile.uiLanguage as string] || 'français'
   // Le fondateur n'a aucune restriction, quel que soit son `plan` en base.
   const isPaid      = estProprietaire || ['pro', 'premium', 'starter', 'enterprise'].includes(plan);
 
@@ -335,7 +353,7 @@ ${profilComplet ? '✅ Profil suffisant pour lancer un scan' : `❌ Profil incom
 ══════════════════════════════════════════════
 SALUTATION ET MÉMOIRE — RÈGLES STRICTES
 ══════════════════════════════════════════════
-- Heure serveur actuelle : il est le ${momentJournee} → si c'est le tout premier message de la conversation (historique vide côté utilisateur), commence par "${salutation} ${prenom || ''}" (naturel, pas mécanique — pas besoin de le répéter à CHAQUE message).
+- Heure locale de l'utilisateur : il est le ${momentJournee} → si c'est le tout premier message de la conversation (historique vide côté utilisateur), commence par une salutation adaptée à ce moment de la journée ET écrite en ${nomLangue} (la langue choisie par l'utilisateur dans ses paramètres — pas forcément le français), suivie de "${prenom || ''}" si connu (naturel, pas mécanique — pas besoin de le répéter à CHAQUE message).
 - Tu as accès à TOUT ce qui précède sur cet utilisateur (nom, domaine, compétences, statut, pays, plan, offres en base) — utilise ces infos pour personnaliser, ne redemande JAMAIS une info déjà listée ci-dessus.
 - Si l'utilisateur te donne une info nouvelle (métier, compétence, ville, préférence) pendant la conversation, considère-la acquise IMMÉDIATEMENT pour le reste de l'échange — elle sera sauvegardée automatiquement dans son profil dès qu'elle est détectée.
 
