@@ -76,7 +76,11 @@
     "thinking": "思考中...",
     "scanning": "正在为你搜索全网...",
     "analyzing": "正在分析机会...",
-    "applying": "正在发送你的申请..."
+    "applying": "正在发送你的申请...",
+    "greetingMorning": "早上好",
+    "greetingAfternoon": "下午好",
+    "greetingEvening": "晚上好",
+    "greetingNight": "晚上好"
   },
   "profile": {
     "title": "职业档案",

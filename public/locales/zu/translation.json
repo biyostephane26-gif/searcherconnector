@@ -76,7 +76,11 @@
     "thinking": "Ngiyacabanga...",
     "scanning": "Ngisesha iwebhu ngenxa yakho...",
     "analyzing": "Ngihlaziya amathuba...",
-    "applying": "Ngithumela isicelo sakho..."
+    "applying": "Ngithumela isicelo sakho...",
+    "greetingMorning": "Sawubona ekuseni",
+    "greetingAfternoon": "Sawubona emini",
+    "greetingEvening": "Sawubona kusihlwa",
+    "greetingNight": "Sawubona ebusuku"
   },
   "profile": {
     "title": "Iphrofayela Yomsebenzi",

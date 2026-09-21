@@ -76,7 +76,11 @@
     "thinking": "חושב...",
     "scanning": "מחפש עבורך ברשת...",
     "analyzing": "מנתח את ההזדמנויות...",
-    "applying": "שולח את המועמדות שלך..."
+    "applying": "שולח את המועמדות שלך...",
+    "greetingMorning": "בוקר טוב",
+    "greetingAfternoon": "צהריים טובים",
+    "greetingEvening": "ערב טוב",
+    "greetingNight": "לילה טוב"
   },
   "profile": {
     "title": "פרופיל מקצועי",

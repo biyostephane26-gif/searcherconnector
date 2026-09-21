@@ -76,7 +76,11 @@
     "thinking": "እያሰብኩ ነው...",
     "scanning": "ለአንተ ድህረ ገጹን እየፈለግኩ ነው...",
     "analyzing": "እድሎችን እየተነተንኩ ነው...",
-    "applying": "ማመልከቻህን እየላክኩ ነው..."
+    "applying": "ማመልከቻህን እየላክኩ ነው...",
+    "greetingMorning": "እንደምን አደርክ",
+    "greetingAfternoon": "ደህና ከሰዓት",
+    "greetingEvening": "ደህና ማታ",
+    "greetingNight": "ደህና ሌሊት"
   },
   "profile": {
     "title": "ሙያዊ መገለጫ",

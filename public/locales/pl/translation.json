@@ -76,7 +76,11 @@
     "thinking": "Myślę...",
     "scanning": "Przeszukuję internet dla ciebie...",
     "analyzing": "Analizuję oferty...",
-    "applying": "Wysyłam twoją aplikację..."
+    "applying": "Wysyłam twoją aplikację...",
+    "greetingMorning": "Dzień dobry",
+    "greetingAfternoon": "Dzień dobry",
+    "greetingEvening": "Dobry wieczór",
+    "greetingNight": "Dobranoc"
   },
   "profile": {
     "title": "Profil zawodowy",

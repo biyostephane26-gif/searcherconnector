@@ -76,7 +76,11 @@
     "thinking": "Jag tänker...",
     "scanning": "Jag söker webben åt dig...",
     "analyzing": "Jag analyserar möjligheterna...",
-    "applying": "Jag skickar din ansökan..."
+    "applying": "Jag skickar din ansökan...",
+    "greetingMorning": "God morgon",
+    "greetingAfternoon": "God eftermiddag",
+    "greetingEvening": "God kväll",
+    "greetingNight": "God natt"
   },
   "profile": {
     "title": "Professionell profil",

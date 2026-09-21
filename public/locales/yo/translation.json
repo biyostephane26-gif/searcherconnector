@@ -76,7 +76,11 @@
     "thinking": "Mo ń ronú...",
     "scanning": "Mo ń wá ayélujára fún ọ...",
     "analyzing": "Mo ń ṣàyẹ̀wò àwọn àǹfààní...",
-    "applying": "Mo ń fi ìbéèrè rẹ ránṣẹ́..."
+    "applying": "Mo ń fi ìbéèrè rẹ ránṣẹ́...",
+    "greetingMorning": "Ẹ káàárọ̀",
+    "greetingAfternoon": "Ẹ káàsán",
+    "greetingEvening": "Ẹ kúùrọ̀lẹ́",
+    "greetingNight": "Ẹ kúùrọ̀lẹ́"
   },
   "profile": {
     "title": "Àkọsílẹ̀ Iṣẹ́",

@@ -76,7 +76,11 @@
     "thinking": "أفكر...",
     "scanning": "أبحث في الويب من أجلك...",
     "analyzing": "أحلل الفرص...",
-    "applying": "أرسل طلبك..."
+    "applying": "أرسل طلبك...",
+    "greetingMorning": "صباح الخير",
+    "greetingAfternoon": "مساء الخير",
+    "greetingEvening": "مساء الخير",
+    "greetingNight": "مساء الخير"
   },
   "profile": {
     "title": "الملف المهني",

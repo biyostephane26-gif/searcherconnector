@@ -76,7 +76,11 @@
     "thinking": "Je réfléchis...",
     "scanning": "Je scanne le web pour toi...",
     "analyzing": "J'analyse les opportunités...",
-    "applying": "J'envoie ta candidature..."
+    "applying": "J'envoie ta candidature...",
+    "greetingMorning": "Bonjour",
+    "greetingAfternoon": "Bon après-midi",
+    "greetingEvening": "Bonsoir",
+    "greetingNight": "Bonsoir"
   },
   "profile": {
     "title": "Profil Professionnel",

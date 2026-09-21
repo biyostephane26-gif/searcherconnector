@@ -76,7 +76,11 @@
     "thinking": "考え中...",
     "scanning": "あなたのためにウェブを検索中...",
     "analyzing": "案件を分析中...",
-    "applying": "応募を送信中..."
+    "applying": "応募を送信中...",
+    "greetingMorning": "おはようございます",
+    "greetingAfternoon": "こんにちは",
+    "greetingEvening": "こんばんは",
+    "greetingNight": "こんばんは"
   },
   "profile": {
     "title": "プロフェッショナルプロフィール",

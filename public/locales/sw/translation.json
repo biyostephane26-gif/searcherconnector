@@ -76,7 +76,11 @@
     "thinking": "Ninafikiri...",
     "scanning": "Ninatafuta mtandaoni kwa ajili yako...",
     "analyzing": "Ninachambua fursa...",
-    "applying": "Ninatuma ombi lako..."
+    "applying": "Ninatuma ombi lako...",
+    "greetingMorning": "Habari za asubuhi",
+    "greetingAfternoon": "Habari za mchana",
+    "greetingEvening": "Habari za jioni",
+    "greetingNight": "Habari za usiku"
   },
   "profile": {
     "title": "Wasifu wa Kitaaluma",

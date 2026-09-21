@@ -76,7 +76,11 @@
     "thinking": "Σκέφτομαι...",
     "scanning": "Ψάχνω το διαδίκτυο για σένα...",
     "analyzing": "Αναλύω τις ευκαιρίες...",
-    "applying": "Στέλνω την αίτησή σου..."
+    "applying": "Στέλνω την αίτησή σου...",
+    "greetingMorning": "Καλημέρα",
+    "greetingAfternoon": "Καλό απόγευμα",
+    "greetingEvening": "Καλησπέρα",
+    "greetingNight": "Καληνύχτα"
   },
   "profile": {
     "title": "Επαγγελματικό προφίλ",

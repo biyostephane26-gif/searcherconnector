@@ -76,7 +76,11 @@
     "thinking": "Đang suy nghĩ...",
     "scanning": "Đang tìm kiếm trên web cho bạn...",
     "analyzing": "Đang phân tích các cơ hội...",
-    "applying": "Đang gửi đơn ứng tuyển của bạn..."
+    "applying": "Đang gửi đơn ứng tuyển của bạn...",
+    "greetingMorning": "Chào buổi sáng",
+    "greetingAfternoon": "Chào buổi chiều",
+    "greetingEvening": "Chào buổi tối",
+    "greetingNight": "Chào buổi tối"
   },
   "profile": {
     "title": "Hồ sơ nghề nghiệp",

@@ -76,7 +76,11 @@
     "thinking": "सोच रहा हूं...",
     "scanning": "आपके लिए वेब खोज रहा हूं...",
     "analyzing": "अवसरों का विश्लेषण कर रहा हूं...",
-    "applying": "आपका आवेदन भेज रहा हूं..."
+    "applying": "आपका आवेदन भेज रहा हूं...",
+    "greetingMorning": "सुप्रभात",
+    "greetingAfternoon": "शुभ दोपहर",
+    "greetingEvening": "शुभ संध्या",
+    "greetingNight": "शुभ रात्रि"
   },
   "profile": {
     "title": "पेशेवर प्रोफ़ाइल",

@@ -76,7 +76,11 @@
     "thinking": "Mă gândesc...",
     "scanning": "Caut pe web pentru tine...",
     "analyzing": "Analizez oportunitățile...",
-    "applying": "Trimit candidatura ta..."
+    "applying": "Trimit candidatura ta...",
+    "greetingMorning": "Bună dimineața",
+    "greetingAfternoon": "Bună ziua",
+    "greetingEvening": "Bună seara",
+    "greetingNight": "Noapte bună"
   },
   "profile": {
     "title": "Profil profesional",

@@ -76,7 +76,11 @@
     "thinking": "سوچ رہا ہوں...",
     "scanning": "آپ کے لیے ویب تلاش کر رہا ہوں...",
     "analyzing": "مواقع کا تجزیہ کر رہا ہوں...",
-    "applying": "آپ کی درخواست بھیج رہا ہوں..."
+    "applying": "آپ کی درخواست بھیج رہا ہوں...",
+    "greetingMorning": "صبح بخیر",
+    "greetingAfternoon": "دوپہر بخیر",
+    "greetingEvening": "شام بخیر",
+    "greetingNight": "شب بخیر"
   },
   "profile": {
     "title": "پیشہ ورانہ پروفائل",

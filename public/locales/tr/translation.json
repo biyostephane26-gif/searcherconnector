@@ -76,7 +76,11 @@
     "thinking": "Düşünüyorum...",
     "scanning": "Senin için internette arama yapıyorum...",
     "analyzing": "Fırsatları analiz ediyorum...",
-    "applying": "Başvurunu gönderiyorum..."
+    "applying": "Başvurunu gönderiyorum...",
+    "greetingMorning": "Günaydın",
+    "greetingAfternoon": "Tünaydın",
+    "greetingEvening": "İyi akşamlar",
+    "greetingNight": "İyi geceler"
   },
   "profile": {
     "title": "Profesyonel Profil",

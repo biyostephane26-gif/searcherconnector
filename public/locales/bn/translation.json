@@ -76,7 +76,11 @@
     "thinking": "ভাবছি...",
     "scanning": "তোমার জন্য ওয়েব খুঁজছি...",
     "analyzing": "সুযোগগুলো বিশ্লেষণ করছি...",
-    "applying": "তোমার আবেদন পাঠাচ্ছি..."
+    "applying": "তোমার আবেদন পাঠাচ্ছি...",
+    "greetingMorning": "শুভ সকাল",
+    "greetingAfternoon": "শুভ অপরাহ্ন",
+    "greetingEvening": "শুভ সন্ধ্যা",
+    "greetingNight": "শুভ রাত্রি"
   },
   "profile": {
     "title": "পেশাদার প্রোফাইল",

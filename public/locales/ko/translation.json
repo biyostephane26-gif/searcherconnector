@@ -76,7 +76,11 @@
     "thinking": "생각 중...",
     "scanning": "당신을 위해 웹을 검색하고 있습니다...",
     "analyzing": "기회를 분석하고 있습니다...",
-    "applying": "지원서를 전송하고 있습니다..."
+    "applying": "지원서를 전송하고 있습니다...",
+    "greetingMorning": "좋은 아침입니다",
+    "greetingAfternoon": "안녕하세요",
+    "greetingEvening": "좋은 저녁입니다",
+    "greetingNight": "좋은 저녁입니다"
   },
   "profile": {
     "title": "전문 프로필",

@@ -76,7 +76,11 @@
     "thinking": "در حال فکر کردن...",
     "scanning": "در حال جستجوی وب برای شما...",
     "analyzing": "در حال تحلیل فرصت‌ها...",
-    "applying": "در حال ارسال درخواست شما..."
+    "applying": "در حال ارسال درخواست شما...",
+    "greetingMorning": "صبح بخیر",
+    "greetingAfternoon": "بعدازظهر بخیر",
+    "greetingEvening": "عصر بخیر",
+    "greetingNight": "شب بخیر"
   },
   "profile": {
     "title": "پروفایل حرفه‌ای",

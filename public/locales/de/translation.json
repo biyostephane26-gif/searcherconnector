@@ -76,7 +76,11 @@
     "thinking": "Ich denke nach...",
     "scanning": "Ich durchsuche das Web für dich...",
     "analyzing": "Ich analysiere die Chancen...",
-    "applying": "Ich sende deine Bewerbung..."
+    "applying": "Ich sende deine Bewerbung...",
+    "greetingMorning": "Guten Morgen",
+    "greetingAfternoon": "Guten Tag",
+    "greetingEvening": "Guten Abend",
+    "greetingNight": "Gute Nacht"
   },
   "profile": {
     "title": "Berufsprofil",

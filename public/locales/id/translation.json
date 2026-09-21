@@ -76,7 +76,11 @@
     "thinking": "Sedang berpikir...",
     "scanning": "Menjelajahi web untuk Anda...",
     "analyzing": "Menganalisis peluang...",
-    "applying": "Mengirim lamaran Anda..."
+    "applying": "Mengirim lamaran Anda...",
+    "greetingMorning": "Selamat pagi",
+    "greetingAfternoon": "Selamat siang",
+    "greetingEvening": "Selamat malam",
+    "greetingNight": "Selamat malam"
   },
   "profile": {
     "title": "Profil Profesional",

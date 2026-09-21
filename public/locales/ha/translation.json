@@ -76,7 +76,11 @@
     "thinking": "Ina tunani...",
     "scanning": "Ina bincike a yanar gizo saboda kai...",
     "analyzing": "Ina nazarin damammaki...",
-    "applying": "Ina aika neman naka..."
+    "applying": "Ina aika neman naka...",
+    "greetingMorning": "Barka da safe",
+    "greetingAfternoon": "Barka da rana",
+    "greetingEvening": "Barka da yamma",
+    "greetingNight": "Barka da dare"
   },
   "profile": {
     "title": "Bayanin Sana'a",

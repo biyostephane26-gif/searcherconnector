@@ -76,7 +76,11 @@
     "thinking": "Nag-iisip ako...",
     "scanning": "Hinahanap ko ang web para sa iyo...",
     "analyzing": "Sinusuri ko ang mga oportunidad...",
-    "applying": "Ipinapadala ko ang iyong aplikasyon..."
+    "applying": "Ipinapadala ko ang iyong aplikasyon...",
+    "greetingMorning": "Magandang umaga",
+    "greetingAfternoon": "Magandang hapon",
+    "greetingEvening": "Magandang gabi",
+    "greetingNight": "Magandang gabi"
   },
   "profile": {
     "title": "Propesyonal na Profile",

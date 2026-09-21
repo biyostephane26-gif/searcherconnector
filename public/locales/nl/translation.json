@@ -76,7 +76,11 @@
     "thinking": "Ik denk na...",
     "scanning": "Ik doorzoek het web voor je...",
     "analyzing": "Ik analyseer de kansen...",
-    "applying": "Ik verstuur je sollicitatie..."
+    "applying": "Ik verstuur je sollicitatie...",
+    "greetingMorning": "Goedemorgen",
+    "greetingAfternoon": "Goedemiddag",
+    "greetingEvening": "Goedenavond",
+    "greetingNight": "Goedenacht"
   },
   "profile": {
     "title": "Professioneel profiel",

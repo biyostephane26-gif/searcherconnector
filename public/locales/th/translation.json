@@ -76,7 +76,11 @@
     "thinking": "กำลังคิด...",
     "scanning": "กำลังค้นหาเว็บให้คุณ...",
     "analyzing": "กำลังวิเคราะห์โอกาส...",
-    "applying": "กำลังส่งใบสมัครของคุณ..."
+    "applying": "กำลังส่งใบสมัครของคุณ...",
+    "greetingMorning": "อรุณสวัสดิ์",
+    "greetingAfternoon": "สวัสดีตอนบ่าย",
+    "greetingEvening": "สวัสดีตอนเย็น",
+    "greetingNight": "สวัสดีตอนดึก"
   },
   "profile": {
     "title": "โปรไฟล์มืออาชีพ",

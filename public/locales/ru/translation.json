@@ -76,7 +76,11 @@
     "thinking": "Думаю...",
     "scanning": "Ищу для тебя в интернете...",
     "analyzing": "Анализирую вакансии...",
-    "applying": "Отправляю твою заявку..."
+    "applying": "Отправляю твою заявку...",
+    "greetingMorning": "Доброе утро",
+    "greetingAfternoon": "Добрый день",
+    "greetingEvening": "Добрый вечер",
+    "greetingNight": "Доброй ночи"
   },
   "profile": {
     "title": "Профессиональный профиль",

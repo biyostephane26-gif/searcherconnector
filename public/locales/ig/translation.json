@@ -76,7 +76,11 @@
     "thinking": "Ana m eche...",
     "scanning": "Ana m achọ na ntanetị maka gị...",
     "analyzing": "Ana m enyocha ohere ndị a...",
-    "applying": "Ana m eziga akwụkwọ gị..."
+    "applying": "Ana m eziga akwụkwọ gị...",
+    "greetingMorning": "Ụtụtụ ọma",
+    "greetingAfternoon": "Ehihie ọma",
+    "greetingEvening": "Mgbede ọma",
+    "greetingNight": "Abalị ọma"
   },
   "profile": {
     "title": "Profaịlụ Ọrụ",
