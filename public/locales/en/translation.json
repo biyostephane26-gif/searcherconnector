@@ -121,6 +121,57 @@
     "back": "Back",
     "next": "Next"
   },
+  "landing": {
+    "badge": "The AI agent for freelancers",
+    "heroTitle1": "Every mission in the world.",
+    "heroTitle2": "Found. Written. Sent.",
+    "heroDesc": "SCAI scans hundreds of freelance platforms for you, writes your applications, and sends them — while you work on something else.",
+    "createFreeAccount": "Create my free account",
+    "viewPricing": "View pricing",
+    "freeToStart": "Free to start — no credit card required.",
+    "opportunitiesFound": "Opportunities found",
+    "featuresTitle": "A copilot, not just another job board",
+    "featuresDesc": "Searcher Connector combines search, writing, and sending — connected to your real tools.",
+    "howItWorksTitle": "How it works",
+    "comparisonTitle": "Searcher vs manual search",
+    "comparisonFeature": "Feature",
+    "comparisonManual": "Manual search",
+    "worldwideTitle": "Built for global freelancing",
+    "worldwideDesc": "One app, every market — no need to switch tools by country.",
+    "ctaTitle": "Ready for your next mission?",
+    "ctaDesc": "Create your account, complete your profile, and let SCAI search while you work.",
+    "newsletterPrompt": "Not ready yet? Get updates by email.",
+    "newsletterThanks": "Thanks — we'll let you know!",
+    "newsletterPlaceholder": "your@email.com",
+    "newsletterSubmit": "Sign up",
+    "newsletterError": "Something went wrong — try again in a moment.",
+    "howItWorks": [
+      { "title": "Your profile", "desc": "Create your account, tell SCAI your job and skills — AI-verified in seconds." },
+      { "title": "The scan", "desc": "SCAI queries hundreds of freelance platforms and job boards continuously, 24/7." },
+      { "title": "The sorting", "desc": "Every listing is scored against YOUR precise profile — you're only alerted for real high potential." },
+      { "title": "The sending", "desc": "SCAI writes your application, pre-fills the form via the extension — the final click stays yours." }
+    ],
+    "features": [
+      { "title": "SCAI Cowork", "desc": "An AI agent that knows your whole profile, talks with you, and acts on your behalf on your real platforms." },
+      { "title": "Connectors", "desc": "Gmail, WhatsApp, Upwork, Fiverr, Malt, LinkedIn, GitHub… wired directly into SCAI, like a real copilot." },
+      { "title": "Browser extension", "desc": "Automatic pre-fill of your applications everywhere, 100% autonomous submission on recognized ATS." },
+      { "title": "Documents on demand", "desc": "CV, cover letters, quotes, reports in PDF, Word or Excel — written by SCAI in seconds." },
+      { "title": "Visual creation", "desc": "Portfolio visuals and short presentation videos generated directly in the chat." },
+      { "title": "AI verification", "desc": "Your profile is automatically analyzed and verified — a trust badge visible to recruiters." }
+    ],
+    "comparison": [
+      { "feature": "Continuous multi-platform search", "manual": "Manual, one platform at a time" },
+      { "feature": "Personalized profile scoring", "manual": "Generic keywords" },
+      { "feature": "AI writing and pre-fill", "manual": "Do it yourself" },
+      { "feature": "Conversational agent with memory", "manual": "None" },
+      { "feature": "Auto-fill extension", "manual": "Rare or absent" }
+    ],
+    "worldwide": [
+      { "title": "Multi-country", "desc": "Cameroon, Nigeria, Senegal, Kenya, Ivory Coast, France, Canada and more — SCAI scans in your language and currency." },
+      { "title": "24/7 agent", "desc": "While you sleep, SCAI keeps scanning, scoring, and preparing your next applications." },
+      { "title": "Genius status", "desc": "The most active and reliable profiles are automatically highlighted, with a badge visible everywhere." }
+    ]
+  },
   "nav": {
     "home": "Home",
     "opportunities": "Opportunities",

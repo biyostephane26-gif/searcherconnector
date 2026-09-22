@@ -121,6 +121,57 @@
     "back": "Précédent",
     "next": "Suivant"
   },
+  "landing": {
+    "badge": "L'agent IA des freelances",
+    "heroTitle1": "Toutes les missions du monde.",
+    "heroTitle2": "Trouvées. Rédigées. Envoyées.",
+    "heroDesc": "SCAI scanne des centaines de plateformes freelance pour toi, rédige tes candidatures et les envoie — pendant que tu travailles sur autre chose.",
+    "createFreeAccount": "Créer mon compte gratuit",
+    "viewPricing": "Voir les tarifs",
+    "freeToStart": "Gratuit pour commencer — aucune carte bancaire requise.",
+    "opportunitiesFound": "Opportunités trouvées",
+    "featuresTitle": "Un copilote, pas un simple job board",
+    "featuresDesc": "Searcher Connector combine recherche, rédaction et envoi — connecté à tes vrais outils.",
+    "howItWorksTitle": "Comment ça marche",
+    "comparisonTitle": "Searcher vs la recherche manuelle",
+    "comparisonFeature": "Fonctionnalité",
+    "comparisonManual": "Recherche manuelle",
+    "worldwideTitle": "Conçu pour le freelancing mondial",
+    "worldwideDesc": "Une seule app, tous les marchés — sans changer d'outil selon le pays.",
+    "ctaTitle": "Prêt pour ta prochaine mission ?",
+    "ctaDesc": "Crée ton compte, complète ton profil, et laisse SCAI chercher pendant que tu travailles.",
+    "newsletterPrompt": "Pas encore prêt ? Reçois les nouveautés par email.",
+    "newsletterThanks": "Merci — tu seras prévenu(e) !",
+    "newsletterPlaceholder": "ton@email.com",
+    "newsletterSubmit": "S'inscrire",
+    "newsletterError": "Une erreur est survenue — réessaie dans un instant.",
+    "howItWorks": [
+      { "title": "Ton profil", "desc": "Crée ton compte, dis à SCAI ton métier et tes compétences — vérifié par IA en quelques secondes." },
+      { "title": "Le scan", "desc": "SCAI interroge des centaines de plateformes freelance et job boards en continu, 24h/24." },
+      { "title": "Le tri", "desc": "Chaque offre est scorée sur TON profil précis — tu n'es alerté que pour du vrai fort potentiel." },
+      { "title": "L'envoi", "desc": "SCAI rédige ta candidature, pré-remplit le formulaire via l'extension — le clic final reste le tien." }
+    ],
+    "features": [
+      { "title": "SCAI Cowork", "desc": "Un agent IA qui connaît tout ton profil, discute avec toi, et agit en ton nom sur tes vraies plateformes." },
+      { "title": "Connecteurs", "desc": "Gmail, WhatsApp, Upwork, Fiverr, Malt, LinkedIn, GitHub… branchés directement à SCAI, comme un vrai copilote." },
+      { "title": "Extension navigateur", "desc": "Pré-remplissage automatique de tes candidatures partout, envoi 100% autonome sur les ATS reconnus." },
+      { "title": "Documents à la demande", "desc": "CV, lettres, devis, rapports en PDF, Word ou Excel — rédigés par SCAI en quelques secondes." },
+      { "title": "Création visuelle", "desc": "Visuels de portfolio et mini-vidéos de présentation générés directement dans le chat." },
+      { "title": "Vérification IA", "desc": "Ton profil est analysé et vérifié automatiquement — un badge de confiance visible par les recruteurs." }
+    ],
+    "comparison": [
+      { "feature": "Recherche multi-plateformes en continu", "manual": "Manuel, une plateforme à la fois" },
+      { "feature": "Scoring personnalisé par profil", "manual": "Mots-clés génériques" },
+      { "feature": "Rédaction et pré-remplissage par IA", "manual": "À faire soi-même" },
+      { "feature": "Agent conversationnel avec mémoire", "manual": "Aucun" },
+      { "feature": "Extension de remplissage automatique", "manual": "Rare ou absent" }
+    ],
+    "worldwide": [
+      { "title": "Multi-pays", "desc": "Cameroun, Nigeria, Sénégal, Kenya, Côte d'Ivoire, France, Canada et plus — SCAI scanne dans ta langue et ta devise." },
+      { "title": "Agent 24/7", "desc": "Pendant que tu dors, SCAI continue de scanner, scorer et préparer tes prochaines candidatures." },
+      { "title": "Statut Genius", "desc": "Les profils les plus actifs et fiables sont mis en avant automatiquement, avec un badge visible partout." }
+    ]
+  },
   "nav": {
     "home": "Accueil",
     "opportunities": "Opportunités",
