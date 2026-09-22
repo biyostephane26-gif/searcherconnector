@@ -227,6 +227,34 @@
       }
     }
   },
+  "applicationsPage": {
+    "loading": "Chargement des candidatures...",
+    "title": "Mes Candidatures",
+    "subtitle": "Suis l'évolution de toutes tes candidatures en un seul endroit",
+    "stats": { "total": "Total", "scaiOnly": "🤖 SCAI seule", "active": "En cours", "interviews": "Entretiens", "offers": "Offres", "accepted": "Acceptées" },
+    "searchPlaceholder": "Rechercher par poste ou entreprise...",
+    "scaiOnlyFilter": "🤖 SCAI seule ({{count}})",
+    "all": "Toutes",
+    "status": {
+      "applied": "Postulée", "viewed": "Vue", "interview_scheduled": "Entretien prévu",
+      "interview_completed": "Entretien passé", "offer_received": "Offre reçue",
+      "accepted": "Acceptée ✓", "rejected": "Refusée", "withdrawn": "Retirée"
+    },
+    "emptyAutoOnly": "SCAI n'a encore rédigé aucune candidature seule",
+    "emptyAll": "Aucune candidature",
+    "emptyFiltered": "Aucune candidature {{status}}",
+    "emptyAutoOnlyDesc": "Active \"Candidatures auto-rédigées\" dans Paramètres pour que SCAI rédige seule dès qu'une offre dépasse ton seuil.",
+    "emptyDesc": "Commence à postuler pour voir tes candidatures ici",
+    "exploreOpportunities": "Explorer les opportunités",
+    "appliedAgo": "Postulée {{time}}",
+    "interviewOn": "Entretien le {{date}}",
+    "offer": "Offre: {{amount}} {{currency}}",
+    "viewApplication": "Voir la candidature",
+    "goToOffer": "Aller sur l'offre",
+    "preparedBySCAI": "(candidature préparée par SCAI)",
+    "updateStatus": "Mettre à jour le statut",
+    "timeAgo": { "today": "Aujourd'hui", "yesterday": "Hier", "days": "{{count}}j", "weeks": "{{count}}sem", "months": "{{count}}mois" }
+  },
   "nav": {
     "home": "Accueil",
     "opportunities": "Opportunités",

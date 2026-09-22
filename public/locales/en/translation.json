@@ -227,6 +227,34 @@
       }
     }
   },
+  "applicationsPage": {
+    "loading": "Loading applications...",
+    "title": "My Applications",
+    "subtitle": "Track the progress of all your applications in one place",
+    "stats": { "total": "Total", "scaiOnly": "🤖 SCAI only", "active": "Active", "interviews": "Interviews", "offers": "Offers", "accepted": "Accepted" },
+    "searchPlaceholder": "Search by job title or company...",
+    "scaiOnlyFilter": "🤖 SCAI only ({{count}})",
+    "all": "All",
+    "status": {
+      "applied": "Applied", "viewed": "Viewed", "interview_scheduled": "Interview scheduled",
+      "interview_completed": "Interview completed", "offer_received": "Offer received",
+      "accepted": "Accepted ✓", "rejected": "Rejected", "withdrawn": "Withdrawn"
+    },
+    "emptyAutoOnly": "SCAI hasn't written any application on its own yet",
+    "emptyAll": "No applications",
+    "emptyFiltered": "No {{status}} applications",
+    "emptyAutoOnlyDesc": "Enable \"Auto-written applications\" in Settings so SCAI writes them on its own once a listing passes your threshold.",
+    "emptyDesc": "Start applying to see your applications here",
+    "exploreOpportunities": "Explore opportunities",
+    "appliedAgo": "Applied {{time}}",
+    "interviewOn": "Interview on {{date}}",
+    "offer": "Offer: {{amount}} {{currency}}",
+    "viewApplication": "View application",
+    "goToOffer": "Go to listing",
+    "preparedBySCAI": "(application prepared by SCAI)",
+    "updateStatus": "Update status",
+    "timeAgo": { "today": "Today", "yesterday": "Yesterday", "days": "{{count}}d", "weeks": "{{count}}wk", "months": "{{count}}mo" }
+  },
   "nav": {
     "home": "Home",
     "opportunities": "Opportunities",

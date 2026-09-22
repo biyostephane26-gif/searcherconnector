@@ -27,6 +27,7 @@ import {
   MapPin,
   ExternalLink
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type ApplicationStatus = 'applied' | 'viewed' | 'interview_scheduled' | 'interview_completed' | 'offer_received' | 'accepted' | 'rejected' | 'withdrawn'
 
@@ -47,58 +48,19 @@ interface Application {
   original_url?: string
 }
 
-const STATUS_CONFIG: Record<ApplicationStatus, { label: string; icon: any; color: string; bg: string }> = {
-  applied: { 
-    label: 'Postulée', 
-    icon: FileText, 
-    color: 'text-blue-400', 
-    bg: 'bg-blue-400/10' 
-  },
-  viewed: { 
-    label: 'Vue', 
-    icon: Eye, 
-    color: 'text-purple-400', 
-    bg: 'bg-purple-400/10' 
-  },
-  interview_scheduled: { 
-    label: 'Entretien prévu', 
-    icon: Calendar, 
-    color: 'text-[#D4AF37]', 
-    bg: 'bg-[#D4AF37]/10' 
-  },
-  interview_completed: { 
-    label: 'Entretien passé', 
-    icon: CheckCircle2, 
-    color: 'text-[#D4AF37]', 
-    bg: 'bg-[#D4AF37]/10' 
-  },
-  offer_received: { 
-    label: 'Offre reçue', 
-    icon: DollarSign, 
-    color: 'text-green-400', 
-    bg: 'bg-green-400/10' 
-  },
-  accepted: { 
-    label: 'Acceptée ✓', 
-    icon: CheckCircle2, 
-    color: 'text-green-400', 
-    bg: 'bg-green-400/10' 
-  },
-  rejected: { 
-    label: 'Refusée', 
-    icon: XCircle, 
-    color: 'text-red-400', 
-    bg: 'bg-red-400/10' 
-  },
-  withdrawn: { 
-    label: 'Retirée', 
-    icon: XCircle, 
-    color: 'text-gray-400', 
-    bg: 'bg-gray-400/10' 
-  }
+const STATUS_CONFIG: Record<ApplicationStatus, { icon: any; color: string; bg: string }> = {
+  applied:              { icon: FileText,     color: 'text-blue-400',   bg: 'bg-blue-400/10' },
+  viewed:               { icon: Eye,          color: 'text-purple-400', bg: 'bg-purple-400/10' },
+  interview_scheduled:  { icon: Calendar,     color: 'text-[#D4AF37]',  bg: 'bg-[#D4AF37]/10' },
+  interview_completed:  { icon: CheckCircle2, color: 'text-[#D4AF37]',  bg: 'bg-[#D4AF37]/10' },
+  offer_received:       { icon: DollarSign,   color: 'text-green-400', bg: 'bg-green-400/10' },
+  accepted:             { icon: CheckCircle2, color: 'text-green-400', bg: 'bg-green-400/10' },
+  rejected:             { icon: XCircle,      color: 'text-red-400',   bg: 'bg-red-400/10' },
+  withdrawn:            { icon: XCircle,      color: 'text-gray-400',  bg: 'bg-gray-400/10' }
 }
 
 export default function Applications() {
+  const { t, i18n } = useTranslation()
   const router = useRouter()
   const { user } = useAuth()
   const [applications, setApplications] = useState<Application[]>([])
@@ -151,11 +113,11 @@ export default function Applications() {
   const timeAgo = (date: string) => {
     const diff = Date.now() - new Date(date).getTime()
     const days = Math.floor(diff / 86400000)
-    if (days === 0) return "Aujourd'hui"
-    if (days === 1) return 'Hier'
-    if (days < 7) return `${days}j`
-    if (days < 30) return `${Math.floor(days / 7)}sem`
-    return `${Math.floor(days / 30)}mois`
+    if (days === 0) return t('applicationsPage.timeAgo.today')
+    if (days === 1) return t('applicationsPage.timeAgo.yesterday')
+    if (days < 7) return t('applicationsPage.timeAgo.days', { count: days })
+    if (days < 30) return t('applicationsPage.timeAgo.weeks', { count: Math.floor(days / 7) })
+    return t('applicationsPage.timeAgo.months', { count: Math.floor(days / 30) })
   }
 
   if (loading) {
@@ -163,7 +125,7 @@ export default function Applications() {
       <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D4AF37] mx-auto mb-4"></div>
-          <p className="text-gray-400">Chargement des candidatures...</p>
+          <p className="text-gray-400">{t('applicationsPage.loading')}</p>
         </div>
       </div>
     )
@@ -175,37 +137,37 @@ export default function Applications() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-[#D4AF37] to-white bg-clip-text text-transparent">
-            Mes Candidatures
+            {t('applicationsPage.title')}
           </h1>
           <p className="text-gray-400">
-            Suis l'évolution de toutes tes candidatures en un seul endroit
+            {t('applicationsPage.subtitle')}
           </p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
           <Card className="p-4">
-            <div className="text-sm text-gray-500 mb-1">Total</div>
+            <div className="text-sm text-gray-500 mb-1">{t('applicationsPage.stats.total')}</div>
             <div className="text-3xl font-bold text-white">{stats.total}</div>
           </Card>
           <Card className="p-4">
-            <div className="text-sm text-gray-500 mb-1">🤖 SCAI seule</div>
+            <div className="text-sm text-gray-500 mb-1">{t('applicationsPage.stats.scaiOnly')}</div>
             <div className="text-3xl font-bold text-[#D4AF37]">{stats.autoApplied}</div>
           </Card>
           <Card className="p-4">
-            <div className="text-sm text-gray-500 mb-1">En cours</div>
+            <div className="text-sm text-gray-500 mb-1">{t('applicationsPage.stats.active')}</div>
             <div className="text-3xl font-bold text-blue-400">{stats.active}</div>
           </Card>
           <Card className="p-4">
-            <div className="text-sm text-gray-500 mb-1">Entretiens</div>
+            <div className="text-sm text-gray-500 mb-1">{t('applicationsPage.stats.interviews')}</div>
             <div className="text-3xl font-bold text-[#D4AF37]">{stats.interviews}</div>
           </Card>
           <Card className="p-4">
-            <div className="text-sm text-gray-500 mb-1">Offres</div>
+            <div className="text-sm text-gray-500 mb-1">{t('applicationsPage.stats.offers')}</div>
             <div className="text-3xl font-bold text-green-400">{stats.offers}</div>
           </Card>
           <Card className="p-4">
-            <div className="text-sm text-gray-500 mb-1">Acceptées</div>
+            <div className="text-sm text-gray-500 mb-1">{t('applicationsPage.stats.accepted')}</div>
             <div className="text-3xl font-bold text-green-400">{stats.accepted}</div>
           </Card>
         </div>
@@ -218,7 +180,7 @@ export default function Applications() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
               <input
                 type="text"
-                placeholder="Rechercher par poste ou entreprise..."
+                placeholder={t('applicationsPage.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg pl-10 pr-4 py-2.5 text-sm focus:border-[#D4AF37] outline-none"
@@ -234,7 +196,7 @@ export default function Applications() {
                   : 'bg-[#1A1A1A] text-gray-400 hover:text-white'
               }`}
             >
-              🤖 SCAI seule ({stats.autoApplied})
+              {t('applicationsPage.scaiOnlyFilter', { count: stats.autoApplied })}
             </button>
 
             {/* Status Filter */}
@@ -242,24 +204,24 @@ export default function Applications() {
               <button
                 onClick={() => setFilter('all')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                  filter === 'all' 
-                    ? 'bg-[#D4AF37] text-black' 
+                  filter === 'all'
+                    ? 'bg-[#D4AF37] text-black'
                     : 'bg-[#1A1A1A] text-gray-400 hover:text-white'
                 }`}
               >
-                Toutes
+                {t('applicationsPage.all')}
               </button>
-              {Object.entries(STATUS_CONFIG).map(([status, config]) => (
+              {Object.entries(STATUS_CONFIG).map(([status]) => (
                 <button
                   key={status}
                   onClick={() => setFilter(status as ApplicationStatus)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                    filter === status 
-                      ? 'bg-[#D4AF37] text-black' 
+                    filter === status
+                      ? 'bg-[#D4AF37] text-black'
                       : 'bg-[#1A1A1A] text-gray-400 hover:text-white'
                   }`}
                 >
-                  {config.label}
+                  {t(`applicationsPage.status.${status}`)}
                 </button>
               ))}
             </div>
@@ -271,15 +233,15 @@ export default function Applications() {
           <Card className="p-12 text-center">
             <FileText className="w-16 h-16 mx-auto mb-4 text-gray-600 opacity-50" />
             <h3 className="text-xl font-bold mb-2">
-              {autoOnly ? 'SCAI n\'a encore rédigé aucune candidature seule'
-                : filter === 'all' ? 'Aucune candidature' : `Aucune candidature ${STATUS_CONFIG[filter as ApplicationStatus].label.toLowerCase()}`}
+              {autoOnly ? t('applicationsPage.emptyAutoOnly')
+                : filter === 'all' ? t('applicationsPage.emptyAll') : t('applicationsPage.emptyFiltered', { status: t(`applicationsPage.status.${filter}`).toLowerCase() })}
             </h3>
             <p className="text-gray-400 mb-6">
-              {autoOnly ? 'Active "Candidatures auto-rédigées" dans Paramètres pour que SCAI rédige seule dès qu\'une offre dépasse ton seuil.'
-                : 'Commence à postuler pour voir tes candidatures ici'}
+              {autoOnly ? t('applicationsPage.emptyAutoOnlyDesc')
+                : t('applicationsPage.emptyDesc')}
             </p>
             <GoldButton onClick={() => router.push('/opportunities')}>
-              Explorer les opportunités
+              {t('applicationsPage.exploreOpportunities')}
             </GoldButton>
           </Card>
         ) : (
@@ -317,13 +279,13 @@ export default function Applications() {
                             </div>
                             <div className="flex items-center gap-1">
                               <Clock className="w-4 h-4" />
-                              <span>Postulée {timeAgo(app.applied_at)}</span>
+                              <span>{t('applicationsPage.appliedAgo', { time: timeAgo(app.applied_at) })}</span>
                             </div>
                           </div>
                         </div>
 
                         <div className={`px-3 py-1 rounded-full text-xs font-bold ${config.bg} ${config.color} whitespace-nowrap`}>
-                          {config.label}
+                          {t(`applicationsPage.status.${app.status}`)}
                         </div>
                       </div>
 
@@ -331,14 +293,14 @@ export default function Applications() {
                       {app.interview_date && (
                         <div className="flex items-center gap-2 text-sm text-[#D4AF37] mt-3">
                           <Calendar className="w-4 h-4" />
-                          <span>Entretien le {new Date(app.interview_date).toLocaleDateString('fr-FR')}</span>
+                          <span>{t('applicationsPage.interviewOn', { date: new Date(app.interview_date).toLocaleDateString(i18n.language) })}</span>
                         </div>
                       )}
 
                       {app.offer_amount && (
                         <div className="flex items-center gap-2 text-sm text-green-400 mt-3">
                           <DollarSign className="w-4 h-4" />
-                          <span>Offre: {app.offer_amount.toLocaleString()} {app.offer_currency || 'USD'}</span>
+                          <span>{t('applicationsPage.offer', { amount: app.offer_amount.toLocaleString(i18n.language), currency: app.offer_currency || 'USD' })}</span>
                         </div>
                       )}
 
@@ -356,7 +318,7 @@ export default function Applications() {
                             className="flex items-center gap-1 text-xs text-[#D4AF37] hover:underline"
                           >
                             <ExternalLink className="w-3 h-3" />
-                            Voir la candidature
+                            {t('applicationsPage.viewApplication')}
                           </button>
                         )}
                         {app.original_url && (
@@ -368,14 +330,14 @@ export default function Applications() {
                             className="flex items-center gap-1 text-xs text-blue-400 hover:underline"
                           >
                             <ExternalLink className="w-3 h-3" />
-                            Aller sur l'offre {app.sent_via === 'scai_auto' ? '(candidature préparée par SCAI)' : ''}
+                            {t('applicationsPage.goToOffer')} {app.sent_via === 'scai_auto' ? t('applicationsPage.preparedBySCAI') : ''}
                           </a>
                         )}
                         <button
                           onClick={() => router.push(`/applications/edit/${app.id}`)}
                           className="flex items-center gap-1 text-xs text-gray-400 hover:text-white"
                         >
-                          Mettre à jour le statut
+                          {t('applicationsPage.updateStatus')}
                           <ChevronRight className="w-3 h-3" />
                         </button>
                       </div>
