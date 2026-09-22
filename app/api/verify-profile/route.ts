@@ -113,6 +113,28 @@ PROFIL ANALYSÉ :
 - GitHub : ${profile.github_url || 'Non fourni'}
 - LinkedIn : ${profile.linkedin_url || 'Non fourni'}
 - Documents : ${hasDocs ? `${docs.length} fichier(s) — ${docs.map((d: any) => d.file_name || 'doc').join(', ')}` : 'Aucun'}
+${profile.birth_date || profile.diploma || profile.school || profile.graduation_year ? `
+- Date de naissance : ${profile.birth_date || 'Non renseignée'}
+- Diplôme : ${profile.diploma || 'Non renseigné'}
+- École : ${profile.school || 'Non renseignée'}
+- Année d'obtention du diplôme : ${profile.graduation_year || 'Non renseignée'}
+` : ''}
+${profile.birth_date && profile.graduation_year ? `
+══════════════════════════════════════════════
+VÉRIFICATION DE COHÉRENCE — âge au diplôme
+══════════════════════════════════════════════
+Calcule l'âge approximatif de la personne au moment de l'obtention du
+diplôme (année de diplôme − année de naissance). Si ce calcul donne un
+âge physiquement implausible pour le niveau de diplôme déclaré (ex :
+moins de 16 ans pour n'importe quel diplôme, moins de 20 ans pour un
+Master/Doctorat), c'est un signal d'incohérence sérieux — traite le
+profil comme "refused" avec une raison qui explique précisément
+l'incohérence détectée (jamais accusateur, juste factuel : "l'âge au
+diplôme déclaré semble incohérent, vérifie les dates"). Une bio ou des
+documents par ailleurs solides ne compensent PAS une incohérence
+d'âge/diplôme — c'est un signal de fraude potentielle à prendre au
+sérieux indépendamment du reste.
+` : ''}
 
 Réponds UNIQUEMENT en JSON valide, une seule ligne :
 {"status":"verified","reason":"Explication courte en français"}`

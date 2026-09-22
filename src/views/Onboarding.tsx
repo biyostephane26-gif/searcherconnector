@@ -60,6 +60,11 @@ export default function Onboarding() {
     linkedinUrl: profile?.linkedin_url || '',
     cvUploaded: false,
     cvUrl: '',
+    photoUrl: (profile as any)?.avatar_url || '',
+    diploma: (profile as any)?.diploma || '',
+    school: (profile as any)?.school || '',
+    birthDate: (profile as any)?.birth_date || '',
+    graduationYear: (profile as any)?.graduation_year ? String((profile as any).graduation_year) : '',
   })
 
   const { isRecording, isProcessing, interimText, toggle: toggleVoice } = useVoiceInput({
@@ -73,7 +78,7 @@ export default function Onboarding() {
   // Freelance-only désormais (job_seeker retiré) — un profil legacy job_seeker
   // suit aussi le parcours freelance.
   const profileType = 'freelance'
-  const totalSteps = 5
+  const totalSteps = 6
 
   useEffect(() => {
     if (!profile) return
@@ -167,6 +172,27 @@ export default function Onboarding() {
     }
   }
 
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0 || !user) return
+    const file = e.target.files[0]
+    if (file.size > 5 * 1024 * 1024) { alert('Photo trop volumineuse (max 5MB)'); return }
+
+    setLoading(true)
+    try {
+      const fileExt = file.name.split('.').pop()
+      const filePath = `avatars/${user.id}-${Math.random()}.${fileExt}`
+      const { error: uploadError } = await supabase.storage.from('DOCUMENTS').upload(filePath, file)
+      if (uploadError) throw uploadError
+      const { data: { publicUrl } } = supabase.storage.from('DOCUMENTS').getPublicUrl(filePath)
+      setFormData(prev => ({ ...prev, photoUrl: publicUrl }))
+    } catch (err: any) {
+      alert(`Échec de l'upload : ${err.message}`)
+    } finally {
+      setLoading(false)
+      e.target.value = ''
+    }
+  }
+
   const handleSubmit = async () => {
     setLoading(true)
     try {
@@ -191,6 +217,11 @@ export default function Onboarding() {
         github_url:       formData.githubUrl,
         linkedin_url:     formData.linkedinUrl,
         cv_url:           formData.cvUrl,
+        avatar_url:       formData.photoUrl || undefined,
+        diploma:          formData.diploma || null,
+        school:           formData.school || null,
+        birth_date:       formData.birthDate || null,
+        graduation_year:  formData.graduationYear ? parseInt(formData.graduationYear) : null,
         profile_completion: 100
       }).eq('id', user?.id)
 
@@ -692,7 +723,71 @@ export default function Onboarding() {
                 <input type="file" className="hidden" onChange={handleFileUpload} disabled={loading} accept=".pdf,.docx,.doc" />
               </label>
             </Card>
-            
+
+            <div className="flex gap-4">
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth disabled={loading}>Précédent</GoldButton>
+              <GoldButton onClick={handleNext} fullWidth loading={loading}>Suivant</GoldButton>
+            </div>
+          </div>
+        )
+      case 6:
+        return (
+          <div className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-4">Dernière étape : ton parcours (optionnel)</h2>
+              <p className="text-gray-400">Une photo et ton diplôme renforcent la confiance des recruteurs. SCAI vérifie aussi que ton profil est cohérent.</p>
+            </div>
+
+            <Card className="p-8 border-dashed border-2 flex flex-col items-center justify-center text-center">
+              {formData.photoUrl ? (
+                <img src={formData.photoUrl} alt="" className="w-20 h-20 rounded-full object-cover mb-3" />
+              ) : (
+                <User className="w-10 h-10 text-[#D4AF37] mb-3" />
+              )}
+              <p className="text-sm text-gray-400 mb-4">Photo de profil</p>
+              <label className="cursor-pointer">
+                <span className="bg-[#D4AF37] text-[#0A0A0A] px-5 py-2.5 rounded-lg font-bold hover:bg-[#F5E6A3] transition-colors text-sm">
+                  {loading ? 'Chargement...' : formData.photoUrl ? 'Photo ajoutée ✔️' : 'Ajouter une photo'}
+                </span>
+                <input type="file" className="hidden" onChange={handlePhotoUpload} disabled={loading} accept="image/*" />
+              </label>
+            </Card>
+
+            <Card className="p-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Diplôme</label>
+                  <input type="text" value={formData.diploma}
+                    onChange={(e) => setFormData(prev => ({ ...prev, diploma: e.target.value }))}
+                    placeholder="ex: Licence en Informatique"
+                    className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">École / Université</label>
+                  <input type="text" value={formData.school}
+                    onChange={(e) => setFormData(prev => ({ ...prev, school: e.target.value }))}
+                    placeholder="ex: Université de Douala"
+                    className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Année d'obtention</label>
+                  <input type="number" value={formData.graduationYear}
+                    onChange={(e) => setFormData(prev => ({ ...prev, graduationYear: e.target.value }))}
+                    placeholder="ex: 2022"
+                    className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Date de naissance</label>
+                  <input type="date" value={formData.birthDate}
+                    onChange={(e) => setFormData(prev => ({ ...prev, birthDate: e.target.value }))}
+                    className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none" />
+                </div>
+              </div>
+              <p className="text-[11px] text-gray-600">
+                Ces informations restent privées — utilisées uniquement pour la vérification IA de cohérence de ton profil, jamais partagées publiquement.
+              </p>
+            </Card>
+
             <div className="flex gap-4">
               <GoldButton variant="outlined" onClick={handleBack} fullWidth disabled={loading}>Précédent</GoldButton>
               <GoldButton onClick={handleSubmit} fullWidth loading={loading}>
