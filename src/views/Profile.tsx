@@ -17,63 +17,55 @@ import {
 } from 'lucide-react';
 import { getCareerLevel, getNextLevelProgress } from '../lib/careerLevel'
 import { authFetch } from '../lib/authFetch'
+import { useTranslation } from 'react-i18next'
 
-
-// ── Charte visuelle par type de profil ───────────────────────────
+// ── Charte visuelle par type de profil — label/description via i18n
+// (clé profilePage.themes.<type>), seuls icônes/couleurs restent ici. ──
 const PROFILE_THEME: Record<string, {
-  label:       string
   icon:        any
   gradient:    string
   accent:      string
   accentText:  string
   borderColor: string
   badgeBg:     string
-  description: string
 }> = {
   job_seeker: {
-    label:       'Job Seeker',
     icon:        User,
     gradient:    'from-blue-950/60 to-[#0d0d0d]',
     accent:      '#3b82f6',
     accentText:  'text-blue-400',
     borderColor: 'border-blue-900/40',
     badgeBg:     'bg-blue-950/40 text-blue-400 border border-blue-800/40',
-    description: 'Cherche un emploi — local ou international',
   },
   freelance: {
-    label:       'Freelance',
     icon:        Code,
     gradient:    'from-[#1A1500]/80 to-[#0d0d0d]',
     accent:      '#D4AF37',
     accentText:  'text-[#D4AF37]',
     borderColor: 'border-[#D4AF37]/20',
     badgeBg:     'bg-[#1A1500]/60 text-[#D4AF37] border border-[#D4AF37]/30',
-    description: 'Freelance — missions hauts de gamme',
   },
   business: {
-    label:       'Entreprise',
     icon:        PieChart,
     gradient:    'from-purple-950/60 to-[#0d0d0d]',
     accent:      '#a855f7',
     accentText:  'text-purple-400',
     borderColor: 'border-purple-900/40',
     badgeBg:     'bg-purple-950/40 text-purple-400 border border-purple-800/40',
-    description: 'Entreprise — recherche de talents',
   },
   investor: {
-    label:       'Investisseur',
     icon:        TrendingUp,
     gradient:    'from-green-950/60 to-[#0d0d0d]',
     accent:      '#22c55e',
     accentText:  'text-green-400',
     borderColor: 'border-green-900/40',
     badgeBg:     'bg-green-950/40 text-green-400 border border-green-800/40',
-    description: 'Investisseur — suivi des startups',
   },
 }
 
 // ── Composant Documents uploadés ─────────────────────────────────
 function DocumentsSection({ userId, onUploadSuccess }: { userId?: string, onUploadSuccess?: () => void }) {
+  const { t } = useTranslation()
   const [docs, setDocs] = useState<any[]>([])
   const [deleting, setDeleting] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -92,7 +84,7 @@ function DocumentsSection({ userId, onUploadSuccess }: { userId?: string, onUplo
   }, [userId])
 
   const handleDelete = async (docId: string) => {
-    if (!userId || !confirm('Supprimer ce document ?')) return
+    if (!userId || !confirm(t('profilePage.documents.confirmDelete'))) return
     setDeleting(docId)
     try {
       await fetch('/api/documents/delete', {
@@ -113,7 +105,7 @@ function DocumentsSection({ userId, onUploadSuccess }: { userId?: string, onUplo
     
     // Validation basique
     if (file.size > 5 * 1024 * 1024) {
-      setUploadError('Fichier trop volumineux (max 5MB)')
+      setUploadError(t('profilePage.documents.fileTooLarge'))
       e.target.value = ''
       return
     }
@@ -121,7 +113,7 @@ function DocumentsSection({ userId, onUploadSuccess }: { userId?: string, onUplo
     const fileExt = file.name.split('.').pop()?.toLowerCase()
     const allowedExts = ['pdf', 'png', 'jpg', 'jpeg']
     if (!fileExt || !allowedExts.includes(fileExt)) {
-      setUploadError('Seuls les formats PDF, PNG et JPG sont acceptés')
+      setUploadError(t('profilePage.documents.invalidFormat'))
       e.target.value = ''
       return
     }
@@ -154,7 +146,7 @@ function DocumentsSection({ userId, onUploadSuccess }: { userId?: string, onUplo
       await fetchDocs()
       if (onUploadSuccess) onUploadSuccess()
     } catch (err: any) {
-      setUploadError(`Échec de l'upload : ${err.message || 'Erreur inconnue'}`)
+      setUploadError(t('profilePage.documents.uploadFailed', { error: err.message || 'Erreur inconnue' }))
     } finally {
       setUploading(false)
       e.target.value = ''
@@ -169,19 +161,19 @@ function DocumentsSection({ userId, onUploadSuccess }: { userId?: string, onUplo
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10 rounded-xl">
             <div className="flex flex-col items-center gap-2">
               <div className="w-8 h-8 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
-              <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest">Uploading...</span>
+              <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest">{t('profilePage.documents.uploading')}</span>
             </div>
           </div>
         )}
         <Upload className="w-10 h-10 text-[#D4AF37] mb-3" />
         <label className="cursor-pointer">
           <span className="bg-[#D4AF37] text-[#0A0A0A] px-5 py-2.5 rounded-lg font-bold hover:bg-[#F5E6A3] transition-colors text-sm">
-            {uploading ? 'Chargement...' : 'Uploader un document'}
+            {uploading ? t('profilePage.documents.loading') : t('profilePage.documents.uploadDoc')}
           </span>
           <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload}
             disabled={uploading} accept=".pdf,.png,.jpg,.jpeg" />
         </label>
-        <p className="text-[10px] text-gray-600 mt-3 uppercase tracking-widest">PDF, JPG, PNG — Max 5MB</p>
+        <p className="text-[10px] text-gray-600 mt-3 uppercase tracking-widest">{t('profilePage.documents.formats')}</p>
         {uploadError && (
           <div className="bg-red-900/20 border border-red-700/50 text-red-400 text-xs p-3 rounded-xl mt-3">
             {uploadError}
@@ -193,7 +185,7 @@ function DocumentsSection({ userId, onUploadSuccess }: { userId?: string, onUplo
       {docs.length === 0 ? (
         <Card className="p-5 text-center">
           <Shield className="w-8 h-8 text-gray-700 mx-auto mb-2" />
-          <p className="text-xs text-gray-600 mb-3">Aucun document soumis pour la vérification.</p>
+          <p className="text-xs text-gray-600 mb-3">{t('profilePage.documents.none')}</p>
         </Card>
       ) : (
         <div className="space-y-2">
@@ -204,7 +196,7 @@ function DocumentsSection({ userId, onUploadSuccess }: { userId?: string, onUplo
                 <div>
                   <p className="text-sm text-white font-medium">{doc.file_name}</p>
                   <p className="text-[10px] text-gray-600 uppercase tracking-widest">
-                    {doc.doc_type === 'verification' ? 'Document de vérification' : doc.doc_type}
+                    {doc.doc_type === 'verification' ? t('profilePage.documents.verificationDoc') : doc.doc_type}
                   </p>
                 </div>
               </div>
@@ -228,8 +220,9 @@ function DocumentsSection({ userId, onUploadSuccess }: { userId?: string, onUplo
 
 // ── Section complétion du profil ─────────────────────────────────
 function CompletionChecklist({ profile, userId }: { profile: any, userId?: string }) {
+  const { t } = useTranslation()
   const [hasDocs, setHasDocs] = useState(false)
-  
+
   useEffect(() => {
     if (!userId) return
     const fetchDocs = async () => {
@@ -240,13 +233,13 @@ function CompletionChecklist({ profile, userId }: { profile: any, userId?: strin
   }, [userId])
 
   const items = [
-    { label: 'Photo de profil',        done: !!profile?.avatar_url },
-    { label: 'Nom complet',            done: !!profile?.full_name },
-    { label: 'Bio professionnelle',    done: (profile?.bio?.length || 0) >= 50 },
-    { label: 'Domaine / Compétences',  done: !!profile?.domain },
-    { label: 'Pays & Ville',           done: !!profile?.country },
-    { label: 'Lien portfolio / GitHub', done: !!(profile?.portfolio_url || profile?.github_url || profile?.linkedin_url) },
-    { label: 'Document de vérification', done: hasDocs },
+    { key: 'photo',    label: t('profilePage.checklist.photo'),    done: !!profile?.avatar_url, settingsLink: true },
+    { key: 'fullName', label: t('profilePage.checklist.fullName'), done: !!profile?.full_name, settingsLink: true },
+    { key: 'bio',      label: t('profilePage.checklist.bio'),      done: (profile?.bio?.length || 0) >= 50, settingsLink: true },
+    { key: 'domain',   label: t('profilePage.checklist.domain'),   done: !!profile?.domain, settingsLink: true },
+    { key: 'location', label: t('profilePage.checklist.location'), done: !!profile?.country, settingsLink: true },
+    { key: 'links',    label: t('profilePage.checklist.links'),    done: !!(profile?.portfolio_url || profile?.github_url || profile?.linkedin_url), settingsLink: true },
+    { key: 'document', label: t('profilePage.checklist.document'), done: hasDocs, settingsLink: false },
   ]
 
   const done = items.filter(i => i.done).length
@@ -255,7 +248,7 @@ function CompletionChecklist({ profile, userId }: { profile: any, userId?: strin
   return (
     <Card className="p-5 border-[#2a2a2a]">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Compléter ton profil</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-gray-500">{t('profilePage.checklist.title')}</span>
         <span className="text-xs text-[#D4AF37] font-bold">{done}/{items.length}</span>
       </div>
       <div className="space-y-2">
@@ -263,8 +256,8 @@ function CompletionChecklist({ profile, userId }: { profile: any, userId?: strin
           <div key={i} className="flex items-center gap-2">
             <AlertCircle className="w-3.5 h-3.5 text-gray-600 flex-shrink-0" />
             <span className="text-xs text-gray-500">{item.label}</span>
-            {item.label.includes('Lien') || item.label.includes('Photo') || item.label.includes('Nom') || item.label.includes('Bio') || item.label.includes('Domaine') || item.label.includes('Pays') ? (
-              <a href="/settings" className="text-[10px] text-[#D4AF37] ml-auto hover:underline">Compléter →</a>
+            {item.settingsLink ? (
+              <a href="/settings" className="text-[10px] text-[#D4AF37] ml-auto hover:underline">{t('profilePage.checklist.complete')}</a>
             ) : null}
           </div>
         ))}
@@ -274,6 +267,7 @@ function CompletionChecklist({ profile, userId }: { profile: any, userId?: strin
 }
 
 export default function Profile() {
+  const { t, i18n } = useTranslation();
   const { user, profile, refreshProfile } = useAuth();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
@@ -301,7 +295,8 @@ export default function Profile() {
   }, [user])
 
   // Charte visuelle selon le type de profil
-  const theme = PROFILE_THEME[profile?.profile_type || 'freelance'] || PROFILE_THEME.freelance
+  const themeKey = (profile?.profile_type && PROFILE_THEME[profile.profile_type]) ? profile.profile_type : 'freelance'
+  const theme = PROFILE_THEME[themeKey]
   const ThemeIcon = theme.icon
   // Icône représentative du métier (mécanicien → clé/marteau, designer →
   // palette, etc.) — affichée en filigrane sur la bannière du profil.
@@ -319,13 +314,13 @@ export default function Profile() {
         body: JSON.stringify({ userId: user.id }),
       })
       const data = await r.json()
-      if (data.status === 'genius') setVerifyMsg('🔱 Statut GENIUS accordé !')
-      else if (data.status === 'verified') setVerifyMsg('✅ Profil vérifié avec succès !')
-      else if (data.status === 'pending') setVerifyMsg('⏳ Analyse en cours — ajoute domaine et pays pour finaliser.')
+      if (data.status === 'genius') setVerifyMsg(t('profilePage.verification.geniusGranted'))
+      else if (data.status === 'verified') setVerifyMsg(t('profilePage.verification.verifiedSuccess'))
+      else if (data.status === 'pending') setVerifyMsg(t('profilePage.verification.analyzingHint'))
       else setVerifyMsg(`❌ ${data.reason || 'Vérification refusée'}`)
       await refreshProfile()
     } catch {
-      setVerifyMsg('Erreur réseau — réessaie.')
+      setVerifyMsg(t('profilePage.verification.networkError'))
     } finally {
       setVerifying(false)
     }
@@ -398,7 +393,7 @@ export default function Profile() {
       await refreshProfile();
     } catch (err) {
       console.error(err);
-      setSaveError("Erreur upload avatar. Réessaie.")
+      setSaveError(t('profilePage.avatarUploadError'))
     } finally {
       setLoading(false);
     }
@@ -410,26 +405,26 @@ export default function Profile() {
 
       <main className="flex-1 flex flex-col min-w-0 lg:ml-64">
         <header className="h-16 border-b border-[#1A1A1A] flex items-center justify-between px-6 bg-[#0A0A0A]/50 backdrop-blur-md sticky top-0 z-30">
-          <h2 className="text-lg font-bold text-white tracking-tight">Profil Professionnel</h2>
+          <h2 className="text-lg font-bold text-white tracking-tight">{t('profilePage.header')}</h2>
           <div className="flex gap-3">
             {!isEditing ? (
-              <button 
+              <button
                 onClick={() => setIsEditing(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-[#1A1A1A] border border-[#2a2a2a] rounded-xl text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-all"
               >
-                <Edit3 size={14} /> Modifier
+                <Edit3 size={14} /> {t('profilePage.edit')}
               </button>
             ) : (
               <div className="flex gap-2 items-center">
                 {saveError && <span className="text-xs text-red-400">{saveError}</span>}
-                <button 
+                <button
                   onClick={() => { setIsEditing(false); setSaveError('') }}
                   className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-white"
                 >
-                  Annuler
+                  {t('profilePage.cancel')}
                 </button>
                 <GoldButton onClick={handleUpdateProfile} disabled={loading} className="h-9 px-6 text-[10px]">
-                  {loading ? <Loader2 size={14} className="animate-spin" /> : 'Enregistrer'}
+                  {loading ? <Loader2 size={14} className="animate-spin" /> : t('profilePage.save')}
                 </GoldButton>
               </div>
             )}
@@ -462,7 +457,7 @@ export default function Profile() {
             <div className="absolute top-4 right-6">
               <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest ${theme.badgeBg}`}>
                 <ThemeIcon size={11} />
-                {theme.label}
+                {t(`profilePage.themes.${themeKey}.label`)}
               </span>
             </div>
             {/* Description du type — ancrée en haut, loin du bloc avatar/nom qui
@@ -471,7 +466,7 @@ export default function Profile() {
                 écrans. Visible sur tous les appareils désormais (plus de hidden
                 md:block qui la cachait entièrement sur mobile). */}
             <div className="absolute top-14 md:top-16 left-6 md:left-10 right-24 md:right-6 max-w-md z-10">
-              <p className={`text-[11px] md:text-xs font-medium ${theme.accentText} opacity-90 truncate`}>{theme.description}</p>
+              <p className={`text-[11px] md:text-xs font-medium ${theme.accentText} opacity-90 truncate`}>{t(`profilePage.themes.${themeKey}.desc`)}</p>
             </div>
             <div className="absolute -bottom-16 left-10 flex items-end gap-6">
               <div className="relative group">
@@ -543,21 +538,21 @@ export default function Profile() {
             {/* Left Column: Info & Stats */}
             <div className="lg:col-span-8 space-y-10">
               <section>
-                <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em] mb-4">À propos</h3>
+                <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em] mb-4">{t('profilePage.about')}</h3>
                 <Card className="p-6">
                   {isEditing ? (
-                    <textarea 
+                    <textarea
                       value={formData.bio}
                       onChange={e => setFormData({...formData, bio: e.target.value})}
-                      placeholder="Décrivez votre expertise et vos ambitions..."
+                      placeholder={t('profilePage.bioPlaceholder')}
                       className="w-full bg-[#0A0A0A] border border-[#2a2a2a] rounded-xl p-4 text-sm text-gray-300 focus:outline-none focus:border-[#D4AF37] min-h-[120px]"
                     />
                   ) : (
                     <p className="text-gray-400 text-sm leading-relaxed">
-                      {profile?.bio || "Aucune bio renseignée."}
+                      {profile?.bio || t('profilePage.noBio')}
                     </p>
                   )}
-                  
+
                   <div className="mt-6 flex flex-wrap gap-6 pt-6 border-t border-[#1A1A1A]">
                     <div className="flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                       <MapPin size={14} className="text-[#D4AF37]" />
@@ -569,7 +564,7 @@ export default function Profile() {
                     </div>
                     <div className="flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                       <Calendar size={14} className="text-[#D4AF37]" />
-                      Membre depuis {profile?.created_at ? new Date(profile.created_at).getFullYear() : '—'}
+                      {t('profilePage.memberSince', { year: profile?.created_at ? new Date(profile.created_at).getFullYear() : '—' })}
                     </div>
                   </div>
                 </Card>
@@ -577,25 +572,25 @@ export default function Profile() {
 
               <section>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em]">Documents & Preuves</h3>
+                  <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em]">{t('profilePage.documentsProofs')}</h3>
                 </div>
-                <DocumentsSection 
-                  userId={user?.id} 
+                <DocumentsSection
+                  userId={user?.id}
                   onUploadSuccess={() => {
                     // Refresh the checklist and trigger verification!
                     refreshProfile()
                     handleReVerify()
-                  }} 
+                  }}
                 />
               </section>
 
               <section>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em]">Expériences & Projets</h3>
+                  <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em]">{t('profilePage.experiencesProjects')}</h3>
                   <button
                     onClick={() => router.push('/settings')}
                     className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-widest hover:underline">
-                    Ajouter +
+                    {t('profilePage.addExp')}
                   </button>
                 </div>
                 <div className="space-y-4">
@@ -605,14 +600,14 @@ export default function Profile() {
                         <Briefcase className="text-gray-600" size={20} />
                       </div>
                       <div>
-                        <h4 className="text-white font-bold text-sm">{profile?.domain || 'Professionnel'}</h4>
-                        <p className="text-gray-500 text-xs">Indépendant · Présent</p>
+                        <h4 className="text-white font-bold text-sm">{profile?.domain || t('profilePage.professional')}</h4>
+                        <p className="text-gray-500 text-xs">{t('profilePage.independent')}</p>
                         <p className="text-gray-400 text-xs mt-2 leading-relaxed">{profile.bio.slice(0, 200)}</p>
                       </div>
                     </Card>
                   ) : (
                     <Card className="p-6 text-center text-gray-600 text-sm">
-                      <p>Ajoute une bio dans <button onClick={() => router.push('/settings')} className="text-[#D4AF37] hover:underline">Paramètres</button> pour afficher tes expériences.</p>
+                      <p>{t('profilePage.addBioPrompt')} <button onClick={() => router.push('/settings')} className="text-[#D4AF37] hover:underline">{t('profilePage.settingsLink')}</button> {t('profilePage.addBioSuffix')}</p>
                     </Card>
                   )}
                 </div>
@@ -622,25 +617,25 @@ export default function Profile() {
             {/* Right Column: Skills & Social */}
             <div className="lg:col-span-4 space-y-10">
               <section>
-                <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em] mb-4">Statistiques</h3>
+                <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em] mb-4">{t('profilePage.statistics')}</h3>
                 <Card className="p-6 grid grid-cols-3 gap-3 text-center">
                   <div>
                     <p className="text-xl font-black text-white">{profile?.missions_completed || 0}</p>
-                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Missions</p>
+                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">{t('profilePage.missions')}</p>
                   </div>
                   <div>
                     <p className="text-xl font-black text-white">{stats.sent}</p>
-                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Candidatures</p>
+                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">{t('profilePage.applications')}</p>
                   </div>
                   <div>
                     <p className="text-xl font-black text-white">{stats.sent > 0 ? Math.round(((stats.interviews + stats.offers) / stats.sent) * 100) : 0}%</p>
-                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Taux réponse</p>
+                    <p className="text-[9px] text-gray-500 uppercase tracking-widest mt-1">{t('profilePage.responseRate')}</p>
                   </div>
                 </Card>
               </section>
 
               <section>
-                <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em] mb-4">Compétences Clés</h3>
+                <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em] mb-4">{t('profilePage.keySkills')}</h3>
                 <Card className="p-6">
                   <div className="flex flex-wrap gap-2">
                     {/* Compétences réelles si renseignées ; sinon le métier
@@ -659,7 +654,7 @@ export default function Profile() {
                     ) : null}
                     {!(profile?.skills && profile.skills.length > 0) && (
                       <button onClick={() => router.push('/settings')} className="text-xs text-gray-600 hover:text-[#D4AF37]">
-                        Ajoute tes compétences dans les paramètres →
+                        {t('profilePage.addSkillsPrompt')}
                       </button>
                     )}
                   </div>
@@ -667,19 +662,19 @@ export default function Profile() {
               </section>
 
               <section>
-                <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em] mb-4">Liens & Réseaux</h3>
+                <h3 className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.3em] mb-4">{t('profilePage.linksNetworks')}</h3>
                 <Card className="p-4 space-y-1">
                   {profile?.portfolio_url ? (
                     <a href={profile.portfolio_url} target="_blank" rel="noopener noreferrer"
                       className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-[#1A1A1A] transition-all text-gray-400 hover:text-white group">
                       <Globe size={16} className="group-hover:text-[#D4AF37]" />
-                      <span className="text-xs font-bold tracking-widest uppercase">Portfolio</span>
+                      <span className="text-xs font-bold tracking-widest uppercase">{t('profilePage.portfolio')}</span>
                       <span className="text-xs text-gray-600 ml-auto truncate max-w-[120px]">{profile.portfolio_url}</span>
                     </a>
                   ) : (
                     <button onClick={() => router.push('/settings')}
                       className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-[#1A1A1A] transition-all text-gray-600 hover:text-white group">
-                      <Globe size={16} /> <span className="text-xs">Ajouter un portfolio</span>
+                      <Globe size={16} /> <span className="text-xs">{t('profilePage.addPortfolio')}</span>
                     </button>
                   )}
                   {profile?.github_url ? (
@@ -699,7 +694,7 @@ export default function Profile() {
                   ) : null}
                   {!profile?.portfolio_url && !profile?.github_url && !profile?.linkedin_url && (
                     <p className="text-xs text-gray-700 p-3 text-center">
-                      Aucun lien. <button onClick={() => router.push('/settings')} className="text-[#D4AF37] hover:underline">Ajouter dans Paramètres</button>
+                      {t('profilePage.noLinks')} <button onClick={() => router.push('/settings')} className="text-[#D4AF37] hover:underline">{t('profilePage.addInSettings')}</button>
                     </p>
                   )}
                 </Card>
@@ -710,18 +705,18 @@ export default function Profile() {
                   <ThemeIcon size={16} className={theme.accentText} />
                   <span className={`text-[10px] font-bold uppercase tracking-widest ${theme.accentText}`}>
                     {profile?.verification_status === 'genius'
-                      ? '🔱 Statut GENIUS'
+                      ? t('profilePage.verification.genius')
                       : profile?.verification_status === 'verified'
-                        ? '✓ Profil Vérifié'
-                        : '⏳ En attente de vérification'}
+                        ? t('profilePage.verification.verified')
+                        : t('profilePage.verification.pending')}
                   </span>
                 </div>
                 <p className="text-xs text-gray-400 leading-relaxed mb-4">
                   {profile?.verification_status === 'genius'
-                    ? 'SCAI a identifié ton profil comme exceptionnel. Priorité absolue sur la plateforme.'
+                    ? t('profilePage.verification.geniusDesc')
                     : profile?.verification_status === 'verified'
-                      ? 'Ton identité a été validée par SCAI. Accès complet aux opportunités.'
-                      : 'Tes documents ont été reçus. Lance l\'analyse pour obtenir ton badge.'}
+                      ? t('profilePage.verification.verifiedDesc')
+                      : t('profilePage.verification.pendingDesc')}
                 </p>
                 {verifyMsg && (
                   <p className={`text-xs mb-3 font-medium ${
@@ -732,20 +727,20 @@ export default function Profile() {
                 )}
                 {profile?.verification_status === 'pending' && (
                   <GoldButton fullWidth loading={verifying} onClick={handleReVerify} className="text-[10px]">
-                    {verifying ? 'Analyse en cours...' : '🔍 Lancer l\'analyse maintenant'}
+                    {verifying ? t('profilePage.verification.analyzing') : t('profilePage.verification.launchAnalysis')}
                   </GoldButton>
                 )}
                 {profile?.verification_status === 'refused' && (
                   <div className="space-y-2">
                     <p className="text-xs text-red-400">{profile.refusal_reason}</p>
                     <GoldButton variant="outlined" fullWidth loading={verifying} onClick={handleReVerify} className="text-[10px]">
-                      Relancer l'analyse
+                      {t('profilePage.verification.relaunchAnalysis')}
                     </GoldButton>
                   </div>
                 )}
                 {(profile?.verification_status === 'verified' || profile?.verification_status === 'genius') && (
                   <div className="flex items-center gap-2 text-green-400 text-xs">
-                    <CheckCircle2 size={14} /> Accès accordé
+                    <CheckCircle2 size={14} /> {t('profilePage.verification.accessGranted')}
                   </div>
                 )}
               </Card>
