@@ -44,7 +44,42 @@
     "launchScan": "Lancer un scan global",
     "recentOpportunities": "Opportunités récentes",
     "viewAll": "Voir tout",
-    "noOpportunities": "Aucune opportunité. Lance un scan pour commencer."
+    "noOpportunities": "Aucune opportunité. Lance un scan pour commencer.",
+    "pendingBanner": {
+      "title": "Profil en attente de vérification",
+      "desc": "Complète ton profil pour débloquer toutes les fonctionnalités — scan, candidatures, accès GENIUS.",
+      "cta": "Compléter la vérification →"
+    },
+    "refusedBanner": {
+      "title": "Vérification refusée",
+      "defaultReason": "Preuves insuffisantes. Ajoute un CV ou un lien portfolio pour être accepté.",
+      "cta": "Revoir mon dossier →"
+    },
+    "scanInterrupted": "Scan interrompu",
+    "scanningWorld": "Scanning the World...",
+    "launchGlobalSearch": "Lancer la recherche mondiale",
+    "noRecentAction": "Aucune action récente de l'agent.",
+    "lastAction": "Dernière action : {{date}}",
+    "initAgentLog": "Lancez un scan pour initialiser le journal de l'agent.",
+    "launchScanBtn": "⚡ Lancer scan",
+    "openAgent": "Ouvrir l'agent",
+    "urgentActionRequired": "Action urgente requise",
+    "alertsCount": "{{count}} ALERTES",
+    "action": "Action",
+    "autonomousAgentTitle": "Agent Autonome Searcher",
+    "autonomousAgentDesc": "L'agent surveille le marché et gère vos candidatures 24/7 pour maximiser votre valeur.",
+    "autonomousMode": "Mode Autonome",
+    "surveillanceMode": "Mode Surveillance",
+    "active": "Actif",
+    "intelligenceLog": "Journal d'intelligence Searcher",
+    "peopleToKnow": "Personnes à connaître",
+    "genius": "Genius",
+    "verified": "Vérifié",
+    "noConnections": "Lance un scan pour découvrir des connexions.",
+    "viewNetwork": "Voir le réseau",
+    "upgradeGeniusTitle": "Passer à Genius",
+    "upgradeGeniusDesc": "Débloque les candidatures autonomes, les sources premium (LinkedIn, Upwork) et l'assistant vocal SCAI.",
+    "upgradeNow": "Mettre à niveau"
   },
   "opportunities": {
     "title": "Explorateur d'Opportunités",
@@ -80,7 +115,16 @@
     "greetingMorning": "Bonjour",
     "greetingAfternoon": "Bon après-midi",
     "greetingEvening": "Bonsoir",
-    "greetingNight": "Bonsoir"
+    "greetingNight": "Bonsoir",
+    "prescan": {
+      "question": "Qu'est-ce que tu cherches précisément en ce moment ? (optionnel — je choisis la zone la plus pertinente pour toi)",
+      "placeholder": "Ex: je veux du remote international bien payé, ou une mission locale rapide...",
+      "answerPlaceholder": "Ta réponse...",
+      "thinking": "SCAI réfléchit intensément...",
+      "reply": "Répondre",
+      "send": "Envoyer à SCAI",
+      "skip": "Lancer directement"
+    }
   },
   "profile": {
     "title": "Profil Professionnel",

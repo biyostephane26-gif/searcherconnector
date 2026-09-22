@@ -19,8 +19,10 @@ import Badge from '../components/ui/Badge'
 import { Bell, Search, TrendingUp, UserPlus, Zap, ArrowRight, Shield } from 'lucide-react'
 import AppTour from '../components/onboarding/AppTour'
 import ScaiThinkingOrb from '../components/scai/ScaiThinkingOrb'
+import { useTranslation } from 'react-i18next'
 
 export default function Dashboard() {
+  const { t, i18n } = useTranslation()
   const { profile, user } = useAuth()
   const router = useRouter()
   const { scanning, launchScan } = useAgent()
@@ -177,15 +179,15 @@ export default function Dashboard() {
               <div className="flex items-start gap-3">
                 <span className="text-xl mt-0.5">⏳</span>
                 <div>
-                  <p className="text-sm font-bold text-[#D4AF37]">Profil en attente de vérification</p>
+                  <p className="text-sm font-bold text-[#D4AF37]">{t('dashboard.pendingBanner.title')}</p>
                   <p className="text-xs text-gray-400 mt-0.5">
-                    Complète ton profil pour débloquer toutes les fonctionnalités — scan, candidatures, accès GENIUS.
+                    {t('dashboard.pendingBanner.desc')}
                   </p>
                 </div>
               </div>
               <div className="flex gap-2 flex-shrink-0">
                 <GoldButton onClick={() => router.push('/onboarding')} className="text-xs py-2 px-4 whitespace-nowrap">
-                  Compléter la vérification →
+                  {t('dashboard.pendingBanner.cta')}
                 </GoldButton>
               </div>
             </div>
@@ -197,14 +199,14 @@ export default function Dashboard() {
               <div className="flex items-start gap-3">
                 <span className="text-xl mt-0.5">❌</span>
                 <div>
-                  <p className="text-sm font-bold text-red-400">Vérification refusée</p>
+                  <p className="text-sm font-bold text-red-400">{t('dashboard.refusedBanner.title')}</p>
                   <p className="text-xs text-gray-400 mt-0.5">
-                    {profile.refusal_reason || 'Preuves insuffisantes. Ajoute un CV ou un lien portfolio pour être accepté.'}
+                    {profile.refusal_reason || t('dashboard.refusedBanner.defaultReason')}
                   </p>
                 </div>
               </div>
               <GoldButton variant="outlined" onClick={() => router.push('/onboarding')} className="text-xs py-2 px-4 whitespace-nowrap border-red-700/50 text-red-400 hover:text-white flex-shrink-0">
-                Revoir mon dossier →
+                {t('dashboard.refusedBanner.cta')}
               </GoldButton>
             </div>
           )}
@@ -219,12 +221,12 @@ export default function Dashboard() {
                 <p className="text-sm text-gray-400 mb-4">
                   {scaiQuestion
                     ? scaiQuestion
-                    : "Qu'est-ce que tu cherches précisément en ce moment ? (optionnel — je choisis la zone la plus pertinente pour toi)"}
+                    : t('scai.prescan.question')}
                 </p>
                 <textarea
                   value={scaiInput}
                   onChange={e => setScaiInput(e.target.value)}
-                  placeholder={scaiQuestion ? "Ta réponse..." : "Ex: je veux du remote international bien payé, ou une mission locale rapide..."}
+                  placeholder={scaiQuestion ? t('scai.prescan.answerPlaceholder') : t('scai.prescan.placeholder')}
                   className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white outline-none focus:border-[#D4AF37] mb-4"
                   rows={3}
                   disabled={scaiThinking}
@@ -234,7 +236,7 @@ export default function Dashboard() {
                   <div className="flex flex-col gap-2 mb-4 -mt-1">
                     <div className="flex items-center gap-2 text-[#D4AF37]">
                       <ScaiThinkingOrb size={14} />
-                      <span className="font-syne font-bold uppercase tracking-widest text-[9px]">SCAI réfléchit intensément...</span>
+                      <span className="font-syne font-bold uppercase tracking-widest text-[9px]">{t('scai.prescan.thinking')}</span>
                     </div>
                     <div className="h-1 w-full bg-gray-900 rounded-full overflow-hidden">
                       <div className="h-full bg-[#D4AF37] animate-[shimmer_2s_infinite] w-1/2"></div>
@@ -243,10 +245,10 @@ export default function Dashboard() {
                 )}
                 <div className="flex gap-3">
                   <GoldButton onClick={handleScaiSubmit} loading={scaiThinking} disabled={!scaiInput.trim()} className="flex-1">
-                    {scaiQuestion ? 'Répondre' : 'Envoyer à SCAI'}
+                    {scaiQuestion ? t('scai.prescan.reply') : t('scai.prescan.send')}
                   </GoldButton>
                   <GoldButton variant="outlined" onClick={handleSkipScai} disabled={scaiThinking} className="flex-1">
-                    Lancer directement
+                    {t('scai.prescan.skip')}
                   </GoldButton>
                 </div>
               </Card>
@@ -267,7 +269,7 @@ export default function Dashboard() {
             <div className="flex items-start gap-3 bg-red-900/15 border border-red-700/40 rounded-2xl px-5 py-4">
               <span className="text-lg mt-0.5">⚠️</span>
               <div className="flex-1">
-                <p className="text-sm font-bold text-red-400">Scan interrompu</p>
+                <p className="text-sm font-bold text-red-400">{t('dashboard.scanInterrupted')}</p>
                 <p className="text-xs text-gray-400 mt-0.5">{scanError}</p>
               </div>
               <button onClick={() => setScanError(null)} className="text-gray-600 hover:text-white text-xs">✕</button>
@@ -301,7 +303,7 @@ export default function Dashboard() {
                 <div className="relative bg-[#111111] border border-[#D4AF37] rounded-full p-8 md:p-12 shadow-[0_0_30px_rgba(212,175,55,0.2)] transition-transform group-hover:scale-105 active:scale-95">
                   <Search className={`w-12 h-12 md:w-16 md:h-16 text-[#D4AF37] mx-auto mb-4 ${scanning ? 'animate-spin-slow' : ''}`} />
                   <div className="text-lg md:text-xl font-bold tracking-tight text-white uppercase">
-                    {scanning ? 'Scanning the World...' : 'Lancer la recherche mondiale'}
+                    {scanning ? t('dashboard.scanningWorld') : t('dashboard.launchGlobalSearch')}
                   </div>
                 </div>
               </button>
@@ -321,20 +323,20 @@ export default function Dashboard() {
                     </span>
                   </div>
                   <div className="text-lg font-bold text-white">
-                    {latestAgentAction?.result || "Aucune action récente de l'agent."}
+                    {latestAgentAction?.result || t('dashboard.noRecentAction')}
                   </div>
                   <div className="text-xs text-gray-500">
                     {latestAgentAction?.created_at
-                      ? `Dernière action: ${new Date(latestAgentAction.created_at).toLocaleString('fr-FR')}`
-                      : "Lancez un scan pour initialiser le journal de l'agent."}
+                      ? t('dashboard.lastAction', { date: new Date(latestAgentAction.created_at).toLocaleString(i18n.language) })
+                      : t('dashboard.initAgentLog')}
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <GoldButton onClick={handleGlobalSearch} loading={scanning}>
-                    ⚡ Lancer scan
+                    {t('dashboard.launchScanBtn')}
                   </GoldButton>
                   <GoldButton variant="outlined" onClick={() => router.push('/agent')}>
-                    Ouvrir l'agent
+                    {t('dashboard.openAgent')}
                   </GoldButton>
                 </div>
               </div>
@@ -345,9 +347,9 @@ export default function Dashboard() {
               <section>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xs font-bold tracking-[0.3em] text-red-500 uppercase flex items-center gap-2">
-                    <Zap className="w-4 h-4" /> Urgent Action Required
+                    <Zap className="w-4 h-4" /> {t('dashboard.urgentActionRequired')}
                   </h3>
-                  <span className="text-[10px] text-gray-600 font-bold">{alerts.length} ALERTS</span>
+                  <span className="text-[10px] text-gray-600 font-bold">{t('dashboard.alertsCount', { count: alerts.length })}</span>
                 </div>
                 <div className="space-y-4">
                   {alerts.map((alert) => (
@@ -360,7 +362,7 @@ export default function Dashboard() {
                         onClick={() => router.push('/opportunities')}
                         className="bg-red-600 hover:bg-red-500 text-white"
                       >
-                        Action <ArrowRight className="w-4 h-4" />
+                        {t('dashboard.action')} <ArrowRight className="w-4 h-4" />
                       </GoldButton>
                     </Card>
                   ))}
@@ -378,8 +380,8 @@ export default function Dashboard() {
                   <TrendingUp className="w-8 h-8 text-[#D4AF37]" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-white mb-1">Agent Autonome Searcher</h4>
-                  <p className="text-sm text-gray-500 max-w-md">L'agent surveille le marché et gère vos candidatures 24/7 pour maximiser votre valeur.</p>
+                  <h4 className="font-bold text-white mb-1">{t('dashboard.autonomousAgentTitle')}</h4>
+                  <p className="text-sm text-gray-500 max-w-md">{t('dashboard.autonomousAgentDesc')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -387,10 +389,10 @@ export default function Dashboard() {
                   <span className={`text-[10px] font-bold uppercase tracking-widest mb-1 ${
                     profile?.verification_status === 'genius' ? 'text-[#D4AF37]' : 'text-gray-500'
                   }`}>
-                    {profile?.verification_status === 'genius' ? 'Mode Autonome' : 'Mode Surveillance'}
+                    {profile?.verification_status === 'genius' ? t('dashboard.autonomousMode') : t('dashboard.surveillanceMode')}
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-green-500 uppercase tracking-widest">Actif</span>
+                    <span className="text-xs font-bold text-green-500 uppercase tracking-widest">{t('dashboard.active')}</span>
                     <GoldDot />
                   </div>
                 </div>
@@ -399,7 +401,7 @@ export default function Dashboard() {
             </Card>
 
             <section>
-              <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-6">Searcher Intelligence Log</h3>
+              <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-6">{t('dashboard.intelligenceLog')}</h3>
               <SearcherLog />
             </section>
           </div>
@@ -408,7 +410,7 @@ export default function Dashboard() {
           <div className="xl:col-span-4 space-y-10">
             <Card className="p-6">
               <h4 className="text-[10px] font-bold tracking-widest text-gray-500 uppercase mb-6 flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-[#D4AF37]" /> People to Know
+                <UserPlus className="w-4 h-4 text-[#D4AF37]" /> {t('dashboard.peopleToKnow')}
               </h4>
               <div className="space-y-6">
                 {(suggestedPeople.length > 0 ? suggestedPeople : []).map((person, i) => (
@@ -420,7 +422,7 @@ export default function Dashboard() {
                       <div>
                         <div className="text-sm font-bold text-white">{person.full_name}</div>
                         <div className="text-[10px] text-gray-600 uppercase font-bold tracking-tighter">
-                          {person.verification_status === 'genius' ? 'Genius' : 'Verified'} · {person.domain || ''}
+                          {person.verification_status === 'genius' ? t('dashboard.genius') : t('dashboard.verified')} · {person.domain || ''}
                         </div>
                       </div>
                     </div>
@@ -430,21 +432,21 @@ export default function Dashboard() {
                   </div>
                 ))}
                 {suggestedPeople.length === 0 && (
-                  <p className="text-xs text-gray-600 text-center py-4">Lance un scan pour découvrir des connexions.</p>
+                  <p className="text-xs text-gray-600 text-center py-4">{t('dashboard.noConnections')}</p>
                 )}
               </div>
               <GoldButton variant="outlined" fullWidth className="mt-8 text-xs py-2">
-                View Network
+                {t('dashboard.viewNetwork')}
               </GoldButton>
             </Card>
 
             <Card className="p-6 bg-gradient-to-br from-[#1A1500] to-[#0A0A0A] border-[#D4AF37]/30 relative overflow-hidden group">
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#D4AF37] opacity-5 blur-3xl group-hover:opacity-10 transition-opacity" />
               <Shield className="w-10 h-10 text-[#D4AF37] mb-6" />
-              <h4 className="text-xl font-bold text-white mb-2 tracking-tight">Upgrade to Genius</h4>
-              <p className="text-sm text-gray-500 mb-8 leading-relaxed">Débloque les candidatures autonomes, les sources premium (LinkedIn, Upwork) et l'assistant vocal SCAI.</p>
+              <h4 className="text-xl font-bold text-white mb-2 tracking-tight">{t('dashboard.upgradeGeniusTitle')}</h4>
+              <p className="text-sm text-gray-500 mb-8 leading-relaxed">{t('dashboard.upgradeGeniusDesc')}</p>
               <GoldButton fullWidth onClick={() => router.push('/pricing')}>
-                Upgrade Now
+                {t('dashboard.upgradeNow')}
               </GoldButton>
             </Card>
           </div>

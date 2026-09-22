@@ -44,7 +44,42 @@
     "launchScan": "Launch global scan",
     "recentOpportunities": "Recent opportunities",
     "viewAll": "View all",
-    "noOpportunities": "No opportunities. Launch a scan to start."
+    "noOpportunities": "No opportunities. Launch a scan to start.",
+    "pendingBanner": {
+      "title": "Profile pending verification",
+      "desc": "Complete your profile to unlock all features — scanning, applications, GENIUS access.",
+      "cta": "Complete verification →"
+    },
+    "refusedBanner": {
+      "title": "Verification declined",
+      "defaultReason": "Insufficient proof. Add a CV or a portfolio link to be accepted.",
+      "cta": "Review my file →"
+    },
+    "scanInterrupted": "Scan interrupted",
+    "scanningWorld": "Scanning the World...",
+    "launchGlobalSearch": "Launch global search",
+    "noRecentAction": "No recent agent action.",
+    "lastAction": "Last action: {{date}}",
+    "initAgentLog": "Launch a scan to initialize the agent's log.",
+    "launchScanBtn": "⚡ Launch scan",
+    "openAgent": "Open the agent",
+    "urgentActionRequired": "Urgent action required",
+    "alertsCount": "{{count}} ALERTS",
+    "action": "Action",
+    "autonomousAgentTitle": "Searcher Autonomous Agent",
+    "autonomousAgentDesc": "The agent monitors the market and handles your applications 24/7 to maximize your value.",
+    "autonomousMode": "Autonomous Mode",
+    "surveillanceMode": "Monitoring Mode",
+    "active": "Active",
+    "intelligenceLog": "Searcher Intelligence Log",
+    "peopleToKnow": "People to Know",
+    "genius": "Genius",
+    "verified": "Verified",
+    "noConnections": "Launch a scan to discover connections.",
+    "viewNetwork": "View Network",
+    "upgradeGeniusTitle": "Upgrade to Genius",
+    "upgradeGeniusDesc": "Unlock autonomous applications, premium sources (LinkedIn, Upwork), and the SCAI voice assistant.",
+    "upgradeNow": "Upgrade Now"
   },
   "opportunities": {
     "title": "Opportunity Explorer",
@@ -80,7 +115,16 @@
     "greetingMorning": "Good morning",
     "greetingAfternoon": "Good afternoon",
     "greetingEvening": "Good evening",
-    "greetingNight": "Good evening"
+    "greetingNight": "Good evening",
+    "prescan": {
+      "question": "What are you looking for right now? (optional — I'll pick the most relevant zone for you)",
+      "placeholder": "e.g. I want well-paid international remote work, or a quick local gig...",
+      "answerPlaceholder": "Your answer...",
+      "thinking": "SCAI is thinking hard...",
+      "reply": "Reply",
+      "send": "Send to SCAI",
+      "skip": "Launch directly"
+    }
   },
   "profile": {
     "title": "Professional Profile",
