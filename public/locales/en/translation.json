@@ -330,6 +330,42 @@
     },
     "avatarUploadError": "Avatar upload error. Try again."
   },
+  "settingsPage": {
+    "title": "Settings",
+    "fullName": "Full name",
+    "city": "City",
+    "bio": "Professional bio",
+    "portfolio": "Portfolio",
+    "save": "Save",
+    "conversationMemory": "Conversation memory",
+    "conversationHistory": "Conversation history",
+    "commandCenter": "Command center",
+    "commandCenterDesc": "Scans, follow-ups, automatic applications.",
+    "autoScan": "Automatic scan",
+    "autoScanDesc": "Enable / disable scheduled scans.",
+    "browserExtension": "Browser extension",
+    "installation": "Installation (2 minutes)",
+    "devModeStepPrefix": "Open",
+    "devModeStepSuffix": "and enable \"Developer mode\" (top right)",
+    "downloadExtension": "Download the extension (.zip)",
+    "downloadExtensionSuffix": "and unzip it",
+    "loadUnpacked": "Click \"Load unpacked\" and select the unzipped folder",
+    "pasteToken": "Paste your token below in the extension's popup",
+    "upgradeExtension": "Upgrade to Pro or Premium to unlock the extension.",
+    "viewPlans": "View plans",
+    "changePassword": "Change password",
+    "changePasswordDesc": "A reset link will be sent by email.",
+    "deleteAccount": "Delete account",
+    "searchSettingsPlaceholder": "Search a setting (theme, language, extension, password…)",
+    "searchSettingsAria": "Search settings",
+    "clear": "Clear"
+  },
+  "messagesPage": {
+    "title": "Messages",
+    "online": "Online",
+    "releaseToSend": "Release to send",
+    "selectConversation": "Select a conversation to start networking with the community."
+  },
   "coworkPage": {
     "statusLabels": { "sent": "Sent", "waiting_reply": "Waiting", "replied": "Replied", "positive_response": "Positive response", "rejected": "Rejected" },
     "paywall": {
@@ -629,6 +665,7 @@
       "genius": "Genius",
       "refused": "Refused"
     },
+    "completedShort": "Profile completed",
     "editProfile": "Edit profile",
     "uploadAvatar": "Change photo",
     "personalInfo": "Personal information",

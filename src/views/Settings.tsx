@@ -320,7 +320,7 @@ export default function Settings() {
       <Sidebar />
       <main className="flex-1 flex flex-col min-w-0 lg:ml-64">
         <header className="h-16 border-b border-[#1A1A1A] flex items-center justify-between px-6 bg-[#0A0A0A]/50 backdrop-blur-md sticky top-0 z-30">
-          <h2 className="text-lg font-bold text-white tracking-tight">Paramètres</h2>
+          <h2 className="text-lg font-bold text-white tracking-tight">{t('settingsPage.title')}</h2>
         </header>
 
         <div className="p-6 lg:p-10 max-w-3xl mx-auto w-full space-y-10">
@@ -330,12 +330,12 @@ export default function Settings() {
             <input
               value={settingsQuery}
               onChange={e => setSettingsQuery(e.target.value)}
-              placeholder="Rechercher un réglage (thème, langue, extension, mot de passe…)"
+              placeholder={t('settingsPage.searchSettingsPlaceholder')}
               className="w-full bg-[#111111] border border-[#2a2a2a] rounded-xl pl-10 pr-9 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37]/60"
-              aria-label="Rechercher dans les paramètres"
+              aria-label={t('settingsPage.searchSettingsAria')}
             />
             {settingsQuery && (
-              <button onClick={() => setSettingsQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white" aria-label="Effacer">
+              <button onClick={() => setSettingsQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white" aria-label={t('settingsPage.clear')}>
                 <X className="w-4 h-4" />
               </button>
             )}
@@ -353,7 +353,7 @@ export default function Settings() {
               <form onSubmit={handleUpdateProfile} className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Nom complet</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('settingsPage.fullName')}</label>
                     <input type="text" value={fullName} onChange={e => setFullName(e.target.value)}
                       className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
                   </div>
@@ -410,14 +410,14 @@ export default function Settings() {
                       className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Ville</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('settingsPage.city')}</label>
                     <input type="text" value={city} onChange={e => setCity(e.target.value)}
                       placeholder="ex: Douala, Paris..."
                       className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Bio professionnelle</label>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('settingsPage.bio')}</label>
                   <textarea value={bio} onChange={e => setBio(e.target.value)} rows={3}
                     placeholder="Décris ton expertise, tes expériences et tes objectifs..."
                     className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none resize-none" />
@@ -431,7 +431,7 @@ export default function Settings() {
                 <div className="space-y-4 pt-2 border-t border-[#2a2a2a]">
                   <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Portfolio</label>
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('settingsPage.portfolio')}</label>
                       <input type="text" value={portfolioUrl} onChange={e => setPortfolioUrl(e.target.value)}
                         placeholder="https://ton-portfolio.com"
                         className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
@@ -465,7 +465,7 @@ export default function Settings() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <GoldButton type="submit" loading={loading}>Sauvegarder</GoldButton>
+                  <GoldButton type="submit" loading={loading}>{t('settingsPage.save')}</GoldButton>
                   {savedMsg && <span className="text-xs text-green-400 font-bold">✓ Profil mis à jour !</span>}
                 </div>
               </form>
@@ -598,14 +598,14 @@ export default function Settings() {
               {/* SCAI Learning */}
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium text-white text-sm">Mémoire des conversations</div>
+                  <div className="font-medium text-white text-sm">{t('settingsPage.conversationMemory')}</div>
                   <p className="text-xs text-gray-600 max-w-xs mt-0.5">SCAI garde l'historique de tes échanges pour que tu les retrouves après reconnexion. Désactive pour des conversations éphémères, non sauvegardées.</p>
                 </div>
                 <Toggle value={scaiLearning} onChange={toggleScaiLearning} />
               </div>
               <div className="border-t border-[#1A1A1A] pt-4 flex items-center justify-between">
                 <div>
-                  <div className="font-medium text-white text-sm">Historique des conversations</div>
+                  <div className="font-medium text-white text-sm">{t('settingsPage.conversationHistory')}</div>
                   <p className="text-xs text-gray-600 mt-0.5">{scaiLearning ? 'Tes conversations avec SCAI sont conservées définitivement.' : 'Désactivé — tes conversations ne sont pas sauvegardées.'}</p>
                 </div>
                 <Link href="/agent" className="text-xs text-[#D4AF37] hover:underline flex items-center gap-1">
@@ -623,8 +623,8 @@ export default function Settings() {
             <Card className="p-6 space-y-5">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <div className="font-bold text-white mb-1">Centre de commande</div>
-                  <p className="text-xs text-gray-500">Scans, relances, candidatures automatiques.</p>
+                  <div className="font-bold text-white mb-1">{t('settingsPage.commandCenter')}</div>
+                  <p className="text-xs text-gray-500">{t('settingsPage.commandCenterDesc')}</p>
                 </div>
                 <Link href="/agent" className="inline-flex items-center gap-2 text-sm font-bold text-[#D4AF37] hover:text-[#F5E6A3] transition-colors">
                   Ouvrir l'agent <ArrowRight className="w-4 h-4" />
@@ -648,8 +648,8 @@ export default function Settings() {
               </div>
               <div className="flex items-center justify-between gap-4 rounded-xl border border-[#1A1A1A] bg-[#0D0D0D] p-4">
                 <div>
-                  <div className="font-medium text-white text-sm">Scan automatique</div>
-                  <p className="text-xs text-gray-600">Activer / désactiver les scans planifiés.</p>
+                  <div className="font-medium text-white text-sm">{t('settingsPage.autoScan')}</div>
+                  <p className="text-xs text-gray-600">{t('settingsPage.autoScanDesc')}</p>
                 </div>
                 <Toggle value={isAutoScanEnabled} onChange={toggleAutoScan} disabled={!agentSchedule || agentLoading} />
               </div>
@@ -682,7 +682,7 @@ export default function Settings() {
 
           {/* ── Extension navigateur ────────────────────────────────── */}
           <section id="extension" hidden={!sectionVisible('extension')} className="space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-gray-500">Extension navigateur</h2>
+            <h2 className="text-sm font-bold uppercase tracking-widest text-gray-500">{t('settingsPage.browserExtension')}</h2>
             <Card className="p-6 space-y-4">
               <p className="text-xs text-gray-600">
                 Une fois installée, l'extension détecte n'importe quel formulaire de candidature (LinkedIn, Upwork,
@@ -693,21 +693,21 @@ export default function Settings() {
 
               {isPaidUser ? (
                 <div className="bg-[#111] border border-[#1A1A1A] rounded-xl p-4 space-y-2">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Installation (2 minutes)</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{t('settingsPage.installation')}</p>
                   <ol className="text-xs text-gray-400 space-y-1.5 list-decimal list-inside">
                     <li>
                       <a href="/downloads/searcher-connector-extension.zip" download
-                        className="text-[#D4AF37] hover:underline font-medium">Télécharge l'extension (.zip)</a> et décompresse-la
+                        className="text-[#D4AF37] hover:underline font-medium">{t('settingsPage.downloadExtension')}</a> {t('settingsPage.downloadExtensionSuffix')}
                     </li>
-                    <li>Ouvre <code className="bg-black px-1.5 py-0.5 rounded text-[10px]">chrome://extensions</code> et active "Mode développeur" (en haut à droite)</li>
-                    <li>Clique "Charger l'extension non empaquetée" et sélectionne le dossier décompressé</li>
-                    <li>Colle ton token ci-dessous dans le popup de l'extension</li>
+                    <li>{t('settingsPage.devModeStepPrefix')} <code className="bg-black px-1.5 py-0.5 rounded text-[10px]">chrome://extensions</code> {t('settingsPage.devModeStepSuffix')}</li>
+                    <li>{t('settingsPage.loadUnpacked')}</li>
+                    <li>{t('settingsPage.pasteToken')}</li>
                   </ol>
                 </div>
               ) : (
                 <div className="bg-[#1A1500] border border-[#D4AF37]/20 rounded-xl p-4 flex items-center justify-between gap-4">
-                  <p className="text-xs text-gray-400">Passe au plan Pro ou Premium pour débloquer l'extension.</p>
-                  <GoldButton onClick={() => router.push('/pricing')}>Voir les plans</GoldButton>
+                  <p className="text-xs text-gray-400">{t('settingsPage.upgradeExtension')}</p>
+                  <GoldButton onClick={() => router.push('/pricing')}>{t('settingsPage.viewPlans')}</GoldButton>
                 </div>
               )}
 
@@ -748,8 +748,8 @@ export default function Settings() {
             <Card className="p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium text-white text-sm">Changer le mot de passe</div>
-                  <p className="text-xs text-gray-600">Un lien de réinitialisation sera envoyé par email.</p>
+                  <div className="font-medium text-white text-sm">{t('settingsPage.changePassword')}</div>
+                  <p className="text-xs text-gray-600">{t('settingsPage.changePasswordDesc')}</p>
                 </div>
                 <Link href="/login?reset=true" className="text-xs text-[#D4AF37] hover:underline">Réinitialiser →</Link>
               </div>
@@ -815,7 +815,7 @@ export default function Settings() {
             </h3>
             <Card className="p-5 border-red-900/50 bg-red-900/5 flex items-center justify-between">
               <div>
-                <div className="font-bold text-white mb-0.5">Supprimer le compte</div>
+                <div className="font-bold text-white mb-0.5">{t('settingsPage.deleteAccount')}</div>
                 <p className="text-xs text-gray-500">Suppression définitive de toutes tes données (30 jours).</p>
               </div>
               <button className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors">

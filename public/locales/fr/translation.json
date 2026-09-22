@@ -330,6 +330,42 @@
     },
     "avatarUploadError": "Erreur upload avatar. Réessaie."
   },
+  "settingsPage": {
+    "title": "Paramètres",
+    "fullName": "Nom complet",
+    "city": "Ville",
+    "bio": "Bio professionnelle",
+    "portfolio": "Portfolio",
+    "save": "Sauvegarder",
+    "conversationMemory": "Mémoire des conversations",
+    "conversationHistory": "Historique des conversations",
+    "commandCenter": "Centre de commande",
+    "commandCenterDesc": "Scans, relances, candidatures automatiques.",
+    "autoScan": "Scan automatique",
+    "autoScanDesc": "Activer / désactiver les scans planifiés.",
+    "browserExtension": "Extension navigateur",
+    "installation": "Installation (2 minutes)",
+    "devModeStepPrefix": "Ouvre",
+    "devModeStepSuffix": "et active \"Mode développeur\" (en haut à droite)",
+    "downloadExtension": "Télécharge l'extension (.zip)",
+    "downloadExtensionSuffix": "et décompresse-la",
+    "loadUnpacked": "Clique \"Charger l'extension non empaquetée\" et sélectionne le dossier décompressé",
+    "pasteToken": "Colle ton token ci-dessous dans le popup de l'extension",
+    "upgradeExtension": "Passe au plan Pro ou Premium pour débloquer l'extension.",
+    "viewPlans": "Voir les plans",
+    "changePassword": "Changer le mot de passe",
+    "changePasswordDesc": "Un lien de réinitialisation sera envoyé par email.",
+    "deleteAccount": "Supprimer le compte",
+    "searchSettingsPlaceholder": "Rechercher un réglage (thème, langue, extension, mot de passe…)",
+    "searchSettingsAria": "Rechercher dans les paramètres",
+    "clear": "Effacer"
+  },
+  "messagesPage": {
+    "title": "Messages",
+    "online": "En ligne",
+    "releaseToSend": "Relâchez pour envoyer",
+    "selectConversation": "Sélectionnez une conversation pour commencer à networker avec la communauté."
+  },
   "coworkPage": {
     "statusLabels": { "sent": "Envoyé", "waiting_reply": "En attente", "replied": "Répondu", "positive_response": "Réponse positive", "rejected": "Refus" },
     "paywall": {
@@ -629,6 +665,7 @@
       "genius": "Genius",
       "refused": "Refusé"
     },
+    "completedShort": "Profil complété",
     "editProfile": "Modifier le profil",
     "uploadAvatar": "Changer la photo",
     "personalInfo": "Informations personnelles",

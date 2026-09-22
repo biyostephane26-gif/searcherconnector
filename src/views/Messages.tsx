@@ -38,7 +38,7 @@ type ConnectionRow = {
 };
 
 export default function Messages() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, profile } = useAuth();
   const searchParams = useSearchParams();
   const targetUserId = searchParams ? searchParams.get('user') : null;
@@ -617,7 +617,7 @@ export default function Messages() {
           {/* Liste des Conversations */}
           <div className={`w-full lg:w-80 border-r border-[#1A1A1A] flex flex-col bg-[#0D0D0D] ${selectedUser ? 'hidden lg:flex' : 'flex'}`}>
             <div className="p-6 border-b border-[#1A1A1A]">
-              <h2 className="text-xl font-bold text-white mb-4 tracking-tight">Messages</h2>
+              <h2 className="text-xl font-bold text-white mb-4 tracking-tight">{t('messagesPage.title')}</h2>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
                 <input 
@@ -723,7 +723,7 @@ export default function Messages() {
                           </>
                         )}
                       </div>
-                      <div className="text-[10px] text-green-500 font-bold uppercase tracking-widest">En ligne</div>
+                      <div className="text-[10px] text-green-500 font-bold uppercase tracking-widest">{t('messagesPage.online')}</div>
                     </div>
                   </div>
                   <button className="text-gray-500 hover:text-white transition-colors">
@@ -873,7 +873,7 @@ export default function Messages() {
                             Enregistrement en cours...
                             <VoiceWaveform source={recordingStream} variant="recording" />
                           </div>
-                          <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 animate-pulse">Relâchez pour envoyer</span>
+                          <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 animate-pulse">{t('messagesPage.releaseToSend')}</span>
                         </div>
                       ) : isUploadingAudio ? (
                         <div className="w-full bg-[#1A1500] border border-[#D4AF37]/20 rounded-2xl px-5 py-3 text-sm text-[#D4AF37] flex items-center gap-3">
@@ -943,7 +943,7 @@ export default function Messages() {
                   <Send size={40} />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Vos Messages</h3>
-                <p className="text-sm text-gray-500 max-w-xs mx-auto mb-8">Sélectionnez une conversation pour commencer à networker avec la communauté.</p>
+                <p className="text-sm text-gray-500 max-w-xs mx-auto mb-8">{t('messagesPage.selectConversation')}</p>
                 {showContactPicker && (
                   <div className="max-w-md mx-auto mb-4 rounded-2xl border border-[#2a2a2a] bg-[#111111] p-4 text-left">
                     <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#D4AF37] mb-3">

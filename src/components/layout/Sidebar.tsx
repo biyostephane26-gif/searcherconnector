@@ -194,7 +194,7 @@ export default function Sidebar() {
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${level.color}`}>{level.label}</span>
                   {profile?.verification_status === 'verified' && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold border border-[#D4AF37]/30 text-[#D4AF37]">Vérifié</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold border border-[#D4AF37]/30 text-[#D4AF37]">{t('profile.verification.verified')}</span>
                   )}
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#1A1A1A] text-gray-400">{planLabel}</span>
                 </div>
@@ -205,7 +205,7 @@ export default function Sidebar() {
                   </div>
                 )}
                 <button onClick={() => go('/settings#profil')} className="w-full flex justify-between text-[10px] text-gray-500 hover:text-white">
-                  <span>Profil complété</span>
+                  <span>{t('profile.completedShort')}</span>
                   <span className={profileCompletionPercent >= 80 ? 'text-green-400' : 'text-[#D4AF37]'}>{profileCompletionPercent}%</span>
                 </button>
                 {profile?.plan && profile.plan !== 'free' && (
