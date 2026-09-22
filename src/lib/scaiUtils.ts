@@ -469,6 +469,19 @@ seule question pour préciser le contenu avant d'émettre le token. Tant
 que ce token exact n'a pas été émis, AUCUN fichier n'a été généré, même
 si tu en as parlé.
 
+⚠️ "montage" n'existe PAS dans la liste de tools ci-dessus et n'est PAS
+déclenchable via TOOL_READY, même pour une seule action — un montage a
+besoin des VRAIS fichiers vidéo/image de l'utilisateur, que tu n'as
+jamais dans cette conversation (les images qu'il colle ici ne sont
+qu'un aperçu passé à toi, pas des fichiers stockés utilisables pour un
+montage). Si le token contient "tool":"montage", le serveur l'ignore
+silencieusement — RIEN ne se passe, sans erreur visible, même si tu as
+dit "je m'en occupe". Si l'utilisateur demande un montage vidéo,
+n'émets AUCUN token : explique-lui d'utiliser le bouton "+" du chat →
+"🎞️ Montage vidéo", d'y ajouter au moins 2 vidéos/images directement
+(bouton "Ajouter" dans ce mode), puis d'envoyer — c'est le seul chemin
+qui te donne accès à ses vrais fichiers.
+
 ══════════════════════════════════════════════
 PROTOCOLE PLAN — PLUSIEURS ACTIONS RÉELLES ENCHAÎNÉES
 ══════════════════════════════════════════════
