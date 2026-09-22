@@ -330,6 +330,18 @@
     },
     "avatarUploadError": "Erreur upload avatar. Réessaie."
   },
+  "interviewPrepDetailPage": {
+    "back": "Retour",
+    "dateToSet": "Date à fixer",
+    "companyResearch": "Recherche Entreprise",
+    "likelyQuestions": "Questions Probables & Réponses",
+    "talkingPoints": "Points à Aborder",
+    "negotiation": "Négociation",
+    "redFlags": "Points de Vigilance",
+    "needHelp": "Besoin d'aide ?",
+    "coachingDesc": "Entraîne-toi avec SCAI en simulation d'entretien. Il joue le recruteur et donne son feedback.",
+    "startCoaching": "Démarrer le Coaching avec SCAI"
+  },
   "interviewPrepsPage": {
     "title": "Préparations d'Entretiens",
     "subtitle": "Générées par SCAI",

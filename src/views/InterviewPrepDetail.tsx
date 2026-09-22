@@ -16,9 +16,11 @@ import {
   Calendar
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 
 export default function InterviewPrepDetail() {
+  const { t, i18n } = useTranslation();
   const params = useParams();
   const idParam = params?.['id'];
   const id = Array.isArray(idParam) ? idParam[0] : idParam;
@@ -68,7 +70,7 @@ export default function InterviewPrepDetail() {
         className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors group"
       >
         <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-        <span className="font-bold uppercase text-xs tracking-widest">Retour</span>
+        <span className="font-bold uppercase text-xs tracking-widest">{t('interviewPrepDetailPage.back')}</span>
       </button>
 
       {/* Header Card */}
@@ -92,7 +94,7 @@ export default function InterviewPrepDetail() {
                 <span className="text-gray-700">|</span>
                 <span className="flex items-center gap-1.5 text-gray-400 text-sm font-medium">
                   <Calendar size={16} className="text-[#D4AF37]" />
-                  {prep.interview_date ? format(new Date(prep.interview_date), 'eeee dd MMMM', { locale: fr }) : 'Date à fixer'}
+                  {prep.interview_date ? format(new Date(prep.interview_date), 'eeee dd MMMM', { locale: i18n.language.startsWith('fr') ? fr : enUS }) : t('interviewPrepDetailPage.dateToSet')}
                 </span>
               </div>
             </div>
@@ -107,7 +109,7 @@ export default function InterviewPrepDetail() {
           <section className="bg-[#111111] rounded-3xl border border-[#222222] p-8">
             <div className="flex items-center gap-3 mb-6">
               <Search className="text-[#D4AF37]" size={20} />
-              <h2 className="text-lg font-bold text-white">Recherche Entreprise</h2>
+              <h2 className="text-lg font-bold text-white">{t('interviewPrepDetailPage.companyResearch')}</h2>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">
               {prep.company_research}
@@ -118,7 +120,7 @@ export default function InterviewPrepDetail() {
           <section className="bg-[#111111] rounded-3xl border border-[#222222] p-8">
             <div className="flex items-center gap-3 mb-6">
               <HelpCircle className="text-[#D4AF37]" size={20} />
-              <h2 className="text-lg font-bold text-white">Questions Probables & Réponses</h2>
+              <h2 className="text-lg font-bold text-white">{t('interviewPrepDetailPage.likelyQuestions')}</h2>
             </div>
             <div className="space-y-6">
               {prep.likely_questions?.map((q: string, i: number) => (
@@ -136,7 +138,7 @@ export default function InterviewPrepDetail() {
           <section className="bg-[#111111] rounded-3xl border border-[#222222] p-8">
             <div className="flex items-center gap-3 mb-6">
               <MessageSquare className="text-[#D4AF37]" size={20} />
-              <h2 className="text-lg font-bold text-white">Points à Aborder</h2>
+              <h2 className="text-lg font-bold text-white">{t('interviewPrepDetailPage.talkingPoints')}</h2>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">
               {prep.talking_points}
@@ -150,7 +152,7 @@ export default function InterviewPrepDetail() {
           <section className="bg-[#111111] rounded-3xl border border-[#222222] p-6 border-l-4 border-l-green-500/50">
             <div className="flex items-center gap-3 mb-4">
               <DollarSign className="text-green-500" size={20} />
-              <h2 className="text-sm font-bold text-white uppercase tracking-widest">Négociation</h2>
+              <h2 className="text-sm font-bold text-white uppercase tracking-widest">{t('interviewPrepDetailPage.negotiation')}</h2>
             </div>
             <p className="text-gray-400 text-xs leading-relaxed">
               {prep.salary_strategy}
@@ -161,7 +163,7 @@ export default function InterviewPrepDetail() {
           <section className="bg-[#111111] rounded-3xl border border-[#222222] p-6 border-l-4 border-l-red-500/50">
             <div className="flex items-center gap-3 mb-4">
               <AlertCircle className="text-red-500" size={20} />
-              <h2 className="text-sm font-bold text-white uppercase tracking-widest">Points de Vigilance</h2>
+              <h2 className="text-sm font-bold text-white uppercase tracking-widest">{t('interviewPrepDetailPage.redFlags')}</h2>
             </div>
             <p className="text-gray-400 text-xs leading-relaxed">
               {prep.red_flags}
@@ -169,13 +171,13 @@ export default function InterviewPrepDetail() {
           </section>
 
           <div className="p-8 bg-[#D4AF37] rounded-3xl text-black">
-            <h3 className="text-lg font-bold mb-2">Besoin d'aide ?</h3>
+            <h3 className="text-lg font-bold mb-2">{t('interviewPrepDetailPage.needHelp')}</h3>
             <p className="text-sm font-medium opacity-80 mb-6">
-              Entraîne-toi avec SCAI en simulation d'entretien. Il joue le recruteur et donne son feedback.
+              {t('interviewPrepDetailPage.coachingDesc')}
             </p>
             <a href="/agent?prompt=Lance+une+simulation+d+entretien"
               className="block w-full py-4 bg-black text-white rounded-2xl font-bold hover:bg-black/80 transition-all text-center">
-              Démarrer le Coaching avec SCAI
+              {t('interviewPrepDetailPage.startCoaching')}
             </a>
           </div>
         </div>
