@@ -330,6 +330,43 @@
     },
     "avatarUploadError": "Erreur upload avatar. Réessaie."
   },
+  "aboutPage": {
+    "missionLabel": "Notre mission",
+    "heroTitle1": "Le travail trouve les gens.",
+    "heroTitle2": "Pas l'inverse.",
+    "heroDesc": "Il existe des milliers de personnes compétentes sans emploi, et des milliers d'opportunités sans candidats. Searcher Connector est le pont entre les deux — automatiquement, 24h/24.",
+    "problemTitle": "Le problème qu'on résout",
+    "problemP1": "Un développeur à Douala est aussi compétent qu'un développeur à Paris. Mais il n'a pas les mêmes connexions, les mêmes contacts, ni le même accès aux opportunités.",
+    "problemP2Prefix": "La recherche d'emploi ou de missions freelance prend en moyenne",
+    "problemP2Bold": "40 heures par semaine",
+    "problemP2Suffix": "— scruter des centaines de plateformes, rédiger des candidatures, relancer, attendre.",
+    "problemP3": "C'est 40 heures que tu ne passes pas à créer, apprendre ou construire.",
+    "stats": [
+      { "title": "2.5 milliards", "sub": "de personnes en âge de travailler sans emploi formel" },
+      { "title": "40h/semaine", "sub": "passées en moyenne sur la recherche d'emploi" },
+      { "title": "15+ sources", "sub": "que SCAI scanne en quelques secondes" }
+    ],
+    "approachTitle": "Notre approche",
+    "approach": [
+      { "title": "Agent autonome", "desc": "SCAI ne dort pas. Il scanne, score et sauvegarde pendant que tu travailles, dors ou apprends." },
+      { "title": "Couverture mondiale", "desc": "Job boards, plateformes freelance, réseaux sociaux, ATS d'entreprises — tout en un seul endroit." },
+      { "title": "Zéro faux lead", "desc": "Chaque opportunité est scorée de 0 à 100 selon ton profil exact. Plus de bruit, juste le signal." },
+      { "title": "Pour tout le monde", "desc": "Emploi et freelance — une seule plateforme, quel que soit ton métier." }
+    ],
+    "founderLabel": "Fondateur",
+    "founderName": "Biyo Stéphane",
+    "founderLocation": "Douala, Cameroun · Entrepreneur · Développeur",
+    "founderQuote": "\"J'ai créé Searcher Connector parce que j'ai vécu ce problème. Trouver des opportunités prenait plus de temps que les réaliser. J'ai décidé d'automatiser cette partie — pour moi d'abord, puis pour les millions de talents africains et mondiaux qui méritent un accès équitable aux meilleures opportunités.\"",
+    "visionTitle": "La vision à 5 ans",
+    "visionDesc": "Être la plateforme d'opportunités numéro 1 en Afrique. Puis dans le monde. Faire en sorte que la localisation géographique ne soit plus jamais un obstacle à l'accès aux meilleures opportunités professionnelles.",
+    "joinNow": "Rejoindre maintenant",
+    "freeToStart": "Gratuit pour commencer · Aucune carte bancaire requise",
+    "footerPricing": "Tarifs",
+    "footerPrivacy": "Confidentialité",
+    "footerTerms": "CGU",
+    "footerSupport": "Support",
+    "copyright": "© {{year}} Searcher Connector"
+  },
   "supportPage": {
     "title": "Centre d'aide",
     "subtitle": "Tout ce que tu dois savoir sur Searcher Connector.",

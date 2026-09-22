@@ -330,6 +330,43 @@
     },
     "avatarUploadError": "Avatar upload error. Try again."
   },
+  "aboutPage": {
+    "missionLabel": "Our mission",
+    "heroTitle1": "Work finds people.",
+    "heroTitle2": "Not the other way around.",
+    "heroDesc": "There are thousands of skilled people without a job, and thousands of opportunities without candidates. Searcher Connector is the bridge between the two — automatically, 24/7.",
+    "problemTitle": "The problem we solve",
+    "problemP1": "A developer in Douala is just as skilled as a developer in Paris. But they don't have the same connections, the same contacts, or the same access to opportunities.",
+    "problemP2Prefix": "Job or freelance mission searching takes on average",
+    "problemP2Bold": "40 hours a week",
+    "problemP2Suffix": "— scanning hundreds of platforms, writing applications, following up, waiting.",
+    "problemP3": "That's 40 hours you're not spending creating, learning, or building.",
+    "stats": [
+      { "title": "2.5 billion", "sub": "working-age people without formal employment" },
+      { "title": "40h/week", "sub": "spent on average on job searching" },
+      { "title": "15+ sources", "sub": "SCAI scans in seconds" }
+    ],
+    "approachTitle": "Our approach",
+    "approach": [
+      { "title": "Autonomous agent", "desc": "SCAI never sleeps. It scans, scores, and saves while you work, sleep, or learn." },
+      { "title": "Global coverage", "desc": "Job boards, freelance platforms, social networks, company ATS — all in one place." },
+      { "title": "Zero false leads", "desc": "Every opportunity is scored from 0 to 100 against your exact profile. No noise, just signal." },
+      { "title": "For everyone", "desc": "Jobs and freelance — one platform, whatever your line of work." }
+    ],
+    "founderLabel": "Founder",
+    "founderName": "Biyo Stéphane",
+    "founderLocation": "Douala, Cameroon · Entrepreneur · Developer",
+    "founderQuote": "\"I created Searcher Connector because I lived this problem. Finding opportunities took more time than doing the work itself. I decided to automate that part — for myself first, then for the millions of African and global talents who deserve fair access to the best opportunities.\"",
+    "visionTitle": "The 5-year vision",
+    "visionDesc": "Be the #1 opportunities platform in Africa. Then in the world. Make sure geographic location is never again a barrier to accessing the best professional opportunities.",
+    "joinNow": "Join now",
+    "freeToStart": "Free to start · No credit card required",
+    "footerPricing": "Pricing",
+    "footerPrivacy": "Privacy",
+    "footerTerms": "Terms",
+    "footerSupport": "Support",
+    "copyright": "© {{year}} Searcher Connector"
+  },
   "supportPage": {
     "title": "Help Center",
     "subtitle": "Everything you need to know about Searcher Connector.",
