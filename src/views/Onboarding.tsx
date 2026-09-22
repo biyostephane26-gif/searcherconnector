@@ -8,6 +8,7 @@ import GoldButton from '../components/ui/GoldButton'
 import Card from '../components/ui/Card'
 import { Mic, Upload, Globe, Link as LinkIcon, Send, CheckCircle2, Loader2, ArrowRight, User, Briefcase, Users, DollarSign, MapPin, Code } from 'lucide-react'
 import { useVoiceInput } from '../hooks/useVoiceInput'
+import { useTranslation } from 'react-i18next'
 
 const CATEGORIES = [
   'Développement',
@@ -35,6 +36,7 @@ const FREELANCE_AVAILABILITIES = ['One-shot', 'Long terme', 'Les deux']
 const CURRENCIES = ['USD', 'EUR', 'XAF', 'XOF', 'GBP', 'JPY']
 
 export default function Onboarding() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { user, profile, refreshProfile } = useAuth()
   const [step, setStep] = useState(1)
@@ -129,14 +131,14 @@ export default function Onboarding() {
     const file = e.target.files[0]
     
     if (file.size > 5 * 1024 * 1024) {
-      alert('Fichier trop volumineux (max 5MB)')
+      alert(t('onboarding.fileTooLarge'))
       return
     }
 
     const fileExt = file.name.split('.').pop()?.toLowerCase()
     const allowedExts = ['pdf', 'docx', 'doc']
     if (!fileExt || !allowedExts.includes(fileExt)) {
-      alert('Seuls les formats PDF, DOCX et DOC sont acceptés')
+      alert(t('onboarding.invalidFileFormat'))
       return
     }
 
@@ -165,7 +167,7 @@ export default function Onboarding() {
       setFormData(prev => ({ ...prev, cvUploaded: true, cvUrl: publicUrl }))
     } catch (err: any) {
       console.error(err)
-      alert(`Échec de l'upload : ${err.message}`)
+      alert(t('onboarding.uploadFailed', { error: err.message }))
     } finally {
       setLoading(false)
       e.target.value = ''
@@ -175,7 +177,7 @@ export default function Onboarding() {
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0 || !user) return
     const file = e.target.files[0]
-    if (file.size > 5 * 1024 * 1024) { alert('Photo trop volumineuse (max 5MB)'); return }
+    if (file.size > 5 * 1024 * 1024) { alert(t('onboarding.photoTooLarge')); return }
 
     setLoading(true)
     try {
@@ -186,7 +188,7 @@ export default function Onboarding() {
       const { data: { publicUrl } } = supabase.storage.from('DOCUMENTS').getPublicUrl(filePath)
       setFormData(prev => ({ ...prev, photoUrl: publicUrl }))
     } catch (err: any) {
-      alert(`Échec de l'upload : ${err.message}`)
+      alert(t('onboarding.uploadFailed', { error: err.message }))
     } finally {
       setLoading(false)
       e.target.value = ''
@@ -291,10 +293,10 @@ export default function Onboarding() {
             body: JSON.stringify({
               userId: user?.id,
               type: 'system',
-              title: '🎉 Bienvenue sur Searcher Connector!',
-              message: 'Ton premier scan est en cours. SCAI analyse actuellement des milliers d\'opportunités pour toi. Tu recevras une notification dans quelques instants!',
+              title: t('onboarding.welcomeNotifTitle'),
+              message: t('onboarding.welcomeNotifMessage'),
               actionUrl: '/dashboard',
-              actionLabel: 'Voir le dashboard'
+              actionLabel: t('onboarding.viewDashboard')
             })
           })
         } catch (err) {
@@ -531,14 +533,14 @@ export default function Onboarding() {
         return (
           <div className="space-y-8">
             <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Quelles sont tes compétences principales ?</h2>
-              <p className="text-gray-400">Sélectionne ou saisis tes compétences.</p>
+              <h2 className="text-3xl font-bold mb-4">{t('onboarding.step1.title')}</h2>
+              <p className="text-gray-400">{t('onboarding.step1.subtitle')}</p>
             </div>
-            
+
             <Card className="p-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Compétences (séparées par des virgules)</label>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('onboarding.step1.label')}</label>
                   <input
                     type="text"
                     placeholder="React, Node.js, Figma..."
@@ -558,9 +560,9 @@ export default function Onboarding() {
                 </div>
               </div>
             </Card>
-            
+
             <GoldButton onClick={handleNext} fullWidth disabled={formData.skills.length === 0} loading={loading}>
-              Continue <ArrowRight className="w-4 h-4" />
+              {t('onboarding.step1.continue')} <ArrowRight className="w-4 h-4" />
             </GoldButton>
           </div>
         )
@@ -568,12 +570,12 @@ export default function Onboarding() {
         return (
           <div className="space-y-8">
             <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Quel est ton tarif journalier ?</h2>
+              <h2 className="text-3xl font-bold mb-4">{t('onboarding.step2.title')}</h2>
             </div>
-            
+
             <Card className="p-6 space-y-6">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Devise</label>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('onboarding.step2.currency')}</label>
                 <select
                   value={formData.currency}
                   onChange={(e) => setFormData(prev => ({ ...prev, currency: e.target.value }))}
@@ -584,9 +586,9 @@ export default function Onboarding() {
                   ))}
                 </select>
               </div>
-              
+
               <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Tarif journalier</label>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('onboarding.step2.dailyRate')}</label>
                 <input
                   type="number"
                   value={formData.dailyRate}
@@ -596,10 +598,10 @@ export default function Onboarding() {
                 />
               </div>
             </Card>
-            
+
             <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Précédent</GoldButton>
-              <GoldButton onClick={handleNext} fullWidth disabled={formData.dailyRate <= 0} loading={loading}>Suivant</GoldButton>
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth>{t('onboarding.back')}</GoldButton>
+              <GoldButton onClick={handleNext} fullWidth disabled={formData.dailyRate <= 0} loading={loading}>{t('onboarding.next')}</GoldButton>
             </div>
           </div>
         )
@@ -607,9 +609,9 @@ export default function Onboarding() {
         return (
           <div className="space-y-8">
             <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Tu es disponible pour quoi ?</h2>
+              <h2 className="text-3xl font-bold mb-4">{t('onboarding.step3.title')}</h2>
             </div>
-            
+
             <Card className="p-6">
               <div className="grid grid-cols-3 gap-4">
                 {FREELANCE_AVAILABILITIES.map(availability => (
@@ -630,8 +632,8 @@ export default function Onboarding() {
             </Card>
             
             <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Précédent</GoldButton>
-              <GoldButton onClick={handleNext} fullWidth disabled={!formData.availability} loading={loading}>Suivant</GoldButton>
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth>{t('onboarding.back')}</GoldButton>
+              <GoldButton onClick={handleNext} fullWidth disabled={!formData.availability} loading={loading}>{t('onboarding.next')}</GoldButton>
             </div>
           </div>
         )
@@ -639,13 +641,13 @@ export default function Onboarding() {
         return (
           <div className="space-y-8">
             <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Liens professionnels (optionnel)</h2>
-              <p className="text-gray-400">Portfolio, GitHub, Behance...</p>
+              <h2 className="text-3xl font-bold mb-4">{t('onboarding.step4.title')}</h2>
+              <p className="text-gray-400">{t('onboarding.step4.subtitle')}</p>
             </div>
-            
+
             <Card className="p-6 space-y-4">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Portfolio / Website</label>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('onboarding.step4.portfolio')}</label>
                 <div className="relative">
                   <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
                   <input
@@ -658,7 +660,7 @@ export default function Onboarding() {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">GitHub</label>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('onboarding.step4.github')}</label>
                 <div className="relative">
                   <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
                   <input
@@ -671,7 +673,7 @@ export default function Onboarding() {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">LinkedIn</label>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('onboarding.step4.linkedin')}</label>
                 <div className="relative">
                   <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
                   <input
@@ -684,10 +686,10 @@ export default function Onboarding() {
                 </div>
               </div>
             </Card>
-            
+
             <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Précédent</GoldButton>
-              <GoldButton onClick={handleNext} fullWidth loading={loading}>Suivant</GoldButton>
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth>{t('onboarding.back')}</GoldButton>
+              <GoldButton onClick={handleNext} fullWidth loading={loading}>{t('onboarding.next')}</GoldButton>
             </div>
           </div>
         )
@@ -695,12 +697,12 @@ export default function Onboarding() {
         return (
           <div className="space-y-8">
             <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Dans quels pays tu cherches des clients ?</h2>
+              <h2 className="text-3xl font-bold mb-4">{t('onboarding.step5.title')}</h2>
             </div>
-            
+
             <Card className="p-6">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Pays (séparés par des virgules)</label>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('onboarding.step5.countriesLabel')}</label>
                 <input
                   type="text"
                   placeholder="France, Canada, Worldwide..."
@@ -715,18 +717,18 @@ export default function Onboarding() {
 
             <Card className="p-8 border-dashed border-2 flex flex-col items-center justify-center text-center">
               <Upload className="w-10 h-10 text-[#D4AF37] mb-3" />
-              <p className="text-sm text-gray-400 mb-4">Upload ton CV (optionnel)</p>
+              <p className="text-sm text-gray-400 mb-4">{t('onboarding.step5.uploadCv')}</p>
               <label className="cursor-pointer">
                 <span className="bg-[#D4AF37] text-[#0A0A0A] px-5 py-2.5 rounded-lg font-bold hover:bg-[#F5E6A3] transition-colors text-sm">
-                  {loading ? 'Chargement...' : formData.cvUploaded ? 'CV Uploadé ✔️' : 'Uploader CV'}
+                  {loading ? t('onboarding.step5.uploading') : formData.cvUploaded ? t('onboarding.step5.cvUploaded') : t('onboarding.step5.uploadCvBtn')}
                 </span>
                 <input type="file" className="hidden" onChange={handleFileUpload} disabled={loading} accept=".pdf,.docx,.doc" />
               </label>
             </Card>
 
             <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth disabled={loading}>Précédent</GoldButton>
-              <GoldButton onClick={handleNext} fullWidth loading={loading}>Suivant</GoldButton>
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth disabled={loading}>{t('onboarding.back')}</GoldButton>
+              <GoldButton onClick={handleNext} fullWidth loading={loading}>{t('onboarding.next')}</GoldButton>
             </div>
           </div>
         )
@@ -734,8 +736,8 @@ export default function Onboarding() {
         return (
           <div className="space-y-8">
             <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Dernière étape : ton parcours (optionnel)</h2>
-              <p className="text-gray-400">Une photo et ton diplôme renforcent la confiance des recruteurs. SCAI vérifie aussi que ton profil est cohérent.</p>
+              <h2 className="text-3xl font-bold mb-4">{t('onboarding.step6.title')}</h2>
+              <p className="text-gray-400">{t('onboarding.step6.subtitle')}</p>
             </div>
 
             <Card className="p-8 border-dashed border-2 flex flex-col items-center justify-center text-center">
@@ -744,10 +746,10 @@ export default function Onboarding() {
               ) : (
                 <User className="w-10 h-10 text-[#D4AF37] mb-3" />
               )}
-              <p className="text-sm text-gray-400 mb-4">Photo de profil</p>
+              <p className="text-sm text-gray-400 mb-4">{t('onboarding.step6.photo')}</p>
               <label className="cursor-pointer">
                 <span className="bg-[#D4AF37] text-[#0A0A0A] px-5 py-2.5 rounded-lg font-bold hover:bg-[#F5E6A3] transition-colors text-sm">
-                  {loading ? 'Chargement...' : formData.photoUrl ? 'Photo ajoutée ✔️' : 'Ajouter une photo'}
+                  {loading ? t('onboarding.step5.uploading') : formData.photoUrl ? t('onboarding.step6.photoAdded') : t('onboarding.step6.addPhoto')}
                 </span>
                 <input type="file" className="hidden" onChange={handlePhotoUpload} disabled={loading} accept="image/*" />
               </label>
@@ -756,42 +758,42 @@ export default function Onboarding() {
             <Card className="p-6 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Diplôme</label>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('onboarding.step6.diploma')}</label>
                   <input type="text" value={formData.diploma}
                     onChange={(e) => setFormData(prev => ({ ...prev, diploma: e.target.value }))}
-                    placeholder="ex: Licence en Informatique"
+                    placeholder={t('onboarding.step6.diplomaPlaceholder')}
                     className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">École / Université</label>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('onboarding.step6.school')}</label>
                   <input type="text" value={formData.school}
                     onChange={(e) => setFormData(prev => ({ ...prev, school: e.target.value }))}
-                    placeholder="ex: Université de Douala"
+                    placeholder={t('onboarding.step6.schoolPlaceholder')}
                     className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Année d'obtention</label>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('onboarding.step6.graduationYear')}</label>
                   <input type="number" value={formData.graduationYear}
                     onChange={(e) => setFormData(prev => ({ ...prev, graduationYear: e.target.value }))}
                     placeholder="ex: 2022"
                     className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Date de naissance</label>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('onboarding.step6.birthDate')}</label>
                   <input type="date" value={formData.birthDate}
                     onChange={(e) => setFormData(prev => ({ ...prev, birthDate: e.target.value }))}
                     className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none" />
                 </div>
               </div>
               <p className="text-[11px] text-gray-600">
-                Ces informations restent privées — utilisées uniquement pour la vérification IA de cohérence de ton profil, jamais partagées publiquement.
+                {t('onboarding.step6.privacyNote')}
               </p>
             </Card>
 
             <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth disabled={loading}>Précédent</GoldButton>
+              <GoldButton variant="outlined" onClick={handleBack} fullWidth disabled={loading}>{t('onboarding.back')}</GoldButton>
               <GoldButton onClick={handleSubmit} fullWidth loading={loading}>
-                Terminer l'onboarding
+                {t('onboarding.step6.finish')}
               </GoldButton>
             </div>
           </div>
@@ -806,8 +808,8 @@ export default function Onboarding() {
       <div className="max-w-2xl mx-auto">
         <div className="mb-12">
           <div className="flex justify-between text-[10px] tracking-widest text-gray-500 font-bold uppercase mb-2">
-            <span>Étape {step} sur {totalSteps}</span>
-            <span>{Math.round((step / totalSteps) * 100)}% complété</span>
+            <span>{t('onboarding.step', { step, total: totalSteps })}</span>
+            <span>{t('onboarding.percentComplete', { percent: Math.round((step / totalSteps) * 100) })}</span>
           </div>
           <div className="h-1 bg-[#1A1A1A] rounded-full overflow-hidden">
             <div 
