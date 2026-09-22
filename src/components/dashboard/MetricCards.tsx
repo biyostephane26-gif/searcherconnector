@@ -1,5 +1,6 @@
 import Card from '../ui/Card'
 import { Briefcase, Send, MessageSquare, Target } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   stats: {
@@ -11,11 +12,12 @@ type Props = {
 }
 
 export default function MetricCards({ stats }: Props) {
+  const { t } = useTranslation()
   const items = [
-    { label: 'Found', value: stats.found, icon: <Briefcase className="w-4 h-4" /> },
-    { label: 'Applied', value: stats.applied, icon: <Send className="w-4 h-4" /> },
-    { label: 'Responses', value: stats.responses, icon: <MessageSquare className="w-4 h-4" /> },
-    { label: 'Avg Score', value: `${stats.avgScore}/100`, icon: <Target className="w-4 h-4" /> },
+    { label: t('metrics.found'), value: stats.found, icon: <Briefcase className="w-4 h-4" /> },
+    { label: t('metrics.applied'), value: stats.applied, icon: <Send className="w-4 h-4" /> },
+    { label: t('metrics.responses'), value: stats.responses, icon: <MessageSquare className="w-4 h-4" /> },
+    { label: t('metrics.avgScore'), value: `${stats.avgScore}/100`, icon: <Target className="w-4 h-4" /> },
   ]
 
   return (

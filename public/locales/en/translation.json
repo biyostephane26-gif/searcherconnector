@@ -81,6 +81,12 @@
     "upgradeGeniusDesc": "Unlock autonomous applications, premium sources (LinkedIn, Upwork), and the SCAI voice assistant.",
     "upgradeNow": "Upgrade Now"
   },
+  "metrics": {
+    "found": "Found",
+    "applied": "Applied",
+    "responses": "Responses",
+    "avgScore": "Avg Score"
+  },
   "opportunities": {
     "title": "Opportunity Explorer",
     "filters": {

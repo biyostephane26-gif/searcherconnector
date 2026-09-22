@@ -81,6 +81,12 @@
     "upgradeGeniusDesc": "Débloque les candidatures autonomes, les sources premium (LinkedIn, Upwork) et l'assistant vocal SCAI.",
     "upgradeNow": "Mettre à niveau"
   },
+  "metrics": {
+    "found": "Trouvées",
+    "applied": "Postulées",
+    "responses": "Réponses",
+    "avgScore": "Score moyen"
+  },
   "opportunities": {
     "title": "Explorateur d'Opportunités",
     "filters": {
