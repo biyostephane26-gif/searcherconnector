@@ -289,14 +289,14 @@ export default function Onboarding() {
           <div className="space-y-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold mb-4">Quels sont tes domaines ?</h2>
-              <p className="text-gray-400">Choisis jusqu'à 3 catégories — SCAI cherchera des opportunités dans chacune.</p>
+              <p className="text-gray-400">Choisis jusqu'à 2 métiers — SCAI cherchera des opportunités dans chacun.</p>
             </div>
 
             <Card className="p-6">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {CATEGORIES.map(category => {
                   const selected = formData.domains.includes(category)
-                  const atMax = formData.domains.length >= 3 && !selected
+                  const atMax = formData.domains.length >= 2 && !selected
                   return (
                     <button
                       key={category}
@@ -305,7 +305,7 @@ export default function Onboarding() {
                       onClick={() => setFormData(prev => {
                         const domains = selected
                           ? prev.domains.filter(d => d !== category)
-                          : prev.domains.length < 3 ? [...prev.domains, category] : prev.domains
+                          : prev.domains.length < 2 ? [...prev.domains, category] : prev.domains
                         return { ...prev, domains, domain: domains[0] || '' }
                       })}
                       className={`p-4 rounded-xl border text-left transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
@@ -319,7 +319,7 @@ export default function Onboarding() {
                   )
                 })}
               </div>
-              <p className="text-xs text-gray-600 mt-4">{formData.domains.length}/3 sélectionnés</p>
+              <p className="text-xs text-gray-600 mt-4">{formData.domains.length}/2 sélectionnés</p>
             </Card>
 
             <GoldButton onClick={handleNext} fullWidth disabled={formData.domains.length === 0} loading={loading}>

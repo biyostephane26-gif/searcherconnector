@@ -358,7 +358,7 @@ export default function Settings() {
                       className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Domaines (max 3) — SCAI cherche dans chacun</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Métier / Domaines (max 2) — ton intitulé de poste</label>
                     <div className="flex flex-wrap gap-2 mb-2">
                       {domains.map((d, i) => (
                         <span key={i} className="flex items-center gap-1.5 bg-[#1A1500] border border-[#D4AF37]/30 text-[#D4AF37] text-xs px-3 py-1.5 rounded-full">
@@ -370,18 +370,18 @@ export default function Settings() {
                     <input type="text" value={domainInput}
                       onChange={e => setDomainInput(e.target.value)}
                       onKeyDown={e => {
-                        if ((e.key === 'Enter' || e.key === ',') && domainInput.trim() && domains.length < 3) {
+                        if ((e.key === 'Enter' || e.key === ',') && domainInput.trim() && domains.length < 2) {
                           e.preventDefault()
                           setDomains(prev => [...prev, domainInput.trim()])
                           setDomainInput('')
                         }
                       }}
-                      disabled={domains.length >= 3}
-                      placeholder={domains.length >= 3 ? 'Maximum 3 domaines' : 'ex: Développeur Full Stack (Entrée pour ajouter)'}
+                      disabled={domains.length >= 2}
+                      placeholder={domains.length >= 2 ? 'Maximum 2 métiers' : 'ex: Développeur Full Stack, Designer UI/UX (Entrée pour ajouter)'}
                       className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none disabled:opacity-50" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Compétences — utilisées par SCAI pour évaluer ton niveau</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Compétences (max 15) — utilisées par SCAI pour évaluer ton niveau</label>
                     <div className="flex flex-wrap gap-2 mb-2">
                       {skills.map((s, i) => (
                         <span key={i} className="flex items-center gap-1.5 bg-[#111] border border-[#2a2a2a] text-gray-300 text-xs px-3 py-1.5 rounded-full">
@@ -393,14 +393,15 @@ export default function Settings() {
                     <input type="text" value={skillInput}
                       onChange={e => setSkillInput(e.target.value)}
                       onKeyDown={e => {
-                        if ((e.key === 'Enter' || e.key === ',') && skillInput.trim()) {
+                        if ((e.key === 'Enter' || e.key === ',') && skillInput.trim() && skills.length < 15) {
                           e.preventDefault()
                           setSkills(prev => [...prev, skillInput.trim()])
                           setSkillInput('')
                         }
                       }}
-                      placeholder="ex: React, Figma, SEO... (Entrée pour ajouter)"
-                      className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
+                      disabled={skills.length >= 15}
+                      placeholder={skills.length >= 15 ? 'Maximum 15 compétences' : 'ex: React, Figma, SEO... (Entrée pour ajouter)'}
+                      className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none disabled:opacity-50" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Pays</label>
