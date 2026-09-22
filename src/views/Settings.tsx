@@ -16,6 +16,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { authFetch } from '../lib/authFetch'
 import { SETTINGS_SECTIONS } from '../components/search/GlobalSearch'
+import { isPaidPlan } from '../lib/planUtils'
 
 // ── Toggle switch réutilisable ────────────────────────────────────
 function Toggle({ value, onChange, disabled }: { value: boolean; onChange: (v: boolean) => void; disabled?: boolean }) {
@@ -51,7 +52,10 @@ export default function Settings() {
     ![...SETTINGS_SECTIONS.map(sec => sec.id), 'fondateur', 'liens'].some(sectionVisible)
   // Extension navigateur + soumission ATS réelle — réservées Pro/Premium
   // (voir planConfig.ts extensionAccess), même règle que côté serveur.
-  const isPaidUser = profile?.role === 'founder' || ['pro', 'premium', 'starter', 'enterprise'].includes((profile as any)?.plan || '')
+  // isPaidPlan() (pas un check local) pour hériter du mode bêta — avant ce
+  // correctif, ce check local ignorait BETA_FREE_FOR_ALL et bloquait
+  // complètement l'extension pour les testeurs gratuits pendant la bêta.
+  const isPaidUser = isPaidPlan(profile)
   const [loading, setLoading]           = useState(false)
   const [fullName, setFullName]         = useState('')
   const [bio, setBio]                   = useState('')
