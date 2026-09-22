@@ -42,7 +42,7 @@ import { detectRequiredLevel, computeLevelMatch } from '../../lib/scraper/skill-
 import { typeMatchDelta, isHardTypeMismatch, isSourceCategoryMismatch } from '../../lib/scraper/typeSignals';
 import { aiFilterOpportunities } from '../../lib/scraper/aiOpportunityFilter';
 import { checkRateLimit } from '../../lib/rateLimiter';
-import { planTier } from '../../lib/planUtils';
+import { planTier, isPaidPlan } from '../../lib/planUtils';
 import { planConfig } from '../../lib/planConfig';
 import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
@@ -1404,8 +1404,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Plan payant → accès complet automatique. Le fondateur (role==='founder')
     // n'a aucune restriction quel que soit son `plan` en base.
+    // isPaidPlan() (pas un check local sur `plan`) pour hériter automatiquement
+    // du mode bêta (BETA_FREE_FOR_ALL dans planUtils.ts) — avant ce correctif,
+    // cette vérification locale ignorait la bêta, donc le Niveau 3 (Apify)
+    // restait invisible pour les testeurs gratuits même une fois la bêta
+    // activée ailleurs (vérifié : sourcesScanned.apify toujours à 0).
     const isFounder       = profile.role === 'founder';
-    const isPaid          = isFounder || ['starter', 'pro', 'enterprise'].includes(plan);
+    const isPaid          = isPaidPlan(profile);
     // Budget : confirmé par SCAI OU plan payant OU stocké dans le profil
     const hasBudgetEff   = has_budget === true || has_budget === 'true' || isPaid
                         || (profile.search_preferences as any)?.has_budget === true;
