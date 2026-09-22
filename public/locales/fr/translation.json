@@ -330,6 +330,18 @@
     },
     "avatarUploadError": "Erreur upload avatar. Réessaie."
   },
+  "interviewPrepsPage": {
+    "title": "Préparations d'Entretiens",
+    "subtitle": "Générées par SCAI",
+    "newPrep": "Nouvelle Prépa",
+    "emptyDesc": "SCAI génère automatiquement des préparations quand un entretien est détecté dans tes emails.",
+    "askManually": "Ou demande-le manuellement à SCAI →",
+    "general": "Général",
+    "dateToSet": "Date à fixer",
+    "company": "Entreprise",
+    "position": "Poste",
+    "fullAnalysis": "Analyse Complète"
+  },
   "aboutPage": {
     "missionLabel": "Notre mission",
     "heroTitle1": "Le travail trouve les gens.",

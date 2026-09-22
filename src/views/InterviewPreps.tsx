@@ -11,9 +11,11 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 
 export default function InterviewPreps() {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const router = useRouter();
   const [preps, setPreps] = useState<any[]>([]);
@@ -61,15 +63,15 @@ export default function InterviewPreps() {
         <div className="p-6 max-w-7xl mx-auto w-full space-y-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Préparations d'Entretiens</h1>
-              <p className="text-gray-500 uppercase text-xs font-bold tracking-widest">Générées par SCAI</p>
+              <h1 className="text-3xl font-bold text-white mb-2">{t('interviewPrepsPage.title')}</h1>
+              <p className="text-gray-500 uppercase text-xs font-bold tracking-widest">{t('interviewPrepsPage.subtitle')}</p>
             </div>
             <button
               onClick={handleNewPrep}
               disabled={generating}
               className="flex items-center gap-2 px-6 py-3 bg-[#D4AF37] text-black rounded-xl font-bold hover:bg-[#B8962D] transition-all disabled:opacity-50">
               {generating ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
-              Nouvelle Prépa
+              {t('interviewPrepsPage.newPrep')}
             </button>
           </div>
 
@@ -77,9 +79,9 @@ export default function InterviewPreps() {
             {preps.length === 0 ? (
               <div className="col-span-full bg-[#111111] p-12 rounded-3xl border border-[#222222] text-center">
                 <Sparkles className="mx-auto text-[#D4AF37] mb-4 opacity-20" size={60} />
-                <p className="text-gray-500 font-medium mb-4">SCAI génère automatiquement des préparations quand un entretien est détecté dans tes emails.</p>
+                <p className="text-gray-500 font-medium mb-4">{t('interviewPrepsPage.emptyDesc')}</p>
                 <button onClick={handleNewPrep} className="text-[#D4AF37] text-sm hover:underline">
-                  Ou demande-le manuellement à SCAI →
+                  {t('interviewPrepsPage.askManually')}
                 </button>
               </div>
             ) : preps.map((prep) => (
@@ -91,24 +93,24 @@ export default function InterviewPreps() {
                   </div>
                   <div className="flex flex-col items-end">
                     <span className="px-3 py-1 bg-[#D4AF37]/10 text-[#D4AF37] rounded-full text-[10px] font-bold uppercase tracking-wider mb-2">
-                      {prep.interview_type || 'Général'}
+                      {prep.interview_type || t('interviewPrepsPage.general')}
                     </span>
                     <div className="flex items-center gap-1.5 text-gray-500">
                       <Clock size={12} />
                       <span className="text-[10px] font-bold">
-                        {prep.interview_date ? format(new Date(prep.interview_date), 'dd MMM', { locale: fr }) : 'Date à fixer'}
+                        {prep.interview_date ? format(new Date(prep.interview_date), 'dd MMM', { locale: i18n.language.startsWith('fr') ? fr : enUS }) : t('interviewPrepsPage.dateToSet')}
                       </span>
                     </div>
                   </div>
                 </div>
                 <div className="space-y-1 mb-6">
-                  <h3 className="text-lg font-bold text-white truncate">{prep.opportunity?.company || 'Entreprise'}</h3>
-                  <p className="text-sm text-gray-400 truncate">{prep.opportunity?.title || 'Poste'}</p>
+                  <h3 className="text-lg font-bold text-white truncate">{prep.opportunity?.company || t('interviewPrepsPage.company')}</h3>
+                  <p className="text-sm text-gray-400 truncate">{prep.opportunity?.title || t('interviewPrepsPage.position')}</p>
                 </div>
                 <div className="flex items-center justify-between pt-6 border-t border-[#222222]">
                   <div className="flex items-center gap-2 text-gray-500">
                     <Sparkles size={14} className="text-[#D4AF37]" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Analyse Complète</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest">{t('interviewPrepsPage.fullAnalysis')}</span>
                   </div>
                   <ChevronRight size={18} className="text-gray-700 group-hover:text-[#D4AF37] transition-colors" />
                 </div>
