@@ -172,6 +172,61 @@
       { "title": "Genius status", "desc": "The most active and reliable profiles are automatically highlighted, with a badge visible everywhere." }
     ]
   },
+  "pricingPage": {
+    "title": "Plans & Pricing",
+    "subtitle": "Global payment + Africa Mobile Money",
+    "betaBanner": "🎉 Beta Period — All features are free for verified members.",
+    "card": "Card",
+    "mobileMoney": "Mobile Money",
+    "cardInfo": "💳 Visa, Mastercard, {{provider}} — international card or Mobile Money in one click",
+    "mobileInfo": "MTN Mobile Money · Orange Money · Wave — {{countries}}",
+    "mobileCountries": "Cameroon, Senegal, Ivory Coast, +20 countries",
+    "popular": "Popular",
+    "perMonthFcfa": "/mo FCFA",
+    "perMonthUsd": "/mo USD",
+    "approxUsd": "≈ ${{price}} USD",
+    "currentPlan": "✓ Current plan",
+    "lowerPlan": "Lower plan",
+    "gumroadNote": "💳 Card payments processed by {{provider}} — zero paperwork, zero VAT for you to file",
+    "monetbilNote": "📱 Mobile Money payments processed by {{provider}} — instant",
+    "cancelNote": "Cancel anytime · No commitment · If there's an issue:",
+    "mobileModal": {
+      "title": "Mobile Money Payment",
+      "planLine": "{{plan}} plan — {{price}} FCFA/mo",
+      "phoneLabel": "Mobile Money number",
+      "phonePlaceholder": "e.g. 237 6XX XXX XXX",
+      "acceptedProviders": "MTN Mobile Money · Orange Money · Wave accepted",
+      "cancel": "Cancel",
+      "pay": "Pay",
+      "sentTitle": "Request sent!",
+      "sentDesc": "Confirm the payment on your phone.",
+      "sentDesc2": "Your plan will be activated automatically after confirmation.",
+      "close": "Close"
+    },
+    "connectionError": "Connection error. Try Mobile Money or send an email.",
+    "paymentError": "Payment error",
+    "paymentErrorPrefix": "Error: ",
+    "emailFallback": {
+      "confirm": "Payment for the {{plan}} plan (${{price}}/mo).\n\nSend an email to biyostephane26@gmail.com:\n- Subject: \"{{plan}} Subscription\"\n- Your email: {{email}}\n\nYour plan will be activated within 2h.\n\nOpen email now?"
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "features": ["RSS sources + free APIs only", "10 visible opportunities (the rest locked)", "3 manual scans / 7h session", "3 auto SCAI scans + 3 notifications", "SCAI Voice: 5 credits/day (limited)", "PDF generation unavailable"],
+        "cta": "Current plan"
+      },
+      "pro": {
+        "name": "Pro",
+        "features": ["~1000 sources (half of them paid premium)", "All missions unlimited", "5 manual scans / 5h session", "5 auto SCAI scans + 20 notifications", "SCAI auto-written applications: up to 10/day", "Opportunity Creator: 3x/day", "60 SCAI credits/month (voice + LinkedIn/Upwork scraping)", "PDF generation: CV + cover letter"],
+        "cta": "Upgrade to Pro"
+      },
+      "premium": {
+        "name": "Premium",
+        "features": ["All 2005 sources — SCAI's full power", "All missions + priority pass", "10 manual scans / 5h session", "20 auto SCAI scans (up to 50 with your email, 250 with credits)", "SCAI auto-written applications: up to 50/day", "Opportunity Creator: 10x/day", "300 SCAI credits/month (voice + LinkedIn/Upwork scraping)", "PDF generation: all documents", "Interview simulation with SCAI"],
+        "cta": "Upgrade to Premium"
+      }
+    }
+  },
   "nav": {
     "home": "Home",
     "opportunities": "Opportunities",
