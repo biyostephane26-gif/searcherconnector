@@ -9,16 +9,15 @@ import GoldButton from '../components/ui/GoldButton'
 import { Mail, MessageSquare, Send, Clock, CheckCircle, XCircle, AlertCircle, ExternalLink, Loader2, Inbox, RefreshCw, Lock, Users, Sparkles, Award, TrendingUp, BriefcaseIcon } from 'lucide-react'
 import { generateEmailDraft } from '../lib/gemini'
 import { isPaidPlan } from '../lib/planUtils'
+import { useTranslation } from 'react-i18next'
 
-const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  sent:              { label: 'Envoyé',          color: 'text-gray-400' },
-  waiting_reply:     { label: 'En attente',      color: 'text-yellow-400' },
-  replied:           { label: 'Répondu',         color: 'text-blue-400' },
-  positive_response: { label: 'Réponse positive',color: 'text-green-400' },
-  rejected:          { label: 'Refus',           color: 'text-red-400' },
+const STATUS_COLORS: Record<string, string> = {
+  sent: 'text-gray-400', waiting_reply: 'text-yellow-400', replied: 'text-blue-400',
+  positive_response: 'text-green-400', rejected: 'text-red-400',
 }
 
 export default function Cowork() {
+  const { t, i18n } = useTranslation()
   const { user, profile } = useAuth()
   const router = useRouter()
   const [inbox, setInbox] = useState<any>(null)
@@ -149,8 +148,8 @@ export default function Cowork() {
 
   const sendCollabProposal = async (targetUserId: string, targetName: string) => {
     if (!user || !profile) return
-    const message = `Bonjour ${targetName},\n\nJe suis ${profile.full_name}, et j'ai remarqué que nous partageons des compétences complémentaires sur Searcher Connector.\n\nJe serais intéressé(e) à échanger sur d'éventuelles collaborations ou projets communs.\n\nÀ bientôt!\n${profile.full_name}`
-    
+    const message = t('coworkPage.collabMessage', { name: targetName, myName: profile.full_name })
+
     try {
       await fetch('/api/notifications/create', {
         method: 'POST',
@@ -158,16 +157,16 @@ export default function Cowork() {
         body: JSON.stringify({
           userId: targetUserId,
           type: 'collab_proposal',
-          title: '🤝 Proposition de collaboration',
-          message: `${profile.full_name} souhaite collaborer avec toi!`,
+          title: t('coworkPage.collabProposalTitle'),
+          message: t('coworkPage.collabProposalMessage', { name: profile.full_name }),
           actionUrl: `/profile/${user.id}`,
-          actionLabel: 'Voir le profil',
+          actionLabel: t('coworkPage.viewProfile'),
           metadata: { proposerId: user.id, message }
         })
       })
-      alert('✅ Proposition envoyée!')
+      alert(t('coworkPage.proposalSent'))
     } catch {
-      alert('Erreur lors de l\'envoi')
+      alert(t('coworkPage.proposalError'))
     }
   }
 
@@ -183,34 +182,31 @@ export default function Cowork() {
             <div className="bg-[#111] border border-[#D4AF37]/30 rounded-2xl p-8 max-w-md w-full space-y-6">
               <div className="text-center">
                 <Lock className="w-12 h-12 text-[#D4AF37] mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-white mb-2">Cowork Inbox</h2>
+                <h2 className="text-2xl font-bold text-white mb-2">{t('coworkPage.paywall.title')}</h2>
                 <p className="text-sm text-gray-400 mb-6">
-                  Fonctionnalité Premium qui centralise tous tes emails et messages liés à tes candidatures avec réponses automatiques SCAI.
+                  {t('coworkPage.paywall.desc')}
                 </p>
               </div>
-              
+
               <div className="bg-[#1A1500] border border-[#D4AF37]/20 rounded-xl p-4">
-                <h3 className="text-sm font-bold text-[#D4AF37] mb-3">Inclus dans le plan Premium:</h3>
+                <h3 className="text-sm font-bold text-[#D4AF37] mb-3">{t('coworkPage.paywall.includedTitle')}</h3>
                 <ul className="text-xs text-gray-300 space-y-2">
-                  <li>✓ Inbox unifiée Gmail + WhatsApp</li>
-                  <li>✓ Réponses automatiques SCAI</li>
-                  <li>✓ Suivi des candidatures centralisé</li>
-                  <li>✓ Templates de réponse intelligents</li>
+                  {(t('coworkPage.paywall.features', { returnObjects: true }) as string[]).map((f, i) => <li key={i}>{f}</li>)}
                 </ul>
               </div>
-              
+
               <div className="flex gap-3">
                 <button
                   onClick={() => router.push('/dashboard')}
                   className="flex-1 py-3 text-sm text-gray-400 border border-[#2A2A2A] rounded-xl hover:border-[#444]"
                 >
-                  Retour
+                  {t('coworkPage.paywall.back')}
                 </button>
                 <GoldButton
                   onClick={() => router.push('/pricing')}
                   className="flex-1"
                 >
-                  Upgrade
+                  {t('coworkPage.paywall.upgrade')}
                 </GoldButton>
               </div>
             </div>
@@ -230,18 +226,18 @@ export default function Cowork() {
               }`}
             >
               <Inbox className="w-4 h-4 inline mr-1" />
-              Inbox
+              {t('coworkPage.inboxTab')}
             </button>
             <button
               onClick={() => setViewMode('matches')}
               className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                viewMode === 'matches' 
-                  ? 'bg-[#D4AF37] text-black' 
+                viewMode === 'matches'
+                  ? 'bg-[#D4AF37] text-black'
                   : 'text-gray-500 hover:text-white'
               }`}
             >
               <Users className="w-4 h-4 inline mr-1" />
-              Matches ({suggestions.length})
+              {t('coworkPage.matchesTab', { count: suggestions.length })}
             </button>
           </div>
 
@@ -254,12 +250,12 @@ export default function Cowork() {
             <div className="p-4 border-b border-[#1A1A1A] flex items-center justify-between">
               <div>
                 <h2 className="text-white font-bold flex items-center gap-2">
-                  <Inbox className="w-4 h-4 text-[#D4AF37]" /> Cowork Inbox
+                  <Inbox className="w-4 h-4 text-[#D4AF37]" /> {t('coworkPage.header')}
                 </h2>
                 {inbox && (
                   <p className="text-xs text-gray-500 mt-0.5">
-                    {inbox.unreplied_count > 0 && <span className="text-red-400 font-bold">{inbox.unreplied_count} sans réponse · </span>}
-                    {inbox.total_messages} messages
+                    {inbox.unreplied_count > 0 && <span className="text-red-400 font-bold">{t('coworkPage.unrepliedCount', { count: inbox.unreplied_count })}</span>}
+                    {t('coworkPage.totalMessages', { count: inbox.total_messages })}
                   </p>
                 )}
               </div>
@@ -268,7 +264,7 @@ export default function Cowork() {
                   href={user ? `/api/oauth/gmail/connect?userId=${user.id}` : '#'}
                   className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 border border-[#2a2a2a] rounded-lg text-[11px] font-bold text-gray-400 hover:text-[#D4AF37] hover:border-[#D4AF37]/40 transition-colors"
                 >
-                  <Mail className="w-3 h-3" /> Connecter Gmail
+                  <Mail className="w-3 h-3" /> {t('coworkPage.connectGmail')}
                 </a>
                 <button onClick={loadInbox} className="p-2 text-gray-600 hover:text-[#D4AF37] transition-colors">
                   <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -278,10 +274,10 @@ export default function Cowork() {
 
             {/* Filtres */}
             <div className="flex gap-0 border-b border-[#1A1A1A]">
-              {(['all','email','whatsapp'] as const).map(t => (
-                <button key={t} onClick={() => setTab(t)}
-                  className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors ${tab === t ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' : 'text-gray-600 hover:text-gray-400'}`}>
-                  {t === 'all' ? 'Tous' : t === 'email' ? '📧 Email' : '💬 WhatsApp'}
+              {(['all','email','whatsapp'] as const).map(tabKey => (
+                <button key={tabKey} onClick={() => setTab(tabKey)}
+                  className={`flex-1 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors ${tab === tabKey ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' : 'text-gray-600 hover:text-gray-400'}`}>
+                  {t(`coworkPage.filters.${tabKey}`)}
                 </button>
               ))}
             </div>
@@ -295,26 +291,22 @@ export default function Cowork() {
               ) : filtered.length === 0 ? (
                 <div className="text-center py-16 text-gray-600 px-6">
                   <Inbox className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                  <p className="text-sm font-bold text-gray-500 mb-1">Cowork est vide pour l'instant</p>
+                  <p className="text-sm font-bold text-gray-500 mb-1">{t('coworkPage.emptyTitle')}</p>
                   <p className="text-xs leading-relaxed">
-                    Les messages apparaissent ici dès que SCAI envoie des candidatures en ton nom.<br/>
-                    Lance un scan depuis le <a href="/agent" className="text-[#D4AF37] hover:underline">dashboard SCAI</a> pour commencer.
+                    {t('coworkPage.emptyDesc')}<br/>
+                    <a href="/agent" className="text-[#D4AF37] hover:underline">{t('coworkPage.emptyCta')}</a> {t('coworkPage.emptyCtaSuffix')}
                   </p>
                   <div className="mt-4 space-y-2 text-left bg-[#111] border border-[#1A1A1A] rounded-xl p-4">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Comment ça marche :</p>
-                    {[
-                      '1. Tu lances un scan → SCAI trouve des opportunités',
-                      '2. SCAI rédige la candidature (avec ta signature) — tu l\'envoies',
-                      '3. Les réponses arrivent ici dans Cowork',
-                      '4. Tu peux répondre par Email ou WhatsApp depuis ici',
-                    ].map((s, i) => (
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">{t('coworkPage.howItWorks')}</p>
+                    {(t('coworkPage.steps', { returnObjects: true }) as string[]).map((s, i) => (
                       <p key={i} className="text-xs text-gray-600">{s}</p>
                     ))}
                   </div>
                 </div>
               ) : (
                 filtered.map((msg: any) => {
-                  const st = STATUS_LABELS[msg.status] || STATUS_LABELS['sent']
+                  const stColor = STATUS_COLORS[msg.status] || STATUS_COLORS['sent']
+                  const stLabel = t(`coworkPage.statusLabels.${msg.status}`, t('coworkPage.statusLabels.sent'))
                   return (
                     <div key={msg.id} onClick={() => setSelectedMsg(msg)}
                       className={`p-4 border-b border-[#1A1A1A] cursor-pointer hover:bg-[#111] transition-colors ${selectedMsg?.id === msg.id ? 'bg-[#111] border-l-2 border-l-[#D4AF37]' : ''}`}>
@@ -332,9 +324,9 @@ export default function Cowork() {
                           <p className="text-xs text-gray-500 truncate">{msg.preview?.slice(0, 70)}</p>
                         </div>
                         <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                          <span className={`text-[10px] font-bold ${st.color}`}>{st.label}</span>
+                          <span className={`text-[10px] font-bold ${stColor}`}>{stLabel}</span>
                           <span className="text-[10px] text-gray-700">
-                            {new Date(msg.created_at).toLocaleDateString('fr-FR', { day:'numeric', month:'short' })}
+                            {new Date(msg.created_at).toLocaleDateString(i18n.language, { day:'numeric', month:'short' })}
                           </span>
                           {msg.direction === 'incoming' && !msg.searcher_replied && (
                             <span className="w-2 h-2 rounded-full bg-red-500" />
@@ -354,7 +346,7 @@ export default function Cowork() {
               <div className="flex items-center justify-center h-full text-gray-700">
                 <div className="text-center">
                   <Mail className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                  <p className="text-sm">Sélectionne un message</p>
+                  <p className="text-sm">{t('coworkPage.selectMessage')}</p>
                 </div>
               </div>
             ) : (
@@ -363,11 +355,11 @@ export default function Cowork() {
                 <div className="p-5 border-b border-[#1A1A1A]">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-white font-bold">{selectedMsg.subject || 'Message'}</h3>
-                      <p className="text-sm text-gray-500 mt-0.5">De : {selectedMsg.from}</p>
+                      <h3 className="text-white font-bold">{selectedMsg.subject || t('coworkPage.message')}</h3>
+                      <p className="text-sm text-gray-500 mt-0.5">{t('coworkPage.from', { from: selectedMsg.from })}</p>
                       {selectedMsg.opportunity && (
                         <div className="flex items-center gap-1.5 mt-1">
-                          <span className="text-[10px] text-gray-600">Opportunité :</span>
+                          <span className="text-[10px] text-gray-600">{t('coworkPage.opportunity')}</span>
                           <span className="text-[10px] text-[#D4AF37] font-bold">{selectedMsg.opportunity.title?.slice(0, 50)}</span>
                         </div>
                       )}
@@ -376,7 +368,7 @@ export default function Cowork() {
                       {selectedMsg.opportunity?.original_url && (
                         <a href={selectedMsg.opportunity.original_url} target="_blank" rel="noopener noreferrer"
                           className="text-xs text-[#D4AF37] hover:text-white flex items-center gap-1 transition-colors">
-                          Voir l'offre <ExternalLink className="w-3 h-3" />
+                          {t('coworkPage.viewOffer')} <ExternalLink className="w-3 h-3" />
                         </a>
                       )}
                     </div>
@@ -387,7 +379,7 @@ export default function Cowork() {
                 <div className="flex-1 overflow-y-auto p-5">
                   <Card className="p-4 mb-4">
                     <p className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">
-                      {selectedMsg.preview || 'Contenu du message non disponible.'}
+                      {selectedMsg.preview || t('coworkPage.noContent')}
                     </p>
                   </Card>
 
@@ -396,12 +388,12 @@ export default function Cowork() {
                     {selectedMsg.requires_human && (
                       <div className="flex items-center gap-1.5 text-xs text-yellow-400 bg-yellow-900/20 border border-yellow-700/30 rounded-lg px-3 py-1.5">
                         <AlertCircle className="w-3.5 h-3.5" />
-                        SCAI recommande une réponse manuelle
+                        {t('coworkPage.scaiRecommendsManual')}
                       </div>
                     )}
                     {selectedMsg.searcher_replied && (
                       <div className="flex items-center gap-1.5 text-xs text-green-400">
-                        <CheckCircle className="w-3.5 h-3.5" /> SCAI a déjà répondu
+                        <CheckCircle className="w-3.5 h-3.5" /> {t('coworkPage.scaiAlreadyReplied')}
                       </div>
                     )}
                   </div>
@@ -413,7 +405,7 @@ export default function Cowork() {
                     <textarea
                       value={replyText}
                       onChange={e => setReplyText(e.target.value)}
-                      placeholder="Écrire une réponse... (SCAI peut le faire automatiquement)"
+                      placeholder={t('coworkPage.replyPlaceholder')}
                       rows={3}
                       className="flex-1 bg-black border border-[#2a2a2a] focus:border-[#D4AF37] rounded-xl px-4 py-3 text-white text-sm outline-none resize-none"
                     />
@@ -425,7 +417,7 @@ export default function Cowork() {
                     className="flex items-center gap-1.5 mb-3 px-4 py-2 border border-[#D4AF37]/30 text-[#D4AF37] rounded-xl text-xs font-bold hover:bg-[#D4AF37]/10 disabled:opacity-50 transition-colors"
                   >
                     {draftingReply ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                    {draftingReply ? 'SCAI rédige...' : 'Rédiger avec SCAI'}
+                    {draftingReply ? t('coworkPage.scaiDrafting') : t('coworkPage.draftWithSCAI')}
                   </button>
 
                   {/* 3 boutons d'envoi */}
@@ -434,7 +426,7 @@ export default function Cowork() {
                     <button onClick={handleReply} disabled={!replyText.trim() || sending}
                       className="flex items-center gap-1.5 px-4 py-2 bg-[#D4AF37] text-black rounded-xl text-xs font-bold hover:bg-[#F5E6A3] disabled:opacity-50 transition-colors">
                       {sending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Mail className="w-3.5 h-3.5" />}
-                      Envoyer par Email
+                      {t('coworkPage.sendByEmail')}
                     </button>
 
                     {/* WhatsApp normal — lien wa.me */}
@@ -444,14 +436,14 @@ export default function Cowork() {
                           type="tel"
                           value={phoneInput}
                           onChange={e => setPhoneInput(e.target.value)}
-                          placeholder="Ex: 237683655802"
+                          placeholder={t('coworkPage.phonePlaceholder')}
                           className="flex-1 bg-black border border-[#2a2a2a] rounded-xl px-3 py-2 text-white text-xs outline-none focus:border-green-500"
                           autoFocus
                         />
                         <button
                           onClick={() => { if (phoneInput.trim()) { handleWhatsAppLink(phoneInput.trim()); setShowPhoneInput(false); setPhoneInput('') } }}
                           className="px-3 py-2 bg-green-600 text-white rounded-xl text-xs font-bold hover:bg-green-500">
-                          OK
+                          {t('coworkPage.ok')}
                         </button>
                         <button onClick={() => setShowPhoneInput(false)} className="px-3 py-2 border border-[#2a2a2a] text-gray-500 rounded-xl text-xs hover:text-white">✕</button>
                       </div>
@@ -481,12 +473,12 @@ export default function Cowork() {
                       }}
                       disabled={!replyText.trim()}
                       className="flex items-center gap-1.5 px-4 py-2 border border-[#2a2a2a] text-gray-400 rounded-xl text-xs font-bold hover:text-white hover:border-[#444] disabled:opacity-50 transition-colors">
-                      {copied ? <><CheckCircle className="w-3.5 h-3.5 text-green-400" /> Copié !</> : '📋 Copier'}
+                      {copied ? <><CheckCircle className="w-3.5 h-3.5 text-green-400" /> {t('coworkPage.copied')}</> : t('coworkPage.copy')}
                     </button>
                   </div>
 
                   <p className="text-[10px] text-gray-700 mt-2">
-                    Signature : "Powered by Searcher Connector · SCAI"
+                    {t('coworkPage.signature')}
                   </p>
                 </div>
               </div>
@@ -503,20 +495,20 @@ export default function Cowork() {
                 <div className="text-center mb-8">
                   <div className="inline-flex items-center gap-2 bg-[#1A1500] border border-[#D4AF37]/30 rounded-full px-4 py-2 mb-4">
                     <Sparkles className="w-4 h-4 text-[#D4AF37]" />
-                    <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">Matching intelligent</span>
+                    <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">{t('coworkPage.matchingIntelligent')}</span>
                   </div>
                   <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-[#D4AF37] to-white bg-clip-text text-transparent">
-                    Collaborateurs recommandés
+                    {t('coworkPage.recommendedCollaborators')}
                   </h2>
                   <p className="text-gray-400">
-                    Basé sur ton domaine, tes compétences et ton type de profil
+                    {t('coworkPage.matchingDesc')}
                   </p>
                   <button
                     onClick={loadSuggestions}
                     className="mt-4 text-sm text-[#D4AF37] hover:text-white flex items-center gap-2 mx-auto"
                   >
                     <RefreshCw className={`w-4 h-4 ${loadingSuggestions ? 'animate-spin' : ''}`} />
-                    Actualiser
+                    {t('coworkPage.refresh')}
                   </button>
                 </div>
 
@@ -528,15 +520,15 @@ export default function Cowork() {
                 ) : suggestions.length === 0 ? (
                   <Card className="p-12 text-center">
                     <Users className="w-16 h-16 text-gray-600 mx-auto mb-4 opacity-50" />
-                    <p className="text-gray-500 mb-2">Aucune suggestion pour le moment</p>
+                    <p className="text-gray-500 mb-2">{t('coworkPage.noSuggestions')}</p>
                     <p className="text-sm text-gray-600">
-                      Complete ton profil pour recevoir des suggestions de collaborateurs compatibles
+                      {t('coworkPage.completeProfileDesc')}
                     </p>
                     <button
                       onClick={() => router.push('/profile')}
                       className="mt-4 text-sm text-[#D4AF37] hover:underline"
                     >
-                      Compléter mon profil →
+                      {t('coworkPage.completeProfile')}
                     </button>
                   </Card>
                 ) : (
@@ -553,7 +545,7 @@ export default function Cowork() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-bold text-white truncate">{match.full_name || 'Utilisateur'}</h3>
+                              <h3 className="font-bold text-white truncate">{match.full_name || t('coworkPage.user')}</h3>
                               {match.verification_status === 'genius' && (
                                 <Award className="w-4 h-4 text-[#D4AF37]" />
                               )}
@@ -568,7 +560,7 @@ export default function Cowork() {
                         {/* Score compatibilité */}
                         <div className="bg-gradient-to-r from-[#1A1500] to-[#0D0D0D] border border-[#D4AF37]/20 rounded-xl p-3 mb-4">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs text-gray-500 uppercase tracking-wider">Compatibilité</span>
+                            <span className="text-xs text-gray-500 uppercase tracking-wider">{t('coworkPage.compatibility')}</span>
                             <span className="text-lg font-bold text-[#D4AF37]">{match.compatibility_score}%</span>
                           </div>
                           <div className="h-2 bg-[#1A1A1A] rounded-full overflow-hidden">
@@ -582,7 +574,7 @@ export default function Cowork() {
                         {/* Domaine */}
                         {match.domain && (
                           <div className="mb-3">
-                            <div className="text-xs text-gray-600 uppercase tracking-wider mb-1">Domaine</div>
+                            <div className="text-xs text-gray-600 uppercase tracking-wider mb-1">{t('coworkPage.domain')}</div>
                             <div className="text-sm text-white font-medium">{match.domain}</div>
                           </div>
                         )}
@@ -590,7 +582,7 @@ export default function Cowork() {
                         {/* Compétences communes */}
                         {match.common_skills && match.common_skills.length > 0 && (
                           <div className="mb-4">
-                            <div className="text-xs text-gray-600 uppercase tracking-wider mb-2">Compétences communes</div>
+                            <div className="text-xs text-gray-600 uppercase tracking-wider mb-2">{t('coworkPage.commonSkills')}</div>
                             <div className="flex flex-wrap gap-1">
                               {match.common_skills.slice(0, 3).map((skill: string, i: number) => (
                                 <span key={i} className="text-xs bg-[#D4AF37]/10 text-[#D4AF37] px-2 py-1 rounded-full">
@@ -610,11 +602,11 @@ export default function Cowork() {
                         <div className="grid grid-cols-2 gap-3 mb-4 text-center">
                           <div className="bg-[#0D0D0D] rounded-lg p-2">
                             <div className="text-lg font-bold text-white">{match.missions_completed || 0}</div>
-                            <div className="text-[10px] text-gray-600 uppercase">Missions</div>
+                            <div className="text-[10px] text-gray-600 uppercase">{t('coworkPage.missions')}</div>
                           </div>
                           <div className="bg-[#0D0D0D] rounded-lg p-2">
                             <div className="text-lg font-bold text-white">{match.plan || 'free'}</div>
-                            <div className="text-[10px] text-gray-600 uppercase">Plan</div>
+                            <div className="text-[10px] text-gray-600 uppercase">{t('coworkPage.plan')}</div>
                           </div>
                         </div>
 
@@ -624,14 +616,14 @@ export default function Cowork() {
                             onClick={() => router.push(`/profile/${match.id}`)}
                             className="flex-1 py-2 text-sm border border-[#2A2A2A] text-gray-400 rounded-lg hover:border-[#D4AF37] hover:text-white transition-colors"
                           >
-                            Voir profil
+                            {t('coworkPage.viewProfileBtn')}
                           </button>
                           <GoldButton
                             onClick={() => sendCollabProposal(match.id, match.full_name)}
                             className="flex-1 text-sm"
                           >
                             <Send className="w-4 h-4" />
-                            Proposer
+                            {t('coworkPage.propose')}
                           </GoldButton>
                         </div>
 
