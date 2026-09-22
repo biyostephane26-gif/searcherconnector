@@ -70,6 +70,24 @@
     "terms": "Terms",
     "privacyPolicy": "Privacy Policy"
   },
+  "resetPassword": {
+    "title": "New password",
+    "subtitle": "Choose a secure password for your account",
+    "passwordTooShort": "Password must be at least 8 characters.",
+    "passwordMismatch": "The two passwords don't match.",
+    "genericError": "An error occurred.",
+    "updated": "Password updated!",
+    "redirecting": "Redirecting to the dashboard in a few seconds...",
+    "goToDashboard": "Go to dashboard →",
+    "verifyingLink": "⏳ Verifying link... If you arrived here from an email, wait a few seconds.",
+    "newPassword": "New password",
+    "passwordPlaceholder": "Minimum 8 characters",
+    "strength": { "weak": "Weak", "medium": "Medium", "good": "Good", "strong": "Strong" },
+    "confirm": "Confirm",
+    "confirmPlaceholder": "Repeat the password",
+    "updateBtn": "Update password",
+    "backToLogin": "← Back to sign in"
+  },
   "nav": {
     "home": "Home",
     "opportunities": "Opportunities",

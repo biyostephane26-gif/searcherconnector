@@ -7,8 +7,10 @@ import GoldButton from '../components/ui/GoldButton'
 import Card from '../components/ui/Card'
 import Link from 'next/link'
 import { Lock, CheckCircle, AlertCircle, Eye, EyeOff } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export default function ResetPassword() {
+  const { t } = useTranslation()
   const router = useRouter()
   const [password, setPassword]         = useState('')
   const [confirm, setConfirm]           = useState('')
@@ -40,8 +42,8 @@ export default function ResetPassword() {
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (password.length < 8) { setError('Le mot de passe doit faire au moins 8 caractères.'); return }
-    if (password !== confirm) { setError('Les deux mots de passe ne correspondent pas.'); return }
+    if (password.length < 8) { setError(t('resetPassword.passwordTooShort')); return }
+    if (password !== confirm) { setError(t('resetPassword.passwordMismatch')); return }
     setLoading(true)
     try {
       const { error: updateError } = await supabase.auth.updateUser({ password })
@@ -49,7 +51,7 @@ export default function ResetPassword() {
       setSuccess(true)
       setTimeout(() => router.push('/dashboard'), 3000)
     } catch (err: any) {
-      setError(err.message || 'Une erreur est survenue.')
+      setError(err.message || t('resetPassword.genericError'))
     } finally {
       setLoading(false)
     }
@@ -62,18 +64,18 @@ export default function ResetPassword() {
           <Link href="/" className="text-[#D4AF37] font-bold text-2xl tracking-tighter inline-block mb-4">
             SEARCHER CONNECTOR
           </Link>
-          <h1 className="text-2xl font-bold text-white">Nouveau mot de passe</h1>
-          <p className="text-gray-500 text-sm mt-2">Choisis un mot de passe sécurisé pour ton compte</p>
+          <h1 className="text-2xl font-bold text-white">{t('resetPassword.title')}</h1>
+          <p className="text-gray-500 text-sm mt-2">{t('resetPassword.subtitle')}</p>
         </div>
 
         <Card className="p-8">
           {success ? (
             <div className="text-center space-y-4 py-4">
               <CheckCircle className="w-14 h-14 text-green-400 mx-auto" />
-              <h3 className="font-bold text-white text-lg">Mot de passe mis à jour !</h3>
-              <p className="text-sm text-gray-400">Redirection vers le dashboard dans quelques secondes...</p>
+              <h3 className="font-bold text-white text-lg">{t('resetPassword.updated')}</h3>
+              <p className="text-sm text-gray-400">{t('resetPassword.redirecting')}</p>
               <Link href="/dashboard" className="text-[#D4AF37] text-sm hover:underline">
-                Aller au dashboard →
+                {t('resetPassword.goToDashboard')}
               </Link>
             </div>
           ) : (
@@ -87,18 +89,18 @@ export default function ResetPassword() {
 
               {!sessionReady && (
                 <div className="bg-yellow-900/20 border border-yellow-800/50 text-yellow-400 p-3 rounded-lg text-xs">
-                  ⏳ Vérification du lien... Si tu arrives ici depuis un email, attends quelques secondes.
+                  {t('resetPassword.verifyingLink')}
                 </div>
               )}
 
               <div className="space-y-2">
-                <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">Nouveau mot de passe</label>
+                <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">{t('resetPassword.newPassword')}</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
                   <input
                     type={showPass ? 'text' : 'password'} required
                     value={password} onChange={e => setPassword(e.target.value)}
-                    placeholder="Minimum 8 caractères"
+                    placeholder={t('resetPassword.passwordPlaceholder')}
                     className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg py-3 pl-10 pr-10 text-sm focus:border-[#D4AF37] outline-none"
                   />
                   <button type="button" onClick={() => setShowPass(v => !v)}
@@ -116,20 +118,20 @@ export default function ResetPassword() {
                       }`} />
                     ))}
                     <span className="text-[10px] text-gray-600 ml-1">
-                      {password.length < 6 ? 'Faible' : password.length < 10 ? 'Moyen' : password.length < 14 ? 'Bon' : 'Fort'}
+                      {password.length < 6 ? t('resetPassword.strength.weak') : password.length < 10 ? t('resetPassword.strength.medium') : password.length < 14 ? t('resetPassword.strength.good') : t('resetPassword.strength.strong')}
                     </span>
                   </div>
                 )}
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">Confirmer</label>
+                <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">{t('resetPassword.confirm')}</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
                   <input
                     type={showPass ? 'text' : 'password'} required
                     value={confirm} onChange={e => setConfirm(e.target.value)}
-                    placeholder="Répète le mot de passe"
+                    placeholder={t('resetPassword.confirmPlaceholder')}
                     className={`w-full bg-[#0D0D0D] border rounded-lg py-3 pl-10 pr-4 text-sm outline-none transition-colors ${
                       confirm && confirm !== password ? 'border-red-500'
                       : confirm && confirm === password ? 'border-green-500'
@@ -141,12 +143,12 @@ export default function ResetPassword() {
 
               <GoldButton type="submit" loading={loading} fullWidth disabled={!sessionReady}>
                 <Lock className="w-4 h-4 mr-2" />
-                Mettre à jour le mot de passe
+                {t('resetPassword.updateBtn')}
               </GoldButton>
 
               <div className="text-center pt-2">
                 <Link href="/login" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
-                  ← Retour à la connexion
+                  {t('resetPassword.backToLogin')}
                 </Link>
               </div>
             </form>

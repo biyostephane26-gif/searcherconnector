@@ -70,6 +70,24 @@
     "terms": "CGU",
     "privacyPolicy": "politique de confidentialité"
   },
+  "resetPassword": {
+    "title": "Nouveau mot de passe",
+    "subtitle": "Choisis un mot de passe sécurisé pour ton compte",
+    "passwordTooShort": "Le mot de passe doit faire au moins 8 caractères.",
+    "passwordMismatch": "Les deux mots de passe ne correspondent pas.",
+    "genericError": "Une erreur est survenue.",
+    "updated": "Mot de passe mis à jour !",
+    "redirecting": "Redirection vers le dashboard dans quelques secondes...",
+    "goToDashboard": "Aller au dashboard →",
+    "verifyingLink": "⏳ Vérification du lien... Si tu arrives ici depuis un email, attends quelques secondes.",
+    "newPassword": "Nouveau mot de passe",
+    "passwordPlaceholder": "Minimum 8 caractères",
+    "strength": { "weak": "Faible", "medium": "Moyen", "good": "Bon", "strong": "Fort" },
+    "confirm": "Confirmer",
+    "confirmPlaceholder": "Répète le mot de passe",
+    "updateBtn": "Mettre à jour le mot de passe",
+    "backToLogin": "← Retour à la connexion"
+  },
   "nav": {
     "home": "Accueil",
     "opportunities": "Opportunités",
