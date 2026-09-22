@@ -115,6 +115,19 @@ export default function AgentDashboard() {
     }).catch(() => {});
   }, [user]);
 
+  // Compteur "Opportunités" du panneau Progression — avant, ça comptait le
+  // nombre de SCANS lancés (recentActions filtré sur 'search_scan'), pas le
+  // nombre réel d'opportunités trouvées. Résultat : un chiffre différent
+  // (souvent 0 ou 1) de celui affiché sur le Dashboard et la page
+  // Opportunités pour le même utilisateur — repéré comme incohérence.
+  // Même requête que Dashboard.tsx pour que les deux soient toujours d'accord.
+  const [opportunitiesCount, setOpportunitiesCount] = useState(0);
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('opportunities').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+      .then(({ count }) => setOpportunitiesCount(count || 0));
+  }, [user, recentActions]);
+
   // Ouverture directe depuis la recherche globale ou la page /connectors
   // (?tab=connectors, ?tool=pdf…) — appliqué une seule fois au montage.
   const searchParams = useSearchParams();
@@ -1047,7 +1060,7 @@ export default function AgentDashboard() {
           <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">Aperçu</p>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { label: 'Opportunités', value: recentActions?.filter((a: any) => a.action_type === 'search_scan').length || 0, icon: <Search size={12} className="text-[#D4AF37]" /> },
+              { label: 'Opportunités', value: opportunitiesCount, icon: <Search size={12} className="text-[#D4AF37]" /> },
               { label: 'Notifications', value: pendingQueue, icon: <Clock size={12} className="text-blue-500" /> },
               { label: 'Candidatures auto', value: recentActions?.filter((a: any) => a.action_type === 'auto_apply').length || 0, icon: <CheckCircle size={12} className="text-green-500" /> },
               { label: 'Actions récentes', value: recentActions?.length || 0, icon: <Mail size={12} className="text-purple-500" /> },
