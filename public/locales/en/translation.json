@@ -330,6 +330,19 @@
     },
     "avatarUploadError": "Avatar upload error. Try again."
   },
+  "agentDashboard": {
+    "exportOpportunities": "Export my opportunities",
+    "exportApplications": "Export my applications",
+    "progression": "Progress",
+    "overview": "Overview",
+    "actionLog": "Action log",
+    "context": "Context",
+    "discussions": "Discussions",
+    "recentActivity": "Recent activity",
+    "confirmDeleteDiscussion": "Delete this discussion?",
+    "table": { "task": "Task", "scheduled": "Scheduled", "priority": "Priority", "status": "Status" },
+    "pending": "Pending"
+  },
   "settingsPage": {
     "title": "Settings",
     "fullName": "Full name",

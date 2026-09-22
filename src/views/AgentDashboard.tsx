@@ -829,8 +829,8 @@ export default function AgentDashboard() {
                 </span>
                 {activeTool === 'excel' && (
                   <>
-                    <button onClick={() => runTool('excel', '', 'opportunities')} className="text-[11px] text-gray-400 hover:text-white hover:underline">Exporter mes opportunités</button>
-                    <button onClick={() => runTool('excel', '', 'applications')} className="text-[11px] text-gray-400 hover:text-white hover:underline">Exporter mes candidatures</button>
+                    <button onClick={() => runTool('excel', '', 'opportunities')} className="text-[11px] text-gray-400 hover:text-white hover:underline">{t('agentDashboard.exportOpportunities')}</button>
+                    <button onClick={() => runTool('excel', '', 'applications')} className="text-[11px] text-gray-400 hover:text-white hover:underline">{t('agentDashboard.exportApplications')}</button>
                   </>
                 )}
               </div>
@@ -1038,7 +1038,7 @@ export default function AgentDashboard() {
   const renderRightPanel = (opts?: { onClose?: () => void }) => (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800 shrink-0">
-        <span className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500">Progression</span>
+        <span className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500">{t('agentDashboard.progression')}</span>
         {opts?.onClose ? (
           <button onClick={opts.onClose} className="text-gray-500 hover:text-white transition-colors"><X size={16} /></button>
         ) : (
@@ -1057,7 +1057,7 @@ export default function AgentDashboard() {
           </div>
         )}
         <div>
-          <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">Aperçu</p>
+          <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">{t('agentDashboard.overview')}</p>
           <div className="grid grid-cols-2 gap-2">
             {[
               { label: 'Opportunités', value: opportunitiesCount, icon: <Search size={12} className="text-[#D4AF37]" /> },
@@ -1092,7 +1092,7 @@ export default function AgentDashboard() {
         </div>
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500">Journal des actions</p>
+            <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500">{t('agentDashboard.actionLog')}</p>
             <span className="text-[10px] text-gray-600">{recentActions?.length || 0}</span>
           </div>
           {!recentActions || recentActions.length === 0 ? (
@@ -1121,7 +1121,7 @@ export default function AgentDashboard() {
         <TasksPanel />
         <OutputsPanel />
         <div>
-          <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">Contexte</p>
+          <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">{t('agentDashboard.context')}</p>
           {connectedConnectors.length === 0 ? (
             <button onClick={() => setActiveTab('connectors')} className="text-xs text-gray-600 hover:text-[#D4AF37] transition-colors text-left">
               Aucun connecteur actif — SCAI travaille avec ton profil seul. Connecter un outil →
@@ -1185,7 +1185,7 @@ export default function AgentDashboard() {
 
           {conversations.length > 0 && (
             <div className="mt-5 flex-1 min-h-0 flex flex-col">
-              <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-600 mb-1.5 px-2">Discussions</p>
+              <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-600 mb-1.5 px-2">{t('agentDashboard.discussions')}</p>
               <div className="flex-1 overflow-y-auto space-y-0.5">
                 {conversations.map(conv => (
                   <button
@@ -1239,7 +1239,7 @@ export default function AgentDashboard() {
 
             {recentActions && recentActions.length > 0 && (
               <div className="w-full max-w-2xl mt-10">
-                <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">Activité récente</p>
+                <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">{t('agentDashboard.recentActivity')}</p>
                 <div className="space-y-2">
                   {recentActions.slice(0, 4).map((a: any) => (
                     <div key={a.id} className="flex items-center gap-3 bg-[#111111] border border-gray-800 rounded-xl px-4 py-3">
@@ -1280,7 +1280,7 @@ export default function AgentDashboard() {
             <div className="flex justify-end items-center -mb-2">
               <div className="flex items-center gap-2">
                 {showClearConfirm && (
-                  <span className="text-[10px] text-red-400">Supprimer cette discussion ?</span>
+                  <span className="text-[10px] text-red-400">{t('agentDashboard.confirmDeleteDiscussion')}</span>
                 )}
                 <button
                   onClick={deleteActiveConversation}
@@ -1487,10 +1487,10 @@ export default function AgentDashboard() {
             <table className="w-full min-w-[560px]">
               <thead>
                 <tr className="border-b border-gray-800">
-                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-medium uppercase tracking-wider">Tâche</th>
-                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-medium uppercase tracking-wider">Planifié</th>
-                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-medium uppercase tracking-wider">Priorité</th>
-                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-medium uppercase tracking-wider">Statut</th>
+                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-medium uppercase tracking-wider">{t('agentDashboard.table.task')}</th>
+                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-medium uppercase tracking-wider">{t('agentDashboard.table.scheduled')}</th>
+                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-medium uppercase tracking-wider">{t('agentDashboard.table.priority')}</th>
+                  <th className="text-left px-4 py-3 text-xs text-gray-500 font-medium uppercase tracking-wider">{t('agentDashboard.table.status')}</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
@@ -1580,7 +1580,7 @@ export default function AgentDashboard() {
                     ) : email.requires_human ? (
                       <span className="text-xs text-gold">⚠️ Votre action requise</span>
                     ) : (
-                      <span className="text-xs text-gray-600">En attente</span>
+                      <span className="text-xs text-gray-600">{t('agentDashboard.pending')}</span>
                     )}
                   </div>
                 </div>

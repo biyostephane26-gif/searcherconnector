@@ -330,6 +330,19 @@
     },
     "avatarUploadError": "Erreur upload avatar. Réessaie."
   },
+  "agentDashboard": {
+    "exportOpportunities": "Exporter mes opportunités",
+    "exportApplications": "Exporter mes candidatures",
+    "progression": "Progression",
+    "overview": "Aperçu",
+    "actionLog": "Journal des actions",
+    "context": "Contexte",
+    "discussions": "Discussions",
+    "recentActivity": "Activité récente",
+    "confirmDeleteDiscussion": "Supprimer cette discussion ?",
+    "table": { "task": "Tâche", "scheduled": "Planifié", "priority": "Priorité", "status": "Statut" },
+    "pending": "En attente"
+  },
   "settingsPage": {
     "title": "Paramètres",
     "fullName": "Nom complet",
