@@ -107,6 +107,111 @@
     "readinessScore": "Score de préparation",
     "applyManually": "Je postule moi-même"
   },
+  "oppCard": {
+    "highMatch": "Très compatible",
+    "recommended": "Recommandé pour ton niveau",
+    "publishedAgo": "Publiée il y a {{hours}}h",
+    "applicants": "Postulants",
+    "via": "via {{source}}",
+    "upworkConnectsRequired": "Connects Upwork requis",
+    "matchIntelligence": "Analyse de compatibilité",
+    "internationalTitle": "Opportunité internationale",
+    "internationalDesc": "Ce poste peut nécessiter un visa ou un passeport. Searcher peut t'aider à préparer les documents nécessaires.",
+    "viewOriginal": "Voir l'offre originale",
+    "readyToSend": "Prête à envoyer",
+    "letSearcherApply": "Laisser Searcher postuler",
+    "sendToFriend": "Envoyer à un ami",
+    "shareText": "SCAI a trouvé cette offre qui pourrait t'intéresser : \"{{title}}\"{{companyPart}}.\n{{link}}\n\nDécouvre Searcher Connector, l'agent IA qui cherche des opportunités pour toi 24h/24 : {{appLink}}",
+    "shareTextCompanyPart": " chez {{company}}"
+  },
+  "oppPage": {
+    "count": "{{count}} opportunités",
+    "applyInSeries": "Postuler en série",
+    "exportPdf": "Exporter PDF",
+    "filters": {
+      "all": "Toutes",
+      "forYou": "🎯 Pour toi",
+      "fresh": "Fraîches (<24h)",
+      "lowComp": "🟢 Faible concurrence",
+      "applied": "Auto-postulées",
+      "pending": "En attente",
+      "atsAuto": "⚡ Envoi automatique",
+      "manual": "✋ Envoi manuel requis"
+    },
+    "category": "Catégorie :",
+    "allCategories": "Toutes catégories ({{count}})",
+    "sortBy": "Trier :",
+    "sorts": { "recommended": "Recommandé", "freshest": "Plus fraîches", "highestPaid": "Mieux payées" },
+    "noneForFilter": "Aucune offre pour ce filtre.",
+    "hints": {
+      "lowComp": "Peu de plateformes affichent le nombre de postulants — relance un scan pour en trouver.",
+      "forYou": "Complète ton domaine et tes compétences dans ton profil pour affiner la sélection.",
+      "fresh": "Aucune offre publiée ces dernières 24h — relance un scan."
+    },
+    "viewAllOffers": "Voir toutes les offres",
+    "nothingHereYet": "Rien à afficher ici pour l'instant.",
+    "appliedEmptyDesc": "La liste complète et permanente des candidatures — y compris celles envoyées par SCAI seule — est sur la page Candidatures.",
+    "viewApplications": "Voir mes candidatures",
+    "noOpportunities": "Aucune opportunité.",
+    "launchScanDesc": "Lance un scan global depuis le dashboard.",
+    "launchScan": "Lancer un scan",
+    "badges": { "auto": "⚡ Auto", "manual": "✋ Manuel" },
+    "unlock": "🔒 Débloquer",
+    "upsell": {
+      "note": "💡 Note de SCAI",
+      "quote": "\"J'ai trouvé d'autres opportunités ultra-fraîches correspondant à ton profil. À ce stade, avoir plus d'options te donne un avantage concret dans tes négociations.\"",
+      "cta": "Voir toutes mes opportunités →",
+      "planHint": "Plan Starter · À partir de $19/mois"
+    },
+    "freshBadge": "Fraîche",
+    "sourceLabel": "Source : ",
+    "postedAgoHours": "Publiée il y a {{hours}}h",
+    "postedAgoDays": "Publiée il y a {{days}}j",
+    "scaiAnalysisCard": "🧠 Analyse SCAI",
+    "defaultMatchReason": "Opportunité identifiée correspondant à ton domaine.",
+    "international": {
+      "title": "Opportunité internationale",
+      "passport": "⚠️ Passeport valide requis",
+      "visa": "📋 Vérifier les conditions de visa",
+      "currency": "💱 Paiement en devise étrangère"
+    },
+    "readiness": { "ready": "Tu es prêt ✓", "almost": "Presque prêt", "incomplete": "Profil à compléter" },
+    "checks": {
+      "profileComplete": "Profil complet",
+      "profileCompleteTip": "Complète ton profil à 70%+",
+      "bio": "Bio professionnelle",
+      "bioTip": "Ajoute une bio de 50 mots minimum",
+      "links": "Portfolio/liens",
+      "linksTip": "Ajoute un lien portfolio ou LinkedIn",
+      "docs": "Documents uploadés",
+      "domain": "Domaine correspond",
+      "domainTip": "Ton profil correspond au domaine"
+    },
+    "beforeApplying": "Avant de postuler",
+    "tips": {
+      "readDesc": "Lis attentivement la description complète",
+      "prepareExamples": "Prépare 2-3 exemples de travaux similaires",
+      "personalize": "Personnalise le message avec le nom de l'entreprise"
+    },
+    "budgetAnnounced": "Budget annoncé : {{min}}-{{max}} {{currency}}",
+    "applyBtn": { "prepared": "✓ Candidature préparée par SCAI", "cta": "⚡ Laisser SCAI préparer ma candidature" },
+    "reviewAndSend": "Relire et envoyer →",
+    "queue": {
+      "progress": "Candidature {{current}} / {{total}}",
+      "messageUnavailable": "Message indisponible pour cette offre.",
+      "copied": "✓ Message copié — colle-le sur la page qui vient de s'ouvrir.",
+      "notCopied": "Le message est déjà copié dans ton presse-papier.",
+      "copyAgain": "Copier à nouveau",
+      "openOffer": "Ouvrir l'offre",
+      "finish": "Terminer",
+      "next": "Suivant →"
+    },
+    "alerts": {
+      "premiumRequired": "⚠️ Fonctionnalité réservée aux membres Premium. Upgrade pour que SCAI rédige tes candidatures automatiquement.",
+      "cannotAutoPrepare": "SCAI ne peut pas préparer cette candidature automatiquement. Postule manuellement.",
+      "prepareFailed": "La candidature n'a pas pu être préparée. Réessaie dans quelques secondes."
+    }
+  },
   "scai": {
     "title": "SCAI Cowork",
     "greeting": "Bonjour ! Je suis SCAI, ton assistant de carrière personnel.",

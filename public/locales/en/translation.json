@@ -107,6 +107,111 @@
     "readinessScore": "Readiness score",
     "applyManually": "I'll apply myself"
   },
+  "oppCard": {
+    "highMatch": "High Match",
+    "recommended": "Recommended for your level",
+    "publishedAgo": "Published {{hours}}h ago",
+    "applicants": "Applicants",
+    "via": "via {{source}}",
+    "upworkConnectsRequired": "Upwork Connects required",
+    "matchIntelligence": "Match Intelligence",
+    "internationalTitle": "International Opportunity",
+    "internationalDesc": "This role may require a visa or passport. Searcher can help you prepare the necessary documents.",
+    "viewOriginal": "View Original",
+    "readyToSend": "Ready to Send",
+    "letSearcherApply": "Let Searcher Apply",
+    "sendToFriend": "Send to a friend",
+    "shareText": "SCAI found this listing that might interest you: \"{{title}}\"{{companyPart}}.\n{{link}}\n\nCheck out Searcher Connector, the AI agent that looks for opportunities for you 24/7: {{appLink}}",
+    "shareTextCompanyPart": " at {{company}}"
+  },
+  "oppPage": {
+    "count": "{{count}} opportunities",
+    "applyInSeries": "Apply in series",
+    "exportPdf": "Export PDF",
+    "filters": {
+      "all": "All",
+      "forYou": "🎯 For you",
+      "fresh": "Fresh (<24h)",
+      "lowComp": "🟢 Low competition",
+      "applied": "Auto-applied",
+      "pending": "Pending",
+      "atsAuto": "⚡ Automatic submission",
+      "manual": "✋ Manual submission required"
+    },
+    "category": "Category:",
+    "allCategories": "All categories ({{count}})",
+    "sortBy": "Sort:",
+    "sorts": { "recommended": "Recommended", "freshest": "Freshest", "highestPaid": "Highest paid" },
+    "noneForFilter": "No listings for this filter.",
+    "hints": {
+      "lowComp": "Few platforms show the applicant count — run a new scan to find more.",
+      "forYou": "Complete your domain and skills in your profile to refine the selection.",
+      "fresh": "No listings published in the last 24h — run a new scan."
+    },
+    "viewAllOffers": "View all listings",
+    "nothingHereYet": "Nothing to show here yet.",
+    "appliedEmptyDesc": "The complete, permanent list of applications — including those sent by SCAI alone — is on the Applications page.",
+    "viewApplications": "View my applications",
+    "noOpportunities": "No opportunities.",
+    "launchScanDesc": "Launch a global scan from the dashboard.",
+    "launchScan": "Launch a scan",
+    "badges": { "auto": "⚡ Auto", "manual": "✋ Manual" },
+    "unlock": "🔒 Unlock",
+    "upsell": {
+      "note": "💡 Note from SCAI",
+      "quote": "\"I found other ultra-fresh opportunities matching your profile. At this stage, having more options gives you a real edge in your negotiations.\"",
+      "cta": "See all my opportunities →",
+      "planHint": "Starter plan · From $19/mo"
+    },
+    "freshBadge": "Fresh",
+    "sourceLabel": "Source: ",
+    "postedAgoHours": "Posted {{hours}}h ago",
+    "postedAgoDays": "Posted {{days}}d ago",
+    "scaiAnalysisCard": "🧠 SCAI Analysis",
+    "defaultMatchReason": "Opportunity identified matching your domain.",
+    "international": {
+      "title": "International opportunity",
+      "passport": "⚠️ Valid passport required",
+      "visa": "📋 Check visa requirements",
+      "currency": "💱 Payment in foreign currency"
+    },
+    "readiness": { "ready": "You're ready ✓", "almost": "Almost ready", "incomplete": "Profile needs completing" },
+    "checks": {
+      "profileComplete": "Profile complete",
+      "profileCompleteTip": "Complete your profile to 70%+",
+      "bio": "Professional bio",
+      "bioTip": "Add a bio of at least 50 words",
+      "links": "Portfolio/links",
+      "linksTip": "Add a portfolio or LinkedIn link",
+      "docs": "Documents uploaded",
+      "domain": "Domain matches",
+      "domainTip": "Your profile matches the domain"
+    },
+    "beforeApplying": "Before you apply",
+    "tips": {
+      "readDesc": "Read the full description carefully",
+      "prepareExamples": "Prepare 2-3 examples of similar work",
+      "personalize": "Personalize the message with the company's name"
+    },
+    "budgetAnnounced": "Announced budget: {{min}}-{{max}} {{currency}}",
+    "applyBtn": { "prepared": "✓ Application prepared by SCAI", "cta": "⚡ Let SCAI prepare my application" },
+    "reviewAndSend": "Review and send →",
+    "queue": {
+      "progress": "Application {{current}} / {{total}}",
+      "messageUnavailable": "Message unavailable for this listing.",
+      "copied": "✓ Message copied — paste it on the page that just opened.",
+      "notCopied": "The message is already copied to your clipboard.",
+      "copyAgain": "Copy again",
+      "openOffer": "Open listing",
+      "finish": "Finish",
+      "next": "Next →"
+    },
+    "alerts": {
+      "premiumRequired": "⚠️ Feature reserved for Premium members. Upgrade so SCAI can write your applications automatically.",
+      "cannotAutoPrepare": "SCAI can't prepare this application automatically. Apply manually.",
+      "prepareFailed": "The application couldn't be prepared. Try again in a few seconds."
+    }
+  },
   "scai": {
     "title": "SCAI Cowork",
     "greeting": "Hello! I'm SCAI, your personal career assistant.",

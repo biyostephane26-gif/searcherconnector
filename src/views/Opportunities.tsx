@@ -14,8 +14,10 @@ import { computeProfileCompletion } from '../lib/profileCompletion'
 import { detectAtsPlatform } from '../lib/scraper/atsPlatformDetect'
 import { categorizeOpportunityTitle, CATEGORY_LABELS } from '../lib/scraper/categories'
 import { isPaidPlan } from '../lib/planUtils'
+import { useTranslation } from 'react-i18next'
 
 export default function Opportunities() {
+  const { t } = useTranslation()
   const { user, profile } = useAuth()
   const router = useRouter()
   const { exportOpportunities } = usePDF()
@@ -72,7 +74,7 @@ export default function Opportunities() {
     // BLOQUER pour free users
     const isFree = !isPaidPlan(profile)
     if (isFree) {
-      alert('⚠️ Fonctionnalité réservée aux membres Premium. Upgrade pour que SCAI rédige tes candidatures automatiquement.')
+      alert(t('oppPage.alerts.premiumRequired'))
       router.push('/pricing')
       return
     }
@@ -90,7 +92,7 @@ export default function Opportunities() {
         // Score trop bas / quota atteint / plan ne permet pas → toujours
         // prévenir l'utilisateur du POURQUOI avant d'ouvrir l'offre en
         // secours (avant ce fix : silence total quand original_url manquait).
-        alert(data.error || 'SCAI ne peut pas préparer cette candidature automatiquement. Postule manuellement.')
+        alert(data.error || t('oppPage.alerts.cannotAutoPrepare'))
         if (opp.original_url) window.open(opp.original_url, '_blank')
         return
       }
@@ -110,11 +112,11 @@ export default function Opportunities() {
       // Ni succès ni requiresManual (ex. rate-limit 429, profil/offre 404,
       // erreur serveur 500) — avant ce fix : bouton "ne faisait rien" car
       // aucun des deux cas ci-dessus n'était couvert.
-      alert(data.error || 'La candidature n\'a pas pu être préparée. Réessaie dans quelques secondes.')
+      alert(data.error || t('oppPage.alerts.prepareFailed'))
     } catch (err) {
       // Ne JAMAIS marquer comme "prête" si l'appel a échoué — le message
       // n'a pas été généré, l'utilisateur ne doit pas croire le contraire.
-      alert('La candidature n\'a pas pu être préparée. Réessaie dans quelques secondes.')
+      alert(t('oppPage.alerts.prepareFailed'))
     }
   }
 
@@ -168,11 +170,11 @@ export default function Opportunities() {
     // bug que Sidebar.tsx — voir src/lib/profileCompletion.ts)
     const { percent: liveCompletion } = computeProfileCompletion(profile, true)
     const checks = [
-      { label: 'Profil complet',         ok: liveCompletion >= 70, tip: 'Complète ton profil à 70%+' },
-      { label: 'Bio professionnelle',    ok: !!profile?.bio && (profile.bio?.length || 0) > 50, tip: 'Ajoute une bio de 50 mots minimum' },
-      { label: 'Portfolio/liens',        ok: !!(profile?.portfolio_url || profile?.github_url || profile?.linkedin_url), tip: 'Ajoute un lien portfolio ou LinkedIn' },
-      { label: 'Documents uploadés',     ok: true, tip: '' },  // simplifié
-      { label: 'Domaine correspond',     ok: opp.match_reason?.includes(profile?.domain?.split(' ')[0] || 'x') || opp.score >= 60, tip: 'Ton profil correspond au domaine' },
+      { label: t('oppPage.checks.profileComplete'), ok: liveCompletion >= 70, tip: t('oppPage.checks.profileCompleteTip') },
+      { label: t('oppPage.checks.bio'),             ok: !!profile?.bio && (profile.bio?.length || 0) > 50, tip: t('oppPage.checks.bioTip') },
+      { label: t('oppPage.checks.links'),           ok: !!(profile?.portfolio_url || profile?.github_url || profile?.linkedin_url), tip: t('oppPage.checks.linksTip') },
+      { label: t('oppPage.checks.docs'),            ok: true, tip: '' },  // simplifié
+      { label: t('oppPage.checks.domain'),          ok: opp.match_reason?.includes(profile?.domain?.split(' ')[0] || 'x') || opp.score >= 60, tip: t('oppPage.checks.domainTip') },
     ]
     const score = Math.round((checks.filter(c => c.ok).length / checks.length) * 100)
     return { checks, score }
@@ -184,20 +186,20 @@ export default function Opportunities() {
   }
 
   const FILTERS = [
-    { key: 'all',      label: 'Toutes' },
-    { key: 'for_you',  label: '🎯 Pour toi' },
-    { key: 'fresh',    label: 'Fraîches (<24h)' },
-    { key: 'low_comp', label: '🟢 Faible concurrence' },
-    { key: 'applied',  label: 'Auto-postulées' },
-    { key: 'pending',  label: 'En attente' },
-    { key: 'ats_auto', label: '⚡ Envoi automatique' },
-    { key: 'manual',   label: '✋ Envoi manuel requis' },
+    { key: 'all',      label: t('oppPage.filters.all') },
+    { key: 'for_you',  label: t('oppPage.filters.forYou') },
+    { key: 'fresh',    label: t('oppPage.filters.fresh') },
+    { key: 'low_comp', label: t('oppPage.filters.lowComp') },
+    { key: 'applied',  label: t('oppPage.filters.applied') },
+    { key: 'pending',  label: t('oppPage.filters.pending') },
+    { key: 'ats_auto', label: t('oppPage.filters.atsAuto') },
+    { key: 'manual',   label: t('oppPage.filters.manual') },
   ]
 
   const SORTS: { key: typeof sortBy; label: string }[] = [
-    { key: 'recommended',  label: 'Recommandé' },
-    { key: 'freshest',     label: 'Plus fraîches' },
-    { key: 'highest_paid', label: 'Mieux payées' },
+    { key: 'recommended',  label: t('oppPage.sorts.recommended') },
+    { key: 'freshest',     label: t('oppPage.sorts.freshest') },
+    { key: 'highest_paid', label: t('oppPage.sorts.highestPaid') },
   ]
 
   // Envoi auto (Greenhouse/Lever, aucun compte requis, formulaire public) vs
@@ -277,23 +279,23 @@ export default function Opportunities() {
       <main className="flex-1 flex flex-col min-w-0 lg:ml-64">
         {/* Header */}
         <header className="h-16 border-b border-[#1A1A1A] flex items-center justify-between px-6 bg-[#0A0A0A]/50 backdrop-blur-md sticky top-0 z-30">
-          <h2 className="text-lg font-bold text-white tracking-tight">Opportunity Explorer</h2>
+          <h2 className="text-lg font-bold text-white tracking-tight">{t('opportunities.title')}</h2>
           <div className="flex items-center gap-3">
             <div className="text-[10px] tracking-widest text-[#D4AF37] font-bold uppercase">
-              {opportunities.length} opportunités
+              {t('oppPage.count', { count: opportunities.length })}
             </div>
             {opportunities.some(o => o.status === 'ready_to_send') && (
               <button
                 onClick={openQueue}
                 className="flex items-center gap-1.5 text-xs text-black bg-[#D4AF37] hover:bg-[#e0bd4f] px-3 py-1.5 rounded-lg transition-all font-bold">
-                <Zap className="w-3.5 h-3.5" /> Postuler en série
+                <Zap className="w-3.5 h-3.5" /> {t('oppPage.applyInSeries')}
               </button>
             )}
             {opportunities.length > 0 && (
               <button
                 onClick={() => exportOpportunities(opportunities, profile?.full_name || 'Profil')}
                 className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#D4AF37] border border-[#2a2a2a] hover:border-[#D4AF37]/30 px-3 py-1.5 rounded-lg transition-all">
-                <FileText className="w-3.5 h-3.5" /> Exporter PDF
+                <FileText className="w-3.5 h-3.5" /> {t('oppPage.exportPdf')}
               </button>
             )}
           </div>
@@ -317,13 +319,13 @@ export default function Opportunities() {
                 résultats de l'utilisateur (pas les 14 en dur à chaque fois). */}
             {availableCategories.length > 1 && (
               <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1 scrollbar-hide">
-                <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest flex-shrink-0">Catégorie :</span>
+                <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest flex-shrink-0">{t('oppPage.category')}</span>
                 <select
                   value={categoryFilter}
                   onChange={e => setCategoryFilter(e.target.value)}
                   className="bg-[#111] border border-[#2a2a2a] text-xs font-bold text-white rounded-full px-3 py-1.5 focus:outline-none focus:border-[#D4AF37]/60"
                 >
-                  <option value="all">Toutes catégories ({opportunities.length})</option>
+                  <option value="all">{t('oppPage.allCategories', { count: opportunities.length })}</option>
                   {availableCategories.map(([cat, count]) => (
                     <option key={cat} value={cat}>{CATEGORY_LABELS[cat] || cat} ({count})</option>
                   ))}
@@ -333,7 +335,7 @@ export default function Opportunities() {
 
             {/* Tri */}
             <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
-              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest flex-shrink-0">Trier :</span>
+              <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest flex-shrink-0">{t('oppPage.sortBy')}</span>
               {SORTS.map(s => (
                 <button key={s.key} onClick={() => setSortBy(s.key)}
                   className={`px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all ${sortBy === s.key ? 'bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/40' : 'bg-transparent text-gray-500 hover:text-white border border-[#2a2a2a]'}`}>
@@ -345,18 +347,18 @@ export default function Opportunities() {
             {loading ? (
               <div className="text-center py-20 text-gray-600">
                 <div className="w-8 h-8 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                Chargement...
+                {t('common.loading')}
               </div>
             ) : opportunities.length > 0 && sortedOpportunities.length === 0 ? (
               <div className="text-center py-16 bg-[#111111] rounded-3xl border border-dashed border-[#2a2a2a]">
                 <Search className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-                <h3 className="text-base font-bold text-gray-400 mb-1">Aucune offre pour ce filtre.</h3>
+                <h3 className="text-base font-bold text-gray-400 mb-1">{t('oppPage.noneForFilter')}</h3>
                 <p className="text-sm text-gray-600 mb-5">
-                  {filter === 'low_comp' && 'Peu de plateformes affichent le nombre de postulants — relance un scan pour en trouver.'}
-                  {filter === 'for_you' && 'Complète ton domaine et tes compétences dans ton profil pour affiner la sélection.'}
-                  {filter === 'fresh' && 'Aucune offre publiée ces dernières 24h — relance un scan.'}
+                  {filter === 'low_comp' && t('oppPage.hints.lowComp')}
+                  {filter === 'for_you' && t('oppPage.hints.forYou')}
+                  {filter === 'fresh' && t('oppPage.hints.fresh')}
                 </p>
-                <button onClick={() => { setFilter('all'); setCategoryFilter('all') }} className="text-xs font-bold text-[#D4AF37] hover:underline">Voir toutes les offres</button>
+                <button onClick={() => { setFilter('all'); setCategoryFilter('all') }} className="text-xs font-bold text-[#D4AF37] hover:underline">{t('oppPage.viewAllOffers')}</button>
               </div>
             ) : opportunities.length === 0 ? (
               <div className="text-center py-20 bg-[#111111] rounded-3xl border border-dashed border-[#2a2a2a]">
@@ -368,15 +370,15 @@ export default function Opportunities() {
                         du cache après un moment, mise à jour de statut parfois
                         silencieusement ratée) — la preuve fiable et permanente
                         de tout ce que SCAI a envoyé vit dans /applications. */}
-                    <h3 className="text-lg font-bold text-gray-500 mb-2">Rien à afficher ici pour l'instant.</h3>
-                    <p className="text-sm text-gray-600 mb-6">La liste complète et permanente des candidatures — y compris celles envoyées par SCAI seule — est sur la page Candidatures.</p>
-                    <GoldButton onClick={() => router.push('/applications')}>Voir mes candidatures</GoldButton>
+                    <h3 className="text-lg font-bold text-gray-500 mb-2">{t('oppPage.nothingHereYet')}</h3>
+                    <p className="text-sm text-gray-600 mb-6">{t('oppPage.appliedEmptyDesc')}</p>
+                    <GoldButton onClick={() => router.push('/applications')}>{t('oppPage.viewApplications')}</GoldButton>
                   </>
                 ) : (
                   <>
-                    <h3 className="text-lg font-bold text-gray-500 mb-2">Aucune opportunité.</h3>
-                    <p className="text-sm text-gray-600 mb-6">Lance un scan global depuis le dashboard.</p>
-                    <GoldButton onClick={() => router.push('/dashboard')}>Lancer un scan</GoldButton>
+                    <h3 className="text-lg font-bold text-gray-500 mb-2">{t('oppPage.noOpportunities')}</h3>
+                    <p className="text-sm text-gray-600 mb-6">{t('oppPage.launchScanDesc')}</p>
+                    <GoldButton onClick={() => router.push('/dashboard')}>{t('oppPage.launchScan')}</GoldButton>
                   </>
                 )}
               </div>
@@ -386,7 +388,7 @@ export default function Opportunities() {
                   <div key={opp.id} onClick={() => handleSelectOpp(opp)}
                     className={`relative cursor-pointer rounded-2xl border transition-all ${selected?.id === opp.id ? 'border-[#D4AF37]/50 bg-[#1A1500]/20' : 'border-[#1A1A1A] hover:border-[#2a2a2a]'}`}>
                     <span className={`absolute top-3 right-3 z-10 text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full ${isAtsAuto(opp) ? 'bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30' : 'bg-[#1A1A1A] text-gray-500 border border-[#2a2a2a]'}`}>
-                      {isAtsAuto(opp) ? '⚡ Auto' : '✋ Manuel'}
+                      {isAtsAuto(opp) ? t('oppPage.badges.auto') : t('oppPage.badges.manual')}
                     </span>
                     <OpportunityCard opportunity={opp} onApply={handleApply} referralCode={profile?.referral_code} />
                   </div>
@@ -402,7 +404,7 @@ export default function Opportunities() {
                         </div>
                         <div className="absolute inset-0 flex items-center justify-center">
                           <a href="/pricing" className="bg-[#D4AF37] text-black font-bold px-6 py-2 rounded-full hover:bg-[#F5E6A3] text-sm">
-                            🔒 Débloquer
+                            {t('oppPage.unlock')}
                           </a>
                         </div>
                       </div>
@@ -433,15 +435,15 @@ export default function Opportunities() {
                       <div className="text-center px-8 py-8 max-w-sm mx-auto">
                         {/* Message conseiller carrière — pas publicitaire */}
                         <div className="text-xs text-gray-600 uppercase tracking-widest font-bold mb-3">
-                          💡 Note de SCAI
+                          {t('oppPage.upsell.note')}
                         </div>
                         <p className="text-sm text-gray-300 leading-relaxed mb-5 italic">
-                          "J'ai trouvé d'autres opportunités ultra-fraîches correspondant à ton profil. À ce stade, avoir plus d'options te donne un avantage concret dans tes négociations."
+                          {t('oppPage.upsell.quote')}
                         </p>
                         <a href="/pricing" className="inline-block bg-[#D4AF37] text-black font-bold px-8 py-3 rounded-full hover:bg-[#F5E6A3] transition-colors text-sm">
-                          Voir toutes mes opportunités →
+                          {t('oppPage.upsell.cta')}
                         </a>
-                        <p className="text-[10px] text-gray-600 mt-3">Plan Starter · À partir de $19/mois</p>
+                        <p className="text-[10px] text-gray-600 mt-3">{t('oppPage.upsell.planHint')}</p>
                       </div>
                     </div>
                   </div>
@@ -455,7 +457,7 @@ export default function Opportunities() {
             <div className="w-full lg:w-[45%] border-l border-[#1A1A1A] overflow-y-auto bg-[#0D0D0D] flex flex-col">
               {/* Header panneau */}
               <div className="sticky top-0 bg-[#0D0D0D] border-b border-[#1A1A1A] p-4 flex items-center justify-between z-10">
-                <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Analyse SCAI</span>
+                <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('opportunities.scaiAnalysis')}</span>
                 <button onClick={() => setSelected(null)} className="p-1 text-gray-600 hover:text-white transition-colors">
                   <X className="w-4 h-4" />
                 </button>
@@ -473,32 +475,32 @@ export default function Opportunities() {
                   <div className="flex items-center gap-2 text-xs text-gray-500">
                     <span>{selected.company}</span>
                     {selected.location && <><span>•</span><span>{selected.location}</span></>}
-                    {selected.hours_ago < 24 && <span className="text-green-500 font-bold">• Fraîche</span>}
+                    {selected.hours_ago < 24 && <span className="text-green-500 font-bold">• {t('oppPage.freshBadge')}</span>}
                   </div>
                 </div>
 
                 {/* Source */}
                 <div className="bg-[#111] rounded-xl p-3 text-xs text-gray-500">
-                  <span className="text-gray-400 font-bold">Source : </span>{selected.source_platform}
-                  {selected.hours_ago > 0 && <span> • Publiée il y a {selected.hours_ago < 24 ? `${selected.hours_ago}h` : `${Math.round(selected.hours_ago/24)}j`}</span>}
+                  <span className="text-gray-400 font-bold">{t('oppPage.sourceLabel')}</span>{selected.source_platform}
+                  {selected.hours_ago > 0 && <span> • {selected.hours_ago < 24 ? t('oppPage.postedAgoHours', { hours: selected.hours_ago }) : t('oppPage.postedAgoDays', { days: Math.round(selected.hours_ago/24) })}</span>}
                 </div>
 
                 {/* Analyse SCAI */}
                 <Card className="p-4">
-                  <div className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest mb-2">🧠 Analyse SCAI</div>
-                  <p className="text-sm text-gray-300 leading-relaxed">{selected.match_reason || 'Opportunité identifiée correspondant à ton domaine.'}</p>
+                  <div className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest mb-2">{t('oppPage.scaiAnalysisCard')}</div>
+                  <p className="text-sm text-gray-300 leading-relaxed">{selected.match_reason || t('oppPage.defaultMatchReason')}</p>
                 </Card>
 
                 {/* Alerte internationale */}
                 {selected.is_foreign && (
                   <div className="bg-orange-900/20 border border-orange-700/30 rounded-xl p-4">
                     <div className="flex items-center gap-2 text-orange-400 font-bold text-sm mb-2">
-                      <Globe className="w-4 h-4" /> Opportunité internationale
+                      <Globe className="w-4 h-4" /> {t('oppPage.international.title')}
                     </div>
                     <ul className="text-xs text-orange-300 space-y-1">
-                      <li>⚠️ Passeport valide requis</li>
-                      <li>📋 Vérifier les conditions de visa</li>
-                      <li>💱 Paiement en devise étrangère</li>
+                      <li>{t('oppPage.international.passport')}</li>
+                      <li>{t('oppPage.international.visa')}</li>
+                      <li>{t('oppPage.international.currency')}</li>
                     </ul>
                   </div>
                 )}
@@ -507,7 +509,7 @@ export default function Opportunities() {
                 {readiness && (
                   <Card className="p-4">
                     <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">
-                      Score de préparation
+                      {t('opportunities.readinessScore')}
                     </div>
                     <div className="flex items-center gap-3 mb-4">
                       <div className={`text-3xl font-bold ${readiness.score >= 80 ? 'text-green-500' : readiness.score >= 60 ? 'text-[#D4AF37]' : 'text-red-500'}`}>
@@ -519,7 +521,7 @@ export default function Opportunities() {
                             style={{ width: `${readiness.score}%` }} />
                         </div>
                         <p className="text-xs text-gray-600 mt-1">
-                          {readiness.score >= 80 ? 'Tu es prêt ✓' : readiness.score >= 60 ? 'Presque prêt' : 'Profil à compléter'}
+                          {readiness.score >= 80 ? t('oppPage.readiness.ready') : readiness.score >= 60 ? t('oppPage.readiness.almost') : t('oppPage.readiness.incomplete')}
                         </p>
                       </div>
                     </div>
@@ -540,13 +542,13 @@ export default function Opportunities() {
 
                 {/* Ce que tu dois préparer */}
                 <Card className="p-4">
-                  <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Avant de postuler</div>
+                  <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">{t('oppPage.beforeApplying')}</div>
                   <ul className="space-y-2 text-xs text-gray-400">
-                    <li className="flex items-start gap-2"><Star className="w-3.5 h-3.5 text-[#D4AF37] mt-0.5 flex-shrink-0" />Lis attentivement la description complète</li>
-                    <li className="flex items-start gap-2"><Star className="w-3.5 h-3.5 text-[#D4AF37] mt-0.5 flex-shrink-0" />Prépare 2-3 exemples de travaux similaires</li>
-                    <li className="flex items-start gap-2"><Star className="w-3.5 h-3.5 text-[#D4AF37] mt-0.5 flex-shrink-0" />Personnalise le message avec le nom de l'entreprise</li>
+                    <li className="flex items-start gap-2"><Star className="w-3.5 h-3.5 text-[#D4AF37] mt-0.5 flex-shrink-0" />{t('oppPage.tips.readDesc')}</li>
+                    <li className="flex items-start gap-2"><Star className="w-3.5 h-3.5 text-[#D4AF37] mt-0.5 flex-shrink-0" />{t('oppPage.tips.prepareExamples')}</li>
+                    <li className="flex items-start gap-2"><Star className="w-3.5 h-3.5 text-[#D4AF37] mt-0.5 flex-shrink-0" />{t('oppPage.tips.personalize')}</li>
                     {selected.salary_max > 0 && (
-                      <li className="flex items-start gap-2"><Star className="w-3.5 h-3.5 text-[#D4AF37] mt-0.5 flex-shrink-0" />Budget annoncé : {selected.salary_min}-{selected.salary_max} {selected.currency}</li>
+                      <li className="flex items-start gap-2"><Star className="w-3.5 h-3.5 text-[#D4AF37] mt-0.5 flex-shrink-0" />{t('oppPage.budgetAnnounced', { min: selected.salary_min, max: selected.salary_max, currency: selected.currency })}</li>
                     )}
                   </ul>
                 </Card>
@@ -554,20 +556,20 @@ export default function Opportunities() {
                 {/* Actions */}
                 <div className="space-y-3 pb-6">
                   <GoldButton fullWidth onClick={() => handleApply(selected.id)} disabled={selected.status === 'ready_to_send'}>
-                    {selected.status === 'ready_to_send' ? '✓ Candidature préparée par SCAI' : '⚡ Laisser SCAI préparer ma candidature'}
+                    {selected.status === 'ready_to_send' ? t('oppPage.applyBtn.prepared') : t('oppPage.applyBtn.cta')}
                   </GoldButton>
 
                   {/* Lien vers le détail de la candidature */}
                   {selected.status === 'ready_to_send' && selected.application_id && (
                     <a href={`/applications/${selected.application_id}`}
                       className="flex items-center justify-center gap-2 w-full bg-[#1A1500] border border-[#D4AF37]/30 hover:border-[#D4AF37]/60 text-[#D4AF37] py-3 rounded-xl text-sm font-medium transition-all">
-                      <FileText className="w-4 h-4" /> Relire et envoyer →
+                      <FileText className="w-4 h-4" /> {t('oppPage.reviewAndSend')}
                     </a>
                   )}
 
                   <a href={selected.original_url} target="_blank" rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 w-full border border-[#2a2a2a] hover:border-[#D4AF37]/30 text-gray-400 hover:text-white py-3 rounded-xl text-sm font-medium transition-all">
-                    <ExternalLink className="w-4 h-4" /> Je postule moi-même
+                    <ExternalLink className="w-4 h-4" /> {t('opportunities.applyManually')}
                   </a>
                 </div>
               </div>
@@ -583,7 +585,7 @@ export default function Opportunities() {
           <div className="bg-[#111] border border-[#D4AF37]/30 rounded-2xl p-6 max-w-lg w-full space-y-5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
-                Candidature {queueIndex + 1} / {queueItems.length}
+                {t('oppPage.queue.progress', { current: queueIndex + 1, total: queueItems.length })}
               </span>
               <button onClick={() => setQueueOpen(false)} className="text-gray-500 hover:text-white">
                 <X className="w-5 h-5" />
@@ -596,25 +598,25 @@ export default function Opportunities() {
             </div>
 
             <div className="bg-black/40 rounded-xl p-4 text-xs text-gray-300 whitespace-pre-wrap leading-relaxed max-h-48 overflow-y-auto border border-[#1A1A1A]">
-              {queueItems[queueIndex].message || 'Message indisponible pour cette offre.'}
+              {queueItems[queueIndex].message || t('oppPage.queue.messageUnavailable')}
             </div>
             <p className="text-[10px] text-gray-600">
-              {queueCopied ? '✓ Message copié — colle-le sur la page qui vient de s\'ouvrir.' : 'Le message est déjà copié dans ton presse-papier.'}
+              {queueCopied ? t('oppPage.queue.copied') : t('oppPage.queue.notCopied')}
             </p>
 
             <div className="grid grid-cols-2 gap-3">
               <button onClick={copyQueueMessage}
                 className="flex items-center justify-center gap-2 py-3 border border-[#2a2a2a] hover:border-[#D4AF37]/40 text-gray-300 rounded-xl text-sm font-medium">
-                Copier à nouveau
+                {t('oppPage.queue.copyAgain')}
               </button>
               <button onClick={openQueueOffer}
                 className="flex items-center justify-center gap-2 py-3 bg-[#1A1500] border border-[#D4AF37]/40 text-[#D4AF37] rounded-xl text-sm font-medium">
-                <ExternalLink className="w-4 h-4" /> Ouvrir l'offre
+                <ExternalLink className="w-4 h-4" /> {t('oppPage.queue.openOffer')}
               </button>
             </div>
 
             <GoldButton onClick={nextQueueItem} fullWidth>
-              {queueIndex + 1 >= queueItems.length ? 'Terminer' : 'Suivant →'}
+              {queueIndex + 1 >= queueItems.length ? t('oppPage.queue.finish') : t('oppPage.queue.next')}
             </GoldButton>
           </div>
         </div>
