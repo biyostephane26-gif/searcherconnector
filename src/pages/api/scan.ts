@@ -1548,13 +1548,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             recommended:     !!o.recommended,
             created_at:      new Date().toISOString(),
           }));
-          let { error: insertErr } = await dbClient.from('opportunities').insert(rows);
+          // upsert + onConflict (pas insert) : le filtre existingUrls
+          // ci-dessus reste utile pour normaliser les query params, mais
+          // seul un vrai index unique côté DB (opportunities_user_url_unique,
+          // migration add_opportunities_dedup_constraint.sql) empêche deux
+          // scans concurrents de passer tous les deux le pré-check avant que
+          // l'un des deux n'ait inséré — vérifié en direct le 2026-09-22 :
+          // deux paires de doublons avec un created_at identique à la
+          // microseconde près, signature exacte de cette course.
+          let { error: insertErr } = await dbClient.from('opportunities')
+            .upsert(rows, { onConflict: 'user_id,original_url', ignoreDuplicates: true });
           // required_level/recommended n'existent que si la migration
           // add_skill_level_matching.sql est appliquée — retry sans ces
           // champs plutôt que de perdre TOUT le résultat du scan.
           if (insertErr && /required_level|recommended/.test(insertErr.message)) {
             const stripped = rows.map(({ required_level, recommended, ...rest }: any) => rest);
-            ({ error: insertErr } = await dbClient.from('opportunities').insert(stripped));
+            ({ error: insertErr } = await dbClient.from('opportunities')
+              .upsert(stripped, { onConflict: 'user_id,original_url', ignoreDuplicates: true }));
           }
           if (insertErr) log.push(`⚠️ Insert Supabase: ${insertErr.message}`);
         }
@@ -1746,12 +1756,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         recommended:     !!o.recommended,
         created_at:      new Date().toISOString(),
       }));
-      let { error: insertErr } = await dbClient.from('opportunities').insert(rows);
+      // upsert + onConflict — voir le commentaire équivalent dans le chemin
+      // Cache Pool ci-dessus (même fix, même migration
+      // add_opportunities_dedup_constraint.sql).
+      let { error: insertErr } = await dbClient.from('opportunities')
+        .upsert(rows, { onConflict: 'user_id,original_url', ignoreDuplicates: true });
       // Fallback si la migration add_skill_level_matching.sql n'est pas
       // encore appliquée (colonnes absentes) — ne jamais perdre le scan.
       if (insertErr && /required_level|recommended/.test(insertErr.message)) {
         const stripped = rows.map(({ required_level, recommended, ...rest }: any) => rest);
-        ({ error: insertErr } = await dbClient.from('opportunities').insert(stripped));
+        ({ error: insertErr } = await dbClient.from('opportunities')
+          .upsert(stripped, { onConflict: 'user_id,original_url', ignoreDuplicates: true }));
       }
       if (insertErr) log.push(`⚠️ Insert Supabase: ${insertErr.message}`);
     }
