@@ -42,7 +42,7 @@ import { detectRequiredLevel, computeLevelMatch } from '../../lib/scraper/skill-
 import { typeMatchDelta, isHardTypeMismatch, isSourceCategoryMismatch } from '../../lib/scraper/typeSignals';
 import { aiFilterOpportunities } from '../../lib/scraper/aiOpportunityFilter';
 import { checkRateLimit } from '../../lib/rateLimiter';
-import { planTier, isPaidPlan } from '../../lib/planUtils';
+import { planTier, isPaidPlan, BETA_FREE_FOR_ALL } from '../../lib/planUtils';
 import { planConfig } from '../../lib/planConfig';
 import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
@@ -1418,8 +1418,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // ── Crédits pour le scraping live niveau 3 (seul coût API par user) ──
     // Le fondateur n'a aucune limite. Un payant ne déclenche le niveau 3
     // que s'il a assez de crédits ; sinon il reste sur le cache (gratuit).
+    // Pendant la bêta (BETA_FREE_FOR_ALL), on bypass aussi ce gate plutôt
+    // que de créditer artificiellement chaque compte — le fondateur assume
+    // le coût Apify réel des testeurs, sans toucher au vrai solde
+    // voice_credits (qui resterait à nettoyer/incohérent une fois la bêta
+    // terminée). deduct_voice_credits gère déjà un solde à 0 sans erreur
+    // (retourne juste "pas assez", ne descend jamais sous 0).
     const currentCredits = isFounder ? Infinity : ((profile as any).voice_credits ?? 0)
-    const allowLevel3    = isFounder || currentCredits >= LIVE_SCRAPE_CREDIT_COST
+    const allowLevel3    = isFounder || BETA_FREE_FOR_ALL || currentCredits >= LIVE_SCRAPE_CREDIT_COST
     let   didLiveScrape  = false
 
     // ── Quota de scans par SESSION glissante (config centrale) ──────
