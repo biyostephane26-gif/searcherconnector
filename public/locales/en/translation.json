@@ -330,6 +330,44 @@
     },
     "avatarUploadError": "Avatar upload error. Try again."
   },
+  "supportPage": {
+    "title": "Help Center",
+    "subtitle": "Everything you need to know about Searcher Connector.",
+    "quickLinks": [
+      { "label": "Direct email", "sub": "biyostephane26@gmail.com" },
+      { "label": "WhatsApp", "sub": "Quick reply" },
+      { "label": "Full guide", "sub": "Guides and tutorials" }
+    ],
+    "faqTitle": "Frequently Asked Questions",
+    "sendMessageTitle": "Send a message",
+    "messageReceived": "Message received!",
+    "responseWithin24h": "Response within 24h at",
+    "sendAnother": "Send another message",
+    "subject": "Subject",
+    "subjectPlaceholder": "e.g. Issue with scan, Billing question...",
+    "message": "Message",
+    "messagePlaceholder": "Describe your issue or question in detail...",
+    "send": "Send",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact",
+    "copyright": "© {{year}} Searcher Connector",
+    "faq": [
+      { "q": "How does the scan work?", "a": "SCAI runs a multi-source search (Serper, APIs, RSS, ATS platforms) based on your profile. Results are scored from 0 to 100. On the free plan, 10 results are visible — the rest unlock with a paid plan." },
+      { "q": "How many sources are actually scanned?", "a": "The registry covers up to 2005 sources depending on your plan (Free 100, Pro 1000, Premium 2005) — job boards, RSS, ATS (Greenhouse/Lever/Ashby/Workable), and LinkedIn/Upwork on demand for paid scans. The number shown on the founder dashboard distinguishes configured sources from those that actually delivered a result recently." },
+      { "q": "What is Genius status?", "a": "Genius status is granted to exceptional profiles. It offers: a gold badge on your profile, priority in search results, early access to new features." },
+      { "q": "How do I connect Gmail for Cowork?", "a": "In Settings → Connections, click \"Connect Gmail\". You'll be redirected to the Google authorization page." },
+      { "q": "Is my data secure?", "a": "Yes. Your data is hosted on Supabase (GDPR-compliant), encrypted in transit (HTTPS), and your passwords are never stored in plain text. Searcher Connector never asks for or stores the password of your LinkedIn, Upwork or other network accounts — we never create or manage an account on your behalf on those platforms." },
+      { "q": "How do I delete my account?", "a": "Go to Settings → Danger Zone → Delete account. Deletion is final within 30 days. You can also send a request to biyostephane26@gmail.com." },
+      { "q": "Can I use Searcher from my phone?", "a": "Searcher Connector is a Progressive Web App (PWA). On mobile, you can add it to your home screen from Chrome or Safari." },
+      { "q": "How does Cowork work?", "a": "Cowork is your unified inbox. It groups your Gmail emails and WhatsApp messages related to your applications. SCAI can automatically reply to simple messages with your signature." },
+      { "q": "Does SCAI really apply on its own, everywhere?", "a": "No, and that's intentional. SCAI always writes an application message tailored to each listing. REAL automatic submission is only possible on listings published via Greenhouse or Lever (public form, no account required) — that's the only situation where no platform's rules are broken. Everywhere else (LinkedIn, Upwork, Freelancer, company sites), the message is ready, but the final send remains your click — via the listing page directly, the \"serial application\" mode, or the browser extension." },
+      { "q": "Why doesn't SCAI apply automatically on LinkedIn or Upwork?", "a": "These platforms explicitly forbid automated submission of applications/proposals in their terms of use, with penalties up to permanent account suspension. It's not a technical limitation on our end — Greenhouse and Lever expose public forms designed to be filled by any candidate, which changes everything legally." },
+      { "q": "What is the browser extension, and is it mandatory?", "a": "It's an optional tool (Pro/Premium) that automatically pre-fills application forms on any site when you open the page — you never have to search/copy the message yourself. On recognized ATS (Greenhouse/Lever), you can also enable automatic sending. It only works while you're present on the page (browser security constraint) — it can't act in your absence, unlike server-side ATS submission." },
+      { "q": "What happens if a CAPTCHA blocks an automatic submission?", "a": "SCAI cleanly gives up and notifies you — never an attempt to bypass it. You then apply manually for that specific listing." },
+      { "q": "Can SCAI log into my accounts (LinkedIn, Upwork...) to apply on my behalf?", "a": "No. Searcher Connector never creates an account and never asks for your credentials on a third-party service. The only possible connections (Gmail for Cowork) go through official Google authorization (OAuth) — we never see your password." }
+    ]
+  },
   "socialPage": {
     "title": "Social Network",
     "filters": { "all": "All", "verified": "Verified", "genius": "Genius" }
