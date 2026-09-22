@@ -8,10 +8,12 @@ import { supabase } from '../lib/supabase'
 import GoldButton from '../components/ui/GoldButton'
 import Card from '../components/ui/Card'
 import { Shield, Mail, Lock, ArrowRight, Eye, EyeOff, CheckCircle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type SignupProfileType = 'freelance'
 
 export default function Signup() {
+  const { t } = useTranslation()
   const searchParams  = useSearchParams()
   const router        = useRouter()
   const { signUp }    = useAuth()
@@ -37,7 +39,7 @@ export default function Signup() {
     setError(null)
 
     if (password.length < 8) {
-      setError('Le mot de passe doit faire au moins 8 caractères.')
+      setError(t('signup.passwordTooShort'))
       setLoading(false)
       return
     }
@@ -124,11 +126,11 @@ export default function Signup() {
     } catch (err: any) {
       const msg = err.message || ''
       if (msg.includes('already registered') || msg.includes('User already registered')) {
-        setError('Cet email est déjà utilisé. Connecte-toi ou réinitialise ton mot de passe.')
+        setError(t('signup.alreadyRegistered'))
       } else if (msg.includes('email') && msg.includes('confirm')) {
-        setError('Un email de confirmation a déjà été envoyé. Vérifie ta boîte mail.')
+        setError(t('signup.confirmationAlreadySent'))
       } else if (!msg || msg === '{}' || msg === '[object Object]') {
-        setError('Erreur de connexion à Supabase. Vérifie ta connexion internet.')
+        setError(t('signup.connectionError'))
       } else {
         setError(msg)
       }
@@ -147,31 +149,31 @@ export default function Signup() {
           </Link>
           <div className="bg-[#111111] border border-[#D4AF37]/30 rounded-2xl p-10 space-y-5">
             <CheckCircle className="w-16 h-16 text-[#D4AF37] mx-auto" />
-            <h2 className="text-xl font-bold text-white">Vérifie ta boîte mail</h2>
+            <h2 className="text-xl font-bold text-white">{t('signup.checkInboxTitle')}</h2>
             <p className="text-sm text-gray-400 leading-relaxed">
-              On a envoyé un lien de confirmation à<br />
+              {t('signup.confirmationSentTo')}<br />
               <strong className="text-white">{email}</strong>
             </p>
             <div className="bg-[#0D0D0D] rounded-xl p-4 text-left space-y-2 text-xs text-gray-500">
-              <p>1. Ouvre l'email de <strong className="text-gray-300">Searcher Connector</strong></p>
-              <p>2. Clique sur <strong className="text-[#D4AF37]">"Confirmer mon adresse email"</strong></p>
-              <p>3. Tu seras redirigé vers l'app automatiquement</p>
+              <p>1. {t('signup.step1')} <strong className="text-gray-300">Searcher Connector</strong></p>
+              <p>2. {t('signup.step2Part1')} <strong className="text-[#D4AF37]">{t('signup.step2Part2')}</strong></p>
+              <p>3. {t('signup.step3')}</p>
             </div>
-            <p className="text-xs text-gray-600">Vérifie aussi tes spams si tu ne vois pas l'email.</p>
+            <p className="text-xs text-gray-600">{t('signup.checkSpam')}</p>
             <button
               onClick={async () => {
                 await supabase.auth.resend({ type: 'signup', email })
                 // feedback visuel simple sans alert
                 const btn = document.activeElement as HTMLButtonElement
-                if (btn) { btn.textContent = '✓ Email renvoyé !'; btn.disabled = true }
+                if (btn) { btn.textContent = t('signup.resendSuccess'); btn.disabled = true }
               }}
               className="text-xs text-[#D4AF37] hover:underline"
             >
-              Renvoyer l'email de confirmation →
+              {t('signup.resendEmail')}
             </button>
           </div>
           <Link href="/login" className="text-xs text-gray-600 hover:text-gray-400 block">
-            ← Retour à la connexion
+            {t('signup.backToLogin')}
           </Link>
         </div>
       </div>
@@ -185,9 +187,9 @@ export default function Signup() {
           <Link href="/" className="text-[#D4AF37] font-bold text-2xl tracking-tighter inline-block mb-4">
             SEARCHER CONNECTOR
           </Link>
-          <h1 className="text-2xl font-bold text-white">Créer un compte</h1>
+          <h1 className="text-2xl font-bold text-white">{t('signup.createAccount')}</h1>
           <p className="text-gray-500 text-sm mt-2">
-            Tu rejoins en tant que <span className="text-[#D4AF37] font-bold">{profileType.replace('_', ' ')}</span>
+            {t('signup.joiningAs')} <span className="text-[#D4AF37] font-bold">{profileType.replace('_', ' ')}</span>
           </p>
         </div>
 
@@ -200,17 +202,17 @@ export default function Signup() {
             )}
 
             <div className="space-y-2">
-              <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">Nom complet</label>
+              <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">{t('signup.fullName')}</label>
               <div className="relative">
                 <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
                 <input type="text" required value={fullName} onChange={e => setFullName(e.target.value)}
                   className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg py-3 pl-10 pr-4 text-sm focus:border-[#D4AF37] outline-none transition-colors"
-                  placeholder="Ton nom complet" />
+                  placeholder={t('signup.fullNamePlaceholder')} />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">Email</label>
+              <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">{t('auth.email')}</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
                 <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
@@ -220,12 +222,12 @@ export default function Signup() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">Mot de passe</label>
+              <label className="text-xs font-bold tracking-widest text-gray-500 uppercase">{t('auth.password')}</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
                 <input type={showPass ? 'text' : 'password'} required value={password} onChange={e => setPassword(e.target.value)}
                   className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg py-3 pl-10 pr-10 text-sm focus:border-[#D4AF37] outline-none transition-colors"
-                  placeholder="Minimum 8 caractères" />
+                  placeholder={t('signup.passwordPlaceholder')} />
                 <button type="button" onClick={() => setShowPass(v => !v)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-white">
                   {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -245,20 +247,20 @@ export default function Signup() {
             </div>
 
             <GoldButton type="submit" loading={loading} fullWidth>
-              Créer mon compte <ArrowRight className="w-4 h-4" />
+              {t('signup.createAccountBtn')} <ArrowRight className="w-4 h-4" />
             </GoldButton>
           </form>
 
           <div className="mt-6 pt-5 border-t border-[#2a2a2a] text-center space-y-2">
             <p className="text-gray-500 text-xs">
-              Déjà un compte ?{' '}
-              <Link href="/login" className="text-[#D4AF37] font-bold hover:underline">Se connecter</Link>
+              {t('signup.alreadyHaveAccount')}{' '}
+              <Link href="/login" className="text-[#D4AF37] font-bold hover:underline">{t('signup.signIn')}</Link>
             </p>
             <p className="text-[10px] text-gray-700 leading-relaxed">
-              En créant un compte, tu acceptes nos{' '}
-              <Link href="/terms" className="text-gray-500 hover:text-[#D4AF37]">CGU</Link>
-              {' '}et notre{' '}
-              <Link href="/privacy" className="text-gray-500 hover:text-[#D4AF37]">politique de confidentialité</Link>.
+              {t('signup.termsAgreement')}{' '}
+              <Link href="/terms" className="text-gray-500 hover:text-[#D4AF37]">{t('signup.terms')}</Link>
+              {' '}{t('signup.and')}{' '}
+              <Link href="/privacy" className="text-gray-500 hover:text-[#D4AF37]">{t('signup.privacyPolicy')}</Link>.
             </p>
           </div>
         </Card>
@@ -266,5 +268,3 @@ export default function Signup() {
     </div>
   )
 }
-
-
