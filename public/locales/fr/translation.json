@@ -330,6 +330,44 @@
     },
     "avatarUploadError": "Erreur upload avatar. Réessaie."
   },
+  "privacyPage": {
+    "docTitle": "Politique de Confidentialité — Searcher Connector",
+    "title": "Politique de Confidentialité",
+    "lastUpdated": "Dernière mise à jour : Juin 2025 — Conforme RGPD et lois africaines de protection des données",
+    "copyright": "© {{year}} Searcher Connector — Tous droits réservés",
+    "sections": [
+      { "title": "1. Responsable du traitement", "content": "Le responsable du traitement des données personnelles est Biyo Stéphane, fondateur de Searcher Connector, domicilié au Cameroun. Contact : biyostephane26@gmail.com" },
+      { "title": "2. Données collectées", "content": "Nous collectons : nom complet, adresse email, mot de passe (haché), photo de profil (optionnel), domaine professionnel, pays, ville, liens externes (LinkedIn, GitHub, portfolio), CV ou documents uploadés (optionnel), préférences de recherche. Données automatiques : adresse IP, logs de navigation, actions dans l'application, messages avec SCAI, résultats de scan." },
+      { "title": "3. Finalités du traitement", "content": "Vos données servent à : fournir et améliorer les services, personnaliser les résultats de scan, envoyer des candidatures en votre nom (avec votre consentement), vous notifier des nouvelles opportunités, traiter les paiements, prévenir les fraudes, et respecter nos obligations légales." },
+      { "title": "4. Base légale", "content": "Exécution du contrat pour la fourniture du Service, consentement pour les communications marketing et scans autonomes, intérêt légitime pour la sécurité et l'amélioration du Service, obligation légale pour la conservation de certaines données." },
+      { "title": "5. Partage des données", "content": "Vos données ne sont jamais vendues. Elles peuvent être partagées avec : Supabase (hébergement DB, conforme RGPD), MongoDB Atlas (cache et sessions), Flutterwave/Monetbil (paiements), Groq/Google AI (traitement IA sans stockage personnel), Vercel (hébergement), Resend (emails transactionnels)." },
+      { "title": "6. Conservation des données", "content": "Données de compte : tant que le compte est actif + 3 ans après suppression. Logs de scan : 48h (cache MongoDB avec TTL automatique). Conversations SCAI : conservées jusqu'à ce que vous désactiviez \"Mémoire des conversations\" dans Paramètres (auquel cas elles ne sont plus sauvegardées) ou que vous demandiez leur suppression. Données de paiement : 10 ans (obligation légale fiscale)." },
+      { "title": "7. Vos droits", "content": "Conformément au RGPD : droit d'accès à vos données, droit de rectification, droit à l'effacement (\"droit à l'oubli\"), droit à la portabilité, droit d'opposition à certains traitements, droit à la limitation. Pour exercer ces droits : biyostephane26@gmail.com. Réponse sous 30 jours." },
+      { "title": "8. Sécurité", "content": "Nous mettons en place : chiffrement en transit (HTTPS/TLS), accès restreint aux données sensibles, authentification sécurisée via Supabase Auth, Content Security Policy (CSP), HSTS, et audits de sécurité réguliers. Les mots de passe ne sont jamais stockés en clair." },
+      { "title": "9. Cookies", "content": "Searcher Connector utilise des cookies essentiels (authentification, préférences de langue) et des cookies analytiques anonymisés. Aucun cookie publicitaire tiers n'est utilisé." },
+      { "title": "10. Transferts internationaux", "content": "Vos données peuvent être traitées hors de votre pays de résidence. Ces transferts s'effectuent avec des garanties appropriées (clauses contractuelles types, certifications)." },
+      { "title": "11. Contact DPO", "content": "Pour toute question relative à la protection de vos données : biyostephane26@gmail.com — Objet : \"Protection des données — Searcher Connector\"" }
+    ]
+  },
+  "termsPage": {
+    "docTitle": "Conditions d'utilisation — Searcher Connector",
+    "title": "Conditions Générales d'Utilisation",
+    "lastUpdated": "Dernière mise à jour : Juin 2025",
+    "copyright": "© {{year}} Searcher Connector — Tous droits réservés",
+    "sections": [
+      { "title": "1. Présentation du service", "content": "Searcher Connector (\"le Service\") est une plateforme d'automatisation de la recherche d'emploi et de missions freelance. Il est opéré par Biyo Stéphane, fondateur, domicilié au Cameroun. Le Service utilise un agent IA (SCAI) pour scanner des sources publiques du web et proposer des opportunités correspondant au profil de l'utilisateur." },
+      { "title": "2. Acceptation des conditions", "content": "En créant un compte sur Searcher Connector, vous acceptez sans réserve les présentes CGU. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser le Service. L'utilisation du Service implique l'acceptation de notre Politique de Confidentialité." },
+      { "title": "3. Description des services", "content": "Searcher Connector propose : scan automatique d'opportunités (emploi et freelance), scoring et filtrage par IA des résultats, préparation de candidatures personnalisées par SCAI, inbox unifiée (Gmail + WhatsApp), réseau social professionnel intégré, et agent IA (SCAI) disponible 24h/24. Important : SCAI prépare et rédige les candidatures, mais ne les soumet pas automatiquement à un employeur ou recruteur — l'envoi final reste une action de l'utilisateur (via le lien de l'offre ou le canal indiqué), sauf pour les fonctionnalités explicitement décrites comme entièrement automatisées." },
+      { "title": "4. Comptes utilisateurs", "content": "Vous êtes responsable de la confidentialité de vos identifiants. Vous vous engagez à fournir des informations exactes et à maintenir votre profil à jour. Un seul compte par personne physique est autorisé. L'équipe Searcher Connector se réserve le droit de suspendre ou supprimer tout compte en cas d'utilisation abusive." },
+      { "title": "5. Plans et facturation", "content": "Le Service propose un plan gratuit avec des fonctionnalités limitées et des plans payants avec accès illimité. Les paiements sont traités via Mobile Money (Monetbil), carte bancaire (quand disponible), ou par virement/dépôt manuel confirmé par email et activé manuellement par l'équipe pour les zones où les paiements automatiques ne sont pas encore disponibles. Les abonnements se renouvellent automatiquement jusqu'à annulation. Aucun remboursement n'est accordé pour une période déjà commencée, sauf disposition légale contraire." },
+      { "title": "6. Utilisation acceptable", "content": "Il est strictement interdit d'utiliser Searcher Connector pour : scraper massivement des données, automatiser des candidatures frauduleuses, envoyer du spam, contourner les limitations du plan gratuit, utiliser des informations d'identité fictives, ou tout acte contraire aux lois applicables." },
+      { "title": "7. Propriété intellectuelle", "content": "Searcher Connector, son code source, ses interfaces, son logo, sa marque et ses algorithmes sont la propriété exclusive de Biyo Stéphane. Toute reproduction ou utilisation sans autorisation est interdite. Le contenu généré par l'IA appartient à l'utilisateur qui l'a généré." },
+      { "title": "8. Limitation de responsabilité", "content": "Searcher Connector est un outil d'aide à la recherche d'opportunités. Il ne garantit pas l'obtention d'un emploi, d'une mission ou d'un financement. La responsabilité de Searcher Connector est limitée au montant des sommes versées par l'utilisateur au cours des 3 derniers mois." },
+      { "title": "9. Modifications", "content": "Nous nous réservons le droit de modifier ces CGU à tout moment. Les utilisateurs seront notifiés par email 30 jours avant toute modification significative." },
+      { "title": "10. Droit applicable", "content": "Les présentes CGU sont régies par le droit camerounais. En cas de litige, les parties s'engagent à rechercher une solution amiable avant tout recours judiciaire." },
+      { "title": "11. Contact", "content": "Pour toute question relative aux présentes CGU : biyostephane26@gmail.com" }
+    ]
+  },
   "agentDashboard": {
     "exportOpportunities": "Exporter mes opportunités",
     "exportApplications": "Exporter mes candidatures",
@@ -455,6 +493,7 @@
     "salary": "Salaires",
     "profile": "Profil",
     "settings": "Paramètres",
+    "connectors": "Connecteurs",
     "pricing": "Tarifs",
     "logout": "Déconnexion"
   },
