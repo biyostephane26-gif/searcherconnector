@@ -9,8 +9,10 @@ import SuggestedGroups from '../components/social/SuggestedGroups'
 import SuggestedConnections from '../components/social/SuggestedConnections'
 import MyNetworkPanel from '../components/social/MyNetworkPanel'
 import Card from '../components/ui/Card'
+import { useTranslation } from 'react-i18next'
 
 export default function Social() {
+  const { t } = useTranslation()
   const [filter, setFilter] = useState('all')
 
   return (
@@ -19,7 +21,7 @@ export default function Social() {
 
       <main className="flex-1 flex flex-col min-w-0 lg:ml-64">
         <header className="h-16 border-b border-[#1A1A1A] flex items-center justify-between px-6 bg-[#0A0A0A]/50 backdrop-blur-md sticky top-0 z-30">
-          <h2 className="text-lg font-bold text-white tracking-tight">Social Network</h2>
+          <h2 className="text-lg font-bold text-white tracking-tight">{t('socialPage.title')}</h2>
           <div className="flex gap-2">
             {['all', 'verified', 'genius'].map((f) => (
               <button
@@ -33,7 +35,7 @@ export default function Social() {
                   }
                 `}
               >
-                {f}
+                {t(`socialPage.filters.${f}`)}
               </button>
             ))}
           </div>

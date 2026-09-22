@@ -330,6 +330,10 @@
     },
     "avatarUploadError": "Erreur upload avatar. Réessaie."
   },
+  "socialPage": {
+    "title": "Réseau Social",
+    "filters": { "all": "Tous", "verified": "Vérifiés", "genius": "Genius" }
+  },
   "privacyPage": {
     "docTitle": "Politique de Confidentialité — Searcher Connector",
     "title": "Politique de Confidentialité",

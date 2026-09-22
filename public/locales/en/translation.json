@@ -330,6 +330,10 @@
     },
     "avatarUploadError": "Avatar upload error. Try again."
   },
+  "socialPage": {
+    "title": "Social Network",
+    "filters": { "all": "All", "verified": "Verified", "genius": "Genius" }
+  },
   "privacyPage": {
     "docTitle": "Privacy Policy — Searcher Connector",
     "title": "Privacy Policy",
