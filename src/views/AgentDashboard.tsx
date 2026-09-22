@@ -1345,10 +1345,15 @@ export default function AgentDashboard() {
             <div className="space-y-4">
               {chatHistory && chatHistory.map((msg: any, i: number) => (
                 <div key={i} className={"flex " + (msg?.role === 'user' ? 'justify-end' : 'justify-start')}>
-                  <div className={"max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm " + (
-                    msg?.role === 'user' 
-                      ? 'bg-[#D4AF37] text-black font-medium rounded-tr-none' 
-                      : 'bg-[#111111] border border-gray-800 text-gray-200 rounded-tl-none'
+                  <div className={"text-sm " + (
+                    msg?.role === 'user'
+                      // Message utilisateur : bulle encadrée, pour le distinguer
+                      // visuellement de SCAI (seul élément qui garde un cadre).
+                      ? 'max-w-[85%] rounded-2xl rounded-tr-none px-4 py-3 shadow-sm bg-[#D4AF37] text-black font-medium'
+                      // Message SCAI : plus de bulle/cadre — texte qui coule
+                      // directement dans la conversation, comme du texte normal
+                      // (même logique que les réponses de Claude lui-même).
+                      : 'max-w-[90%] text-gray-200'
                   )}>
                     {msg?.role === 'agent' ? (
                       <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed">
