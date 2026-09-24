@@ -9,8 +9,10 @@ import GoldButton from '../components/ui/GoldButton';
 import { Users, Search, Plus, Globe, Lock, ShieldCheck, ChevronRight } from 'lucide-react';
 import { Group } from '../types';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
 export default function Groups() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'my' | 'discover' | 'create'>('discover');
@@ -84,12 +86,12 @@ export default function Groups() {
           user_id: user.id,
           role: 'admin'
         });
-        alert("Groupe créé avec succès !");
+        alert(t('groupsPage.createdSuccess'));
         setActiveTab('my');
       }
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de la création du groupe");
+      alert(t('groupsPage.createError'));
     } finally {
       setLoading(false);
     }
@@ -104,11 +106,11 @@ export default function Groups() {
         role: 'member'
       });
       if (error) throw error;
-      alert("Vous avez rejoint le groupe !");
+      alert(t('groupsPage.joinedSuccess'));
       fetchGroups();
     } catch (err) {
       console.error(err);
-      alert("Impossible de rejoindre ce groupe");
+      alert(t('groupsPage.joinError'));
     }
   };
 
@@ -119,13 +121,13 @@ export default function Groups() {
       <main className="flex-1 flex flex-col min-w-0 lg:ml-64">
         <header className="h-16 border-b border-[#1A1A1A] flex items-center justify-between px-6 bg-[#0A0A0A]/50 backdrop-blur-md sticky top-0 z-30">
           <div className="flex items-center gap-4">
-            <h2 className="text-lg font-bold text-white tracking-tight">Communautés</h2>
+            <h2 className="text-lg font-bold text-white tracking-tight">{t('groupsPage.title')}</h2>
             <div className="h-4 w-px bg-gray-800 mx-2" />
             <div className="flex gap-1">
               {[
-                { id: 'discover', label: 'Découvrir', icon: Search },
-                { id: 'my', label: 'Mes Groupes', icon: Users },
-                { id: 'create', label: 'Créer', icon: Plus },
+                { id: 'discover', label: t('groupsPage.discover'), icon: Search },
+                { id: 'my', label: t('groupsPage.myGroups'), icon: Users },
+                { id: 'create', label: t('groupsPage.create'), icon: Plus },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -149,65 +151,65 @@ export default function Groups() {
         <div className="p-6 lg:p-10 max-w-7xl mx-auto w-full">
           {activeTab === 'create' ? (
             <Card className="max-w-2xl mx-auto p-8 border-[#1A1A1A]">
-              <h3 className="text-xl font-bold text-white mb-8 tracking-tight">Créer un nouveau groupe</h3>
+              <h3 className="text-xl font-bold text-white mb-8 tracking-tight">{t('groupsPage.createTitle')}</h3>
               <form onSubmit={handleCreateGroup} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Nom du groupe</label>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('groupsPage.groupName')}</label>
                   <input
                     required
                     value={newGroup.name}
                     onChange={e => setNewGroup(prev => ({ ...prev, name: e.target.value }))}
                     className="w-full bg-[#111111] border border-[#2a2a2a] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#D4AF37] transition-all"
-                    placeholder="Ex: Freelances Tech Cameroun"
+                    placeholder={t('groupsPage.groupNamePlaceholder')}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Description</label>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('groupsPage.description')}</label>
                   <textarea
                     rows={4}
                     value={newGroup.description}
                     onChange={e => setNewGroup(prev => ({ ...prev, description: e.target.value }))}
                     className="w-full bg-[#111111] border border-[#2a2a2a] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#D4AF37] transition-all resize-none"
-                    placeholder="De quoi parle ce groupe ?"
+                    placeholder={t('groupsPage.descriptionPlaceholder')}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Catégorie</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('groupsPage.category')}</label>
                     <select
                       value={newGroup.category}
                       onChange={e => setNewGroup(prev => ({ ...prev, category: e.target.value }))}
                       className="w-full bg-[#111111] border border-[#2a2a2a] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#D4AF37] transition-all"
                     >
-                      <option value="tech">Technologie</option>
-                      <option value="marketing">Marketing</option>
-                      <option value="finance">Finance</option>
-                      <option value="freelance">Freelance</option>
-                      <option value="investissement">Investissement</option>
+                      <option value="tech">{t('groupsPage.catTech')}</option>
+                      <option value="marketing">{t('groupsPage.catMarketing')}</option>
+                      <option value="finance">{t('groupsPage.catFinance')}</option>
+                      <option value="freelance">{t('groupsPage.catFreelance')}</option>
+                      <option value="investissement">{t('groupsPage.catInvestment')}</option>
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Visibilité</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('groupsPage.visibility')}</label>
                     <div className="flex gap-2">
                       <button
                         type="button"
                         onClick={() => setNewGroup(prev => ({ ...prev, visibility: 'public' }))}
                         className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border transition-all ${newGroup.visibility === 'public' ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]' : 'border-[#2a2a2a] text-gray-500'}`}
                       >
-                        <Globe size={14} /> <span className="text-[10px] font-bold uppercase">Public</span>
+                        <Globe size={14} /> <span className="text-[10px] font-bold uppercase">{t('groupsPage.public')}</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setNewGroup(prev => ({ ...prev, visibility: 'private' }))}
                         className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border transition-all ${newGroup.visibility === 'private' ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]' : 'border-[#2a2a2a] text-gray-500'}`}
                       >
-                        <Lock size={14} /> <span className="text-[10px] font-bold uppercase">Privé</span>
+                        <Lock size={14} /> <span className="text-[10px] font-bold uppercase">{t('groupsPage.private')}</span>
                       </button>
                     </div>
                   </div>
                 </div>
                 <GoldButton type="submit" loading={loading} className="w-full py-4 mt-4">
-                  Créer le groupe
+                  {t('groupsPage.createGroupBtn')}
                 </GoldButton>
               </form>
             </Card>
@@ -220,17 +222,17 @@ export default function Groups() {
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     className="w-full bg-[#111111] border border-[#2a2a2a] rounded-full pl-12 pr-4 py-3 text-sm text-white focus:outline-none focus:border-[#D4AF37] transition-all"
-                    placeholder="Rechercher un groupe..."
+                    placeholder={t('groupsPage.searchPlaceholder')}
                   />
                 </div>
                 <div className="flex gap-2 overflow-x-auto scrollbar-hide">
                   {[
-                    { id: 'all', label: 'Toutes' },
-                    { id: 'tech', label: 'Technologie' },
-                    { id: 'marketing', label: 'Marketing' },
-                    { id: 'finance', label: 'Finance' },
-                    { id: 'freelance', label: 'Freelance' },
-                    { id: 'investissement', label: 'Investissement' },
+                    { id: 'all', label: t('groupsPage.catAll') },
+                    { id: 'tech', label: t('groupsPage.catTech') },
+                    { id: 'marketing', label: t('groupsPage.catMarketing') },
+                    { id: 'finance', label: t('groupsPage.catFinance') },
+                    { id: 'freelance', label: t('groupsPage.catFreelance') },
+                    { id: 'investissement', label: t('groupsPage.catInvestment') },
                   ].map(c => (
                     <button
                       key={c.id}
@@ -252,13 +254,13 @@ export default function Groups() {
               ) : groups.filter(g => (category === 'all' || g.category === category) && g.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 ? (
                 <div className="text-center py-20 border border-dashed border-[#1A1A1A] rounded-2xl">
                   <Users size={40} className="mx-auto text-gray-700 mb-4" />
-                  <p className="text-gray-400 font-semibold text-sm mb-1">Aucun groupe ne correspond à ta recherche.</p>
-                  <p className="text-gray-600 text-xs mb-5">Sois le premier à lancer une communauté sur ce sujet.</p>
+                  <p className="text-gray-400 font-semibold text-sm mb-1">{t('groupsPage.noResults')}</p>
+                  <p className="text-gray-600 text-xs mb-5">{t('groupsPage.noResultsDesc')}</p>
                   <button
                     onClick={() => setActiveTab('create')}
                     className="inline-flex items-center gap-2 bg-[#D4AF37] text-black font-bold text-xs px-4 py-2.5 rounded-full hover:bg-[#e0bd4f] transition-colors"
                   >
-                    <Plus size={14} /> Créer un groupe
+                    <Plus size={14} /> {t('groupsPage.createGroupCta')}
                   </button>
                 </div>
               ) : (
@@ -285,7 +287,7 @@ export default function Groups() {
                         <p className="text-xs text-gray-500 line-clamp-2 mb-6 h-8">{group.description}</p>
                         <div className="flex items-center justify-between">
                           <div className="flex flex-col">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{group.members_count} membres</span>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{group.members_count} {t('groupsPage.members')}</span>
                             <span className="text-[10px] font-bold text-[#D4AF37]/50 uppercase tracking-tighter">{group.category}</span>
                           </div>
                           {activeTab === 'discover' ? (
@@ -293,7 +295,7 @@ export default function Groups() {
                               onClick={() => joinGroup(group.id)}
                               className="px-4 py-1.5 rounded-lg border border-[#2a2a2a] text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all"
                             >
-                              Rejoindre
+                              {t('groupsPage.join')}
                             </button>
                           ) : (
                             <ChevronRight size={16} className="text-gray-800 group-hover:text-[#D4AF37] transition-all" />
