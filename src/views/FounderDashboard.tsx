@@ -17,16 +17,18 @@ import {
   Activity, Globe, CheckCircle, AlertTriangle, Mail, RefreshCw,
   Server, TrendingUp, FileText, Filter
 } from 'lucide-react'
-
-// Fonction pour calculer le niveau professionnel
-const getProfessionalLevel = (missionsCount: number = 0) => {
-  if (missionsCount >= 25) return { label: 'Expert', color: 'text-purple-400 bg-purple-900/30 border-purple-700/30' }
-  if (missionsCount >= 10) return { label: 'Senior', color: 'text-blue-400 bg-blue-900/30 border-blue-700/30' }
-  if (missionsCount >= 3) return { label: 'Mid', color: 'text-green-400 bg-green-900/30 border-green-700/30' }
-  return { label: 'Junior', color: 'text-yellow-400 bg-yellow-900/30 border-yellow-700/30' }
-}
+import { useTranslation } from 'react-i18next'
 
 export default function FounderDashboard() {
+  const { t, i18n } = useTranslation()
+
+  const getProfessionalLevel = (missionsCount: number = 0) => {
+    if (missionsCount >= 25) return { label: t('founderDashboardPage.levelExpert'), color: 'text-purple-400 bg-purple-900/30 border-purple-700/30' }
+    if (missionsCount >= 10) return { label: t('founderDashboardPage.levelSenior'), color: 'text-blue-400 bg-blue-900/30 border-blue-700/30' }
+    if (missionsCount >= 3) return { label: t('founderDashboardPage.levelMid'), color: 'text-green-400 bg-green-900/30 border-green-700/30' }
+    return { label: t('founderDashboardPage.levelJunior'), color: 'text-yellow-400 bg-yellow-900/30 border-yellow-700/30' }
+  }
+
   const [activeTab, setActiveTab] = useState('overview')
   const [stats, setStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -109,10 +111,10 @@ export default function FounderDashboard() {
     await supabase.from('notifications').insert({
       user_id: userId,
       type: 'plan_activated',
-      title: 'Votre abonnement Premium est activé !',
-      message: `Vous avez accès au plan ${plan}${expiryHours > 0 ? ` pour ${expiryHours}h` : ''}.`,
+      title: t('founderDashboardPage.notifPlanActivatedTitle'),
+      message: t('founderDashboardPage.notifPlanActivatedMsg', { plan, hours: expiryHours > 0 ? t('founderDashboardPage.forHours', { h: expiryHours }) : '' }),
     })
-    alert(`Plan ${plan} activé${expiryHours > 0 ? ` (expire dans ${expiryHours}h)` : ' (permanent)'} !`)
+    alert(t('founderDashboardPage.planActivatedAlert', { plan, expiry: expiryHours > 0 ? t('founderDashboardPage.expiresIn', { h: expiryHours }) : t('founderDashboardPage.permanent') }))
     setShowStatusModal(false)
     loadDashboardData()
   }
@@ -122,7 +124,7 @@ export default function FounderDashboard() {
     if (!user) return
     const newTokens = Math.max(0, (user.tokens || 0) + delta)
     await supabase.from('users_profiles').update({ tokens: newTokens }).eq('id', userId)
-    alert(`Tokens mis à jour : ${newTokens}`)
+    alert(t('founderDashboardPage.tokensUpdated', { n: newTokens }))
     loadDashboardData()
   }
 
@@ -158,7 +160,7 @@ export default function FounderDashboard() {
     }
   }
 
-  if (loading) return <div className='p-8 text-white'>Chargement...</div>
+  if (loading) return <div className='p-8 text-white'>{t('founderDashboardPage.loading')}</div>
 
   return (
     <div className='min-h-screen bg-[#0A0A0A] text-white p-6'>
@@ -169,37 +171,37 @@ export default function FounderDashboard() {
             <div className='flex items-center gap-3'>
               <AlertTriangle className='text-red-400' size={24} />
               <div>
-                <h3 className='font-bold text-red-300'>MODE MAINTENANCE ACTIVÉ</h3>
-                <p className='text-sm text-red-400'>Les utilisateurs voient un message de maintenance</p>
+                <h3 className='font-bold text-red-300'>{t('founderDashboardPage.maintenanceEnabledTitle')}</h3>
+                <p className='text-sm text-red-400'>{t('founderDashboardPage.maintenanceEnabledDesc')}</p>
               </div>
             </div>
             <button 
               onClick={() => setMaintenanceMode(false)}
               className='px-4 py-2 bg-red-700 hover:bg-red-600 rounded-lg text-sm font-bold'
             >
-              Désactiver
+              {t('founderDashboardPage.deactivate')}
             </button>
           </div>
         )}
 
         <div className='flex items-center justify-between mb-8'>
           <div>
-            <h1 className='text-3xl font-bold'>Founder Dashboard</h1>
-            <p className='text-gray-400'>Contrôle total de l'application</p>
+            <h1 className='text-3xl font-bold'>{t('founderDashboardPage.title')}</h1>
+            <p className='text-gray-400'>{t('founderDashboardPage.subtitle')}</p>
           </div>
-          <GoldButton onClick={loadDashboardData}>Actualiser</GoldButton>
+          <GoldButton onClick={loadDashboardData}>{t('founderDashboardPage.refresh')}</GoldButton>
         </div>
 
         {/* Tabs */}
         <div className='flex gap-4 mb-8 border-b border-[#2A2A2A] pb-4 flex-wrap'>
           {[
-            { id: 'overview', label: 'Vue d\'ensemble', icon: <Activity size={16} /> },
-            { id: 'settings', label: 'Paramètres', icon: <Settings size={16} /> },
-            { id: 'scraper', label: 'Scraper & Sources', icon: <Database size={16} /> },
-            { id: 'users', label: 'Utilisateurs', icon: <Users size={16} /> },
-            { id: 'opportunities', label: 'Opportunités', icon: <Zap size={16} /> },
-            { id: 'api', label: 'API & Quotas', icon: <Globe size={16} /> },
-            { id: 'alerts', label: 'Alertes', icon: <Bell size={16} /> },
+            { id: 'overview', label: t('founderDashboardPage.tabOverview'), icon: <Activity size={16} /> },
+            { id: 'settings', label: t('founderDashboardPage.tabSettings'), icon: <Settings size={16} /> },
+            { id: 'scraper', label: t('founderDashboardPage.tabScraper'), icon: <Database size={16} /> },
+            { id: 'users', label: t('founderDashboardPage.tabUsers'), icon: <Users size={16} /> },
+            { id: 'opportunities', label: t('founderDashboardPage.tabOpportunities'), icon: <Zap size={16} /> },
+            { id: 'api', label: t('founderDashboardPage.tabApi'), icon: <Globe size={16} /> },
+            { id: 'alerts', label: t('founderDashboardPage.tabAlerts'), icon: <Bell size={16} /> },
           ].map(tab => (
             <button
               key={tab.id}
@@ -222,23 +224,23 @@ export default function FounderDashboard() {
             {/* Stats Row */}
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4'>
               <Card className='p-6'>
-                <h3 className='text-sm text-gray-400 mb-2'>Opportunités en cache</h3>
+                <h3 className='text-sm text-gray-400 mb-2'>{t('founderDashboardPage.cachedOpportunities')}</h3>
                 <p className='text-3xl font-bold text-[#D4AF37]'>{stats.cache}</p>
               </Card>
               <Card className='p-6'>
-                <h3 className='text-sm text-gray-400 mb-2'>Sessions de scraping</h3>
+                <h3 className='text-sm text-gray-400 mb-2'>{t('founderDashboardPage.scrapingSessions')}</h3>
                 <p className='text-3xl font-bold'>{stats.sessions.length}</p>
               </Card>
               <Card className='p-6'>
-                <h3 className='text-sm text-gray-400 mb-2'>Sources actives (24h)</h3>
+                <h3 className='text-sm text-gray-400 mb-2'>{t('founderDashboardPage.activeSources24h')}</h3>
                 <p className='text-3xl font-bold text-green-400'>{stats.sources24h || 0} / {stats.sourcesTotal || 0}</p>
               </Card>
               <Card className='p-6'>
-                <h3 className='text-sm text-gray-400 mb-2'>Taux déduplication</h3>
+                <h3 className='text-sm text-gray-400 mb-2'>{t('founderDashboardPage.dedupRate')}</h3>
                 <p className='text-3xl font-bold text-blue-400'>{stats.deduplication?.rate || 0}%</p>
               </Card>
               <Card className='p-6'>
-                <h3 className='text-sm text-gray-400 mb-2'>Utilisateurs</h3>
+                <h3 className='text-sm text-gray-400 mb-2'>{t('founderDashboardPage.users')}</h3>
                 <p className='text-3xl font-bold'>{stats.users.length}</p>
               </Card>
             </div>
@@ -248,7 +250,7 @@ export default function FounderDashboard() {
               <div className='flex items-center justify-between mb-6'>
                 <h2 className='text-xl font-bold flex items-center gap-2'>
                   <Database className='text-[#D4AF37]' size={24} />
-                  MongoDB & Sources Monitoring
+                  {t('founderDashboardPage.mongoMonitoring')}
                 </h2>
                 <GoldButton onClick={loadDashboardData} size='sm'>
                   <RefreshCw size={14} />
@@ -258,15 +260,15 @@ export default function FounderDashboard() {
                 <div className='p-4 bg-[#111] rounded-lg border border-[#2A2A2A]'>
                   <div className='flex items-center gap-3 mb-2'>
                     <Server className='text-green-400' size={20} />
-                    <h3 className='font-bold'>Sources RSS gratuites</h3>
+                    <h3 className='font-bold'>{t('founderDashboardPage.freeRssSources')}</h3>
                   </div>
                   <p className='text-2xl font-bold text-green-400'>2000+</p>
-                  <p className='text-xs text-gray-500'>Interrogées toutes les 10/15/30/60 mins</p>
+                  <p className='text-xs text-gray-500'>{t('founderDashboardPage.queriedEvery')}</p>
                 </div>
                 <div className='p-4 bg-[#111] rounded-lg border border-[#2A2A2A]'>
                   <div className='flex items-center gap-3 mb-2'>
                     <Globe className='text-blue-400' size={20} />
-                    <h3 className='font-bold'>Sources API payantes</h3>
+                    <h3 className='font-bold'>{t('founderDashboardPage.paidApiSources')}</h3>
                   </div>
                   <p className='text-2xl font-bold text-blue-400'>201</p>
                   <p className='text-xs text-gray-500'>LinkedIn, Indeed, Glassdoor, etc.</p>
@@ -274,10 +276,10 @@ export default function FounderDashboard() {
                 <div className='p-4 bg-[#111] rounded-lg border border-[#2A2A2A]'>
                   <div className='flex items-center gap-3 mb-2'>
                     <Activity className='text-[#D4AF37]' size={20} />
-                    <h3 className='font-bold'>Sources actives 24h</h3>
+                    <h3 className='font-bold'>{t('founderDashboardPage.activeSources24hLabel')}</h3>
                   </div>
                   <p className='text-2xl font-bold text-[#D4AF37]'>{stats.sources24h || 0}</p>
-                  <p className='text-xs text-gray-500'>Sources ayant retourné des données</p>
+                  <p className='text-xs text-gray-500'>{t('founderDashboardPage.sourcesReturnedData')}</p>
                 </div>
               </div>
             </Card>
@@ -286,19 +288,19 @@ export default function FounderDashboard() {
             <Card className='p-6'>
               <h2 className='text-xl font-bold mb-4 flex items-center gap-2'>
                 <Filter className='text-purple-400' size={20} />
-                Déduplication intelligente
+                {t('founderDashboardPage.smartDedup')}
               </h2>
               <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
                 <div className='p-4 bg-[#111] rounded-lg border border-[#2A2A2A]'>
-                  <h3 className='text-sm text-gray-400 mb-2'>Opportunités trouvées</h3>
+                  <h3 className='text-sm text-gray-400 mb-2'>{t('founderDashboardPage.opportunitiesFound')}</h3>
                   <p className='text-2xl font-bold'>{stats.deduplication?.totalFound || 0}</p>
                 </div>
                 <div className='p-4 bg-[#111] rounded-lg border border-[#2A2A2A]'>
-                  <h3 className='text-sm text-gray-400 mb-2'>Doublons supprimés</h3>
+                  <h3 className='text-sm text-gray-400 mb-2'>{t('founderDashboardPage.duplicatesRemoved')}</h3>
                   <p className='text-2xl font-bold text-red-400'>{stats.deduplication?.totalDuplicates || 0}</p>
                 </div>
                 <div className='p-4 bg-[#111] rounded-lg border border-[#2A2A2A]'>
-                  <h3 className='text-sm text-gray-400 mb-2'>Taux de déduplication</h3>
+                  <h3 className='text-sm text-gray-400 mb-2'>{t('founderDashboardPage.dedupRateLabel')}</h3>
                   <p className='text-2xl font-bold text-purple-400'>{stats.deduplication?.rate || 0}%</p>
                 </div>
               </div>
@@ -306,13 +308,13 @@ export default function FounderDashboard() {
 
             {/* Quick Settings */}
             <Card className='p-6'>
-              <h2 className='text-xl font-bold mb-4'>Contrôles Rapides</h2>
+              <h2 className='text-xl font-bold mb-4'>{t('founderDashboardPage.quickControls')}</h2>
               <div className='grid grid-cols-1 md:grid-cols-4 gap-6'>
                 <div className='space-y-3'>
                   <div className='flex items-center justify-between'>
                     <div>
-                      <h3 className='font-medium'>Scan Gratuit</h3>
-                      <p className='text-xs text-gray-500'>Toggle ON/OFF</p>
+                      <h3 className='font-medium'>{t('founderDashboardPage.freeScan')}</h3>
+                      <p className='text-xs text-gray-500'>{t('founderDashboardPage.toggleOnOff')}</p>
                     </div>
                     <button
                       onClick={() => toggleScan('free')}
@@ -325,8 +327,8 @@ export default function FounderDashboard() {
                 <div className='space-y-3'>
                   <div className='flex items-center justify-between'>
                     <div>
-                      <h3 className='font-medium'>Scan Payant</h3>
-                      <p className='text-xs text-gray-500'>Toggle ON/OFF</p>
+                      <h3 className='font-medium'>{t('founderDashboardPage.paidScan')}</h3>
+                      <p className='text-xs text-gray-500'>{t('founderDashboardPage.toggleOnOff')}</p>
                     </div>
                     <button
                       onClick={() => toggleScan('paid')}
@@ -339,8 +341,8 @@ export default function FounderDashboard() {
                 <div className='space-y-3'>
                   <div className='flex items-center justify-between'>
                     <div>
-                      <h3 className='font-medium'>Mode Maintenance</h3>
-                      <p className='text-xs text-gray-500'>Message utilisateurs</p>
+                      <h3 className='font-medium'>{t('founderDashboardPage.maintenanceMode')}</h3>
+                      <p className='text-xs text-gray-500'>{t('founderDashboardPage.usersMessage')}</p>
                     </div>
                     <button
                       onClick={() => setMaintenanceMode(!maintenanceMode)}
@@ -353,7 +355,7 @@ export default function FounderDashboard() {
                 <div className='space-y-3'>
                   <GoldButton onClick={testEmailAlert} fullWidth size='sm'>
                     <Mail size={14} className='mr-2' />
-                    Test Email Alert
+                    {t('founderDashboardPage.testEmailAlertBtn')}
                   </GoldButton>
                 </div>
               </div>
@@ -363,7 +365,7 @@ export default function FounderDashboard() {
             <Card className='p-6'>
               <h2 className='text-xl font-bold mb-4 flex items-center gap-2'>
                 <TrendingUp className='text-[#D4AF37]' size={20} />
-                Logs de Scraping (Dernières 50 sessions)
+                {t('founderDashboardPage.scrapingLogs')}
               </h2>
               <div className='space-y-3 max-h-96 overflow-y-auto'>
                 {stats.sessions.map((session: any) => {
@@ -373,16 +375,16 @@ export default function FounderDashboard() {
                       <div className='flex-1'>
                         <div className='flex items-center gap-2 mb-1'>
                           <p className='font-medium'>
-                            {new Date(session.created_at).toLocaleString('fr-FR')}
+                            {new Date(session.created_at).toLocaleString(i18n.language)}
                           </p>
                           {isFresh && (
                             <span className='px-2 py-0.5 bg-green-900/30 text-green-400 text-[10px] font-bold rounded uppercase'>
-                              Ultra Frais
+                              {t('founderDashboardPage.ultraFresh')}
                             </span>
                           )}
                         </div>
                         <p className='text-sm text-gray-400'>
-                          {session.opportunities_found || 0} trouvées · {session.opportunities_added || 0} ajoutées · {session.duplicates_removed || 0} doublons
+                          {session.opportunities_found || 0} {t('founderDashboardPage.found')} · {session.opportunities_added || 0} {t('founderDashboardPage.added')} · {session.duplicates_removed || 0} {t('founderDashboardPage.duplicates')}
                         </p>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -461,8 +463,8 @@ export default function FounderDashboard() {
                   <div className='p-4 bg-[#111] rounded-xl border border-[#2A2A2A]'>
                     <div className='flex items-center justify-between'>
                       <div>
-                        <h4 className='font-medium'>Activer le mode maintenance</h4>
-                        <p className='text-xs text-gray-500'>Tous les utilisateurs verront un message</p>
+                        <h4 className='font-medium'>{t('founderDashboardPage.enableMaintenanceMode')}</h4>
+                        <p className='text-xs text-gray-500'>{t('founderDashboardPage.allUsersWillSee')}</p>
                       </div>
                       <button
                         onClick={() => setMaintenanceMode(!maintenanceMode)}
@@ -487,35 +489,35 @@ export default function FounderDashboard() {
             {/* Stats Row */}
             <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
               <Card className='p-6'>
-                <h3 className='text-sm text-gray-400 mb-2'>Opportunités en cache</h3>
+                <h3 className='text-sm text-gray-400 mb-2'>{t('founderDashboardPage.cachedOpportunities')}</h3>
                 <p className='text-3xl font-bold text-[#D4AF37]'>{stats.cache}</p>
               </Card>
               <Card className='p-6'>
-                <h3 className='text-sm text-gray-400 mb-2'>Sessions totales</h3>
+                <h3 className='text-sm text-gray-400 mb-2'>{t('founderDashboardPage.totalSessions')}</h3>
                 <p className='text-3xl font-bold'>{stats.sessions.length}</p>
               </Card>
               <Card className='p-6'>
-                <h3 className='text-sm text-gray-400 mb-2'>Sources interrogées</h3>
+                <h3 className='text-sm text-gray-400 mb-2'>{t('founderDashboardPage.sourcesQueried')}</h3>
                 <p className='text-3xl font-bold'>200+</p>
               </Card>
               <Card className='p-6'>
-                <h3 className='text-sm text-gray-400 mb-2'>Sources API</h3>
+                <h3 className='text-sm text-gray-400 mb-2'>{t('founderDashboardPage.apiSources')}</h3>
                 <p className='text-3xl font-bold'>21</p>
               </Card>
             </div>
 
             {/* Scraper Sessions */}
             <Card className='p-6'>
-              <h2 className='text-xl font-bold mb-4'>Sessions de scraping</h2>
+              <h2 className='text-xl font-bold mb-4'>{t('founderDashboardPage.scrapingSessions')}</h2>
               <div className='space-y-3'>
                 {stats.sessions.map((session: any) => (
                   <div key={session.id} className='flex items-center justify-between p-4 bg-[#111] rounded-lg border border-[#2A2A2A]'>
                     <div>
                       <p className='font-medium'>
-                        {new Date(session.created_at).toLocaleString('fr-FR')}
+                        {new Date(session.created_at).toLocaleString(i18n.language)}
                       </p>
                       <p className='text-sm text-gray-400'>
-                        {session.opportunities_found} trouvées · {session.opportunities_added} ajoutées
+                        {session.opportunities_found} {t('founderDashboardPage.found')} · {session.opportunities_added} {t('founderDashboardPage.added')}
                       </p>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -534,18 +536,18 @@ export default function FounderDashboard() {
 
         {activeTab === 'users' && (
           <Card className='p-6'>
-            <h2 className='text-xl font-bold mb-4'>Gestion des utilisateurs</h2>
+            <h2 className='text-xl font-bold mb-4'>{t('founderDashboardPage.userManagement')}</h2>
             <div className='overflow-x-auto'>
               <table className='w-full text-sm'>
                 <thead>
                   <tr className='text-gray-400 border-b border-[#2A2A2A]'>
-                    <th className='text-left py-3'>Email</th>
-                    <th className='text-left py-3'>Type</th>
-                    <th className='text-left py-3'>Plan</th>
-                    <th className='text-left py-3'>Niveau</th>
-                    <th className='text-left py-3'>Tokens</th>
-                    <th className='text-left py-3'>Statut</th>
-                    <th className='text-left py-3'>Actions</th>
+                    <th className='text-left py-3'>{t('founderDashboardPage.email')}</th>
+                    <th className='text-left py-3'>{t('founderDashboardPage.type')}</th>
+                    <th className='text-left py-3'>{t('founderDashboardPage.plan')}</th>
+                    <th className='text-left py-3'>{t('founderDashboardPage.level')}</th>
+                    <th className='text-left py-3'>{t('founderDashboardPage.tokens')}</th>
+                    <th className='text-left py-3'>{t('founderDashboardPage.status')}</th>
+                    <th className='text-left py-3'>{t('founderDashboardPage.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -596,7 +598,7 @@ export default function FounderDashboard() {
                           }}
                           className='bg-[#D4AF37] text-black px-3 py-1 rounded text-xs font-bold hover:bg-[#F5E6A3]'
                         >
-                          Changer plan
+                          {t('founderDashboardPage.changePlan')}
                         </button>
                       </td>
                     </tr>
@@ -609,16 +611,16 @@ export default function FounderDashboard() {
 
         {activeTab === 'opportunities' && (
           <Card className='p-6'>
-            <h2 className='text-xl font-bold mb-4'>Opportunités Récentes</h2>
+            <h2 className='text-xl font-bold mb-4'>{t('founderDashboardPage.recentOpportunities')}</h2>
             <div className='overflow-x-auto'>
               <table className='w-full text-sm'>
                 <thead>
                   <tr className='text-gray-400 border-b border-[#2A2A2A]'>
-                    <th className='text-left py-3'>Titre</th>
-                    <th className='text-left py-3'>Source</th>
-                    <th className='text-left py-3'>Localisation</th>
-                    <th className='text-left py-3'>Date</th>
-                    <th className='text-left py-3'>Ultra Frais</th>
+                    <th className='text-left py-3'>{t('founderDashboardPage.titleCol')}</th>
+                    <th className='text-left py-3'>{t('founderDashboardPage.source')}</th>
+                    <th className='text-left py-3'>{t('founderDashboardPage.location')}</th>
+                    <th className='text-left py-3'>{t('founderDashboardPage.date')}</th>
+                    <th className='text-left py-3'>{t('founderDashboardPage.ultraFresh')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -628,7 +630,7 @@ export default function FounderDashboard() {
                       <td className='py-3 text-gray-400'>{opp.source}</td>
                       <td className='py-3 text-gray-400'>{opp.location}</td>
                       <td className='py-3 text-gray-400'>
-                        {opp.created_at ? new Date(opp.created_at).toLocaleDateString('fr-FR') : 'N/A'}
+                        {opp.created_at ? new Date(opp.created_at).toLocaleDateString(i18n.language) : 'N/A'}
                       </td>
                       <td className='py-3'>
                         {opp.is_ultra_fresh ? (
@@ -647,19 +649,19 @@ export default function FounderDashboard() {
 
         {activeTab === 'api' && (
           <Card className='p-6'>
-            <h2 className='text-xl font-bold mb-4'>API & Quotas</h2>
+            <h2 className='text-xl font-bold mb-4'>{t('founderDashboardPage.apiAndQuotas')}</h2>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
               {Object.entries(stats.apiStats).map(([service, data]: [string, any]) => (
                 <div key={service} className='p-4 bg-[#111] rounded-lg border border-[#2A2A2A]'>
                   <div className='flex items-center justify-between mb-3'>
                     <h3 className='font-bold capitalize'>{service}</h3>
                     <span className='text-xs text-gray-400'>
-                      Clé {data.activeKeyIndex + 1}/{data.totalKeys}
+                      {t('founderDashboardPage.key')} {data.activeKeyIndex + 1}/{data.totalKeys}
                     </span>
                   </div>
                   <div className='mb-2'>
                     <div className='flex justify-between text-xs text-gray-400 mb-1'>
-                      <span>Utilisation</span>
+                      <span>{t('founderDashboardPage.usage')}</span>
                       <span>{data.usagePercent}%</span>
                     </div>
                     <div className='h-2 bg-[#2A2A2A] rounded-full overflow-hidden'>
@@ -674,18 +676,18 @@ export default function FounderDashboard() {
                     </div>
                   </div>
                   <p className='text-xs text-gray-500'>
-                    {data.totalKeys} clés disponibles
+                    {data.totalKeys} {t('founderDashboardPage.keysAvailable')}
                   </p>
                 </div>
               ))}
             </div>
 
             <div className='mt-8 p-4 bg-yellow-900/20 border border-yellow-800 rounded-lg'>
-              <h3 className='font-bold text-yellow-300 mb-2'>Stratégie zéro dépense</h3>
+              <h3 className='font-bold text-yellow-300 mb-2'>{t('founderDashboardPage.zeroCostStrategy')}</h3>
               <ul className='text-sm text-yellow-100 space-y-1'>
-                <li>• Rotation automatique des clés à 80% d'utilisation</li>
-                <li>• Seuil paiement : 100 utilisateurs premium</li>
-                <li>• Coût estimé ce mois : $0.00</li>
+                <li>• {t('founderDashboardPage.strategyItem1')}</li>
+                <li>• {t('founderDashboardPage.strategyItem2')}</li>
+                <li>• {t('founderDashboardPage.strategyItem3')}</li>
               </ul>
             </div>
           </Card>
@@ -693,7 +695,7 @@ export default function FounderDashboard() {
 
         {activeTab === 'alerts' && (
           <Card className='p-6'>
-            <h2 className='text-xl font-bold mb-4'>Alertes fondateur</h2>
+            <h2 className='text-xl font-bold mb-4'>{t('founderDashboardPage.founderAlerts')}</h2>
             <div className='space-y-3'>
               {stats.alerts.map((alert: any) => (
                 <div key={alert.id} className={`p-4 rounded-lg border ${
@@ -715,7 +717,7 @@ export default function FounderDashboard() {
                   </div>
                   <p className='text-gray-300 text-sm mb-2'>{alert.message}</p>
                   <p className='text-xs text-gray-500'>
-                    {new Date(alert.created_at).toLocaleString('fr-FR')}
+                    {new Date(alert.created_at).toLocaleString(i18n.language)}
                   </p>
                 </div>
               ))}
@@ -740,7 +742,7 @@ export default function FounderDashboard() {
             </p>
             
             <div className='space-y-3'>
-              <label className='text-xs font-bold text-gray-400 uppercase'>Nouveau plan</label>
+              <label className='text-xs font-bold text-gray-400 uppercase'>{t('founderDashboardPage.newPlan')}</label>
               <select
                 id='newPlan'
                 className='w-full bg-[#0D0D0D] border border-[#2A2A2A] rounded-lg p-3 text-white'
@@ -753,17 +755,17 @@ export default function FounderDashboard() {
 
             <div className='space-y-3'>
               <label className='text-xs font-bold text-gray-400 uppercase'>
-                Expiration (optionnel)
+                {t('founderDashboardPage.expirationOptional')}
               </label>
               <input
                 type='number'
                 value={statusExpiry}
                 onChange={(e) => setStatusExpiry(Number(e.target.value))}
-                placeholder='0 = permanent'
+                placeholder={t('founderDashboardPage.expirationPlaceholder')}
                 className='w-full bg-[#0D0D0D] border border-[#2A2A2A] rounded-lg p-3 text-white'
               />
               <p className='text-xs text-gray-500'>
-                Nombre d'heures avant retour automatique à Free (0 = permanent)
+                {t('founderDashboardPage.expirationHint')}
               </p>
             </div>
 
@@ -772,7 +774,7 @@ export default function FounderDashboard() {
                 onClick={() => setShowStatusModal(false)}
                 className='flex-1 py-2.5 text-sm text-gray-500 border border-[#2A2A2A] rounded-xl hover:border-[#444]'
               >
-                Annuler
+                {t('founderDashboardPage.cancel')}
               </button>
               <GoldButton
                 onClick={() => {
@@ -781,7 +783,7 @@ export default function FounderDashboard() {
                 }}
                 className='flex-1'
               >
-                Activer
+                {t('founderDashboardPage.activate')}
               </GoldButton>
             </div>
           </div>

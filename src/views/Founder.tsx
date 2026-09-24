@@ -20,9 +20,11 @@ import {
   Plus, Minus
 } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { useTranslation } from 'react-i18next'
 
 // ── Composant croissance utilisateurs ────────────────────────────
 function UserGrowthChart() {
+  const { t } = useTranslation()
   const [growth, setGrowth] = useState<any[]>([])
   const [totalUsers, setTotalUsers] = useState(0)
 
@@ -60,8 +62,8 @@ function UserGrowthChart() {
   return (
     <Card className="p-6 mb-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold text-white">Croissance utilisateurs</h3>
-        <div className="text-2xl font-black text-[#D4AF37]">{totalUsers} <span className="text-xs text-gray-500 font-normal">total</span></div>
+        <h3 className="font-bold text-white">{t('founderPage.userGrowth')}</h3>
+        <div className="text-2xl font-black text-[#D4AF37]">{totalUsers} <span className="text-xs text-gray-500 font-normal">{t('founderPage.total')}</span></div>
       </div>
       {growth.length > 0 ? (
         <div className="h-48">
@@ -71,29 +73,29 @@ function UserGrowthChart() {
               <XAxis dataKey="week" stroke="#444" fontSize={10} tickLine={false} axisLine={false} />
               <YAxis stroke="#444" fontSize={10} tickLine={false} axisLine={false} />
               <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #2a2a2a', borderRadius: '8px' }} itemStyle={{ color: '#D4AF37' }} />
-              <Line type="monotone" dataKey="total" stroke="#D4AF37" strokeWidth={2} dot={false} name="Total" />
-              <Line type="monotone" dataKey="new" stroke="#22C55E" strokeWidth={1.5} dot={false} name="Nouveaux" strokeDasharray="4 2" />
+              <Line type="monotone" dataKey="total" stroke="#D4AF37" strokeWidth={2} dot={false} name={t('founderPage.totalLegend')} />
+              <Line type="monotone" dataKey="new" stroke="#22C55E" strokeWidth={1.5} dot={false} name={t('founderPage.newLegend')} strokeDasharray="4 2" />
             </LineChart>
           </ResponsiveContainer>
         </div>
       ) : (
-        <p className="text-gray-600 text-sm text-center py-8">Pas encore de données de croissance.</p>
+        <p className="text-gray-600 text-sm text-center py-8">{t('founderPage.noGrowthData')}</p>
       )}
     </Card>
   )
 }
 
-const TABS = [
-  { id: 'monitor',   label: '🚨 Monitoring',       icon: AlertTriangle },
-  { id: 'telemetry', label: '📊 MongoDB/Sources',  icon: Shield },
-  { id: 'scans',     label: '🔄 Scans & Logs',     icon: RefreshCw },
-  { id: 'users',     label: '👥 Utilisateurs',     icon: Users },
-  { id: 'chats',     label: '💬 Conversations',    icon: MessageSquare },
-  { id: 'revenue',   label: '💰 Revenus',          icon: DollarSign },
-  { id: 'platforms', label: '🔐 Comptes plateformes', icon: Shield },
-]
-
 export default function Founder() {
+  const { t, i18n } = useTranslation()
+  const TABS = [
+    { id: 'monitor',   label: t('founderPage.tabMonitor'),       icon: AlertTriangle },
+    { id: 'telemetry', label: t('founderPage.tabTelemetry'),  icon: Shield },
+    { id: 'scans',     label: t('founderPage.tabScans'),     icon: RefreshCw },
+    { id: 'users',     label: t('founderPage.tabUsers'),     icon: Users },
+    { id: 'chats',     label: t('founderPage.tabChats'),    icon: MessageSquare },
+    { id: 'revenue',   label: t('founderPage.tabRevenue'),          icon: DollarSign },
+    { id: 'platforms', label: t('founderPage.tabPlatforms'), icon: Shield },
+  ]
   const { profile, user, loading: authLoading } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -140,15 +142,15 @@ export default function Founder() {
     loadTab(tab)
   }, [tab, isFounder, authLoading])
 
-  const loadTab = async (t: string) => {
+  const loadTab = async (tabId: string) => {
     setLoading(true)
     try {
-      if (t === 'monitor') {
+      if (tabId === 'monitor') {
         const res = await fetch('/api/monitoring?limit=50')
         const data = await res.json()
         setEvents(data.events || [])
       }
-      if (t === 'telemetry') {
+      if (tabId === 'telemetry') {
         // Charger vraies stats MongoDB/sources depuis API dédiée
         const res = await fetch('/api/founder/telemetry', {
           headers: {
@@ -173,28 +175,28 @@ export default function Founder() {
           if (s.key === 'MAINTENANCE_MODE') setMaintenanceMode(s.value === 'true')
         })
       }
-      if (t === 'scans') {
+      if (tabId === 'scans') {
         const { data } = await supabase.from('scraper_sessions').select('*').order('created_at', { ascending: false }).limit(100)
         setScanSessions(data || [])
       }
-      if (t === 'users') {
+      if (tabId === 'users') {
         const { data } = await supabase.from('users_profiles').select('*').order('created_at', { ascending: false }).limit(100)
         setUsers(data || [])
       }
-      if (t === 'chats') {
+      if (tabId === 'chats') {
         // Charger les sessions SCAI depuis MongoDB via API
         const res = await fetch('/api/scai/all-sessions')
         const data = await res.json()
         setChats(data.sessions || [])
       }
-      if (t === 'platforms') {
+      if (tabId === 'platforms') {
         const { data: { session } } = await supabase.auth.getSession()
         const res = await fetch('/api/founder/platform-credentials', {
           headers: { Authorization: `Bearer ${session?.access_token}` },
         })
         if (res.ok) setPlatformCreds((await res.json()).credentials || [])
       }
-      if (t === 'revenue') {
+      if (tabId === 'revenue') {
         const { data } = await supabase.from('payment_attempts').select('*').order('created_at', { ascending: false }).limit(100)
         setPayments(data || [])
       }
@@ -304,7 +306,7 @@ export default function Founder() {
     const newTokens = Math.max(0, (user.tokens || 0) + delta)
     await supabase.from('users_profiles').update({ tokens: newTokens }).eq('id', userId)
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, tokens: newTokens } : u))
-    alert(`Tokens mis à jour : ${newTokens}`)
+    alert(t('founderPage.tokensUpdated', { n: newTokens }))
   }
 
   const toggleScan = async (type: 'free' | 'paid' | 'maintenance') => {
@@ -312,32 +314,32 @@ export default function Founder() {
       const newValue = !freeScanEnabled
       setFreeScanEnabled(newValue)
       await supabase.from('app_settings').upsert({ key: 'FREE_SCAN_ENABLED', value: String(newValue) })
-      alert(`Scan gratuit ${newValue ? 'ACTIVÉ ✅' : 'DÉSACTIVÉ ❌'}`)
+      alert(newValue ? t('founderPage.freeScanActivated') : t('founderPage.freeScanDeactivated'))
     } else if (type === 'paid') {
       const newValue = !paidScanEnabled
       setPaidScanEnabled(newValue)
       await supabase.from('app_settings').upsert({ key: 'PAID_SCAN_ENABLED', value: String(newValue) })
-      alert(`Scan payant ${newValue ? 'ACTIVÉ ✅' : 'DÉSACTIVÉ ❌'}`)
+      alert(newValue ? t('founderPage.paidScanActivated') : t('founderPage.paidScanDeactivated'))
     } else {
       const newValue = !maintenanceMode
       setMaintenanceMode(newValue)
       await supabase.from('app_settings').upsert({ key: 'MAINTENANCE_MODE', value: String(newValue) })
-      alert(`Mode maintenance ${newValue ? 'ACTIVÉ 🔴' : 'DÉSACTIVÉ ✅'}`)
+      alert(newValue ? t('founderPage.maintenanceOn') : t('founderPage.maintenanceOff'))
     }
   }
 
   const testEmailAlert = async () => {
-    if (!confirm('Envoyer un email de test ?')) return
+    if (!confirm(t('founderPage.confirmTestEmail'))) return
     try {
       const res = await fetch('/api/email/welcome', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ test: true }),
       })
-      if (res.ok) alert('✅ Email de test envoyé !')
-      else alert('❌ Erreur lors de l\'envoi')
+      if (res.ok) alert(t('founderPage.testEmailSent'))
+      else alert(t('founderPage.sendError'))
     } catch {
-      alert('❌ Erreur de connexion')
+      alert(t('founderPage.connectionError'))
     }
   }
 
@@ -372,7 +374,7 @@ export default function Founder() {
         <header className="h-16 border-b border-[#1A1A1A] flex items-center justify-between px-6 bg-[#0A0A0A]/50 backdrop-blur-md sticky top-0 z-30">
           <div className="flex items-center gap-3">
             <span className="text-[#D4AF37] font-black text-lg">🔱</span>
-            <h2 className="text-lg font-bold text-white">Dashboard Fondateur</h2>
+            <h2 className="text-lg font-bold text-white">{t('founderPage.dashboardTitle')}</h2>
           </div>
           <button onClick={() => loadTab(tab)} className="p-2 text-gray-500 hover:text-[#D4AF37] transition-colors">
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -381,12 +383,12 @@ export default function Founder() {
 
         {/* Tabs */}
         <div className="flex gap-0 border-b border-[#1A1A1A] overflow-x-auto">
-          {TABS.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)}
+          {TABS.map(tabItem => (
+            <button key={tabItem.id} onClick={() => setTab(tabItem.id)}
               className={`px-5 py-3 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 -mb-px whitespace-nowrap ${
-                tab === t.id ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-gray-600 border-transparent hover:text-gray-400'
+                tab === tabItem.id ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-gray-600 border-transparent hover:text-gray-400'
               }`}>
-              {t.label}
+              {tabItem.label}
             </button>
           ))}
         </div>
@@ -397,14 +399,14 @@ export default function Founder() {
           {tab === 'monitor' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-white font-bold">Événements système</h3>
-                <span className="text-xs text-gray-500">{events.filter(e => !e.resolved).length} non résolus</span>
+                <h3 className="text-white font-bold">{t('founderPage.systemEvents')}</h3>
+                <span className="text-xs text-gray-500">{events.filter(e => !e.resolved).length} {t('founderPage.unresolved')}</span>
               </div>
               {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-[#D4AF37]" /></div>
               : events.length === 0 ? (
                 <Card className="p-12 text-center">
                   <CheckCircle className="w-10 h-10 text-green-400 mx-auto mb-3" />
-                  <p className="text-gray-500">Aucun événement — tout fonctionne bien.</p>
+                  <p className="text-gray-500">{t('founderPage.noEvents')}</p>
                 </Card>
               ) : events.map(e => (
                 <Card key={e.id} className={`p-4 ${e.resolved ? 'opacity-40' : ''}`}>
@@ -416,16 +418,16 @@ export default function Founder() {
                         </span>
                         <span className="text-[10px] text-gray-600 uppercase">{e.type} · {e.source}</span>
                         <span className="text-[10px] text-gray-700 ml-auto">
-                          {new Date(e.created_at).toLocaleString('fr-FR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}
+                          {new Date(e.created_at).toLocaleString(i18n.language, { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' })}
                         </span>
                       </div>
                       <p className="text-sm text-gray-300">{e.message}</p>
-                      {e.user_id && <p className="text-xs text-gray-600 mt-1">User: {e.user_id.slice(0, 12)}</p>}
+                      {e.user_id && <p className="text-xs text-gray-600 mt-1">{t('founderPage.userLabel')} {e.user_id.slice(0, 12)}</p>}
                     </div>
                     {!e.resolved && (
                       <button onClick={() => resolveEvent(e.id)}
                         className="text-xs text-green-400 hover:text-green-300 border border-green-400/30 px-3 py-1 rounded-lg flex-shrink-0">
-                        Résoudre
+                        {t('founderPage.resolve')}
                       </button>
                     )}
                   </div>
@@ -448,47 +450,47 @@ export default function Founder() {
                     <Card className="p-6">
                       <div className="flex items-center gap-3 mb-2">
                         <Server className="text-purple-400" size={20} />
-                        <h3 className="font-bold text-white">Registre configuré</h3>
+                        <h3 className="font-bold text-white">{t('founderPage.registeredSources')}</h3>
                       </div>
                       <p className="text-3xl font-bold text-purple-400">
                         {sourcesStats?.totalConfiguredSources?.toLocaleString() || 0}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        {sourcesStats?.totalConfiguredFreeSources || 0} gratuites · {sourcesStats?.totalConfiguredPaidSources || 0} premium — interrogées par rotation, pas toutes en même temps
+                        {t('founderPage.freePaidRotation', { free: sourcesStats?.totalConfiguredFreeSources || 0, paid: sourcesStats?.totalConfiguredPaidSources || 0 })}
                       </p>
                     </Card>
                     <Card className="p-6">
                       <div className="flex items-center gap-3 mb-2">
                         <Server className="text-green-400" size={20} />
-                        <h3 className="font-bold text-white">Sources gratuites ayant livré</h3>
+                        <h3 className="font-bold text-white">{t('founderPage.freeSourcesDelivered')}</h3>
                       </div>
                       <p className="text-3xl font-bold text-green-400">
                         {sourcesStats?.freeSources || 0}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        Actives: {sourcesStats?.activeSources || 0} | Erreurs: {sourcesStats?.errorSources || 0}
+                        {t('founderPage.activeErrors', { active: sourcesStats?.activeSources || 0, errors: sourcesStats?.errorSources || 0 })}
                       </p>
                     </Card>
                     <Card className="p-6">
                       <div className="flex items-center gap-3 mb-2">
                         <Globe className="text-blue-400" size={20} />
-                        <h3 className="font-bold text-white">Sources payantes ayant livré</h3>
+                        <h3 className="font-bold text-white">{t('founderPage.paidSourcesDelivered')}</h3>
                       </div>
                       <p className="text-3xl font-bold text-blue-400">
                         {sourcesStats?.paidSources || 0}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">sur {sourcesStats?.totalConfiguredPaidSources || 0} configurées (LinkedIn, Upwork, Indeed...)</p>
+                      <p className="text-xs text-gray-500 mt-1">{t('founderPage.outOfConfigured', { total: sourcesStats?.totalConfiguredPaidSources || 0 })}</p>
                     </Card>
                     <Card className="p-6">
                       <div className="flex items-center gap-3 mb-2">
                         <Activity className="text-[#D4AF37]" size={20} />
-                        <h3 className="font-bold text-white">Opportunités totales</h3>
+                        <h3 className="font-bold text-white">{t('founderPage.totalOpportunities')}</h3>
                       </div>
                       <p className="text-3xl font-bold text-[#D4AF37]">
                         {sourcesStats?.totalOpportunitiesFound?.toLocaleString() || 0}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        Scans réussis: {sourcesStats?.successfulScans || 0}
+                        {t('founderPage.successfulScans')} {sourcesStats?.successfulScans || 0}
                       </p>
                     </Card>
                   </div>
@@ -502,13 +504,13 @@ export default function Founder() {
                     <Card className="p-6">
                       <h3 className="font-bold text-white mb-3 flex items-center gap-2">
                         <AlertTriangle className="w-4 h-4 text-red-400" />
-                        Sources en panne ({deadSources.length})
+                        {t('founderPage.deadSources')} ({deadSources.length})
                       </h3>
                       <div className="space-y-2 max-h-64 overflow-y-auto">
-                        {deadSources.map((s: any) => (
-                          <div key={s.source_name} className="flex items-center justify-between gap-3 text-xs border-b border-[#1A1A1A] pb-2">
-                            <span className="text-gray-300 truncate">{s.source_name}</span>
-                            <span className="text-red-400 font-bold flex-shrink-0">{s.consecutive_failures} échecs</span>
+                        {deadSources.map((src: any) => (
+                          <div key={src.source_name} className="flex items-center justify-between gap-3 text-xs border-b border-[#1A1A1A] pb-2">
+                            <span className="text-gray-300 truncate">{src.source_name}</span>
+                            <span className="text-red-400 font-bold flex-shrink-0">{src.consecutive_failures} {t('founderPage.failures')}</span>
                           </div>
                         ))}
                       </div>
@@ -519,13 +521,13 @@ export default function Founder() {
                   <Card className="p-6">
                     <h3 className="font-bold text-white mb-4 flex items-center gap-2">
                       <Lock className="w-5 h-5 text-[#D4AF37]" />
-                      Contrôles système
+                      {t('founderPage.systemControls')}
                     </h3>
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-white">Scan mode gratuit</p>
-                          <p className="text-xs text-gray-500">Scans automatiques pour utilisateurs free</p>
+                          <p className="text-sm font-medium text-white">{t('founderPage.freeScanMode')}</p>
+                          <p className="text-xs text-gray-500">{t('founderPage.autoScansFreeUsers')}</p>
                         </div>
                         <button
                           onClick={() => toggleScanMode('free', !freeScanEnabled)}
@@ -538,8 +540,8 @@ export default function Founder() {
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-white">Scan mode payant</p>
-                          <p className="text-xs text-gray-500">Scans automatiques pour utilisateurs premium</p>
+                          <p className="text-sm font-medium text-white">{t('founderPage.paidScanMode')}</p>
+                          <p className="text-xs text-gray-500">{t('founderPage.autoScansPaidUsers')}</p>
                         </div>
                         <button
                           onClick={() => toggleScanMode('paid', !paidScanEnabled)}
@@ -552,8 +554,8 @@ export default function Founder() {
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-white">Mode maintenance</p>
-                          <p className="text-xs text-gray-500">Bloquer toutes les actions utilisateurs</p>
+                          <p className="text-sm font-medium text-white">{t('founderPage.maintenanceModeLabel')}</p>
+                          <p className="text-xs text-gray-500">{t('founderPage.blockAllActions')}</p>
                         </div>
                         <button
                           onClick={() => toggleMaintenanceMode(!maintenanceMode)}
@@ -575,14 +577,14 @@ export default function Founder() {
           {tab === 'scans' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-white font-bold">Logs de Scraping (100 dernières sessions)</h3>
-                <span className="text-xs text-gray-500">{scanSessions.length} sessions</span>
+                <h3 className="text-white font-bold">{t('founderPage.scrapingLogs')}</h3>
+                <span className="text-xs text-gray-500">{scanSessions.length} {t('founderPage.sessions')}</span>
               </div>
               {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-[#D4AF37]" /></div>
               : scanSessions.length === 0 ? (
                 <Card className="p-12 text-center">
                   <Database className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-                  <p className="text-gray-500 text-sm">Aucune session de scan enregistrée.</p>
+                  <p className="text-gray-500 text-sm">{t('founderPage.noScanSessions')}</p>
                 </Card>
               ) : (
                 <div className="space-y-3 max-h-[600px] overflow-y-auto">
@@ -594,16 +596,16 @@ export default function Founder() {
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
                               <p className="font-medium text-white text-sm">
-                                {new Date(session.created_at).toLocaleString('fr-FR')}
+                                {new Date(session.created_at).toLocaleString(i18n.language)}
                               </p>
                               {isFresh && (
                                 <span className="px-2 py-0.5 bg-green-900/30 text-green-400 text-[10px] font-bold rounded uppercase">
-                                  Ultra Frais
+                                  {t('founderPage.ultraFresh')}
                                 </span>
                               )}
                             </div>
                             <p className="text-sm text-gray-400">
-                              {session.opportunities_found || 0} trouvées · {session.opportunities_added || 0} ajoutées · {session.duplicates_removed || 0} doublons
+                              {session.opportunities_found || 0} {t('founderPage.found')} · {session.opportunities_added || 0} {t('founderPage.added')} · {session.duplicates_removed || 0} {t('founderPage.duplicates')}
                             </p>
                           </div>
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -628,10 +630,10 @@ export default function Founder() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
                 <input type="text" value={userSearch} onChange={e => setUserSearch(e.target.value)}
-                  placeholder="Rechercher par nom, email, domaine..."
+                  placeholder={t('founderPage.searchPlaceholder')}
                   className="w-full bg-[#111] border border-[#2a2a2a] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:border-[#D4AF37] outline-none" />
               </div>
-              <div className="text-xs text-gray-600">{filteredUsers.length} profils</div>
+              <div className="text-xs text-gray-600">{filteredUsers.length} {t('founderPage.profiles')}</div>
               {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-[#D4AF37]" /></div>
               : filteredUsers.map(u => (
                 <Card key={u.id} className="p-4">
@@ -641,7 +643,7 @@ export default function Founder() {
                         {u.avatar_url ? <img src={u.avatar_url} alt="" className="w-full h-full object-cover" /> : (u.full_name?.[0] || '?').toUpperCase()}
                       </div>
                       <div>
-                        <div className="font-bold text-white text-sm">{u.full_name || 'Sans nom'}</div>
+                        <div className="font-bold text-white text-sm">{u.full_name || t('founderPage.noName')}</div>
                         <div className="text-xs text-gray-500">{u.email} · {u.country}</div>
                         <div className="text-xs text-gray-600">{u.domain} · {u.profile_type}</div>
                       </div>
@@ -656,7 +658,7 @@ export default function Founder() {
                         <button
                           onClick={() => activatePlan1Month(u.id, u.plan || 'pro')}
                           className="px-2 py-1 bg-[#D4AF37]/20 text-[#D4AF37] text-[10px] font-bold rounded hover:bg-[#D4AF37]/30"
-                          title="Activer ce plan pour 1 mois"
+                          title={t('founderPage.activate1MonthTitle')}
                         >
                           1M
                         </button>
@@ -669,7 +671,7 @@ export default function Founder() {
                       {/* Afficher expiration si existe */}
                       {u.plan_expiry && new Date(u.plan_expiry) > new Date() && (
                         <span className="text-[9px] text-gray-600">
-                          Expire: {new Date(u.plan_expiry).toLocaleDateString('fr-FR')}
+                          {t('founderPage.expires')} {new Date(u.plan_expiry).toLocaleDateString(i18n.language)}
                         </span>
                       )}
                     </div>
@@ -682,12 +684,12 @@ export default function Founder() {
           {/* ── CONVERSATIONS ────────────────────────────────── */}
           {tab === 'chats' && (
             <div className="space-y-4">
-              <p className="text-xs text-gray-500">Conversations SCAI — modération et contrôle qualité.</p>
+              <p className="text-xs text-gray-500">{t('founderPage.scaiConversations')}</p>
               {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-[#D4AF37]" /></div>
               : chats.length === 0 ? (
                 <Card className="p-12 text-center">
                   <MessageSquare className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-                  <p className="text-gray-500 text-sm">Aucune conversation disponible.</p>
+                  <p className="text-gray-500 text-sm">{t('founderPage.noConversations')}</p>
                 </Card>
               ) : chats.map((c: any) => (
                 <Card key={c.userId} className="overflow-hidden">
@@ -697,7 +699,7 @@ export default function Founder() {
                       <MessageSquare className="w-4 h-4 text-[#D4AF37]" />
                       <div className="text-left">
                         <div className="text-sm font-bold text-white">{c.userId}</div>
-                        <div className="text-xs text-gray-500">{c.messageCount} messages · Dernière activité : {c.lastActive ? new Date(c.lastActive).toLocaleDateString('fr-FR') : 'N/A'}</div>
+                        <div className="text-xs text-gray-500">{c.messageCount} {t('founderPage.messages')} · {t('founderPage.lastActivity')} {c.lastActive ? new Date(c.lastActive).toLocaleDateString(i18n.language) : 'N/A'}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -728,9 +730,9 @@ export default function Founder() {
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-4 mb-6">
                 {[
-                  { label: 'Total paiements', value: payments.length },
-                  { label: 'Confirmés', value: payments.filter(p => p.status === 'completed').length },
-                  { label: 'En attente', value: payments.filter(p => p.status === 'pending_manual').length },
+                  { label: t('founderPage.totalPayments'), value: payments.length },
+                  { label: t('founderPage.confirmed'), value: payments.filter(p => p.status === 'completed').length },
+                  { label: t('founderPage.pending'), value: payments.filter(p => p.status === 'pending_manual').length },
                 ].map(s => (
                   <Card key={s.label} className="p-4 text-center">
                     <div className="text-2xl font-bold text-[#D4AF37]">{s.value}</div>
@@ -750,7 +752,7 @@ export default function Founder() {
                       <div>
                         <div className="font-bold text-white text-sm">{p.plan?.toUpperCase()} — {p.amount?.toLocaleString()} {p.currency}</div>
                         <div className="text-xs text-gray-500 mt-0.5">
-                          {p.user_id?.slice(0, 12)} · {p.method} · {new Date(p.created_at).toLocaleDateString('fr-FR')}
+                          {p.user_id?.slice(0, 12)} · {p.method} · {new Date(p.created_at).toLocaleDateString(i18n.language)}
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
@@ -765,7 +767,7 @@ export default function Founder() {
                             await supabase.from('payment_attempts').update({ status: 'completed', activated_at: new Date().toISOString() }).eq('id', p.id)
                             setPayments(prev => prev.map(x => x.id === p.id ? { ...x, status: 'completed' } : x))
                           }} className="text-xs text-[#D4AF37] border border-[#D4AF37]/30 px-3 py-1 rounded-lg hover:bg-[#D4AF37]/10">
-                            Activer ✓
+                            {t('founderPage.activateCheck')}
                           </button>
                         )}
                       </div>
@@ -780,26 +782,25 @@ export default function Founder() {
           {tab === 'platforms' && (
             <div className="space-y-6">
               <div className="text-xs text-gray-500 bg-[#111] border border-[#1A1A1A] rounded-lg p-3">
-                Identifiants chiffrés côté serveur (AES-256-GCM) — jamais renvoyés en clair, jamais visibles ailleurs que sur cette page.
-                Utilisés par le worker Playwright pour lire les missions de ces plateformes même hors ligne (toutes les 2h).
+                {t('founderPage.credentialsNote')}
               </div>
 
               <Card className="p-5">
-                <h3 className="text-white font-bold text-sm mb-4">Ajouter / mettre à jour un compte</h3>
+                <h3 className="text-white font-bold text-sm mb-4">{t('founderPage.addUpdateAccount')}</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  <input placeholder="Nom exact (ex: Kicklox)" value={pcForm.platform_name}
+                  <input placeholder={t('founderPage.exactNamePlaceholder')} value={pcForm.platform_name}
                     onChange={e => setPcForm(f => ({ ...f, platform_name: e.target.value }))}
                     className="bg-[#0A0A0A] border border-[#1A1A1A] rounded-lg px-3 py-2 text-sm text-white col-span-2" />
-                  <input placeholder="URL de connexion" value={pcForm.login_url}
+                  <input placeholder={t('founderPage.loginUrlPlaceholder')} value={pcForm.login_url}
                     onChange={e => setPcForm(f => ({ ...f, login_url: e.target.value }))}
                     className="bg-[#0A0A0A] border border-[#1A1A1A] rounded-lg px-3 py-2 text-sm text-white col-span-2" />
-                  <input placeholder="URL de la page de missions" value={pcForm.listing_url}
+                  <input placeholder={t('founderPage.listingUrlPlaceholder')} value={pcForm.listing_url}
                     onChange={e => setPcForm(f => ({ ...f, listing_url: e.target.value }))}
                     className="bg-[#0A0A0A] border border-[#1A1A1A] rounded-lg px-3 py-2 text-sm text-white col-span-2" />
-                  <input placeholder="Identifiant / email" value={pcForm.username}
+                  <input placeholder={t('founderPage.usernamePlaceholder')} value={pcForm.username}
                     onChange={e => setPcForm(f => ({ ...f, username: e.target.value }))}
                     className="bg-[#0A0A0A] border border-[#1A1A1A] rounded-lg px-3 py-2 text-sm text-white" />
-                  <input placeholder="Mot de passe" type="password" value={pcForm.password}
+                  <input placeholder={t('founderPage.passwordPlaceholder')} type="password" value={pcForm.password}
                     onChange={e => setPcForm(f => ({ ...f, password: e.target.value }))}
                     className="bg-[#0A0A0A] border border-[#1A1A1A] rounded-lg px-3 py-2 text-sm text-white" />
                 </div>
@@ -816,16 +817,16 @@ export default function Founder() {
                         body: JSON.stringify(pcForm),
                       })
                       const d = await res.json()
-                      if (!res.ok) { setPcMsg(`Erreur: ${d.error}`); setPcSaving(false); return }
-                      setPcMsg(`✓ ${pcForm.platform_name} enregistré — sélecteurs à ajouter ensuite.`)
+                      if (!res.ok) { setPcMsg(`${t('founderPage.error')} ${d.error}`); setPcSaving(false); return }
+                      setPcMsg(t('founderPage.registered', { name: pcForm.platform_name }))
                       setPcForm({ platform_name: '', login_url: '', listing_url: '', username: '', password: '' })
                       loadTab('platforms')
-                    } catch { setPcMsg('Erreur réseau') }
+                    } catch { setPcMsg(t('founderPage.networkError')) }
                     setPcSaving(false)
                   }}
                   className="mt-4"
                 >
-                  {pcSaving ? 'Enregistrement...' : 'Enregistrer (chiffré)'}
+                  {pcSaving ? t('founderPage.saving') : t('founderPage.saveEncrypted')}
                 </GoldButton>
               </Card>
 
@@ -835,12 +836,12 @@ export default function Founder() {
                     <div>
                       <div className="font-bold text-white text-sm">{c.platform_name}</div>
                       <div className="text-xs text-gray-500 mt-0.5">
-                        {c.username} · dernière lecture: {c.last_scrape_at ? new Date(c.last_scrape_at).toLocaleString('fr-FR') : 'jamais'}
-                        {typeof c.last_scrape_count === 'number' ? ` · ${c.last_scrape_count} missions` : ''}
+                        {c.username} · {t('founderPage.lastRead')} {c.last_scrape_at ? new Date(c.last_scrape_at).toLocaleString(i18n.language) : t('founderPage.never')}
+                        {typeof c.last_scrape_count === 'number' ? ` · ${c.last_scrape_count} ${t('founderPage.missions')}` : ''}
                       </div>
                       {c.last_login_error && <div className="text-xs text-red-400 mt-1">⚠ {c.last_login_error}</div>}
                       {(!c.selectors || Object.keys(c.selectors).length === 0) && (
-                        <div className="text-xs text-yellow-400 mt-1">⚠ Sélecteurs non configurés — le worker ne fera rien tant que ce n'est pas fait.</div>
+                        <div className="text-xs text-yellow-400 mt-1">{t('founderPage.selectorsNotConfigured')}</div>
                       )}
                     </div>
                     <div className="flex items-center gap-3">
@@ -857,12 +858,12 @@ export default function Founder() {
                         })
                         loadTab('platforms')
                       }} className="text-xs text-red-400 border border-red-400/30 px-3 py-1 rounded-lg hover:bg-red-400/10">
-                        Supprimer
+                        {t('founderPage.delete')}
                       </button>
                     </div>
                   </Card>
                 ))}
-                {platformCreds.length === 0 && <div className="text-xs text-gray-600 text-center py-6">Aucun compte enregistré.</div>}
+                {platformCreds.length === 0 && <div className="text-xs text-gray-600 text-center py-6">{t('founderPage.noAccountsRegistered')}</div>}
               </div>
             </div>
           )}
