@@ -330,6 +330,33 @@
     },
     "avatarUploadError": "Avatar upload error. Try again."
   },
+  "statusPage": {
+    "verificationEngine": "Verification Engine",
+    "analyzing": "Analyzing...",
+    "analyzingDesc": "SCAI is reviewing your profile, documents, and bio. This usually takes 15 to 30 seconds.",
+    "stepInit": "Initializing...",
+    "stepAnalyzing": "Analyzing evidence...",
+    "stepFinalizing": "Finalizing...",
+    "takingLonger": "The analysis is taking longer than expected. You can access the dashboard with limited access while it finishes.",
+    "accessDashboard": "Access dashboard →",
+    "accessGranted": "Access granted ✓",
+    "verifiedDesc": "Your profile has been verified. You have access to all Searcher Connector features.",
+    "autoRedirect": "Redirecting automatically...",
+    "goToDashboard": "Access dashboard",
+    "geniusDetected": "GENIUS status detected 🔱",
+    "geniusDesc": "SCAI identified your profile as exceptional. You get GENIUS-level access — top priority on the platform.",
+    "enterDashboard": "Enter the dashboard",
+    "verificationRefused": "Verification declined",
+    "insufficientProof": "Insufficient or inconsistent proof.",
+    "strengthenTitle": "How to strengthen your file:",
+    "strengthenTips": [
+      "Add a detailed professional bio (min. 100 words)",
+      "Upload a CV, diploma, or official certificate",
+      "Provide a link to your real projects (GitHub, portfolio)",
+      "Make sure your information is consistent and verifiable"
+    ],
+    "reviewFile": "Review my file"
+  },
   "talentSearchPage": {
     "title": "Talent Search",
     "subtitle": "Find the best global profiles in any domain — Searcher scans GitHub, LinkedIn, Behance and more.",

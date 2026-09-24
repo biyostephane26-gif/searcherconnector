@@ -14,8 +14,10 @@ import { supabase } from '../lib/supabase'
 import GoldButton from '../components/ui/GoldButton'
 import Card from '../components/ui/Card'
 import { Clock, CheckCircle, Diamond, XCircle, ArrowRight, RefreshCcw, AlertTriangle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export default function Status() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { profile, refreshProfile } = useAuth()
   const [elapsed, setElapsed]     = useState(0)
@@ -92,7 +94,7 @@ export default function Status() {
         {/* Header */}
         <div className="mb-12">
           <div className="text-[#D4AF37] font-bold text-2xl tracking-tighter mb-2">SEARCHER CONNECTOR</div>
-          <div className="text-[10px] tracking-[0.4em] text-gray-600 uppercase font-bold">Verification Engine</div>
+          <div className="text-[10px] tracking-[0.4em] text-gray-600 uppercase font-bold">{t('statusPage.verificationEngine')}</div>
         </div>
 
         <AnimatePresence mode="wait">
@@ -109,9 +111,9 @@ export default function Status() {
               </div>
 
               <div>
-                <h2 className="text-3xl font-bold mb-3">Analyse en cours...</h2>
+                <h2 className="text-3xl font-bold mb-3">{t('statusPage.analyzing')}</h2>
                 <p className="text-gray-400 text-sm leading-relaxed">
-                  SCAI examine ton profil, tes documents et ta bio. L'analyse prend généralement 15 à 30 secondes.
+                  {t('statusPage.analyzingDesc')}
                 </p>
               </div>
 
@@ -123,7 +125,7 @@ export default function Status() {
 
               <div className="flex items-center justify-center gap-2 text-xs text-gray-600">
                 <RefreshCcw className="w-3 h-3 animate-spin" />
-                <span>{elapsed < 10 ? 'Initialisation...' : elapsed < 30 ? 'Analyse des preuves...' : 'Finalisation...'}</span>
+                <span>{elapsed < 10 ? t('statusPage.stepInit') : elapsed < 30 ? t('statusPage.stepAnalyzing') : t('statusPage.stepFinalizing')}</span>
               </div>
 
               {/* Bouton "Accéder au dashboard" après 30s */}
@@ -133,11 +135,11 @@ export default function Status() {
                     <div className="flex items-start gap-3 text-left">
                       <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
                       <p className="text-sm text-gray-400">
-                        L'analyse prend plus longtemps que prévu. Tu peux accéder au dashboard avec un accès limité pendant l'analyse.
+                        {t('statusPage.takingLonger')}
                       </p>
                     </div>
                     <GoldButton variant="outlined" fullWidth onClick={() => router.push('/dashboard')}>
-                      Accéder au dashboard →
+                      {t('statusPage.accessDashboard')}
                     </GoldButton>
                   </Card>
                 </motion.div>
@@ -155,12 +157,12 @@ export default function Status() {
                 <CheckCircle className="w-24 h-24 text-green-500 mx-auto relative z-10" />
               </div>
               <div>
-                <h2 className="text-3xl font-bold mb-3">Accès accordé ✓</h2>
-                <p className="text-gray-400">Ton profil a été vérifié. Tu as accès à toutes les fonctionnalités de Searcher Connector.</p>
+                <h2 className="text-3xl font-bold mb-3">{t('statusPage.accessGranted')}</h2>
+                <p className="text-gray-400">{t('statusPage.verifiedDesc')}</p>
               </div>
-              <p className="text-xs text-gray-600">Redirection automatique...</p>
+              <p className="text-xs text-gray-600">{t('statusPage.autoRedirect')}</p>
               <GoldButton onClick={() => router.push('/dashboard')} className="text-lg px-12 mx-auto">
-                Accéder au dashboard <ArrowRight className="w-5 h-5" />
+                {t('statusPage.goToDashboard')} <ArrowRight className="w-5 h-5" />
               </GoldButton>
             </motion.div>
           )}
@@ -175,12 +177,12 @@ export default function Status() {
                 <Diamond className="w-24 h-24 text-[#D4AF37] mx-auto relative z-10" />
               </div>
               <div>
-                <h2 className="text-3xl font-bold mb-3 text-gradient-gold">Statut GENIUS détecté 🔱</h2>
-                <p className="text-gray-400">SCAI a identifié ton profil comme exceptionnel. Tu bénéficies du niveau d'accès GENIUS — priorité absolue sur la plateforme.</p>
+                <h2 className="text-3xl font-bold mb-3 text-gradient-gold">{t('statusPage.geniusDetected')}</h2>
+                <p className="text-gray-400">{t('statusPage.geniusDesc')}</p>
               </div>
-              <p className="text-xs text-gray-600">Redirection automatique...</p>
+              <p className="text-xs text-gray-600">{t('statusPage.autoRedirect')}</p>
               <GoldButton onClick={() => router.push('/dashboard')} className="text-lg px-12 mx-auto shadow-[0_0_20px_rgba(212,175,55,0.4)]">
-                Entrer dans le dashboard <ArrowRight className="w-5 h-5" />
+                {t('statusPage.enterDashboard')} <ArrowRight className="w-5 h-5" />
               </GoldButton>
             </motion.div>
           )}
@@ -192,20 +194,19 @@ export default function Status() {
               className="space-y-8">
               <XCircle className="w-24 h-24 text-red-500 mx-auto" />
               <div>
-                <h2 className="text-3xl font-bold mb-3 text-red-500">Vérification refusée</h2>
-                <p className="text-gray-400 mb-4">{profile?.refusal_reason || 'Preuves insuffisantes ou incohérentes.'}</p>
+                <h2 className="text-3xl font-bold mb-3 text-red-500">{t('statusPage.verificationRefused')}</h2>
+                <p className="text-gray-400 mb-4">{profile?.refusal_reason || t('statusPage.insufficientProof')}</p>
                 <Card className="p-5 text-left border-red-900/50 bg-red-900/5">
-                  <h4 className="text-xs font-bold text-red-400 uppercase tracking-widest mb-3">Comment renforcer ton dossier :</h4>
+                  <h4 className="text-xs font-bold text-red-400 uppercase tracking-widest mb-3">{t('statusPage.strengthenTitle')}</h4>
                   <ul className="text-sm text-gray-500 space-y-2">
-                    <li className="flex gap-2"><span>•</span> Ajoute une bio professionnelle détaillée (min. 100 mots)</li>
-                    <li className="flex gap-2"><span>•</span> Upload un CV, diplôme ou certificat officiel</li>
-                    <li className="flex gap-2"><span>•</span> Fournis un lien vers tes projets réels (GitHub, portfolio)</li>
-                    <li className="flex gap-2"><span>•</span> Assure-toi que les informations sont cohérentes et vérifiables</li>
+                    {(t('statusPage.strengthenTips', { returnObjects: true }) as string[]).map((tip, i) => (
+                      <li key={i} className="flex gap-2"><span>•</span> {tip}</li>
+                    ))}
                   </ul>
                 </Card>
               </div>
               <GoldButton variant="outlined" onClick={() => router.push('/onboarding')} className="mx-auto">
-                Revoir mon dossier
+                {t('statusPage.reviewFile')}
               </GoldButton>
             </motion.div>
           )}

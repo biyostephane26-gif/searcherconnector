@@ -330,6 +330,33 @@
     },
     "avatarUploadError": "Erreur upload avatar. Réessaie."
   },
+  "statusPage": {
+    "verificationEngine": "Verification Engine",
+    "analyzing": "Analyse en cours...",
+    "analyzingDesc": "SCAI examine ton profil, tes documents et ta bio. L'analyse prend généralement 15 à 30 secondes.",
+    "stepInit": "Initialisation...",
+    "stepAnalyzing": "Analyse des preuves...",
+    "stepFinalizing": "Finalisation...",
+    "takingLonger": "L'analyse prend plus longtemps que prévu. Tu peux accéder au dashboard avec un accès limité pendant l'analyse.",
+    "accessDashboard": "Accéder au dashboard →",
+    "accessGranted": "Accès accordé ✓",
+    "verifiedDesc": "Ton profil a été vérifié. Tu as accès à toutes les fonctionnalités de Searcher Connector.",
+    "autoRedirect": "Redirection automatique...",
+    "goToDashboard": "Accéder au dashboard",
+    "geniusDetected": "Statut GENIUS détecté 🔱",
+    "geniusDesc": "SCAI a identifié ton profil comme exceptionnel. Tu bénéficies du niveau d'accès GENIUS — priorité absolue sur la plateforme.",
+    "enterDashboard": "Entrer dans le dashboard",
+    "verificationRefused": "Vérification refusée",
+    "insufficientProof": "Preuves insuffisantes ou incohérentes.",
+    "strengthenTitle": "Comment renforcer ton dossier :",
+    "strengthenTips": [
+      "Ajoute une bio professionnelle détaillée (min. 100 mots)",
+      "Upload un CV, diplôme ou certificat officiel",
+      "Fournis un lien vers tes projets réels (GitHub, portfolio)",
+      "Assure-toi que les informations sont cohérentes et vérifiables"
+    ],
+    "reviewFile": "Revoir mon dossier"
+  },
   "talentSearchPage": {
     "title": "Talent Search",
     "subtitle": "Trouvez les meilleurs profils mondiaux dans n'importe quel domaine — Searcher scanne GitHub, LinkedIn, Behance et plus.",
