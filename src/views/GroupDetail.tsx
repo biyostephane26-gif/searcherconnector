@@ -10,8 +10,10 @@ import PostCard from '../components/social/PostCard';
 import CreatePostBox from '../components/social/CreatePostBox';
 import { Users, ShieldCheck, ChevronLeft, Settings, Info, MessageSquare } from 'lucide-react';
 import { Group, GroupPost } from '../types';
+import { useTranslation } from 'react-i18next';
 
 export default function GroupDetail() {
+  const { t, i18n } = useTranslation();
   const params = useParams();
   const idParam = params?.['id'];
   const id = Array.isArray(idParam) ? idParam[0] : idParam;
@@ -53,10 +55,10 @@ export default function GroupDetail() {
       if (error) throw error;
       setIsEditing(false);
       fetchGroupData();
-      alert("Groupe mis à jour !");
+      alert(t('groupDetailPage.updatedSuccess'));
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de la mise à jour");
+      alert(t('groupDetailPage.updateError'));
     }
   };
 
@@ -144,7 +146,7 @@ export default function GroupDetail() {
       fetchGroupData();
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de l'adhésion au groupe");
+      alert(t('groupDetailPage.joinError'));
     }
   };
 
@@ -186,7 +188,7 @@ export default function GroupDetail() {
                     {group.is_verified && <ShieldCheck size={18} className="text-[#D4AF37]" />}
                   </div>
                   <div className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em]">
-                    {group.members_count} Membres • {group.category}
+                    {group.members_count} {t('groupDetailPage.members')} • {group.category}
                   </div>
                 </div>
 
@@ -195,14 +197,14 @@ export default function GroupDetail() {
                 {isMember ? (
                   <div className="flex flex-col gap-2">
                     <div className="w-full py-3 bg-[#111111] border border-[#2a2a2a] rounded-xl text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest text-center">
-                      Vous êtes {memberRole}
+                      {t('groupDetailPage.youAre')} {memberRole}
                     </div>
                     {memberRole === 'admin' && (
                       <button 
                         onClick={() => setIsEditing(!isEditing)}
                         className="flex items-center justify-center gap-2 w-full py-3 text-gray-500 hover:text-white transition-colors text-[10px] font-bold uppercase tracking-widest"
                       >
-                        <Settings size={14} /> {isEditing ? "Fermer les paramètres" : "Paramètres du groupe"}
+                        <Settings size={14} /> {isEditing ? t('groupDetailPage.closeSettings') : t('groupDetailPage.groupSettings')}
                       </button>
                     )}
                   </div>
@@ -211,26 +213,26 @@ export default function GroupDetail() {
                     onClick={joinGroup}
                     className="w-full py-4 bg-[#D4AF37] text-[#0A0A0A] rounded-xl font-bold uppercase tracking-widest hover:bg-[#F5E6A3] transition-all shadow-[0_0_20px_rgba(212,175,55,0.2)]"
                   >
-                    Rejoindre la communauté
+                    {t('groupDetailPage.joinCommunity')}
                   </button>
                 )}
               </Card>
 
               <Card className="p-6 border-[#1A1A1A]">
                 <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-6 flex items-center gap-2">
-                  <Info size={12} /> À propos
+                  <Info size={12} /> {t('groupDetailPage.about')}
                 </h4>
                 <div className="space-y-4">
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-600">Créé le</span>
-                    <span className="text-gray-400">{new Date(group.created_at).toLocaleDateString()}</span>
+                    <span className="text-gray-600">{t('groupDetailPage.createdOn')}</span>
+                    <span className="text-gray-400">{new Date(group.created_at).toLocaleDateString(i18n.language)}</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-600">Visibilité</span>
+                    <span className="text-gray-600">{t('groupDetailPage.visibility')}</span>
                     <span className="text-gray-400 capitalize">{group.visibility}</span>
                   </div>
                   <div className="flex justify-between text-xs">
-                    <span className="text-gray-600">Publications</span>
+                    <span className="text-gray-600">{t('groupDetailPage.publications')}</span>
                     <span className="text-gray-400">{group.posts_count}</span>
                   </div>
                 </div>
@@ -241,10 +243,10 @@ export default function GroupDetail() {
             <div className="lg:col-span-8 space-y-6">
               {isEditing ? (
                 <Card className="p-8 border-[#1A1A1A]">
-                  <h3 className="text-xl font-bold text-white mb-8 tracking-tight">Paramètres du groupe</h3>
+                  <h3 className="text-xl font-bold text-white mb-8 tracking-tight">{t('groupDetailPage.groupSettings')}</h3>
                   <form onSubmit={handleUpdateGroup} className="space-y-6">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Nom du groupe</label>
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('groupDetailPage.groupName')}</label>
                       <input
                         required
                         value={editForm.name}
@@ -253,7 +255,7 @@ export default function GroupDetail() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Description</label>
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('groupDetailPage.description')}</label>
                       <textarea
                         rows={4}
                         value={editForm.description}
@@ -263,35 +265,35 @@ export default function GroupDetail() {
                     </div>
                     <div className="grid grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Catégorie</label>
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('groupDetailPage.category')}</label>
                         <select
                           value={editForm.category}
                           onChange={e => setEditForm(prev => ({ ...prev, category: e.target.value }))}
                           className="w-full bg-[#111111] border border-[#2a2a2a] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#D4AF37] transition-all"
                         >
-                          <option value="tech">Technologie</option>
-                          <option value="marketing">Marketing</option>
-                          <option value="finance">Finance</option>
-                          <option value="freelance">Freelance</option>
-                          <option value="investissement">Investissement</option>
+                          <option value="tech">{t('groupsPage.catTech')}</option>
+                          <option value="marketing">{t('groupsPage.catMarketing')}</option>
+                          <option value="finance">{t('groupsPage.catFinance')}</option>
+                          <option value="freelance">{t('groupsPage.catFreelance')}</option>
+                          <option value="investissement">{t('groupsPage.catInvestment')}</option>
                         </select>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Visibilité</label>
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('groupDetailPage.visibility')}</label>
                         <div className="flex gap-2">
                           <button
                             type="button"
                             onClick={() => setEditForm(prev => ({ ...prev, visibility: 'public' }))}
                             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border transition-all ${editForm.visibility === 'public' ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]' : 'border-[#2a2a2a] text-gray-500'}`}
                           >
-                            <span className="text-[10px] font-bold uppercase">Public</span>
+                            <span className="text-[10px] font-bold uppercase">{t('groupDetailPage.public')}</span>
                           </button>
                           <button
                             type="button"
                             onClick={() => setEditForm(prev => ({ ...prev, visibility: 'private' }))}
                             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border transition-all ${editForm.visibility === 'private' ? 'border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37]' : 'border-[#2a2a2a] text-gray-500'}`}
                           >
-                            <span className="text-[10px] font-bold uppercase">Privé</span>
+                            <span className="text-[10px] font-bold uppercase">{t('groupDetailPage.private')}</span>
                           </button>
                         </div>
                       </div>
@@ -302,13 +304,13 @@ export default function GroupDetail() {
                         onClick={() => setIsEditing(false)}
                         className="flex-1 py-4 border border-[#2a2a2a] text-gray-500 rounded-xl font-bold uppercase tracking-widest hover:bg-[#111111] transition-all"
                       >
-                        Annuler
+                        {t('groupDetailPage.cancel')}
                       </button>
                       <button
                         type="submit"
                         className="flex-2 py-4 bg-[#D4AF37] text-[#0A0A0A] rounded-xl font-bold uppercase tracking-widest hover:bg-[#F5E6A3] transition-all"
                       >
-                        Sauvegarder
+                        {t('groupDetailPage.save')}
                       </button>
                     </div>
                   </form>
@@ -320,7 +322,7 @@ export default function GroupDetail() {
                     {posts.length === 0 ? (
                       <div className="text-center py-20 bg-[#111111]/30 rounded-3xl border border-dashed border-[#1A1A1A]">
                         <MessageSquare size={48} className="mx-auto text-gray-800 mb-4" />
-                        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Aucune publication pour le moment</p>
+                        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">{t('groupDetailPage.noPosts')}</p>
                       </div>
                     ) : (
                       posts.map(post => (
@@ -332,13 +334,13 @@ export default function GroupDetail() {
               ) : (
                 <div className="text-center py-40 bg-[#111111]/30 rounded-3xl border border-dashed border-[#1A1A1A] backdrop-blur-sm">
                   <ShieldCheck size={64} className="mx-auto text-[#D4AF37]/20 mb-6" />
-                  <h3 className="text-lg font-bold text-white mb-2">Contenu réservé aux membres</h3>
-                  <p className="text-sm text-gray-500 max-w-sm mx-auto mb-8">Rejoignez cette communauté pour voir les publications et interagir avec les autres membres.</p>
+                  <h3 className="text-lg font-bold text-white mb-2">{t('groupDetailPage.membersOnlyTitle')}</h3>
+                  <p className="text-sm text-gray-500 max-w-sm mx-auto mb-8">{t('groupDetailPage.membersOnlyDesc')}</p>
                   <button 
                     onClick={joinGroup}
                     className="px-8 py-3 bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37] rounded-xl font-bold uppercase tracking-widest hover:bg-[#D4AF37]/20 transition-all"
                   >
-                    Rejoindre maintenant
+                    {t('groupDetailPage.joinNow')}
                   </button>
                 </div>
               )}
