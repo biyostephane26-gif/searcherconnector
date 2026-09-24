@@ -13,30 +13,32 @@ import {
   TrendingUp, Send, Calendar, Award, DollarSign, Gauge, Mic, FileText, ImageIcon, Video,
   Sparkles, Zap, Bell, Wallet,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type Tab = 'transactions' | 'usage' | 'report'
 
-const TOOL_META: Record<string, { label: string; icon: JSX.Element }> = {
-  scai_tool_pdf:   { label: 'Documents PDF',   icon: <FileText className="w-3.5 h-3.5" /> },
-  scai_tool_xlsx:  { label: 'Classeurs Excel', icon: <FileText className="w-3.5 h-3.5" /> },
-  scai_tool_docx:  { label: 'Documents Word',  icon: <FileText className="w-3.5 h-3.5" /> },
-  scai_tool_image: { label: 'Images générées', icon: <ImageIcon className="w-3.5 h-3.5" /> },
-  scai_tool_video: { label: 'Mini-vidéos',     icon: <Video className="w-3.5 h-3.5" /> },
-}
-
-const STATUS_UI: Record<string, { label: string; cls: string; icon: JSX.Element }> = {
-  completed: { label: 'Payé', cls: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30', icon: <CheckCircle2 className="w-3.5 h-3.5" /> },
-  pending:   { label: 'En attente', cls: 'text-amber-400 bg-amber-500/10 border-amber-500/30', icon: <Clock className="w-3.5 h-3.5" /> },
-  failed:    { label: 'Échoué', cls: 'text-red-400 bg-red-500/10 border-red-500/30', icon: <XCircle className="w-3.5 h-3.5" /> },
-}
-
-const APP_STATUS_LABEL: Record<string, string> = {
-  found: 'Trouvée', ready_to_send: 'Prête à envoyer', sent: 'Envoyée', pending_action: 'En attente',
-  viewed: 'Vue par le client', interview: 'Entretien', offer: 'Offre reçue', rejected: 'Refusée', hired: 'Mission obtenue',
-}
-
 export default function Transactions() {
+  const { t, i18n } = useTranslation()
   const { user, profile } = useAuth()
+
+  const TOOL_META: Record<string, { label: string; icon: JSX.Element }> = {
+    scai_tool_pdf:   { label: t('transactionsPage.toolPdf'),   icon: <FileText className="w-3.5 h-3.5" /> },
+    scai_tool_xlsx:  { label: t('transactionsPage.toolXlsx'), icon: <FileText className="w-3.5 h-3.5" /> },
+    scai_tool_docx:  { label: t('transactionsPage.toolDocx'),  icon: <FileText className="w-3.5 h-3.5" /> },
+    scai_tool_image: { label: t('transactionsPage.toolImage'), icon: <ImageIcon className="w-3.5 h-3.5" /> },
+    scai_tool_video: { label: t('transactionsPage.toolVideo'),     icon: <Video className="w-3.5 h-3.5" /> },
+  }
+
+  const STATUS_UI: Record<string, { label: string; cls: string; icon: JSX.Element }> = {
+    completed: { label: t('transactionsPage.statusPaid'), cls: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30', icon: <CheckCircle2 className="w-3.5 h-3.5" /> },
+    pending:   { label: t('transactionsPage.statusPending'), cls: 'text-amber-400 bg-amber-500/10 border-amber-500/30', icon: <Clock className="w-3.5 h-3.5" /> },
+    failed:    { label: t('transactionsPage.statusFailed'), cls: 'text-red-400 bg-red-500/10 border-red-500/30', icon: <XCircle className="w-3.5 h-3.5" /> },
+  }
+
+  const APP_STATUS_LABEL: Record<string, string> = {
+    found: t('transactionsPage.appStatusFound'), ready_to_send: t('transactionsPage.appStatusReady'), sent: t('transactionsPage.appStatusSent'), pending_action: t('transactionsPage.appStatusPendingAction'),
+    viewed: t('transactionsPage.appStatusViewed'), interview: t('transactionsPage.appStatusInterview'), offer: t('transactionsPage.appStatusOffer'), rejected: t('transactionsPage.appStatusRejected'), hired: t('transactionsPage.appStatusHired'),
+  }
   const [tab, setTab] = useState<Tab>('transactions')
   const [payments, setPayments] = useState<any[]>([])
   const [applications, setApplications] = useState<any[]>([])
@@ -93,7 +95,7 @@ export default function Transactions() {
     try {
       const r = await authFetch('/api/tools/document', { method: 'POST', body: JSON.stringify({ format, source: 'applications' }) })
       const d = await r.json()
-      if (!r.ok) throw new Error(d.error || 'Génération impossible')
+      if (!r.ok) throw new Error(d.error || t('transactionsPage.genericGenError'))
       downloadBase64(d.base64, d.filename, d.mime)
     } catch (e: any) {
       setGenError(e.message)
@@ -107,21 +109,21 @@ export default function Transactions() {
       <Sidebar />
       <main className="flex-1 flex flex-col min-w-0 lg:ml-64">
         <header className="h-16 border-b border-[#1A1A1A] flex items-center justify-between px-6 bg-[#0A0A0A]/50 backdrop-blur-md sticky top-0 z-30">
-          <h2 className="text-lg font-bold text-white tracking-tight">Transactions & Rapports</h2>
+          <h2 className="text-lg font-bold text-white tracking-tight">{t('transactionsPage.title')}</h2>
           <div className="flex gap-1 bg-[#111111] border border-[#2a2a2a] rounded-full p-1">
             {[
-              { id: 'transactions' as Tab, label: 'Transactions', icon: Receipt },
-              { id: 'usage' as Tab, label: 'Utilisation', icon: Gauge },
-              { id: 'report' as Tab, label: 'Rapport d’activité', icon: FileBarChart },
-            ].map(t => (
+              { id: 'transactions' as Tab, label: t('transactionsPage.tabTransactions'), icon: Receipt },
+              { id: 'usage' as Tab, label: t('transactionsPage.tabUsage'), icon: Gauge },
+              { id: 'report' as Tab, label: t('transactionsPage.tabReport'), icon: FileBarChart },
+            ].map(tabItem => (
               <button
-                key={t.id}
-                onClick={() => setTab(t.id)}
+                key={tabItem.id}
+                onClick={() => setTab(tabItem.id)}
                 className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  tab === t.id ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'
+                  tab === tabItem.id ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'
                 }`}
               >
-                <t.icon className="w-3.5 h-3.5" /> {t.label}
+                <tabItem.icon className="w-3.5 h-3.5" /> {tabItem.label}
               </button>
             ))}
           </div>
@@ -132,33 +134,33 @@ export default function Transactions() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Card className="p-5">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Plan actuel</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">{t('transactionsPage.currentPlan')}</p>
                   <p className="text-xl font-bold text-white">{plan.label}</p>
-                  <p className="text-xs text-gray-500 mt-1">{plan.priceUSD > 0 ? `$${plan.priceUSD}/mois` : 'Gratuit'}</p>
+                  <p className="text-xs text-gray-500 mt-1">{plan.priceUSD > 0 ? `$${plan.priceUSD}${t('transactionsPage.perMonth')}` : t('transactionsPage.free')}</p>
                 </Card>
                 <Card className="p-5">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Total payé</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">{t('transactionsPage.totalPaid')}</p>
                   <p className="text-xl font-bold text-white">${totalPaid.toFixed(2)}</p>
-                  <p className="text-xs text-gray-500 mt-1">{payments.filter(p => p.status === 'completed').length} paiement(s) réussi(s)</p>
+                  <p className="text-xs text-gray-500 mt-1">{payments.filter(p => p.status === 'completed').length} {t('transactionsPage.successfulPayments')}</p>
                 </Card>
                 <Card className="p-5">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Prochaine étape</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">{t('transactionsPage.nextStep')}</p>
                   <a href="/pricing" className="text-sm font-bold text-[#D4AF37] hover:underline flex items-center gap-1">
-                    <CreditCard className="w-4 h-4" /> Gérer mon abonnement
+                    <CreditCard className="w-4 h-4" /> {t('transactionsPage.manageSubscription')}
                   </a>
                 </Card>
               </div>
 
               <Card className="p-0 overflow-hidden">
                 <div className="px-5 py-4 border-b border-[#1A1A1A]">
-                  <h3 className="text-sm font-bold text-white">Historique des paiements</h3>
+                  <h3 className="text-sm font-bold text-white">{t('transactionsPage.paymentHistory')}</h3>
                 </div>
                 {loading ? (
-                  <div className="p-8 text-center text-sm text-gray-500">Chargement…</div>
+                  <div className="p-8 text-center text-sm text-gray-500">{t('transactionsPage.loadingEllipsis')}</div>
                 ) : payments.length === 0 ? (
                   <div className="p-10 text-center">
                     <Receipt className="w-9 h-9 text-gray-700 mx-auto mb-3" />
-                    <p className="text-sm text-gray-500">Aucune transaction pour l'instant.</p>
+                    <p className="text-sm text-gray-500">{t('transactionsPage.noTransactions')}</p>
                   </div>
                 ) : (
                   <div className="divide-y divide-[#1A1A1A]">
@@ -168,7 +170,7 @@ export default function Transactions() {
                         <div key={p.id} className="flex items-center justify-between px-5 py-3.5">
                           <div>
                             <p className="text-sm font-semibold text-white capitalize">{p.plan} {p.method ? `· ${p.method}` : ''}</p>
-                            <p className="text-xs text-gray-500">{new Date(p.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                            <p className="text-xs text-gray-500">{new Date(p.created_at).toLocaleDateString(i18n.language, { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                           </div>
                           <div className="flex items-center gap-3">
                             <span className="text-sm font-bold text-white">{p.amount ? `${p.amount} ${p.currency || ''}` : '—'}</span>
@@ -189,36 +191,36 @@ export default function Transactions() {
                 <Card className="p-5">
                   <div className="flex items-center gap-2 mb-1">
                     <Mic className="w-4 h-4 text-[#D4AF37]" />
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">SCAI Voice</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{t('transactionsPage.scaiVoice')}</p>
                   </div>
                   <p className="text-xl font-bold text-white">{voiceCredits ?? '—'}</p>
-                  <p className="text-xs text-gray-500 mt-1">crédits restants aujourd'hui · {plan.voiceCreditsPerDay}/jour sur ton plan</p>
+                  <p className="text-xs text-gray-500 mt-1">{t('transactionsPage.creditsRemainingToday')} · {plan.voiceCreditsPerDay}{t('transactionsPage.perDayOnYourPlan')}</p>
                 </Card>
                 <Card className="p-5">
                   <div className="flex items-center gap-2 mb-1">
                     <Bell className="w-4 h-4 text-[#D4AF37]" />
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Notifications</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{t('transactionsPage.notifications')}</p>
                   </div>
                   <p className="text-xl font-bold text-white">{notifCountToday} <span className="text-sm text-gray-500 font-normal">/ {plan.notifBudget}</span></p>
-                  <p className="text-xs text-gray-500 mt-1">reçues aujourd'hui</p>
+                  <p className="text-xs text-gray-500 mt-1">{t('transactionsPage.receivedToday')}</p>
                 </Card>
                 <Card className="p-5">
                   <div className="flex items-center gap-2 mb-1">
                     <Zap className="w-4 h-4 text-[#D4AF37]" />
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Auto-candidature</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">{t('transactionsPage.autoApplication')}</p>
                   </div>
-                  <p className="text-xl font-bold text-white">{plan.autoApplyPerDay}<span className="text-sm text-gray-500 font-normal">/jour max</span></p>
-                  <p className="text-xs text-gray-500 mt-1">sur ton plan {plan.label}</p>
+                  <p className="text-xl font-bold text-white">{plan.autoApplyPerDay}<span className="text-sm text-gray-500 font-normal">{t('transactionsPage.perDayMax')}</span></p>
+                  <p className="text-xs text-gray-500 mt-1">{t('transactionsPage.onYourPlan')} {plan.label}</p>
                 </Card>
               </div>
 
               <Card className="p-5">
                 <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#D4AF37]" /> Outils SCAI Cowork — ce mois-ci
+                  <Sparkles className="w-4 h-4 text-[#D4AF37]" /> {t('transactionsPage.scaiCoworkTools')}
                 </h3>
-                <p className="text-xs text-gray-500 mb-4">Documents, images et vidéos générés directement dans le chat.</p>
+                <p className="text-xs text-gray-500 mb-4">{t('transactionsPage.scaiCoworkToolsDesc')}</p>
                 {Object.keys(toolUsage).length === 0 ? (
-                  <p className="text-sm text-gray-500 py-4 text-center">Aucun outil utilisé ce mois-ci — essaie le bouton « + » dans SCAI Cowork.</p>
+                  <p className="text-sm text-gray-500 py-4 text-center">{t('transactionsPage.noToolUsed')}</p>
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {Object.entries(TOOL_META).map(([key, meta]) => (
@@ -236,14 +238,14 @@ export default function Transactions() {
 
               <Card className="p-5">
                 <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-                  <Wallet className="w-4 h-4 text-[#D4AF37]" /> Ce qu'inclut ton plan {plan.label}
+                  <Wallet className="w-4 h-4 text-[#D4AF37]" /> {t('transactionsPage.planIncludesTitle')} {plan.label}
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                   {[
-                    { label: 'Scans manuels', value: `${plan.scansPerSession}/session` },
-                    { label: 'Sources accessibles', value: plan.maxSources.toLocaleString('fr-FR') },
-                    { label: 'Opportunity Creator', value: `${plan.opportunityCreatorPerDay}/jour` },
-                    { label: 'Crédits SCAI/mois', value: plan.monthlyCredits },
+                    { label: t('transactionsPage.manualScans'), value: `${plan.scansPerSession}${t('transactionsPage.perSession')}` },
+                    { label: t('transactionsPage.accessibleSources'), value: plan.maxSources.toLocaleString(i18n.language) },
+                    { label: t('transactionsPage.opportunityCreator'), value: `${plan.opportunityCreatorPerDay}${t('transactionsPage.perDay')}` },
+                    { label: t('transactionsPage.scaiCreditsPerMonth'), value: plan.monthlyCredits },
                   ].map(item => (
                     <div key={item.label}>
                       <p className="text-lg font-bold text-[#D4AF37]">{item.value}</p>
@@ -253,7 +255,7 @@ export default function Transactions() {
                 </div>
                 {tier !== 'premium' && (
                   <a href="/pricing" className="mt-5 flex items-center justify-center gap-1.5 text-xs font-bold text-[#D4AF37] hover:underline">
-                    Débloquer plus avec un plan supérieur <TrendingUp className="w-3.5 h-3.5" />
+                    {t('transactionsPage.unlockMore')} <TrendingUp className="w-3.5 h-3.5" />
                   </a>
                 )}
               </Card>
@@ -264,10 +266,10 @@ export default function Transactions() {
             <>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                  { label: 'Candidatures', value: stats.total, icon: Send, color: 'text-blue-400' },
-                  { label: 'Entretiens', value: stats.interviews, icon: Calendar, color: 'text-[#D4AF37]' },
-                  { label: 'Offres reçues', value: stats.offers, icon: Award, color: 'text-emerald-400' },
-                  { label: 'Taux de réponse', value: `${stats.responseRate}%`, icon: TrendingUp, color: 'text-purple-400' },
+                  { label: t('transactionsPage.applications'), value: stats.total, icon: Send, color: 'text-blue-400' },
+                  { label: t('transactionsPage.interviews'), value: stats.interviews, icon: Calendar, color: 'text-[#D4AF37]' },
+                  { label: t('transactionsPage.offersReceived'), value: stats.offers, icon: Award, color: 'text-emerald-400' },
+                  { label: t('transactionsPage.responseRate'), value: `${stats.responseRate}%`, icon: TrendingUp, color: 'text-purple-400' },
                 ].map(s => (
                   <Card key={s.label} className="p-4">
                     <s.icon className={`w-4 h-4 mb-2 ${s.color}`} />
@@ -281,16 +283,16 @@ export default function Transactions() {
                 <Card className="p-5 flex items-center gap-3">
                   <DollarSign className="w-8 h-8 text-emerald-400" />
                   <div>
-                    <p className="text-2xl font-bold text-white">{stats.totalOfferAmount.toLocaleString('fr-FR')} {stats.currency}</p>
-                    <p className="text-xs text-gray-500">Valeur cumulée des offres reçues</p>
+                    <p className="text-2xl font-bold text-white">{stats.totalOfferAmount.toLocaleString(i18n.language)} {stats.currency}</p>
+                    <p className="text-xs text-gray-500">{t('transactionsPage.cumulativeOfferValue')}</p>
                   </div>
                 </Card>
               )}
 
               <Card className="p-5">
-                <h3 className="text-sm font-bold text-white mb-4">Répartition par statut</h3>
+                <h3 className="text-sm font-bold text-white mb-4">{t('transactionsPage.breakdownByStatus')}</h3>
                 {stats.total === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-6">Aucune candidature enregistrée pour l'instant.</p>
+                  <p className="text-sm text-gray-500 text-center py-6">{t('transactionsPage.noApplicationsRecorded')}</p>
                 ) : (
                   <div className="space-y-2.5">
                     {Object.entries(stats.byStatus).sort((a, b) => b[1] - a[1]).map(([status, count]) => (
@@ -313,7 +315,7 @@ export default function Transactions() {
                   className="flex items-center gap-2 bg-[#D4AF37] text-black font-bold text-sm px-5 py-2.5 rounded-xl hover:bg-[#e0bd4f] disabled:opacity-50"
                 >
                   {generating === 'pdf' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                  Rapport PDF
+                  {t('transactionsPage.reportPdf')}
                 </button>
                 <button
                   onClick={() => generate('xlsx')}
@@ -321,7 +323,7 @@ export default function Transactions() {
                   className="flex items-center gap-2 bg-[#111111] border border-[#2a2a2a] text-white font-bold text-sm px-5 py-2.5 rounded-xl hover:border-[#D4AF37]/40 disabled:opacity-50"
                 >
                   {generating === 'xlsx' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                  Export Excel
+                  {t('transactionsPage.exportExcel')}
                 </button>
                 {genError && <p className="text-sm text-red-400">{genError}</p>}
               </div>
