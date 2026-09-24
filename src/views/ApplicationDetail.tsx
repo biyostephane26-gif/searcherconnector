@@ -12,8 +12,10 @@ import Sidebar from '../components/layout/Sidebar'
 import Card from '../components/ui/Card'
 import { ArrowLeft, ExternalLink, Copy, CheckCircle, Clock, Bot, FileText, Download } from 'lucide-react'
 import { usePDF } from '../hooks/usePDF'
+import { useTranslation } from 'react-i18next'
 
 export default function ApplicationDetail() {
+  const { t, i18n } = useTranslation()
   const { user }    = useAuth()
   const params      = useParams()
   const router      = useRouter()
@@ -71,7 +73,7 @@ export default function ApplicationDetail() {
   if (!app) return (
     <div className="min-h-screen bg-[#0A0A0A] flex">
       <Sidebar />
-      <div className="flex-1 flex items-center justify-center text-gray-600">Candidature introuvable.</div>
+      <div className="flex-1 flex items-center justify-center text-gray-600">{t('applicationDetailPage.notFound')}</div>
     </div>
   )
 
@@ -85,13 +87,13 @@ export default function ApplicationDetail() {
           <div className="flex items-center justify-between">
             <button onClick={() => router.back()}
               className="flex items-center gap-2 text-gray-500 hover:text-white text-sm transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Retour
+              <ArrowLeft className="w-4 h-4" /> {t('applicationDetailPage.back')}
             </button>
             {app && (
               <button
                 onClick={() => exportApplication(app, {})}
                 className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#D4AF37] border border-[#2a2a2a] hover:border-[#D4AF37]/30 px-3 py-1.5 rounded-lg transition-all">
-                <Download className="w-3.5 h-3.5" /> Exporter PDF
+                <Download className="w-3.5 h-3.5" /> {t('applicationDetailPage.exportPdf')}
               </button>
             )}
           </div>
@@ -101,7 +103,7 @@ export default function ApplicationDetail() {
             <div className="flex items-center gap-2 text-[#D4AF37] text-xs font-bold uppercase tracking-widest mb-2">
               <img src="/scai-icon.png" alt="SCAI" className="w-4 h-4 rounded object-contain"
                 onError={e => { (e.target as HTMLImageElement).style.display='none' }} />
-              SCAI a préparé cette candidature pour toi
+              {t('applicationDetailPage.preparedForYou')}
             </div>
             <h1 className="text-2xl font-bold text-white mb-1">{app.job_title}</h1>
             {app.company && <p className="text-gray-500 text-sm">{app.company}</p>}
@@ -110,21 +112,21 @@ export default function ApplicationDetail() {
           {/* Infos de la candidature */}
           <div className="grid grid-cols-2 gap-4">
             <Card className="p-4">
-              <div className="text-[10px] text-gray-600 uppercase tracking-widest mb-1">Préparée le</div>
+              <div className="text-[10px] text-gray-600 uppercase tracking-widest mb-1">{t('applicationDetailPage.preparedOn')}</div>
               <div className="flex items-center gap-2 text-sm text-white">
                 <Clock className="w-4 h-4 text-[#D4AF37]" />
-                {new Date(app.applied_at).toLocaleString('fr-FR', {
+                {new Date(app.applied_at).toLocaleString(i18n.language, {
                   day: 'numeric', month: 'short', year: 'numeric',
                   hour: '2-digit', minute: '2-digit',
                 })}
               </div>
             </Card>
             <Card className="p-4">
-              <div className="text-[10px] text-gray-600 uppercase tracking-widest mb-1">Statut</div>
+              <div className="text-[10px] text-gray-600 uppercase tracking-widest mb-1">{t('applicationDetailPage.status')}</div>
               <div className="flex items-center gap-2 text-sm text-white">
                 <img src="/scai-icon.png" alt="SCAI" className="w-4 h-4 rounded object-contain"
                   onError={e => { (e.target as HTMLImageElement).style.display='none' }} />
-                {app.response_status === 'waiting' ? 'À envoyer' : app.response_status}
+                {app.response_status === 'waiting' ? t('applicationDetailPage.toSend') : app.response_status}
               </div>
             </Card>
           </div>
@@ -134,12 +136,12 @@ export default function ApplicationDetail() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 text-[10px] text-gray-500 uppercase tracking-widest">
                 <FileText className="w-4 h-4 text-[#D4AF37]" />
-                Message rédigé par SCAI — relis-le avant d'envoyer
+                {t('applicationDetailPage.writtenBySCAI')}
               </div>
               <button onClick={copy}
                 className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#D4AF37] transition-colors">
                 {copied ? <CheckCircle className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
-                {copied ? 'Copié !' : 'Copier'}
+                {copied ? t('applicationDetailPage.copied') : t('applicationDetailPage.copy')}
               </button>
             </div>
             <pre className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed font-sans">
@@ -152,26 +154,26 @@ export default function ApplicationDetail() {
           <Card className="p-5 border-[#D4AF37]/20">
             <div className="flex items-center gap-2 text-[10px] text-gray-500 uppercase tracking-widest mb-3">
               <CheckCircle className="w-4 h-4 text-[#D4AF37]" />
-              Preuve — où SCAI a préparé cette candidature
+              {t('applicationDetailPage.proofTitle')}
             </div>
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Plateforme</span>
-                <span className="text-white font-bold">{app.source_platform || 'Source web'}</span>
+                <span className="text-gray-600">{t('applicationDetailPage.platform')}</span>
+                <span className="text-white font-bold">{app.source_platform || t('applicationDetailPage.webSource')}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Poste</span>
+                <span className="text-gray-600">{t('applicationDetailPage.position')}</span>
                 <span className="text-white text-right">{app.job_title}</span>
               </div>
               {app.company && (
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Entreprise</span>
+                  <span className="text-gray-600">{t('applicationDetailPage.company')}</span>
                   <span className="text-white text-right">{app.company}</span>
                 </div>
               )}
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Préparée le</span>
-                <span className="text-white">{app.applied_at ? new Date(app.applied_at).toLocaleString('fr-FR') : '—'}</span>
+                <span className="text-gray-600">{t('applicationDetailPage.preparedOn')}</span>
+                <span className="text-white">{app.applied_at ? new Date(app.applied_at).toLocaleString(i18n.language) : '—'}</span>
               </div>
             </div>
           </Card>
@@ -180,14 +182,14 @@ export default function ApplicationDetail() {
           {app.original_url && (
             <a href={app.original_url} target="_blank" rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full bg-[#D4AF37] hover:bg-[#F5E6A3] text-[#0A0A0A] py-3 rounded-xl text-sm font-bold transition-all">
-              <ExternalLink className="w-4 h-4" /> Ouvrir l'offre sur {app.source_platform || 'la plateforme'} et envoyer
+              <ExternalLink className="w-4 h-4" /> {t('applicationDetailPage.openOfferOn', { platform: app.source_platform || t('applicationDetailPage.thePlatform') })}
             </a>
           )}
 
           {/* Score de l'opportunité */}
           {app.score != null && (
             <p className="text-xs text-gray-700 text-center">
-              Score de l'opportunité : <strong className="text-gray-500">{app.score}/100</strong>
+              {t('applicationDetailPage.opportunityScore')} <strong className="text-gray-500">{app.score}/100</strong>
             </p>
           )}
         </div>

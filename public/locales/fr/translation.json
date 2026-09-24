@@ -330,6 +330,26 @@
     },
     "avatarUploadError": "Erreur upload avatar. Réessaie."
   },
+  "applicationDetailPage": {
+    "back": "Retour",
+    "exportPdf": "Exporter PDF",
+    "notFound": "Candidature introuvable.",
+    "preparedForYou": "SCAI a préparé cette candidature pour toi",
+    "preparedOn": "Préparée le",
+    "status": "Statut",
+    "toSend": "À envoyer",
+    "writtenBySCAI": "Message rédigé par SCAI — relis-le avant d'envoyer",
+    "copied": "Copié !",
+    "copy": "Copier",
+    "proofTitle": "Preuve — où SCAI a préparé cette candidature",
+    "platform": "Plateforme",
+    "webSource": "Source web",
+    "position": "Poste",
+    "company": "Entreprise",
+    "openOfferOn": "Ouvrir l'offre sur {{platform}} et envoyer",
+    "thePlatform": "la plateforme",
+    "opportunityScore": "Score de l'opportunité :"
+  },
   "interviewPrepDetailPage": {
     "back": "Retour",
     "dateToSet": "Date à fixer",

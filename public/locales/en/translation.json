@@ -330,6 +330,26 @@
     },
     "avatarUploadError": "Avatar upload error. Try again."
   },
+  "applicationDetailPage": {
+    "back": "Back",
+    "exportPdf": "Export PDF",
+    "notFound": "Application not found.",
+    "preparedForYou": "SCAI prepared this application for you",
+    "preparedOn": "Prepared on",
+    "status": "Status",
+    "toSend": "To send",
+    "writtenBySCAI": "Message written by SCAI — review before sending",
+    "copied": "Copied!",
+    "copy": "Copy",
+    "proofTitle": "Proof — where SCAI prepared this application",
+    "platform": "Platform",
+    "webSource": "Web source",
+    "position": "Position",
+    "company": "Company",
+    "openOfferOn": "Open the listing on {{platform}} and send",
+    "thePlatform": "the platform",
+    "opportunityScore": "Opportunity score:"
+  },
   "interviewPrepDetailPage": {
     "back": "Back",
     "dateToSet": "Date to set",
