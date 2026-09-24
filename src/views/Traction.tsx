@@ -6,6 +6,7 @@
 import { useEffect, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Users, Briefcase, Send, Activity, RefreshCw } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface TractionData {
   total_users: number
@@ -17,12 +18,12 @@ interface TractionData {
   generated_at: string
 }
 
-function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
+function Stat({ icon, label, value, lang }: { icon: React.ReactNode; label: string; value: number; lang: string }) {
   return (
     <div className="bg-[#111111] border border-[#2a2a2a] rounded-2xl p-5 flex items-center gap-4">
       <div className="w-11 h-11 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] shrink-0">{icon}</div>
       <div>
-        <p className="text-2xl font-bold text-white">{value.toLocaleString('fr-FR')}</p>
+        <p className="text-2xl font-bold text-white">{value.toLocaleString(lang)}</p>
         <p className="text-xs text-gray-500">{label}</p>
       </div>
     </div>
@@ -30,6 +31,7 @@ function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; va
 }
 
 export default function Traction() {
+  const { t, i18n } = useTranslation()
   const [data, setData] = useState<TractionData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -53,26 +55,26 @@ export default function Traction() {
             <span className="text-[#D4AF37] font-black text-xl tracking-tighter">SEARCHER</span>
             <span className="text-gray-600 text-xs tracking-[0.3em] uppercase">Connector</span>
           </div>
-          <h1 className="text-2xl font-bold">Traction en direct</h1>
+          <h1 className="text-2xl font-bold">{t('tractionPage.title')}</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Chiffres réels tirés directement de la base de production — cette page interroge les mêmes données que l'application elle-même, en temps réel.
+            {t('tractionPage.subtitle')}
           </p>
         </div>
 
-        {loading && <div className="text-gray-600 text-sm">Chargement des chiffres réels...</div>}
-        {error && <div className="text-red-400 text-sm">Erreur : {error}</div>}
+        {loading && <div className="text-gray-600 text-sm">{t('tractionPage.loading')}</div>}
+        {error && <div className="text-red-400 text-sm">{t('tractionPage.error')} {error}</div>}
 
         {data && (
           <>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Stat icon={<Users className="w-5 h-5" />} label="Utilisateurs inscrits" value={data.total_users} />
-              <Stat icon={<Briefcase className="w-5 h-5" />} label="Opportunités en base" value={data.total_opportunities} />
-              <Stat icon={<Send className="w-5 h-5" />} label="Candidatures envoyées" value={data.total_applications_sent} />
-              <Stat icon={<Activity className="w-5 h-5" />} label="Actions de l'agent" value={data.total_agent_actions} />
+              <Stat icon={<Users className="w-5 h-5" />} label={t('tractionPage.registeredUsers')} value={data.total_users} lang={i18n.language} />
+              <Stat icon={<Briefcase className="w-5 h-5" />} label={t('tractionPage.opportunitiesInDb')} value={data.total_opportunities} lang={i18n.language} />
+              <Stat icon={<Send className="w-5 h-5" />} label={t('tractionPage.applicationsSent')} value={data.total_applications_sent} lang={i18n.language} />
+              <Stat icon={<Activity className="w-5 h-5" />} label={t('tractionPage.agentActions')} value={data.total_agent_actions} lang={i18n.language} />
             </div>
 
             <div className="bg-[#111111] border border-[#2a2a2a] rounded-2xl p-6">
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Nouveaux utilisateurs — 30 derniers jours</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">{t('tractionPage.newUsers30d')}</p>
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={data.users_growth_30d}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
@@ -85,7 +87,7 @@ export default function Traction() {
             </div>
 
             <div className="bg-[#111111] border border-[#2a2a2a] rounded-2xl p-6">
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Opportunités trouvées — 30 derniers jours</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">{t('tractionPage.opportunitiesFound30d')}</p>
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={data.opportunities_growth_30d}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
@@ -98,9 +100,9 @@ export default function Traction() {
             </div>
 
             <div className="flex items-center justify-between text-[11px] text-gray-600">
-              <span>Généré le {new Date(data.generated_at).toLocaleString('fr-FR')}</span>
+              <span>{t('tractionPage.generatedOn')} {new Date(data.generated_at).toLocaleString(i18n.language)}</span>
               <button onClick={load} className="flex items-center gap-1.5 text-[#D4AF37] hover:underline">
-                <RefreshCw className="w-3 h-3" /> Rafraîchir
+                <RefreshCw className="w-3 h-3" /> {t('tractionPage.refresh')}
               </button>
             </div>
           </>

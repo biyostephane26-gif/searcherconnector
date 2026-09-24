@@ -1,4 +1,18 @@
 {
+  "tractionPage": {
+    "title": "Traction en direct",
+    "subtitle": "Chiffres réels tirés directement de la base de production — cette page interroge les mêmes données que l'application elle-même, en temps réel.",
+    "loading": "Chargement des chiffres réels...",
+    "error": "Erreur :",
+    "registeredUsers": "Utilisateurs inscrits",
+    "opportunitiesInDb": "Opportunités en base",
+    "applicationsSent": "Candidatures envoyées",
+    "agentActions": "Actions de l'agent",
+    "newUsers30d": "Nouveaux utilisateurs — 30 derniers jours",
+    "opportunitiesFound30d": "Opportunités trouvées — 30 derniers jours",
+    "generatedOn": "Généré le",
+    "refresh": "Rafraîchir"
+  },
   "interviewSimPage": {
     "micError": "Erreur microphone. Vérifie tes permissions.",
     "insufficientCredits": "⚠️ Crédits vocaux insuffisants. Passe à un plan premium pour utiliser SCAI Voice.",
