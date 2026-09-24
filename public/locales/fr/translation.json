@@ -1,4 +1,164 @@
 {
+  "appGuidePage": {
+    "backToDashboard": "Retour au dashboard",
+    "guideSubtitle": "Guide complet Searcher Connector",
+    "downloadPdf": "Télécharger PDF",
+    "print": "Imprimer",
+    "coverTagline": "PREMIER AGENT D'OPPORTUNITÉS AUTONOME MONDIAL",
+    "coverDesc": "L'agent IA qui travaille pour toi 24h/24 — emploi, freelance.",
+    "statSources": "Sources simultanées",
+    "statAgent": "Agent actif",
+    "statScore": "Score IA par offre",
+    "howItWorks": "Comment ça marche",
+    "cycleStep1": "Parle à SCAI",
+    "cycleStep2": "SCAI scan",
+    "cycleStep3": "Opportunités",
+    "cycleStep4": "Tu décides",
+    "forWhoTitle": "Pour qui ?",
+    "howToUse": "Comment l'utiliser",
+    "verificationTitle": "Système de Vérification",
+    "verificationDesc": "Searcher Connector utilise un système de vérification strict pour garantir la qualité du réseau. Chaque profil est analysé et classé.",
+    "quickstartTitle": "Démarrage en 5 minutes",
+    "footerRights": "© 2025 Searcher Connector — Tous droits réservés · Créé par Biyo Stéphane",
+    "goToApp": "Accéder à l'app →",
+    "seePricing": "Voir les tarifs",
+    "features": [
+      {
+        "title": "SCAI — Ton entité digitale",
+        "tag": "CŒUR DE L'APP",
+        "description": "SCAI n'est pas un chatbot. C'est une entité digitale autonome qui analyse ton profil, pose des questions stratégiques et prend des décisions pour toi. Il parle dans ta langue, comprend tes nuances, et travaille pendant que tu dors.",
+        "steps": [
+          "Va dans \"SCAI Cowork\" dans le menu",
+          "Parle à SCAI — dis-lui ce que tu cherches",
+          "Il te pose 3-4 questions stratégiques (zone, type, budget)",
+          "Il lance le scan et t'informe en temps réel"
+        ]
+      },
+      {
+        "title": "Le Scan Multi-Sources",
+        "tag": "MOTEUR PRINCIPAL",
+        "description": "Quand SCAI lance un scan, il interroge simultanément 15+ sources : Serper, Brave Search, Exa.ai, Tavily, Remotive, Arbeitnow, HackerNews, GitHub, Adzuna, Greenhouse ATS, et bien d'autres. Chaque résultat est scoré de 0 à 100 selon ton profil exact.",
+        "steps": [
+          "Scan automatique 1x/jour (plan gratuit)",
+          "Scan automatique toutes les 4h (plan Talent)",
+          "Scan automatique toutes les heures (plan Investor)",
+          "Scan manuel disponible à tout moment"
+        ]
+      },
+      {
+        "title": "Opportunités",
+        "tag": "RÉSULTATS",
+        "description": "Toutes les opportunités trouvées s'affichent dans /opportunités, triées par score. Tu vois le titre, la source, la date de publication et un extrait. Plan gratuit : 8 résultats visibles. Plan payant : 100+ débloqués.",
+        "steps": [
+          "Clique sur une opportunité pour voir les détails",
+          "Score de 0-100 affiché pour chaque offre",
+          "Filtre par fraîcheur, score ou type",
+          "Postule en un clic ou laisse SCAI le faire"
+        ]
+      },
+      {
+        "title": "Opportunity Creator",
+        "tag": "BUSINESS",
+        "description": "SCAI scanne les entreprises locales ou mondiales qui ont besoin de tes services, génère un audit de leur présence digitale, estime leur budget et rédige un message d'approche personnalisé. Idéal pour les freelances et consultants.",
+        "steps": [
+          "Va dans \"Opportunity Creator\"",
+          "Choisis ta zone (locale, Afrique, mondiale)",
+          "SCAI trouve des entreprises avec un score digital faible",
+          "Copie le message généré → envoie sur WhatsApp/Email"
+        ]
+      },
+      {
+        "title": "Find Your Worker / Talent Search",
+        "tag": "RECRUTEMENT",
+        "description": "Tu cherches un développeur, designer ou consultant ? SCAI parcourt les profils vérifiés sur Searcher, GitHub, LinkedIn et autres plateformes pour trouver le talent qui correspond exactement à tes critères.",
+        "steps": [
+          "Va dans \"Find Your Worker\" ou \"Talent Search\"",
+          "Décris le profil recherché à SCAI",
+          "SCAI affiche les meilleurs profils scorés",
+          "Contacte directement via la messagerie"
+        ]
+      },
+      {
+        "title": "Portfolio Analyzer",
+        "tag": "IA ANALYSE",
+        "description": "Soumets ton portfolio, GitHub, LinkedIn ou CV. SCAI l'analyse avec l'IA et génère un rapport détaillé : points forts, lacunes, recommandations, score de marché, et conseils pour améliorer ta visibilité.",
+        "steps": [
+          "Va dans \"Portfolio Analyzer\"",
+          "Colle tes liens ou uploade tes documents",
+          "SCAI génère un audit complet en 2 minutes",
+          "Suis les recommandations pour améliorer ton profil"
+        ]
+      },
+      {
+        "title": "Cowork — Inbox Unifiée",
+        "tag": "COMMUNICATIONS",
+        "description": "Toutes tes communications en un seul endroit. Gmail et WhatsApp intégrés directement dans Searcher. Vois toutes les réponses à tes candidatures, envoie des messages, et laisse SCAI répondre automatiquement aux messages simples.",
+        "steps": [
+          "Connecte Gmail dans Paramètres → Connexions",
+          "Toutes les réponses de candidatures apparaissent ici",
+          "SCAI génère des réponses intelligentes (Smart Replies)",
+          "Suit le statut : Envoyé → Lu → Répondu → Signé"
+        ]
+      },
+      {
+        "title": "Réseau Social Pro",
+        "tag": "COMMUNAUTÉ",
+        "description": "Searcher a son propre réseau social professionnel. Partage tes avancées, connecte-toi avec des talents vérifiés du monde entier, rejoins des groupes thématiques, et publie des articles dans ton domaine.",
+        "steps": [
+          "Va dans \"Social\" pour le fil d'actualité",
+          "Rejoins des groupes dans \"Communautés\"",
+          "Connecte-toi avec les profils Genius et Verified",
+          "Publie des articles pour augmenter ta visibilité"
+        ]
+      },
+      {
+        "title": "Les Plans",
+        "tag": "TARIFS",
+        "description": "Searcher Connector propose un plan gratuit pour démarrer et des plans premium pour maximiser les résultats. Chaque plan débloque plus de sources, plus de résultats et plus d'automatisation.",
+        "steps": []
+      }
+    ],
+    "statusLevels": [
+      {
+        "name": "Pending",
+        "desc": "Profil en cours de vérification"
+      },
+      {
+        "name": "Verified",
+        "desc": "Preuves soumises et validées — accès complet"
+      },
+      {
+        "name": "Genius",
+        "desc": "Talent exceptionnel identifié par Searcher — priorité absolue"
+      }
+    ],
+    "profiles": [
+      {
+        "title": "Job Seeker",
+        "desc": "Tu cherches un emploi. SCAI scanne les job boards monde entier et rédige des candidatures personnalisées prêtes à envoyer."
+      },
+      {
+        "title": "Freelance Talent",
+        "desc": "Tu cherches des missions. SCAI trouve des clients sur Upwork, Malt, Contra, et localement — avec budget ou sans."
+      },
+      {
+        "title": "Business Owner",
+        "desc": "Tu cherches des clients. Opportunity Creator scanne les entreprises qui ont besoin de tes services et génère les messages d'approche."
+      },
+      {
+        "title": "Investisseur",
+        "desc": "Tu cherches des projets à financer. SCAI analyse des startups, VC deals, et projets en phase seed dans ton secteur."
+      }
+    ],
+    "quickstartSteps": [
+      "Crée ton compte sur searcherconnector.com",
+      "Complète l'onboarding (domaine, pays, type de profil)",
+      "Ouvre \"SCAI Cowork\" et parle à SCAI",
+      "SCAI te pose 3 questions → lance le scan",
+      "Consulte tes résultats dans \"Opportunités\"",
+      "Postule ou laisse SCAI le faire pour toi"
+    ]
+  },
   "common": {
     "loading": "Chargement...",
     "save": "Enregistrer",
@@ -19,28 +179,18 @@
     "success": "Succès"
   },
   "auth": {
-    "welcomeBack": "Bon retour",
-    "enterCredentials": "Entre tes identifiants pour accéder à Searcher",
-    "forgotPasswordTitle": "Mot de passe oublié",
-    "forgotPasswordDesc": "On t'envoie un lien de réinitialisation par email",
+    "login": "Connexion",
+    "signup": "Inscription",
     "email": "Email",
     "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
     "forgotPassword": "Mot de passe oublié ?",
-    "signIn": "Se connecter",
-    "yourEmail": "Ton adresse email",
-    "sendLink": "Envoyer le lien",
-    "backToLogin": "← Retour à la connexion",
-    "emailSent": "Email envoyé !",
-    "checkInbox": "Vérifie ta boîte mail à {{email}}.",
-    "clickLink": "Clique sur le lien pour créer un nouveau mot de passe.",
-    "checkSpam": "Vérifie aussi les spams si tu ne le vois pas.",
-    "noAccount": "Pas encore de compte ?",
-    "createAccount": "Créer un compte",
-    "securedBy": "SÉCURISÉ PAR SUPABASE INTELLIGENCE",
-    "errors": {
-      "invalidCredentials": "Email ou mot de passe incorrect.",
-      "emailNotConfirmed": "Confirme ton email avant de te connecter. Vérifie ta boîte mail."
-    }
+    "alreadyHaveAccount": "Déjà un compte ?",
+    "dontHaveAccount": "Pas encore de compte ?",
+    "loginWithGoogle": "Continuer avec Google",
+    "loginWithGithub": "Continuer avec GitHub",
+    "acceptTerms": "J'accepte les conditions d'utilisation",
+    "waitlist": "Rejoindre la liste d'attente"
   },
   "signup": {
     "passwordTooShort": "Le mot de passe doit faire au moins 8 caractères.",
@@ -82,7 +232,12 @@
     "verifyingLink": "⏳ Vérification du lien... Si tu arrives ici depuis un email, attends quelques secondes.",
     "newPassword": "Nouveau mot de passe",
     "passwordPlaceholder": "Minimum 8 caractères",
-    "strength": { "weak": "Faible", "medium": "Moyen", "good": "Bon", "strong": "Fort" },
+    "strength": {
+      "weak": "Faible",
+      "medium": "Moyen",
+      "good": "Bon",
+      "strong": "Fort"
+    },
     "confirm": "Confirmer",
     "confirmPlaceholder": "Répète le mot de passe",
     "updateBtn": "Mettre à jour le mot de passe",
@@ -98,11 +253,35 @@
     "welcomeNotifTitle": "🎉 Bienvenue sur Searcher Connector!",
     "welcomeNotifMessage": "Ton premier scan est en cours. SCAI analyse actuellement des milliers d'opportunités pour toi. Tu recevras une notification dans quelques instants!",
     "viewDashboard": "Voir le dashboard",
-    "step1": { "title": "Quelles sont tes compétences principales ?", "subtitle": "Sélectionne ou saisis tes compétences.", "label": "Compétences (séparées par des virgules)", "continue": "Continuer" },
-    "step2": { "title": "Quel est ton tarif journalier ?", "currency": "Devise", "dailyRate": "Tarif journalier" },
-    "step3": { "title": "Tu es disponible pour quoi ?" },
-    "step4": { "title": "Liens professionnels (optionnel)", "subtitle": "Portfolio, GitHub, Behance...", "portfolio": "Portfolio / Site web", "github": "GitHub", "linkedin": "LinkedIn" },
-    "step5": { "title": "Dans quels pays tu cherches des clients ?", "countriesLabel": "Pays (séparés par des virgules)", "uploadCv": "Upload ton CV (optionnel)", "uploading": "Chargement...", "cvUploaded": "CV Uploadé ✔️", "uploadCvBtn": "Uploader CV" },
+    "step1": {
+      "title": "Quelles sont tes compétences principales ?",
+      "subtitle": "Sélectionne ou saisis tes compétences.",
+      "label": "Compétences (séparées par des virgules)",
+      "continue": "Continuer"
+    },
+    "step2": {
+      "title": "Quel est ton tarif journalier ?",
+      "currency": "Devise",
+      "dailyRate": "Tarif journalier"
+    },
+    "step3": {
+      "title": "Tu es disponible pour quoi ?"
+    },
+    "step4": {
+      "title": "Liens professionnels (optionnel)",
+      "subtitle": "Portfolio, GitHub, Behance...",
+      "portfolio": "Portfolio / Site web",
+      "github": "GitHub",
+      "linkedin": "LinkedIn"
+    },
+    "step5": {
+      "title": "Dans quels pays tu cherches des clients ?",
+      "countriesLabel": "Pays (séparés par des virgules)",
+      "uploadCv": "Upload ton CV (optionnel)",
+      "uploading": "Chargement...",
+      "cvUploaded": "CV Uploadé ✔️",
+      "uploadCvBtn": "Uploader CV"
+    },
     "step6": {
       "title": "Dernière étape : ton parcours (optionnel)",
       "subtitle": "Une photo et ton diplôme renforcent la confiance des recruteurs. SCAI vérifie aussi que ton profil est cohérent.",
@@ -146,30 +325,84 @@
     "newsletterSubmit": "S'inscrire",
     "newsletterError": "Une erreur est survenue — réessaie dans un instant.",
     "howItWorks": [
-      { "title": "Ton profil", "desc": "Crée ton compte, dis à SCAI ton métier et tes compétences — vérifié par IA en quelques secondes." },
-      { "title": "Le scan", "desc": "SCAI interroge des centaines de plateformes freelance et job boards en continu, 24h/24." },
-      { "title": "Le tri", "desc": "Chaque offre est scorée sur TON profil précis — tu n'es alerté que pour du vrai fort potentiel." },
-      { "title": "L'envoi", "desc": "SCAI rédige ta candidature, pré-remplit le formulaire via l'extension — le clic final reste le tien." }
+      {
+        "title": "Ton profil",
+        "desc": "Crée ton compte, dis à SCAI ton métier et tes compétences — vérifié par IA en quelques secondes."
+      },
+      {
+        "title": "Le scan",
+        "desc": "SCAI interroge des centaines de plateformes freelance et job boards en continu, 24h/24."
+      },
+      {
+        "title": "Le tri",
+        "desc": "Chaque offre est scorée sur TON profil précis — tu n'es alerté que pour du vrai fort potentiel."
+      },
+      {
+        "title": "L'envoi",
+        "desc": "SCAI rédige ta candidature, pré-remplit le formulaire via l'extension — le clic final reste le tien."
+      }
     ],
     "features": [
-      { "title": "SCAI Cowork", "desc": "Un agent IA qui connaît tout ton profil, discute avec toi, et agit en ton nom sur tes vraies plateformes." },
-      { "title": "Connecteurs", "desc": "Gmail, WhatsApp, Upwork, Fiverr, Malt, LinkedIn, GitHub… branchés directement à SCAI, comme un vrai copilote." },
-      { "title": "Extension navigateur", "desc": "Pré-remplissage automatique de tes candidatures partout, envoi 100% autonome sur les ATS reconnus." },
-      { "title": "Documents à la demande", "desc": "CV, lettres, devis, rapports en PDF, Word ou Excel — rédigés par SCAI en quelques secondes." },
-      { "title": "Création visuelle", "desc": "Visuels de portfolio et mini-vidéos de présentation générés directement dans le chat." },
-      { "title": "Vérification IA", "desc": "Ton profil est analysé et vérifié automatiquement — un badge de confiance visible par les recruteurs." }
+      {
+        "title": "SCAI Cowork",
+        "desc": "Un agent IA qui connaît tout ton profil, discute avec toi, et agit en ton nom sur tes vraies plateformes."
+      },
+      {
+        "title": "Connecteurs",
+        "desc": "Gmail, WhatsApp, Upwork, Fiverr, Malt, LinkedIn, GitHub… branchés directement à SCAI, comme un vrai copilote."
+      },
+      {
+        "title": "Extension navigateur",
+        "desc": "Pré-remplissage automatique de tes candidatures partout, envoi 100% autonome sur les ATS reconnus."
+      },
+      {
+        "title": "Documents à la demande",
+        "desc": "CV, lettres, devis, rapports en PDF, Word ou Excel — rédigés par SCAI en quelques secondes."
+      },
+      {
+        "title": "Création visuelle",
+        "desc": "Visuels de portfolio et mini-vidéos de présentation générés directement dans le chat."
+      },
+      {
+        "title": "Vérification IA",
+        "desc": "Ton profil est analysé et vérifié automatiquement — un badge de confiance visible par les recruteurs."
+      }
     ],
     "comparison": [
-      { "feature": "Recherche multi-plateformes en continu", "manual": "Manuel, une plateforme à la fois" },
-      { "feature": "Scoring personnalisé par profil", "manual": "Mots-clés génériques" },
-      { "feature": "Rédaction et pré-remplissage par IA", "manual": "À faire soi-même" },
-      { "feature": "Agent conversationnel avec mémoire", "manual": "Aucun" },
-      { "feature": "Extension de remplissage automatique", "manual": "Rare ou absent" }
+      {
+        "feature": "Recherche multi-plateformes en continu",
+        "manual": "Manuel, une plateforme à la fois"
+      },
+      {
+        "feature": "Scoring personnalisé par profil",
+        "manual": "Mots-clés génériques"
+      },
+      {
+        "feature": "Rédaction et pré-remplissage par IA",
+        "manual": "À faire soi-même"
+      },
+      {
+        "feature": "Agent conversationnel avec mémoire",
+        "manual": "Aucun"
+      },
+      {
+        "feature": "Extension de remplissage automatique",
+        "manual": "Rare ou absent"
+      }
     ],
     "worldwide": [
-      { "title": "Multi-pays", "desc": "Cameroun, Nigeria, Sénégal, Kenya, Côte d'Ivoire, France, Canada et plus — SCAI scanne dans ta langue et ta devise." },
-      { "title": "Agent 24/7", "desc": "Pendant que tu dors, SCAI continue de scanner, scorer et préparer tes prochaines candidatures." },
-      { "title": "Statut Genius", "desc": "Les profils les plus actifs et fiables sont mis en avant automatiquement, avec un badge visible partout." }
+      {
+        "title": "Multi-pays",
+        "desc": "Cameroun, Nigeria, Sénégal, Kenya, Côte d'Ivoire, France, Canada et plus — SCAI scanne dans ta langue et ta devise."
+      },
+      {
+        "title": "Agent 24/7",
+        "desc": "Pendant que tu dors, SCAI continue de scanner, scorer et préparer tes prochaines candidatures."
+      },
+      {
+        "title": "Statut Genius",
+        "desc": "Les profils les plus actifs et fiables sont mis en avant automatiquement, avec un badge visible partout."
+      }
     ]
   },
   "pricingPage": {
@@ -212,17 +445,43 @@
     "plans": {
       "free": {
         "name": "Free",
-        "features": ["Sources RSS + APIs gratuites uniquement", "10 opportunités visibles (le reste verrouillé)", "3 scans manuels / session de 7h", "3 scans auto SCAI + 3 notifications", "SCAI Voice : 5 crédits/jour (limité)", "Génération PDF non disponible"],
+        "features": [
+          "Sources RSS + APIs gratuites uniquement",
+          "10 opportunités visibles (le reste verrouillé)",
+          "3 scans manuels / session de 7h",
+          "3 scans auto SCAI + 3 notifications",
+          "SCAI Voice : 5 crédits/jour (limité)",
+          "Génération PDF non disponible"
+        ],
         "cta": "Plan actuel"
       },
       "pro": {
         "name": "Pro",
-        "features": ["~1000 sources (dont la moitié premium payantes)", "Toutes les missions sans limite", "5 scans manuels / session de 5h", "5 scans auto SCAI + 20 notifications", "Candidatures auto-rédigées par SCAI : jusqu'à 10/jour", "Opportunity Creator : 3×/jour", "60 crédits SCAI/mois (voix + scraping LinkedIn/Upwork)", "Génération PDF: CV + Lettre de motivation"],
+        "features": [
+          "~1000 sources (dont la moitié premium payantes)",
+          "Toutes les missions sans limite",
+          "5 scans manuels / session de 5h",
+          "5 scans auto SCAI + 20 notifications",
+          "Candidatures auto-rédigées par SCAI : jusqu'à 10/jour",
+          "Opportunity Creator : 3×/jour",
+          "60 crédits SCAI/mois (voix + scraping LinkedIn/Upwork)",
+          "Génération PDF: CV + Lettre de motivation"
+        ],
         "cta": "Passer à Pro"
       },
       "premium": {
         "name": "Premium",
-        "features": ["Les 2005 sources — toute la puissance de SCAI", "Toutes les missions + passage prioritaire", "10 scans manuels / session de 5h", "20 scans auto SCAI (jusqu'à 50 avec ton email, 250 en crédits)", "Candidatures auto-rédigées par SCAI : jusqu'à 50/jour", "Opportunity Creator : 10×/jour", "300 crédits SCAI/mois (voix + scraping LinkedIn/Upwork)", "Génération PDF: tous les documents", "Simulation d'entretien avec SCAI"],
+        "features": [
+          "Les 2005 sources — toute la puissance de SCAI",
+          "Toutes les missions + passage prioritaire",
+          "10 scans manuels / session de 5h",
+          "20 scans auto SCAI (jusqu'à 50 avec ton email, 250 en crédits)",
+          "Candidatures auto-rédigées par SCAI : jusqu'à 50/jour",
+          "Opportunity Creator : 10×/jour",
+          "300 crédits SCAI/mois (voix + scraping LinkedIn/Upwork)",
+          "Génération PDF: tous les documents",
+          "Simulation d'entretien avec SCAI"
+        ],
         "cta": "Passer à Premium"
       }
     }
@@ -231,14 +490,26 @@
     "loading": "Chargement des candidatures...",
     "title": "Mes Candidatures",
     "subtitle": "Suis l'évolution de toutes tes candidatures en un seul endroit",
-    "stats": { "total": "Total", "scaiOnly": "🤖 SCAI seule", "active": "En cours", "interviews": "Entretiens", "offers": "Offres", "accepted": "Acceptées" },
+    "stats": {
+      "total": "Total",
+      "scaiOnly": "🤖 SCAI seule",
+      "active": "En cours",
+      "interviews": "Entretiens",
+      "offers": "Offres",
+      "accepted": "Acceptées"
+    },
     "searchPlaceholder": "Rechercher par poste ou entreprise...",
     "scaiOnlyFilter": "🤖 SCAI seule ({{count}})",
     "all": "Toutes",
     "status": {
-      "applied": "Postulée", "viewed": "Vue", "interview_scheduled": "Entretien prévu",
-      "interview_completed": "Entretien passé", "offer_received": "Offre reçue",
-      "accepted": "Acceptée ✓", "rejected": "Refusée", "withdrawn": "Retirée"
+      "applied": "Postulée",
+      "viewed": "Vue",
+      "interview_scheduled": "Entretien prévu",
+      "interview_completed": "Entretien passé",
+      "offer_received": "Offre reçue",
+      "accepted": "Acceptée ✓",
+      "rejected": "Refusée",
+      "withdrawn": "Retirée"
     },
     "emptyAutoOnly": "SCAI n'a encore rédigé aucune candidature seule",
     "emptyAll": "Aucune candidature",
@@ -253,7 +524,13 @@
     "goToOffer": "Aller sur l'offre",
     "preparedBySCAI": "(candidature préparée par SCAI)",
     "updateStatus": "Mettre à jour le statut",
-    "timeAgo": { "today": "Aujourd'hui", "yesterday": "Hier", "days": "{{count}}j", "weeks": "{{count}}sem", "months": "{{count}}mois" }
+    "timeAgo": {
+      "today": "Aujourd'hui",
+      "yesterday": "Hier",
+      "days": "{{count}}j",
+      "weeks": "{{count}}sem",
+      "months": "{{count}}mois"
+    }
   },
   "profilePage": {
     "header": "Profil Professionnel",
@@ -261,10 +538,22 @@
     "cancel": "Annuler",
     "save": "Enregistrer",
     "themes": {
-      "job_seeker": { "label": "Job Seeker", "desc": "Cherche un emploi — local ou international" },
-      "freelance": { "label": "Freelance", "desc": "Freelance — missions hauts de gamme" },
-      "business": { "label": "Entreprise", "desc": "Entreprise — recherche de talents" },
-      "investor": { "label": "Investisseur", "desc": "Investisseur — suivi des startups" }
+      "job_seeker": {
+        "label": "Job Seeker",
+        "desc": "Cherche un emploi — local ou international"
+      },
+      "freelance": {
+        "label": "Freelance",
+        "desc": "Freelance — missions hauts de gamme"
+      },
+      "business": {
+        "label": "Entreprise",
+        "desc": "Entreprise — recherche de talents"
+      },
+      "investor": {
+        "label": "Investisseur",
+        "desc": "Investisseur — suivi des startups"
+      }
     },
     "memberSince": "Membre depuis {{year}}",
     "about": "À propos",
@@ -720,16 +1009,37 @@
     "problemP2Suffix": "— scruter des centaines de plateformes, rédiger des candidatures, relancer, attendre.",
     "problemP3": "C'est 40 heures que tu ne passes pas à créer, apprendre ou construire.",
     "stats": [
-      { "title": "2.5 milliards", "sub": "de personnes en âge de travailler sans emploi formel" },
-      { "title": "40h/semaine", "sub": "passées en moyenne sur la recherche d'emploi" },
-      { "title": "15+ sources", "sub": "que SCAI scanne en quelques secondes" }
+      {
+        "title": "2.5 milliards",
+        "sub": "de personnes en âge de travailler sans emploi formel"
+      },
+      {
+        "title": "40h/semaine",
+        "sub": "passées en moyenne sur la recherche d'emploi"
+      },
+      {
+        "title": "15+ sources",
+        "sub": "que SCAI scanne en quelques secondes"
+      }
     ],
     "approachTitle": "Notre approche",
     "approach": [
-      { "title": "Agent autonome", "desc": "SCAI ne dort pas. Il scanne, score et sauvegarde pendant que tu travailles, dors ou apprends." },
-      { "title": "Couverture mondiale", "desc": "Job boards, plateformes freelance, réseaux sociaux, ATS d'entreprises — tout en un seul endroit." },
-      { "title": "Zéro faux lead", "desc": "Chaque opportunité est scorée de 0 à 100 selon ton profil exact. Plus de bruit, juste le signal." },
-      { "title": "Pour tout le monde", "desc": "Emploi et freelance — une seule plateforme, quel que soit ton métier." }
+      {
+        "title": "Agent autonome",
+        "desc": "SCAI ne dort pas. Il scanne, score et sauvegarde pendant que tu travailles, dors ou apprends."
+      },
+      {
+        "title": "Couverture mondiale",
+        "desc": "Job boards, plateformes freelance, réseaux sociaux, ATS d'entreprises — tout en un seul endroit."
+      },
+      {
+        "title": "Zéro faux lead",
+        "desc": "Chaque opportunité est scorée de 0 à 100 selon ton profil exact. Plus de bruit, juste le signal."
+      },
+      {
+        "title": "Pour tout le monde",
+        "desc": "Emploi et freelance — une seule plateforme, quel que soit ton métier."
+      }
     ],
     "founderLabel": "Fondateur",
     "founderName": "Biyo Stéphane",
@@ -749,9 +1059,18 @@
     "title": "Centre d'aide",
     "subtitle": "Tout ce que tu dois savoir sur Searcher Connector.",
     "quickLinks": [
-      { "label": "Email direct", "sub": "biyostephane26@gmail.com" },
-      { "label": "WhatsApp", "sub": "Réponse rapide" },
-      { "label": "Guide complet", "sub": "Guides et tutoriels" }
+      {
+        "label": "Email direct",
+        "sub": "biyostephane26@gmail.com"
+      },
+      {
+        "label": "WhatsApp",
+        "sub": "Réponse rapide"
+      },
+      {
+        "label": "Guide complet",
+        "sub": "Guides et tutoriels"
+      }
     ],
     "faqTitle": "Questions fréquentes",
     "sendMessageTitle": "Envoyer un message",
@@ -768,24 +1087,67 @@
     "contact": "Contact",
     "copyright": "© {{year}} Searcher Connector",
     "faq": [
-      { "q": "Comment fonctionne le scan ?", "a": "SCAI lance une recherche multi-sources (Serper, APIs, RSS, plateformes ATS) selon ton profil. Les résultats sont scorés de 0 à 100. En plan gratuit, 10 résultats sont visibles — les autres sont débloqués avec un plan payant." },
-      { "q": "Combien de sources sont vraiment scannées ?", "a": "Le registre couvre jusqu'à 2005 sources selon ton plan (Free 100, Pro 1000, Premium 2005) — job boards, RSS, ATS (Greenhouse/Lever/Ashby/Workable), et LinkedIn/Upwork à la demande sur les scans payants. Le nombre affiché au dashboard fondateur distingue les sources configurées de celles ayant réellement livré un résultat récemment." },
-      { "q": "Qu'est-ce que le statut Genius ?", "a": "Le statut Genius est attribué aux profils d'exception. Il offre : badge doré sur le profil, priorité dans les résultats de recherche, accès anticipé aux nouvelles fonctionnalités." },
-      { "q": "Comment connecter Gmail pour Cowork ?", "a": "Dans Settings → Connexions, clique sur 'Connecter Gmail'. Tu seras redirigé vers la page d'autorisation Google." },
-      { "q": "Mes données sont-elles en sécurité ?", "a": "Oui. Tes données sont hébergées sur Supabase (conforme RGPD), chiffrées en transit (HTTPS), et tes mots de passe ne sont jamais stockés en clair. Searcher Connector ne demande et ne stocke JAMAIS le mot de passe de tes comptes LinkedIn, Upwork ou autres réseaux — nous ne créons ni ne gérons de compte en ton nom sur ces plateformes." },
-      { "q": "Comment supprimer mon compte ?", "a": "Va dans Settings → Danger Zone → Supprimer le compte. La suppression est définitive sous 30 jours. Tu peux aussi envoyer une demande à biyostephane26@gmail.com." },
-      { "q": "Puis-je utiliser Searcher depuis mon téléphone ?", "a": "Searcher Connector est une Progressive Web App (PWA). Sur mobile, tu peux l'ajouter à ton écran d'accueil depuis Chrome ou Safari." },
-      { "q": "Comment fonctionne Cowork ?", "a": "Cowork est ton inbox unifiée. Il regroupe tes emails Gmail et messages WhatsApp liés à tes candidatures. SCAI peut répondre automatiquement aux messages simples avec ta signature." },
-      { "q": "SCAI postule-t-il vraiment tout seul, partout ?", "a": "Non, et c'est volontaire. SCAI rédige toujours un message de candidature adapté à chaque offre. La soumission RÉELLE et automatique n'est possible que sur les offres publiées via Greenhouse ou Lever (formulaire public, sans compte requis) — c'est la seule situation où aucune règle d'aucune plateforme n'est enfreinte. Partout ailleurs (LinkedIn, Upwork, Freelancer, sites d'entreprise), le message est prêt, mais l'envoi final reste ton clic — via la page de candidature directement, le mode \"candidature en série\", ou l'extension navigateur." },
-      { "q": "Pourquoi SCAI ne postule pas automatiquement sur LinkedIn ou Upwork ?", "a": "Ces plateformes interdisent explicitement la soumission automatisée de candidatures/propositions dans leurs conditions d'utilisation, avec des sanctions allant jusqu'à la suspension définitive du compte. Ce n'est pas une limite technique de notre côté — Greenhouse et Lever, eux, exposent des formulaires publics faits pour être remplis par n'importe quel candidat, ce qui change tout légalement." },
-      { "q": "Qu'est-ce que l'extension navigateur, et est-elle obligatoire ?", "a": "C'est un outil optionnel (Pro/Premium) qui pré-remplit automatiquement les formulaires de candidature sur n'importe quel site quand tu ouvres la page — tu n'as jamais à chercher/copier le message toi-même. Sur les ATS reconnus (Greenhouse/Lever), tu peux aussi activer l'envoi automatique. Elle ne fonctionne que quand tu es présent sur la page (contrainte de sécurité des navigateurs) — elle ne peut pas agir en ton absence, contrairement à la soumission ATS côté serveur." },
-      { "q": "Que se passe-t-il si un CAPTCHA bloque une soumission automatique ?", "a": "SCAI abandonne proprement et te notifie — jamais de tentative de contournement. Tu postules alors manuellement pour cette offre précise." },
-      { "q": "SCAI peut-il se connecter à mes comptes (LinkedIn, Upwork...) pour postuler à ma place ?", "a": "Non. Searcher Connector ne crée jamais de compte et ne demande jamais tes identifiants sur un service tiers. Les seules connexions possibles (Gmail pour Cowork) passent par l'autorisation officielle Google (OAuth) — nous ne voyons jamais ton mot de passe." }
+      {
+        "q": "Comment fonctionne le scan ?",
+        "a": "SCAI lance une recherche multi-sources (Serper, APIs, RSS, plateformes ATS) selon ton profil. Les résultats sont scorés de 0 à 100. En plan gratuit, 10 résultats sont visibles — les autres sont débloqués avec un plan payant."
+      },
+      {
+        "q": "Combien de sources sont vraiment scannées ?",
+        "a": "Le registre couvre jusqu'à 2005 sources selon ton plan (Free 100, Pro 1000, Premium 2005) — job boards, RSS, ATS (Greenhouse/Lever/Ashby/Workable), et LinkedIn/Upwork à la demande sur les scans payants. Le nombre affiché au dashboard fondateur distingue les sources configurées de celles ayant réellement livré un résultat récemment."
+      },
+      {
+        "q": "Qu'est-ce que le statut Genius ?",
+        "a": "Le statut Genius est attribué aux profils d'exception. Il offre : badge doré sur le profil, priorité dans les résultats de recherche, accès anticipé aux nouvelles fonctionnalités."
+      },
+      {
+        "q": "Comment connecter Gmail pour Cowork ?",
+        "a": "Dans Settings → Connexions, clique sur 'Connecter Gmail'. Tu seras redirigé vers la page d'autorisation Google."
+      },
+      {
+        "q": "Mes données sont-elles en sécurité ?",
+        "a": "Oui. Tes données sont hébergées sur Supabase (conforme RGPD), chiffrées en transit (HTTPS), et tes mots de passe ne sont jamais stockés en clair. Searcher Connector ne demande et ne stocke JAMAIS le mot de passe de tes comptes LinkedIn, Upwork ou autres réseaux — nous ne créons ni ne gérons de compte en ton nom sur ces plateformes."
+      },
+      {
+        "q": "Comment supprimer mon compte ?",
+        "a": "Va dans Settings → Danger Zone → Supprimer le compte. La suppression est définitive sous 30 jours. Tu peux aussi envoyer une demande à biyostephane26@gmail.com."
+      },
+      {
+        "q": "Puis-je utiliser Searcher depuis mon téléphone ?",
+        "a": "Searcher Connector est une Progressive Web App (PWA). Sur mobile, tu peux l'ajouter à ton écran d'accueil depuis Chrome ou Safari."
+      },
+      {
+        "q": "Comment fonctionne Cowork ?",
+        "a": "Cowork est ton inbox unifiée. Il regroupe tes emails Gmail et messages WhatsApp liés à tes candidatures. SCAI peut répondre automatiquement aux messages simples avec ta signature."
+      },
+      {
+        "q": "SCAI postule-t-il vraiment tout seul, partout ?",
+        "a": "Non, et c'est volontaire. SCAI rédige toujours un message de candidature adapté à chaque offre. La soumission RÉELLE et automatique n'est possible que sur les offres publiées via Greenhouse ou Lever (formulaire public, sans compte requis) — c'est la seule situation où aucune règle d'aucune plateforme n'est enfreinte. Partout ailleurs (LinkedIn, Upwork, Freelancer, sites d'entreprise), le message est prêt, mais l'envoi final reste ton clic — via la page de candidature directement, le mode \"candidature en série\", ou l'extension navigateur."
+      },
+      {
+        "q": "Pourquoi SCAI ne postule pas automatiquement sur LinkedIn ou Upwork ?",
+        "a": "Ces plateformes interdisent explicitement la soumission automatisée de candidatures/propositions dans leurs conditions d'utilisation, avec des sanctions allant jusqu'à la suspension définitive du compte. Ce n'est pas une limite technique de notre côté — Greenhouse et Lever, eux, exposent des formulaires publics faits pour être remplis par n'importe quel candidat, ce qui change tout légalement."
+      },
+      {
+        "q": "Qu'est-ce que l'extension navigateur, et est-elle obligatoire ?",
+        "a": "C'est un outil optionnel (Pro/Premium) qui pré-remplit automatiquement les formulaires de candidature sur n'importe quel site quand tu ouvres la page — tu n'as jamais à chercher/copier le message toi-même. Sur les ATS reconnus (Greenhouse/Lever), tu peux aussi activer l'envoi automatique. Elle ne fonctionne que quand tu es présent sur la page (contrainte de sécurité des navigateurs) — elle ne peut pas agir en ton absence, contrairement à la soumission ATS côté serveur."
+      },
+      {
+        "q": "Que se passe-t-il si un CAPTCHA bloque une soumission automatique ?",
+        "a": "SCAI abandonne proprement et te notifie — jamais de tentative de contournement. Tu postules alors manuellement pour cette offre précise."
+      },
+      {
+        "q": "SCAI peut-il se connecter à mes comptes (LinkedIn, Upwork...) pour postuler à ma place ?",
+        "a": "Non. Searcher Connector ne crée jamais de compte et ne demande jamais tes identifiants sur un service tiers. Les seules connexions possibles (Gmail pour Cowork) passent par l'autorisation officielle Google (OAuth) — nous ne voyons jamais ton mot de passe."
+      }
     ]
   },
   "socialPage": {
     "title": "Réseau Social",
-    "filters": { "all": "Tous", "verified": "Vérifiés", "genius": "Genius" }
+    "filters": {
+      "all": "Tous",
+      "verified": "Vérifiés",
+      "genius": "Genius"
+    }
   },
   "privacyPage": {
     "docTitle": "Politique de Confidentialité — Searcher Connector",
@@ -793,17 +1155,50 @@
     "lastUpdated": "Dernière mise à jour : Juin 2025 — Conforme RGPD et lois africaines de protection des données",
     "copyright": "© {{year}} Searcher Connector — Tous droits réservés",
     "sections": [
-      { "title": "1. Responsable du traitement", "content": "Le responsable du traitement des données personnelles est Biyo Stéphane, fondateur de Searcher Connector, domicilié au Cameroun. Contact : biyostephane26@gmail.com" },
-      { "title": "2. Données collectées", "content": "Nous collectons : nom complet, adresse email, mot de passe (haché), photo de profil (optionnel), domaine professionnel, pays, ville, liens externes (LinkedIn, GitHub, portfolio), CV ou documents uploadés (optionnel), préférences de recherche. Données automatiques : adresse IP, logs de navigation, actions dans l'application, messages avec SCAI, résultats de scan." },
-      { "title": "3. Finalités du traitement", "content": "Vos données servent à : fournir et améliorer les services, personnaliser les résultats de scan, envoyer des candidatures en votre nom (avec votre consentement), vous notifier des nouvelles opportunités, traiter les paiements, prévenir les fraudes, et respecter nos obligations légales." },
-      { "title": "4. Base légale", "content": "Exécution du contrat pour la fourniture du Service, consentement pour les communications marketing et scans autonomes, intérêt légitime pour la sécurité et l'amélioration du Service, obligation légale pour la conservation de certaines données." },
-      { "title": "5. Partage des données", "content": "Vos données ne sont jamais vendues. Elles peuvent être partagées avec : Supabase (hébergement DB, conforme RGPD), MongoDB Atlas (cache et sessions), Flutterwave/Monetbil (paiements), Groq/Google AI (traitement IA sans stockage personnel), Vercel (hébergement), Resend (emails transactionnels)." },
-      { "title": "6. Conservation des données", "content": "Données de compte : tant que le compte est actif + 3 ans après suppression. Logs de scan : 48h (cache MongoDB avec TTL automatique). Conversations SCAI : conservées jusqu'à ce que vous désactiviez \"Mémoire des conversations\" dans Paramètres (auquel cas elles ne sont plus sauvegardées) ou que vous demandiez leur suppression. Données de paiement : 10 ans (obligation légale fiscale)." },
-      { "title": "7. Vos droits", "content": "Conformément au RGPD : droit d'accès à vos données, droit de rectification, droit à l'effacement (\"droit à l'oubli\"), droit à la portabilité, droit d'opposition à certains traitements, droit à la limitation. Pour exercer ces droits : biyostephane26@gmail.com. Réponse sous 30 jours." },
-      { "title": "8. Sécurité", "content": "Nous mettons en place : chiffrement en transit (HTTPS/TLS), accès restreint aux données sensibles, authentification sécurisée via Supabase Auth, Content Security Policy (CSP), HSTS, et audits de sécurité réguliers. Les mots de passe ne sont jamais stockés en clair." },
-      { "title": "9. Cookies", "content": "Searcher Connector utilise des cookies essentiels (authentification, préférences de langue) et des cookies analytiques anonymisés. Aucun cookie publicitaire tiers n'est utilisé." },
-      { "title": "10. Transferts internationaux", "content": "Vos données peuvent être traitées hors de votre pays de résidence. Ces transferts s'effectuent avec des garanties appropriées (clauses contractuelles types, certifications)." },
-      { "title": "11. Contact DPO", "content": "Pour toute question relative à la protection de vos données : biyostephane26@gmail.com — Objet : \"Protection des données — Searcher Connector\"" }
+      {
+        "title": "1. Responsable du traitement",
+        "content": "Le responsable du traitement des données personnelles est Biyo Stéphane, fondateur de Searcher Connector, domicilié au Cameroun. Contact : biyostephane26@gmail.com"
+      },
+      {
+        "title": "2. Données collectées",
+        "content": "Nous collectons : nom complet, adresse email, mot de passe (haché), photo de profil (optionnel), domaine professionnel, pays, ville, liens externes (LinkedIn, GitHub, portfolio), CV ou documents uploadés (optionnel), préférences de recherche. Données automatiques : adresse IP, logs de navigation, actions dans l'application, messages avec SCAI, résultats de scan."
+      },
+      {
+        "title": "3. Finalités du traitement",
+        "content": "Vos données servent à : fournir et améliorer les services, personnaliser les résultats de scan, envoyer des candidatures en votre nom (avec votre consentement), vous notifier des nouvelles opportunités, traiter les paiements, prévenir les fraudes, et respecter nos obligations légales."
+      },
+      {
+        "title": "4. Base légale",
+        "content": "Exécution du contrat pour la fourniture du Service, consentement pour les communications marketing et scans autonomes, intérêt légitime pour la sécurité et l'amélioration du Service, obligation légale pour la conservation de certaines données."
+      },
+      {
+        "title": "5. Partage des données",
+        "content": "Vos données ne sont jamais vendues. Elles peuvent être partagées avec : Supabase (hébergement DB, conforme RGPD), MongoDB Atlas (cache et sessions), Flutterwave/Monetbil (paiements), Groq/Google AI (traitement IA sans stockage personnel), Vercel (hébergement), Resend (emails transactionnels)."
+      },
+      {
+        "title": "6. Conservation des données",
+        "content": "Données de compte : tant que le compte est actif + 3 ans après suppression. Logs de scan : 48h (cache MongoDB avec TTL automatique). Conversations SCAI : conservées jusqu'à ce que vous désactiviez \"Mémoire des conversations\" dans Paramètres (auquel cas elles ne sont plus sauvegardées) ou que vous demandiez leur suppression. Données de paiement : 10 ans (obligation légale fiscale)."
+      },
+      {
+        "title": "7. Vos droits",
+        "content": "Conformément au RGPD : droit d'accès à vos données, droit de rectification, droit à l'effacement (\"droit à l'oubli\"), droit à la portabilité, droit d'opposition à certains traitements, droit à la limitation. Pour exercer ces droits : biyostephane26@gmail.com. Réponse sous 30 jours."
+      },
+      {
+        "title": "8. Sécurité",
+        "content": "Nous mettons en place : chiffrement en transit (HTTPS/TLS), accès restreint aux données sensibles, authentification sécurisée via Supabase Auth, Content Security Policy (CSP), HSTS, et audits de sécurité réguliers. Les mots de passe ne sont jamais stockés en clair."
+      },
+      {
+        "title": "9. Cookies",
+        "content": "Searcher Connector utilise des cookies essentiels (authentification, préférences de langue) et des cookies analytiques anonymisés. Aucun cookie publicitaire tiers n'est utilisé."
+      },
+      {
+        "title": "10. Transferts internationaux",
+        "content": "Vos données peuvent être traitées hors de votre pays de résidence. Ces transferts s'effectuent avec des garanties appropriées (clauses contractuelles types, certifications)."
+      },
+      {
+        "title": "11. Contact DPO",
+        "content": "Pour toute question relative à la protection de vos données : biyostephane26@gmail.com — Objet : \"Protection des données — Searcher Connector\""
+      }
     ]
   },
   "termsPage": {
@@ -812,17 +1207,50 @@
     "lastUpdated": "Dernière mise à jour : Juin 2025",
     "copyright": "© {{year}} Searcher Connector — Tous droits réservés",
     "sections": [
-      { "title": "1. Présentation du service", "content": "Searcher Connector (\"le Service\") est une plateforme d'automatisation de la recherche d'emploi et de missions freelance. Il est opéré par Biyo Stéphane, fondateur, domicilié au Cameroun. Le Service utilise un agent IA (SCAI) pour scanner des sources publiques du web et proposer des opportunités correspondant au profil de l'utilisateur." },
-      { "title": "2. Acceptation des conditions", "content": "En créant un compte sur Searcher Connector, vous acceptez sans réserve les présentes CGU. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser le Service. L'utilisation du Service implique l'acceptation de notre Politique de Confidentialité." },
-      { "title": "3. Description des services", "content": "Searcher Connector propose : scan automatique d'opportunités (emploi et freelance), scoring et filtrage par IA des résultats, préparation de candidatures personnalisées par SCAI, inbox unifiée (Gmail + WhatsApp), réseau social professionnel intégré, et agent IA (SCAI) disponible 24h/24. Important : SCAI prépare et rédige les candidatures, mais ne les soumet pas automatiquement à un employeur ou recruteur — l'envoi final reste une action de l'utilisateur (via le lien de l'offre ou le canal indiqué), sauf pour les fonctionnalités explicitement décrites comme entièrement automatisées." },
-      { "title": "4. Comptes utilisateurs", "content": "Vous êtes responsable de la confidentialité de vos identifiants. Vous vous engagez à fournir des informations exactes et à maintenir votre profil à jour. Un seul compte par personne physique est autorisé. L'équipe Searcher Connector se réserve le droit de suspendre ou supprimer tout compte en cas d'utilisation abusive." },
-      { "title": "5. Plans et facturation", "content": "Le Service propose un plan gratuit avec des fonctionnalités limitées et des plans payants avec accès illimité. Les paiements sont traités via Mobile Money (Monetbil), carte bancaire (quand disponible), ou par virement/dépôt manuel confirmé par email et activé manuellement par l'équipe pour les zones où les paiements automatiques ne sont pas encore disponibles. Les abonnements se renouvellent automatiquement jusqu'à annulation. Aucun remboursement n'est accordé pour une période déjà commencée, sauf disposition légale contraire." },
-      { "title": "6. Utilisation acceptable", "content": "Il est strictement interdit d'utiliser Searcher Connector pour : scraper massivement des données, automatiser des candidatures frauduleuses, envoyer du spam, contourner les limitations du plan gratuit, utiliser des informations d'identité fictives, ou tout acte contraire aux lois applicables." },
-      { "title": "7. Propriété intellectuelle", "content": "Searcher Connector, son code source, ses interfaces, son logo, sa marque et ses algorithmes sont la propriété exclusive de Biyo Stéphane. Toute reproduction ou utilisation sans autorisation est interdite. Le contenu généré par l'IA appartient à l'utilisateur qui l'a généré." },
-      { "title": "8. Limitation de responsabilité", "content": "Searcher Connector est un outil d'aide à la recherche d'opportunités. Il ne garantit pas l'obtention d'un emploi, d'une mission ou d'un financement. La responsabilité de Searcher Connector est limitée au montant des sommes versées par l'utilisateur au cours des 3 derniers mois." },
-      { "title": "9. Modifications", "content": "Nous nous réservons le droit de modifier ces CGU à tout moment. Les utilisateurs seront notifiés par email 30 jours avant toute modification significative." },
-      { "title": "10. Droit applicable", "content": "Les présentes CGU sont régies par le droit camerounais. En cas de litige, les parties s'engagent à rechercher une solution amiable avant tout recours judiciaire." },
-      { "title": "11. Contact", "content": "Pour toute question relative aux présentes CGU : biyostephane26@gmail.com" }
+      {
+        "title": "1. Présentation du service",
+        "content": "Searcher Connector (\"le Service\") est une plateforme d'automatisation de la recherche d'emploi et de missions freelance. Il est opéré par Biyo Stéphane, fondateur, domicilié au Cameroun. Le Service utilise un agent IA (SCAI) pour scanner des sources publiques du web et proposer des opportunités correspondant au profil de l'utilisateur."
+      },
+      {
+        "title": "2. Acceptation des conditions",
+        "content": "En créant un compte sur Searcher Connector, vous acceptez sans réserve les présentes CGU. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser le Service. L'utilisation du Service implique l'acceptation de notre Politique de Confidentialité."
+      },
+      {
+        "title": "3. Description des services",
+        "content": "Searcher Connector propose : scan automatique d'opportunités (emploi et freelance), scoring et filtrage par IA des résultats, préparation de candidatures personnalisées par SCAI, inbox unifiée (Gmail + WhatsApp), réseau social professionnel intégré, et agent IA (SCAI) disponible 24h/24. Important : SCAI prépare et rédige les candidatures, mais ne les soumet pas automatiquement à un employeur ou recruteur — l'envoi final reste une action de l'utilisateur (via le lien de l'offre ou le canal indiqué), sauf pour les fonctionnalités explicitement décrites comme entièrement automatisées."
+      },
+      {
+        "title": "4. Comptes utilisateurs",
+        "content": "Vous êtes responsable de la confidentialité de vos identifiants. Vous vous engagez à fournir des informations exactes et à maintenir votre profil à jour. Un seul compte par personne physique est autorisé. L'équipe Searcher Connector se réserve le droit de suspendre ou supprimer tout compte en cas d'utilisation abusive."
+      },
+      {
+        "title": "5. Plans et facturation",
+        "content": "Le Service propose un plan gratuit avec des fonctionnalités limitées et des plans payants avec accès illimité. Les paiements sont traités via Mobile Money (Monetbil), carte bancaire (quand disponible), ou par virement/dépôt manuel confirmé par email et activé manuellement par l'équipe pour les zones où les paiements automatiques ne sont pas encore disponibles. Les abonnements se renouvellent automatiquement jusqu'à annulation. Aucun remboursement n'est accordé pour une période déjà commencée, sauf disposition légale contraire."
+      },
+      {
+        "title": "6. Utilisation acceptable",
+        "content": "Il est strictement interdit d'utiliser Searcher Connector pour : scraper massivement des données, automatiser des candidatures frauduleuses, envoyer du spam, contourner les limitations du plan gratuit, utiliser des informations d'identité fictives, ou tout acte contraire aux lois applicables."
+      },
+      {
+        "title": "7. Propriété intellectuelle",
+        "content": "Searcher Connector, son code source, ses interfaces, son logo, sa marque et ses algorithmes sont la propriété exclusive de Biyo Stéphane. Toute reproduction ou utilisation sans autorisation est interdite. Le contenu généré par l'IA appartient à l'utilisateur qui l'a généré."
+      },
+      {
+        "title": "8. Limitation de responsabilité",
+        "content": "Searcher Connector est un outil d'aide à la recherche d'opportunités. Il ne garantit pas l'obtention d'un emploi, d'une mission ou d'un financement. La responsabilité de Searcher Connector est limitée au montant des sommes versées par l'utilisateur au cours des 3 derniers mois."
+      },
+      {
+        "title": "9. Modifications",
+        "content": "Nous nous réservons le droit de modifier ces CGU à tout moment. Les utilisateurs seront notifiés par email 30 jours avant toute modification significative."
+      },
+      {
+        "title": "10. Droit applicable",
+        "content": "Les présentes CGU sont régies par le droit camerounais. En cas de litige, les parties s'engagent à rechercher une solution amiable avant tout recours judiciaire."
+      },
+      {
+        "title": "11. Contact",
+        "content": "Pour toute question relative aux présentes CGU : biyostephane26@gmail.com"
+      }
     ]
   },
   "agentDashboard": {
@@ -835,7 +1263,12 @@
     "discussions": "Discussions",
     "recentActivity": "Activité récente",
     "confirmDeleteDiscussion": "Supprimer cette discussion ?",
-    "table": { "task": "Tâche", "scheduled": "Planifié", "priority": "Priorité", "status": "Statut" },
+    "table": {
+      "task": "Tâche",
+      "scheduled": "Planifié",
+      "priority": "Priorité",
+      "status": "Statut"
+    },
     "pending": "En attente"
   },
   "settingsPage": {
@@ -875,12 +1308,23 @@
     "selectConversation": "Sélectionnez une conversation pour commencer à networker avec la communauté."
   },
   "coworkPage": {
-    "statusLabels": { "sent": "Envoyé", "waiting_reply": "En attente", "replied": "Répondu", "positive_response": "Réponse positive", "rejected": "Refus" },
+    "statusLabels": {
+      "sent": "Envoyé",
+      "waiting_reply": "En attente",
+      "replied": "Répondu",
+      "positive_response": "Réponse positive",
+      "rejected": "Refus"
+    },
     "paywall": {
       "title": "Cowork Inbox",
       "desc": "Fonctionnalité Premium qui centralise tous tes emails et messages liés à tes candidatures avec réponses automatiques SCAI.",
       "includedTitle": "Inclus dans le plan Premium:",
-      "features": ["✓ Inbox unifiée Gmail + WhatsApp", "✓ Réponses automatiques SCAI", "✓ Suivi des candidatures centralisé", "✓ Templates de réponse intelligents"],
+      "features": [
+        "✓ Inbox unifiée Gmail + WhatsApp",
+        "✓ Réponses automatiques SCAI",
+        "✓ Suivi des candidatures centralisé",
+        "✓ Templates de réponse intelligents"
+      ],
       "back": "Retour",
       "upgrade": "Upgrade"
     },
@@ -890,13 +1334,22 @@
     "unrepliedCount": "{{count}} sans réponse · ",
     "totalMessages": "{{count}} messages",
     "connectGmail": "Connecter Gmail",
-    "filters": { "all": "Tous", "email": "📧 Email", "whatsapp": "💬 WhatsApp" },
+    "filters": {
+      "all": "Tous",
+      "email": "📧 Email",
+      "whatsapp": "💬 WhatsApp"
+    },
     "emptyTitle": "Cowork est vide pour l'instant",
     "emptyDesc": "Les messages apparaissent ici dès que SCAI envoie des candidatures en ton nom.",
     "emptyCta": "dashboard SCAI",
     "emptyCtaSuffix": "pour commencer.",
     "howItWorks": "Comment ça marche :",
-    "steps": ["1. Tu lances un scan → SCAI trouve des opportunités", "2. SCAI rédige la candidature (avec ta signature) — tu l'envoies", "3. Les réponses arrivent ici dans Cowork", "4. Tu peux répondre par Email ou WhatsApp depuis ici"],
+    "steps": [
+      "1. Tu lances un scan → SCAI trouve des opportunités",
+      "2. SCAI rédige la candidature (avec ta signature) — tu l'envoies",
+      "3. Les réponses arrivent ici dans Cowork",
+      "4. Tu peux répondre par Email ou WhatsApp depuis ici"
+    ],
     "selectMessage": "Sélectionne un message",
     "message": "Message",
     "from": "De : {{from}}",
@@ -1060,7 +1513,11 @@
     "category": "Catégorie :",
     "allCategories": "Toutes catégories ({{count}})",
     "sortBy": "Trier :",
-    "sorts": { "recommended": "Recommandé", "freshest": "Plus fraîches", "highestPaid": "Mieux payées" },
+    "sorts": {
+      "recommended": "Recommandé",
+      "freshest": "Plus fraîches",
+      "highestPaid": "Mieux payées"
+    },
     "noneForFilter": "Aucune offre pour ce filtre.",
     "hints": {
       "lowComp": "Peu de plateformes affichent le nombre de postulants — relance un scan pour en trouver.",
@@ -1074,7 +1531,10 @@
     "noOpportunities": "Aucune opportunité.",
     "launchScanDesc": "Lance un scan global depuis le dashboard.",
     "launchScan": "Lancer un scan",
-    "badges": { "auto": "⚡ Auto", "manual": "✋ Manuel" },
+    "badges": {
+      "auto": "⚡ Auto",
+      "manual": "✋ Manuel"
+    },
     "unlock": "🔒 Débloquer",
     "upsell": {
       "note": "💡 Note de SCAI",
@@ -1094,7 +1554,11 @@
       "visa": "📋 Vérifier les conditions de visa",
       "currency": "💱 Paiement en devise étrangère"
     },
-    "readiness": { "ready": "Tu es prêt ✓", "almost": "Presque prêt", "incomplete": "Profil à compléter" },
+    "readiness": {
+      "ready": "Tu es prêt ✓",
+      "almost": "Presque prêt",
+      "incomplete": "Profil à compléter"
+    },
     "checks": {
       "profileComplete": "Profil complet",
       "profileCompleteTip": "Complète ton profil à 70%+",
@@ -1113,7 +1577,10 @@
       "personalize": "Personnalise le message avec le nom de l'entreprise"
     },
     "budgetAnnounced": "Budget annoncé : {{min}}-{{max}} {{currency}}",
-    "applyBtn": { "prepared": "✓ Candidature préparée par SCAI", "cta": "⚡ Laisser SCAI préparer ma candidature" },
+    "applyBtn": {
+      "prepared": "✓ Candidature préparée par SCAI",
+      "cta": "⚡ Laisser SCAI préparer ma candidature"
+    },
     "reviewAndSend": "Relire et envoyer →",
     "queue": {
       "progress": "Candidature {{current}} / {{total}}",
@@ -1271,20 +1738,6 @@
     "noApplications": "Aucune candidature pour le moment",
     "viewDetails": "Voir les détails",
     "withdrawApplication": "Retirer la candidature"
-  },
-  "auth": {
-    "login": "Connexion",
-    "signup": "Inscription",
-    "email": "Email",
-    "password": "Mot de passe",
-    "confirmPassword": "Confirmer le mot de passe",
-    "forgotPassword": "Mot de passe oublié ?",
-    "alreadyHaveAccount": "Déjà un compte ?",
-    "dontHaveAccount": "Pas encore de compte ?",
-    "loginWithGoogle": "Continuer avec Google",
-    "loginWithGithub": "Continuer avec GitHub",
-    "acceptTerms": "J'accepte les conditions d'utilisation",
-    "waitlist": "Rejoindre la liste d'attente"
   },
   "errors": {
     "generic": "Une erreur s'est produite",

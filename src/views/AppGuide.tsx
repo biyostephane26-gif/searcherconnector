@@ -9,25 +9,17 @@ import { useRef } from 'react'
 import { Printer, Download, ArrowLeft, Zap, Bot, Briefcase, Users, Target, BarChart2, Inbox, DollarSign, Shield, MessageSquare, BookOpen, Search, CheckCircle, Globe, Clock, Star } from 'lucide-react'
 import Link from 'next/link'
 import { usePDF } from '../hooks/usePDF'
+import { useTranslation } from 'react-i18next'
 
 // ── Sections du guide ────────────────────────────────────────────
-const FEATURES = [
+const FEATURE_META = [
   {
     icon: (
       <img src="/scai-icon.png" alt="SCAI" className="w-6 h-6 rounded-lg object-contain"
         onError={e => { (e.target as HTMLImageElement).style.display='none' }}
       />
     ),
-    title: 'SCAI — Ton entité digitale',
-    tag: 'CŒUR DE L\'APP',
     tagColor: 'text-[#D4AF37] bg-[#D4AF37]/10',
-    description: 'SCAI n\'est pas un chatbot. C\'est une entité digitale autonome qui analyse ton profil, pose des questions stratégiques et prend des décisions pour toi. Il parle dans ta langue, comprend tes nuances, et travaille pendant que tu dors.',
-    steps: [
-      'Va dans "SCAI Cowork" dans le menu',
-      'Parle à SCAI — dis-lui ce que tu cherches',
-      'Il te pose 3-4 questions stratégiques (zone, type, budget)',
-      'Il lance le scan et t\'informe en temps réel',
-    ],
     visual: `
 ┌─────────────────────────────────┐
 │  SCAI                    🔱     │
@@ -42,16 +34,7 @@ const FEATURES = [
   },
   {
     icon: <Zap className="w-6 h-6 text-[#D4AF37]" />,
-    title: 'Le Scan Multi-Sources',
-    tag: 'MOTEUR PRINCIPAL',
     tagColor: 'text-blue-400 bg-blue-400/10',
-    description: 'Quand SCAI lance un scan, il interroge simultanément 15+ sources : Serper, Brave Search, Exa.ai, Tavily, Remotive, Arbeitnow, HackerNews, GitHub, Adzuna, Greenhouse ATS, et bien d\'autres. Chaque résultat est scoré de 0 à 100 selon ton profil exact.',
-    steps: [
-      'Scan automatique 1x/jour (plan gratuit)',
-      'Scan automatique toutes les 4h (plan Talent)',
-      'Scan automatique toutes les heures (plan Investor)',
-      'Scan manuel disponible à tout moment',
-    ],
     visual: `
 Serper ──┐
 Brave ───┤                ┌── Score 94/100
@@ -62,16 +45,7 @@ GitHub ──┘`,
   },
   {
     icon: <Briefcase className="w-6 h-6 text-[#D4AF37]" />,
-    title: 'Opportunités',
-    tag: 'RÉSULTATS',
     tagColor: 'text-green-400 bg-green-400/10',
-    description: 'Toutes les opportunités trouvées s\'affichent dans /opportunités, triées par score. Tu vois le titre, la source, la date de publication et un extrait. Plan gratuit : 8 résultats visibles. Plan payant : 100+ débloqués.',
-    steps: [
-      'Clique sur une opportunité pour voir les détails',
-      'Score de 0-100 affiché pour chaque offre',
-      'Filtre par fraîcheur, score ou type',
-      'Postule en un clic ou laisse SCAI le faire',
-    ],
     visual: `
 ┌──────────────────────────────────────┐
 │ 🎯 94  Senior Growth Hacker          │
@@ -87,16 +61,7 @@ GitHub ──┘`,
   },
   {
     icon: <Target className="w-6 h-6 text-[#D4AF37]" />,
-    title: 'Opportunity Creator',
-    tag: 'BUSINESS',
     tagColor: 'text-purple-400 bg-purple-400/10',
-    description: 'SCAI scanne les entreprises locales ou mondiales qui ont besoin de tes services, génère un audit de leur présence digitale, estime leur budget et rédige un message d\'approche personnalisé. Idéal pour les freelances et consultants.',
-    steps: [
-      'Va dans "Opportunity Creator"',
-      'Choisis ta zone (locale, Afrique, mondiale)',
-      'SCAI trouve des entreprises avec un score digital faible',
-      'Copie le message généré → envoie sur WhatsApp/Email',
-    ],
     visual: `
 Entreprise XYZ
 Score digital : 23/100
@@ -109,16 +74,7 @@ Budget estimé : 200-500$
   },
   {
     icon: <Search className="w-6 h-6 text-[#D4AF37]" />,
-    title: 'Find Your Worker / Talent Search',
-    tag: 'RECRUTEMENT',
     tagColor: 'text-orange-400 bg-orange-400/10',
-    description: 'Tu cherches un développeur, designer ou consultant ? SCAI parcourt les profils vérifiés sur Searcher, GitHub, LinkedIn et autres plateformes pour trouver le talent qui correspond exactement à tes critères.',
-    steps: [
-      'Va dans "Find Your Worker" ou "Talent Search"',
-      'Décris le profil recherché à SCAI',
-      'SCAI affiche les meilleurs profils scorés',
-      'Contacte directement via la messagerie',
-    ],
     visual: `
 Cherche : "React Developer, Afrique"
 ─────────────────────────────────
@@ -128,16 +84,7 @@ Cherche : "React Developer, Afrique"
   },
   {
     icon: <BarChart2 className="w-6 h-6 text-[#D4AF37]" />,
-    title: 'Portfolio Analyzer',
-    tag: 'IA ANALYSE',
     tagColor: 'text-cyan-400 bg-cyan-400/10',
-    description: 'Soumets ton portfolio, GitHub, LinkedIn ou CV. SCAI l\'analyse avec l\'IA et génère un rapport détaillé : points forts, lacunes, recommandations, score de marché, et conseils pour améliorer ta visibilité.',
-    steps: [
-      'Va dans "Portfolio Analyzer"',
-      'Colle tes liens ou uploade tes documents',
-      'SCAI génère un audit complet en 2 minutes',
-      'Suis les recommandations pour améliorer ton profil',
-    ],
     visual: `
 Analyse de : github.com/tonprofil
 ─────────────────────────────────
@@ -149,16 +96,7 @@ Visibilité    : Moyen → Fort si README amélioré`,
   },
   {
     icon: <Inbox className="w-6 h-6 text-[#D4AF37]" />,
-    title: 'Cowork — Inbox Unifiée',
-    tag: 'COMMUNICATIONS',
     tagColor: 'text-pink-400 bg-pink-400/10',
-    description: 'Toutes tes communications en un seul endroit. Gmail et WhatsApp intégrés directement dans Searcher. Vois toutes les réponses à tes candidatures, envoie des messages, et laisse SCAI répondre automatiquement aux messages simples.',
-    steps: [
-      'Connecte Gmail dans Paramètres → Connexions',
-      'Toutes les réponses de candidatures apparaissent ici',
-      'SCAI génère des réponses intelligentes (Smart Replies)',
-      'Suit le statut : Envoyé → Lu → Répondu → Signé',
-    ],
     visual: `
 📧 Inbox Unifiée
 ─────────────────────────────────
@@ -170,16 +108,7 @@ Smart Replies: [Merci !] [Disponible] [+]`,
   },
   {
     icon: <Users className="w-6 h-6 text-[#D4AF37]" />,
-    title: 'Réseau Social Pro',
-    tag: 'COMMUNAUTÉ',
     tagColor: 'text-yellow-400 bg-yellow-400/10',
-    description: 'Searcher a son propre réseau social professionnel. Partage tes avancées, connecte-toi avec des talents vérifiés du monde entier, rejoins des groupes thématiques, et publie des articles dans ton domaine.',
-    steps: [
-      'Va dans "Social" pour le fil d\'actualité',
-      'Rejoins des groupes dans "Communautés"',
-      'Connecte-toi avec les profils Genius et Verified',
-      'Publie des articles pour augmenter ta visibilité',
-    ],
     visual: `
 🔱 Biyo S. · Fondateur
    "Searcher Connector vient de trouver
@@ -192,11 +121,7 @@ Smart Replies: [Merci !] [Disponible] [+]`,
   },
   {
     icon: <DollarSign className="w-6 h-6 text-[#D4AF37]" />,
-    title: 'Les Plans',
-    tag: 'TARIFS',
     tagColor: 'text-emerald-400 bg-emerald-400/10',
-    description: 'Searcher Connector propose un plan gratuit pour démarrer et des plans premium pour maximiser les résultats. Chaque plan débloque plus de sources, plus de résultats et plus d\'automatisation.',
-    steps: [],
     visual: `
 GRATUIT          TALENT        BUSINESS      INVESTOR
 ────────         ────────      ────────      ────────
@@ -208,15 +133,29 @@ Manuel limité    Illimité      Illimité      Illimité
   },
 ]
 
-const STATUS_LEVELS = [
-  { icon: '⏳', name: 'Pending', desc: 'Profil en cours de vérification', color: 'text-yellow-500' },
-  { icon: '✓', name: 'Verified', desc: 'Preuves soumises et validées — accès complet', color: 'text-blue-400' },
-  { icon: '🔱', name: 'Genius', desc: 'Talent exceptionnel identifié par Searcher — priorité absolue', color: 'text-[#D4AF37]' },
+const STATUS_META = [
+  { icon: '⏳', color: 'text-yellow-500' },
+  { icon: '✓', color: 'text-blue-400' },
+  { icon: '🔱', color: 'text-[#D4AF37]' },
 ]
 
+const PROFILE_ICONS = ['💼', '⚡', '🏢', '📈']
+
 export default function AppGuide() {
+  const { t } = useTranslation()
   const printRef = useRef<HTMLDivElement>(null)
   const { exportSection } = usePDF()
+
+  const tFeatures = t('appGuidePage.features', { returnObjects: true }) as { title: string; tag: string; description: string; steps: string[] }[]
+  const FEATURES = FEATURE_META.map((meta, i) => ({ ...meta, ...tFeatures[i] }))
+
+  const tStatus = t('appGuidePage.statusLevels', { returnObjects: true }) as { name: string; desc: string }[]
+  const STATUS_LEVELS = STATUS_META.map((meta, i) => ({ ...meta, ...tStatus[i] }))
+
+  const tProfiles = t('appGuidePage.profiles', { returnObjects: true }) as { title: string; desc: string }[]
+  const PROFILES = PROFILE_ICONS.map((icon, i) => ({ icon, ...tProfiles[i] }))
+
+  const QUICKSTART_STEPS = t('appGuidePage.quickstartSteps', { returnObjects: true }) as string[]
 
   const handlePrint = () => {
     window.print()
@@ -243,20 +182,20 @@ export default function AppGuide() {
         {/* Navbar d'impression */}
         <div className="no-print sticky top-0 z-50 bg-[#0D0D0D] border-b border-[#1A1A1A] px-6 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm">
-            <ArrowLeft className="w-4 h-4" /> Retour au dashboard
+            <ArrowLeft className="w-4 h-4" /> {t('appGuidePage.backToDashboard')}
           </Link>
           <div className="flex items-center gap-4">
-            <span className="text-xs text-gray-600">Guide complet Searcher Connector</span>
+            <span className="text-xs text-gray-600">{t('appGuidePage.guideSubtitle')}</span>
             <button
               onClick={handleExportPDF}
               className="flex items-center gap-2 bg-[#1A1A1A] border border-[#2a2a2a] hover:border-[#D4AF37]/30 text-gray-400 hover:text-white px-4 py-2 rounded-lg text-sm transition-colors">
-              <Download className="w-4 h-4" /> Télécharger PDF
+              <Download className="w-4 h-4" /> {t('appGuidePage.downloadPdf')}
             </button>
             <button
               onClick={handlePrint}
               className="flex items-center gap-2 bg-[#D4AF37] text-black px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#B8962D] transition-colors"
             >
-              <Printer className="w-4 h-4" /> Imprimer
+              <Printer className="w-4 h-4" /> {t('appGuidePage.print')}
             </button>
           </div>
         </div>
@@ -267,22 +206,22 @@ export default function AppGuide() {
           <div className="print-page text-center py-16 space-y-6 border-b border-[#1A1A1A] pb-16">
             <div className="inline-flex items-center gap-2 text-[#D4AF37] text-xs font-bold uppercase tracking-[0.3em] mb-4">
               <Globe className="w-4 h-4" />
-              PREMIER AGENT D'OPPORTUNITÉS AUTONOME MONDIAL
+              {t('appGuidePage.coverTagline')}
             </div>
             <h1 className="text-5xl font-black text-white tracking-tight">
               Searcher<br />
               <span className="text-[#D4AF37]">Connector</span>
             </h1>
             <p className="text-xl text-gray-400 max-w-lg mx-auto leading-relaxed">
-              L'agent IA qui travaille pour toi 24h/24 — emploi, freelance.
+              {t('appGuidePage.coverDesc')}
             </p>
 
             {/* Visuels stats */}
             <div className="grid grid-cols-3 gap-6 max-w-lg mx-auto mt-10">
               {[
-                { icon: <Globe className="w-5 h-5" />, val: '15+', label: 'Sources simultanées' },
-                { icon: <Clock className="w-5 h-5" />, val: '24/7', label: 'Agent actif' },
-                { icon: <Star className="w-5 h-5" />, val: '0-100', label: 'Score IA par offre' },
+                { icon: <Globe className="w-5 h-5" />, val: '15+', label: t('appGuidePage.statSources') },
+                { icon: <Clock className="w-5 h-5" />, val: '24/7', label: t('appGuidePage.statAgent') },
+                { icon: <Star className="w-5 h-5" />, val: '0-100', label: t('appGuidePage.statScore') },
               ].map((s, i) => (
                 <div key={i} className="bg-[#111111] border border-[#2a2a2a] rounded-xl p-4 text-center">
                   <div className="flex justify-center text-[#D4AF37] mb-2">{s.icon}</div>
@@ -294,9 +233,9 @@ export default function AppGuide() {
 
             {/* Cycle complet */}
             <div className="bg-[#111111] border border-[#1A1A1A] rounded-xl p-6 max-w-lg mx-auto mt-8 text-left">
-              <div className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4 text-center">Comment ça marche</div>
+              <div className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4 text-center">{t('appGuidePage.howItWorks')}</div>
               <div className="flex items-center justify-between text-sm">
-                {['Parle à SCAI', '→', 'SCAI scan', '→', 'Opportunités', '→', 'Tu décides'].map((s, i) => (
+                {[t('appGuidePage.cycleStep1'), '→', t('appGuidePage.cycleStep2'), '→', t('appGuidePage.cycleStep3'), '→', t('appGuidePage.cycleStep4')].map((s, i) => (
                   <span key={i} className={s === '→' ? 'text-gray-700' : i === 0 ? 'text-[#D4AF37] font-bold' : 'text-white font-medium'}>
                     {s}
                   </span>
@@ -309,17 +248,12 @@ export default function AppGuide() {
           <div className="print-page space-y-6">
             <div className="flex items-center gap-3 mb-8">
               <div className="h-px flex-1 bg-[#1A1A1A]" />
-              <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">Pour qui ?</h2>
+              <h2 className="text-xs font-bold uppercase tracking-[0.3em] text-gray-500">{t('appGuidePage.forWhoTitle')}</h2>
               <div className="h-px flex-1 bg-[#1A1A1A]" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              {[
-                { icon: '💼', title: 'Job Seeker', desc: 'Tu cherches un emploi. SCAI scanne les job boards monde entier et rédige des candidatures personnalisées prêtes à envoyer.' },
-                { icon: '⚡', title: 'Freelance Talent', desc: 'Tu cherches des missions. SCAI trouve des clients sur Upwork, Malt, Contra, et localement — avec budget ou sans.' },
-                { icon: '🏢', title: 'Business Owner', desc: 'Tu cherches des clients. Opportunity Creator scanne les entreprises qui ont besoin de tes services et génère les messages d\'approche.' },
-                { icon: '📈', title: 'Investisseur', desc: 'Tu cherches des projets à financer. SCAI analyse des startups, VC deals, et projets en phase seed dans ton secteur.' },
-              ].map((p, i) => (
+              {PROFILES.map((p, i) => (
                 <div key={i} className="bg-[#111111] border border-[#1A1A1A] rounded-xl p-5">
                   <div className="text-3xl mb-3">{p.icon}</div>
                   <h3 className="font-bold text-white mb-2">{p.title}</h3>
@@ -349,7 +283,7 @@ export default function AppGuide() {
                 {/* Étapes */}
                 {f.steps.length > 0 && (
                   <div className="space-y-2">
-                    <div className="text-xs font-bold uppercase tracking-widest text-gray-600 mb-3">Comment l'utiliser</div>
+                    <div className="text-xs font-bold uppercase tracking-widest text-gray-600 mb-3">{t('appGuidePage.howToUse')}</div>
                     {f.steps.map((step, j) => (
                       <div key={j} className="flex items-start gap-3 text-sm text-gray-300">
                         <div className="w-5 h-5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] text-[10px] font-bold flex-shrink-0 mt-0.5">
@@ -374,9 +308,9 @@ export default function AppGuide() {
           {/* ── NIVEAUX DE STATUT ──────────────────────────────── */}
           <div className="print-page space-y-6 border-t border-[#1A1A1A] pt-12">
             <h2 className="text-xl font-bold text-white flex items-center gap-3">
-              <Shield className="w-6 h-6 text-[#D4AF37]" /> Système de Vérification
+              <Shield className="w-6 h-6 text-[#D4AF37]" /> {t('appGuidePage.verificationTitle')}
             </h2>
-            <p className="text-sm text-gray-400">Searcher Connector utilise un système de vérification strict pour garantir la qualité du réseau. Chaque profil est analysé et classé.</p>
+            <p className="text-sm text-gray-400">{t('appGuidePage.verificationDesc')}</p>
             <div className="space-y-3">
               {STATUS_LEVELS.map((s, i) => (
                 <div key={i} className="flex items-start gap-4 bg-[#111111] border border-[#1A1A1A] rounded-xl p-4">
@@ -393,17 +327,10 @@ export default function AppGuide() {
           {/* ── DÉMARRAGE RAPIDE ───────────────────────────────── */}
           <div className="print-page border-t border-[#1A1A1A] pt-12 space-y-6">
             <h2 className="text-xl font-bold text-white flex items-center gap-3">
-              <CheckCircle className="w-6 h-6 text-green-400" /> Démarrage en 5 minutes
+              <CheckCircle className="w-6 h-6 text-green-400" /> {t('appGuidePage.quickstartTitle')}
             </h2>
             <div className="space-y-3">
-              {[
-                'Crée ton compte sur searcherconnector.com',
-                'Complète l\'onboarding (domaine, pays, type de profil)',
-                'Ouvre "SCAI Cowork" et parle à SCAI',
-                'SCAI te pose 3 questions → lance le scan',
-                'Consulte tes résultats dans "Opportunités"',
-                'Postule ou laisse SCAI le faire pour toi',
-              ].map((step, i) => (
+              {QUICKSTART_STEPS.map((step, i) => (
                 <div key={i} className="flex items-center gap-4">
                   <div className="w-8 h-8 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] font-bold text-sm flex-shrink-0">
                     {i + 1}
@@ -423,14 +350,14 @@ export default function AppGuide() {
               searcherconnector.com · biyostephane26@gmail.com
             </p>
             <p className="text-xs text-gray-700">
-              © 2025 Searcher Connector — Tous droits réservés · Créé par Biyo Stéphane
+              {t('appGuidePage.footerRights')}
             </p>
             <div className="no-print flex justify-center gap-4 pt-4">
               <Link href="/dashboard" className="text-sm text-[#D4AF37] hover:underline">
-                Accéder à l'app →
+                {t('appGuidePage.goToApp')}
               </Link>
               <Link href="/pricing" className="text-sm text-gray-500 hover:text-white">
-                Voir les tarifs
+                {t('appGuidePage.seePricing')}
               </Link>
             </div>
           </div>
