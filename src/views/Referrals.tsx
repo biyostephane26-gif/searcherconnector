@@ -22,6 +22,7 @@ import {
   Twitter,
   Facebook
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface ReferralStats {
   totalReferred: number
@@ -31,6 +32,7 @@ interface ReferralStats {
 }
 
 export default function Referrals() {
+  const { t, i18n } = useTranslation()
   const { user, profile, refreshProfile } = useAuth()
   const [stats, setStats] = useState<ReferralStats>({
     totalReferred: 0,
@@ -53,11 +55,11 @@ export default function Referrals() {
         body: JSON.stringify({ referralId, userId: user.id }),
       })
       const data = await res.json()
-      if (!res.ok) { alert(data.error || 'Impossible de réclamer cette récompense.'); return }
+      if (!res.ok) { alert(data.error || t('referralsPage.claimError')); return }
       await fetchStats()
       await refreshProfile()
     } catch {
-      alert('Impossible de réclamer cette récompense. Réessaie dans quelques secondes.')
+      alert(t('referralsPage.claimErrorRetry'))
     }
     setClaimingId(null)
   }
@@ -126,12 +128,12 @@ export default function Referrals() {
   }
 
   const shareVia = (platform: 'email' | 'whatsapp' | 'twitter' | 'facebook') => {
-    const text = `Rejoins-moi sur Searcher Connector, l'agent IA qui trouve des opportunités 24/7! 🚀`
+    const text = t('referralsPage.shareText')
     const url = encodeURIComponent(referralLink)
     const encodedText = encodeURIComponent(text)
 
     const urls = {
-      email: `mailto:?subject=${encodeURIComponent('Rejoins Searcher Connector')}&body=${encodedText}%0A%0A${url}`,
+      email: `mailto:?subject=${encodeURIComponent(t('referralsPage.emailSubject'))}&body=${encodedText}%0A%0A${url}`,
       whatsapp: `https://wa.me/?text=${encodedText}%20${url}`,
       twitter: `https://twitter.com/intent/tweet?text=${encodedText}&url=${url}`,
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`
@@ -155,13 +157,13 @@ export default function Referrals() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-[#1A1500] border border-[#D4AF37]/30 rounded-full px-4 py-2 mb-4">
             <Gift className="w-4 h-4 text-[#D4AF37]" />
-            <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">Programme de parrainage</span>
+            <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">{t('referralsPage.badge')}</span>
           </div>
           <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-[#D4AF37] to-white bg-clip-text text-transparent">
-            Gagne du Premium Gratuit
+            {t('referralsPage.heroTitle')}
           </h1>
           <p className="text-gray-400 text-lg">
-            Partage Searcher Connector avec tes amis et gagne <span className="text-[#D4AF37] font-bold">7 jours premium</span> par ami qui s'abonne
+            {t('referralsPage.heroDesc')}
           </p>
         </div>
 
@@ -170,22 +172,22 @@ export default function Referrals() {
           <Card className="p-6 text-center">
             <Users className="w-8 h-8 text-[#D4AF37] mx-auto mb-2" />
             <div className="text-3xl font-bold text-white mb-1">{stats.totalReferred}</div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider">Parrainés</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wider">{t('referralsPage.statReferred')}</div>
           </Card>
           <Card className="p-6 text-center">
             <CheckCircle2 className="w-8 h-8 text-green-400 mx-auto mb-2" />
             <div className="text-3xl font-bold text-white mb-1">{stats.activePremium}</div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider">Premium actifs</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wider">{t('referralsPage.statActivePremium')}</div>
           </Card>
           <Card className="p-6 text-center">
             <Gift className="w-8 h-8 text-[#D4AF37] mx-auto mb-2" />
             <div className="text-3xl font-bold text-white mb-1">{stats.daysEarned}</div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider">Jours gagnés</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wider">{t('referralsPage.statDaysEarned')}</div>
           </Card>
           <Card className="p-6 text-center">
             <TrendingUp className="w-8 h-8 text-blue-400 mx-auto mb-2" />
             <div className="text-3xl font-bold text-white mb-1">{stats.pending}</div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider">En attente</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wider">{t('referralsPage.statPending')}</div>
           </Card>
         </div>
 
@@ -193,7 +195,7 @@ export default function Referrals() {
         <Card className="p-8 mb-8">
           <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
             <Share2 className="w-5 h-5 text-[#D4AF37]" />
-            Ton lien de parrainage unique
+            {t('referralsPage.linkTitle')}
           </h3>
           
           <div className="bg-[#0D0D0D] rounded-xl p-4 mb-6 border border-[#1A1A1A]">
@@ -203,7 +205,7 @@ export default function Referrals() {
               </div>
               <GoldButton onClick={copyLink} className="flex items-center gap-2 whitespace-nowrap">
                 {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                {copied ? 'Copié!' : 'Copier'}
+                {copied ? t('referralsPage.copied') : t('referralsPage.copy')}
               </GoldButton>
             </div>
 
@@ -244,20 +246,20 @@ export default function Referrals() {
           <div className="bg-gradient-to-r from-[#1A1500] to-[#0D0D0D] border border-[#D4AF37]/20 rounded-xl p-6">
             <h4 className="font-bold text-[#D4AF37] mb-4 flex items-center gap-2">
               <Gift className="w-5 h-5" />
-              Comment ça marche ?
+              {t('referralsPage.howItWorks')}
             </h4>
             <div className="space-y-3 text-sm">
               <div className="flex items-start gap-3">
                 <div className="bg-[#D4AF37] text-black rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs flex-shrink-0">1</div>
-                <p className="text-gray-300">Partage ton lien unique avec tes amis</p>
+                <p className="text-gray-300">{t('referralsPage.step1')}</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="bg-[#D4AF37] text-black rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs flex-shrink-0">2</div>
-                <p className="text-gray-300">Ton ami s'inscrit et passe à un plan payant</p>
+                <p className="text-gray-300">{t('referralsPage.step2')}</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="bg-[#D4AF37] text-black rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs flex-shrink-0">3</div>
-                <p className="text-gray-300">Tu gagnes <strong className="text-[#D4AF37]">7 jours premium gratuits</strong> + ton ami gagne aussi 3 jours bonus!</p>
+                <p className="text-gray-300">{t('referralsPage.step3Before')} <strong className="text-[#D4AF37]">{t('referralsPage.step3Bold')}</strong> {t('referralsPage.step3After')}</p>
               </div>
             </div>
           </div>
@@ -265,13 +267,13 @@ export default function Referrals() {
 
         {/* Liste des parrainages */}
         <Card className="p-6">
-          <h3 className="text-xl font-bold mb-4">Mes parrainages ({referrals.length})</h3>
+          <h3 className="text-xl font-bold mb-4">{t('referralsPage.myReferrals')} ({referrals.length})</h3>
           
           {referrals.length === 0 ? (
             <div className="text-center py-12">
               <Users className="w-16 h-16 text-gray-600 mx-auto mb-4 opacity-50" />
-              <p className="text-gray-500 mb-2">Aucun parrainage pour le moment</p>
-              <p className="text-sm text-gray-600">Partage ton lien pour commencer à gagner du premium gratuit!</p>
+              <p className="text-gray-500 mb-2">{t('referralsPage.noReferrals')}</p>
+              <p className="text-sm text-gray-600">{t('referralsPage.noReferralsDesc')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -287,7 +289,7 @@ export default function Referrals() {
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-white">{ref.referred?.full_name || 'Utilisateur'}</span>
+                      <span className="font-medium text-white">{ref.referred?.full_name || t('referralsPage.unnamedUser')}</span>
                       {ref.referred?.verification_status === 'genius' && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4AF37] text-black">GENIUS</span>
                       )}
@@ -296,9 +298,9 @@ export default function Referrals() {
                       )}
                     </div>
                     <div className="flex items-center gap-3 text-xs text-gray-500">
-                      <span>Inscrit {new Date(ref.created_at).toLocaleDateString('fr-FR')}</span>
+                      <span>{t('referralsPage.registeredOn')} {new Date(ref.created_at).toLocaleDateString(i18n.language)}</span>
                       {ref.referred?.plan !== 'free' && (
-                        <span className="text-green-400">● Plan {ref.referred.plan}</span>
+                        <span className="text-green-400">● {t('referralsPage.plan')} {ref.referred.plan}</span>
                       )}
                     </div>
                   </div>
@@ -307,16 +309,16 @@ export default function Referrals() {
                     {ref.reward_claimed ? (
                       <div className="flex items-center gap-2 text-green-400 text-sm">
                         <CheckCircle2 className="w-4 h-4" />
-                        <span className="font-bold">{ref.reward_days || 7}j réclamés</span>
+                        <span className="font-bold">{ref.reward_days || 7}{t('referralsPage.daysClaimed')}</span>
                       </div>
                     ) : ref.referred?.plan && ref.referred.plan !== 'free' ? (
                       <button onClick={() => claimReward(ref.id)} disabled={claimingId === ref.id}
                         className="flex items-center gap-2 text-[#D4AF37] text-sm bg-[#1A1500] border border-[#D4AF37]/40 hover:border-[#D4AF37] px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50">
                         <Gift className="w-4 h-4" />
-                        <span className="font-bold">{claimingId === ref.id ? 'Réclamation...' : `Réclamer ${ref.reward_days || 7}j`}</span>
+                        <span className="font-bold">{claimingId === ref.id ? t('referralsPage.claiming') : `${t('referralsPage.claim')} ${ref.reward_days || 7}${t('referralsPage.days')}`}</span>
                       </button>
                     ) : (
-                      <span className="text-xs text-gray-600">En attente d'abonnement</span>
+                      <span className="text-xs text-gray-600">{t('referralsPage.waitingSubscription')}</span>
                     )}
                   </div>
                 </div>
