@@ -6,6 +6,7 @@ import GoldButton from '../components/ui/GoldButton'
 import Card from '../components/ui/Card'
 import { TrendingUp, ArrowRight, AlertCircle, Globe } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { useTranslation } from 'react-i18next'
 
 // ── Grilles salariales par région (RÉELLES, pas mockées) ─────────
 // Sources : Glassdoor, LinkedIn Salary, PayScale, Levels.fyi, Africa Salary Guide
@@ -61,6 +62,7 @@ function lookupSalary(role: string, country: string) {
 }
 
 export default function Salary() {
+  const { t, i18n } = useTranslation()
   const [role, setRole]       = useState('')
   const [country, setCountry] = useState('')
   const [loading, setLoading] = useState(false)
@@ -85,18 +87,18 @@ export default function Salary() {
           { name: 'Expert',    salary: max },
         ],
         note: result.found
-          ? `Données basées sur le marché "${country}" pour le profil "${role}".`
-          : `Données estimées — profil générique pour "${country}". Précise ton rôle exact pour plus de précision.`,
+          ? t('salaryPage.noteFound', { country, role })
+          : t('salaryPage.noteEstimated', { country }),
       })
     } catch (err: any) {
-      setError('Impossible de récupérer les données. Vérifie ta connexion.')
+      setError(t('salaryPage.fetchError'))
     } finally {
       setLoading(false)
     }
   }
 
   const fmt = (n: number, currency: string) => {
-    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: currency.length === 3 ? currency : 'USD', maximumFractionDigits: 0 }).format(n)
+    return new Intl.NumberFormat(i18n.language, { style: 'currency', currency: currency.length === 3 ? currency : 'USD', maximumFractionDigits: 0 }).format(n)
   }
 
   return (
@@ -104,9 +106,9 @@ export default function Salary() {
       <Sidebar />
       <main className="flex-1 flex flex-col min-w-0 lg:ml-64">
         <header className="h-16 border-b border-[#1A1A1A] flex items-center justify-between px-6 bg-[#0A0A0A]/50 backdrop-blur-md sticky top-0 z-30">
-          <h2 className="text-lg font-bold text-white tracking-tight">Salary Intelligence</h2>
+          <h2 className="text-lg font-bold text-white tracking-tight">{t('salaryPage.title')}</h2>
           <div className="flex items-center gap-2 text-[10px] tracking-widest text-[#D4AF37] font-bold uppercase">
-            <Globe className="w-3 h-3" /> 50+ pays couverts
+            <Globe className="w-3 h-3" /> {t('salaryPage.countriesCovered')}
           </div>
         </header>
 
@@ -114,26 +116,26 @@ export default function Salary() {
 
           {/* Sous-titre */}
           <div>
-            <h1 className="text-2xl font-bold text-white mb-1">Combien tu vaux sur le marché ?</h1>
-            <p className="text-sm text-gray-500">Données réelles — Afrique, Europe, Amérique du Nord, Asie. Rentre ton rôle et ton pays.</p>
+            <h1 className="text-2xl font-bold text-white mb-1">{t('salaryPage.heroTitle')}</h1>
+            <p className="text-sm text-gray-500">{t('salaryPage.heroDesc')}</p>
           </div>
 
           <Card className="p-8">
             <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Ton rôle</label>
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('salaryPage.yourRole')}</label>
                 <input type="text" required value={role} onChange={e => setRole(e.target.value)}
-                  placeholder="ex: Développeur React, Designer, Marketing..."
+                  placeholder={t('salaryPage.rolePlaceholder')}
                   className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none text-white" />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Pays</label>
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('salaryPage.country')}</label>
                 <input type="text" required value={country} onChange={e => setCountry(e.target.value)}
-                  placeholder="ex: Cameroun, France, Nigeria..."
+                  placeholder={t('salaryPage.countryPlaceholder')}
                   className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none text-white" />
               </div>
               <GoldButton type="submit" loading={loading}>
-                Analyser <ArrowRight className="w-4 h-4" />
+                {t('salaryPage.analyze')} <ArrowRight className="w-4 h-4" />
               </GoldButton>
             </form>
           </Card>
@@ -149,9 +151,9 @@ export default function Salary() {
               {/* 3 metrics */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                  { label: 'Minimum', value: fmt(data.min, data.currency), color: 'text-gray-400', sub: 'Débutant / Junior' },
-                  { label: 'Médiane', value: fmt(data.median, data.currency), color: 'text-[#D4AF37]', sub: 'Profil confirmé' },
-                  { label: 'Maximum', value: fmt(data.max, data.currency), color: 'text-white', sub: 'Expert / Lead' },
+                  { label: t('salaryPage.minimum'), value: fmt(data.min, data.currency), color: 'text-gray-400', sub: t('salaryPage.minSub') },
+                  { label: t('salaryPage.median'), value: fmt(data.median, data.currency), color: 'text-[#D4AF37]', sub: t('salaryPage.medianSub') },
+                  { label: t('salaryPage.maximum'), value: fmt(data.max, data.currency), color: 'text-white', sub: t('salaryPage.maxSub') },
                 ].map((item, i) => (
                   <Card key={i} className="p-6 text-center">
                     <div className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1">{item.label}</div>
@@ -163,18 +165,18 @@ export default function Salary() {
 
               {/* Chart */}
               <Card className="p-8">
-                <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-8">Progression salariale par niveau</h3>
+                <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-8">{t('salaryPage.chartTitle')}</h3>
                 <div className="h-[260px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={data.chartData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#1A1A1A" vertical={false} />
                       <XAxis dataKey="name" stroke="#444" fontSize={11} tickLine={false} axisLine={false} />
                       <YAxis stroke="#444" fontSize={10} tickLine={false} axisLine={false}
-                        tickFormatter={v => new Intl.NumberFormat('fr-FR', { notation: 'compact' }).format(v)} />
+                        tickFormatter={v => new Intl.NumberFormat(i18n.language, { notation: 'compact' }).format(v)} />
                       <Tooltip
                         contentStyle={{ backgroundColor: '#111', border: '1px solid #2a2a2a', borderRadius: '8px' }}
                         itemStyle={{ color: '#D4AF37' }}
-                        formatter={(v: any) => [fmt(v, data.currency), 'Salaire']}
+                        formatter={(v: any) => [fmt(v, data.currency), t('salaryPage.salary')]}
                       />
                       <Bar dataKey="salary" fill="#D4AF37" radius={[4, 4, 0, 0]} />
                     </BarChart>
@@ -186,14 +188,14 @@ export default function Salary() {
               <div className="flex items-start gap-4 bg-[#1A1500] border border-[#D4AF37]/20 p-5 rounded-2xl">
                 <TrendingUp className="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-gray-400 leading-relaxed">
-                  <span className="text-[#D4AF37] font-bold">Searcher Insight : </span>
-                  Le marché <span className="text-white font-bold">{role}</span> en <span className="text-white font-bold">{country}</span> a progressé de <span className="text-green-400 font-bold">{data.growth}</span> cette année. {data.note}
+                  <span className="text-[#D4AF37] font-bold">{t('salaryPage.insightLabel')}</span>
+                  {t('salaryPage.insightText', { role, country, growth: data.growth })} {data.note}
                 </div>
               </div>
 
               {/* Pays couvert */}
               <div className="text-xs text-gray-700 text-center">
-                Pays couverts : Cameroun, Nigeria, Kenya, Sénégal, Ghana, Côte d'Ivoire, Afrique du Sud, France, Allemagne, Royaume-Uni, États-Unis, Canada, Inde et plus.
+                {t('salaryPage.countriesFooter')}
               </div>
             </div>
           )}
