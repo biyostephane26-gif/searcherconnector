@@ -163,6 +163,7 @@ export default function FounderDashboard() {
   if (loading) return <div className='p-8 text-white'>{t('founderDashboardPage.loading')}</div>
 
   return (
+    <>
     <div className='min-h-screen bg-[#0A0A0A] text-white p-6'>
       <div className='max-w-7xl mx-auto'>
         {/* Maintenance Banner */}
@@ -726,19 +727,16 @@ export default function FounderDashboard() {
         )}
       </div>
     </div>
-  )
-}
-
 
       {/* Modal changement statut avec expiration */}
       {showStatusModal && selectedUser && (
         <div className='fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4'>
           <div className='bg-[#111] border border-[#D4AF37]/30 rounded-2xl p-8 w-full max-w-md space-y-5'>
             <h3 className='text-lg font-bold text-white'>
-              Changer le plan de {selectedUser.email}
+              {t('founderDashboardPage.changePlanFor', { email: selectedUser.email })}
             </h3>
             <p className='text-sm text-gray-400'>
-              Plan actuel: <span className='text-[#D4AF37] font-bold'>{selectedUser.plan}</span>
+              {t('founderDashboardPage.currentPlan')} <span className='text-[#D4AF37] font-bold'>{selectedUser.plan}</span>
             </p>
             
             <div className='space-y-3'>
@@ -789,3 +787,6 @@ export default function FounderDashboard() {
           </div>
         </div>
       )}
+    </>
+  )
+}
