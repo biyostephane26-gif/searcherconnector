@@ -12,21 +12,22 @@ import { supabase } from '../lib/supabase'
 import Card from '../components/ui/Card'
 import GoldButton from '../components/ui/GoldButton'
 import { ArrowLeft, Calendar, FileText, DollarSign } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type ApplicationStatus = 'applied' | 'viewed' | 'interview_scheduled' | 'interview_completed' | 'offer_received' | 'accepted' | 'rejected' | 'withdrawn'
 
-const STATUSES: { value: ApplicationStatus; label: string }[] = [
-  { value: 'applied', label: 'Postulée' },
-  { value: 'viewed', label: 'Vue par le recruteur' },
-  { value: 'interview_scheduled', label: 'Entretien prévu' },
-  { value: 'interview_completed', label: 'Entretien passé' },
-  { value: 'offer_received', label: 'Offre reçue' },
-  { value: 'accepted', label: 'Acceptée' },
-  { value: 'rejected', label: 'Refusée' },
-  { value: 'withdrawn', label: 'Retirée' }
-]
-
 export default function EditApplicationStatus() {
+  const { t, i18n } = useTranslation()
+  const STATUSES: { value: ApplicationStatus; label: string }[] = [
+    { value: 'applied', label: t('applicationsPage.status.applied') },
+    { value: 'viewed', label: t('editAppStatusPage.viewedByRecruiter') },
+    { value: 'interview_scheduled', label: t('applicationsPage.status.interview_scheduled') },
+    { value: 'interview_completed', label: t('applicationsPage.status.interview_completed') },
+    { value: 'offer_received', label: t('applicationsPage.status.offer_received') },
+    { value: 'accepted', label: t('applicationsPage.status.accepted') },
+    { value: 'rejected', label: t('applicationsPage.status.rejected') },
+    { value: 'withdrawn', label: t('applicationsPage.status.withdrawn') }
+  ]
   const router = useRouter()
   const params = useParams()
   const { user } = useAuth()
@@ -104,10 +105,10 @@ export default function EditApplicationStatus() {
           body: JSON.stringify({
             userId: user?.id,
             type: 'application',
-            title: `Entretien prévu: ${application.job_title}`,
-            message: `Ton entretien chez ${application.company} est prévu le ${new Date(formData.interview_date).toLocaleDateString('fr-FR')}. Bonne chance!`,
+            title: t('editAppStatusPage.notifInterviewTitle', { title: application.job_title }),
+            message: t('editAppStatusPage.notifInterviewMessage', { company: application.company, date: new Date(formData.interview_date).toLocaleDateString(i18n.language) }),
             actionUrl: `/applications/edit/${id}`,
-            actionLabel: 'Voir'
+            actionLabel: t('editAppStatusPage.view')
           })
         })
       } else if (formData.status === 'offer_received') {
@@ -117,10 +118,10 @@ export default function EditApplicationStatus() {
           body: JSON.stringify({
             userId: user?.id,
             type: 'application',
-            title: `🎉 Offre reçue: ${application.job_title}`,
-            message: `${application.company} t'a fait une offre de ${formData.offer_amount} ${formData.offer_currency}!`,
+            title: t('editAppStatusPage.notifOfferTitle', { title: application.job_title }),
+            message: t('editAppStatusPage.notifOfferMessage', { company: application.company, amount: formData.offer_amount, currency: formData.offer_currency }),
             actionUrl: `/applications/edit/${id}`,
-            actionLabel: 'Voir l\'offre'
+            actionLabel: t('editAppStatusPage.viewOffer')
           })
         })
       } else if (formData.status === 'accepted') {
@@ -130,10 +131,10 @@ export default function EditApplicationStatus() {
           body: JSON.stringify({
             userId: user?.id,
             type: 'system',
-            title: `🎊 Félicitations!`,
-            message: `Tu as accepté l'offre de ${application.company}. Ton niveau professionnel a été mis à jour!`,
+            title: t('editAppStatusPage.notifAcceptedTitle'),
+            message: t('editAppStatusPage.notifAcceptedMessage', { company: application.company }),
             actionUrl: `/profile`,
-            actionLabel: 'Voir mon profil'
+            actionLabel: t('editAppStatusPage.viewProfile')
           })
         })
       }
@@ -141,7 +142,7 @@ export default function EditApplicationStatus() {
       router.push('/applications')
     } catch (error: any) {
       console.error('Erreur mise à jour:', error)
-      alert('Erreur lors de la mise à jour')
+      alert(t('editAppStatusPage.updateError'))
     } finally {
       setSaving(false)
     }
@@ -159,9 +160,9 @@ export default function EditApplicationStatus() {
     return (
       <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl mb-4">Candidature introuvable</p>
+          <p className="text-xl mb-4">{t('editAppStatusPage.notFound')}</p>
           <GoldButton onClick={() => router.push('/applications')}>
-            Retour aux candidatures
+            {t('editAppStatusPage.backToApplications')}
           </GoldButton>
         </div>
       </div>
@@ -176,7 +177,7 @@ export default function EditApplicationStatus() {
           className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Retour aux candidatures
+          {t('editAppStatusPage.backToApplications')}
         </button>
 
         <Card className="p-8">
@@ -189,7 +190,7 @@ export default function EditApplicationStatus() {
             {/* Statut */}
             <div>
               <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">
-                Statut de la candidature
+                {t('editAppStatusPage.statusLabel')}
               </label>
               <select
                 value={formData.status}
@@ -207,7 +208,7 @@ export default function EditApplicationStatus() {
               <div>
                 <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">
                   <Calendar className="w-4 h-4 inline mr-2" />
-                  Date et heure de l'entretien
+                  {t('editAppStatusPage.interviewDateLabel')}
                 </label>
                 <input
                   type="datetime-local"
@@ -216,15 +217,15 @@ export default function EditApplicationStatus() {
                   className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none"
                 />
                 <div className="mt-3">
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Type d'entretien</label>
+                  <label className="block text-sm font-bold text-gray-400 mb-2">{t('editAppStatusPage.interviewTypeLabel')}</label>
                   <select
                     value={formData.interview_type}
                     onChange={(e) => setFormData(prev => ({ ...prev, interview_type: e.target.value }))}
                     className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none"
                   >
-                    <option value="phone">Téléphone</option>
-                    <option value="video">Visio</option>
-                    <option value="in-person">En personne</option>
+                    <option value="phone">{t('editAppStatusPage.interviewPhone')}</option>
+                    <option value="video">{t('editAppStatusPage.interviewVideo')}</option>
+                    <option value="in-person">{t('editAppStatusPage.interviewInPerson')}</option>
                   </select>
                 </div>
               </div>
@@ -235,7 +236,7 @@ export default function EditApplicationStatus() {
               <div>
                 <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">
                   <DollarSign className="w-4 h-4 inline mr-2" />
-                  Montant de l'offre
+                  {t('editAppStatusPage.offerAmountLabel')}
                 </label>
                 <div className="flex gap-3">
                   <input
@@ -263,14 +264,14 @@ export default function EditApplicationStatus() {
             {formData.status === 'rejected' && (
               <div>
                 <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">
-                  Raison du refus (optionnel)
+                  {t('editAppStatusPage.rejectionReasonLabel')}
                 </label>
                 <input
                   type="text"
                   value={formData.rejection_reason}
                   onChange={(e) => setFormData(prev => ({ ...prev, rejection_reason: e.target.value }))}
                   className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none"
-                  placeholder="Ex: Profil pas assez senior"
+                  placeholder={t('editAppStatusPage.rejectionPlaceholder')}
                 />
               </div>
             )}
@@ -279,14 +280,14 @@ export default function EditApplicationStatus() {
             <div>
               <label className="block text-sm font-bold text-gray-400 mb-2 uppercase tracking-wider">
                 <FileText className="w-4 h-4 inline mr-2" />
-                Notes personnelles
+                {t('editAppStatusPage.notesLabel')}
               </label>
               <textarea
                 value={formData.notes}
                 onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                 rows={4}
                 className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none resize-none"
-                placeholder="Ajoute des notes sur cette candidature..."
+                placeholder={t('editAppStatusPage.notesPlaceholder')}
               />
             </div>
 
@@ -298,14 +299,14 @@ export default function EditApplicationStatus() {
                 onClick={() => router.push('/applications')}
                 fullWidth
               >
-                Annuler
+                {t('editAppStatusPage.cancel')}
               </GoldButton>
               <GoldButton
                 type="submit"
                 fullWidth
                 loading={saving}
               >
-                Enregistrer
+                {t('editAppStatusPage.save')}
               </GoldButton>
             </div>
           </form>
