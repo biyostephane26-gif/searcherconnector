@@ -330,6 +330,25 @@
     },
     "avatarUploadError": "Avatar upload error. Try again."
   },
+  "articlesPage": {
+    "writeArticle": "Write an article",
+    "draft": "Draft",
+    "publish": "Publish",
+    "titlePlaceholder": "Article title",
+    "subtitlePlaceholder": "Subtitle or short description...",
+    "changeCover": "Change cover",
+    "uploading": "Uploading...",
+    "addCover": "Add a cover",
+    "uploadError": "Error uploading the image",
+    "publishError": "Error publishing",
+    "title": "Articles & Knowledge",
+    "searchPlaceholder": "Search articles...",
+    "write": "Write",
+    "article": "Article",
+    "by": "By {{name}}",
+    "empty": "No articles yet",
+    "emptyDesc": "Be the first to share your expertise with the community."
+  },
   "statusPage": {
     "verificationEngine": "Verification Engine",
     "analyzing": "Analyzing...",

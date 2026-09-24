@@ -330,6 +330,25 @@
     },
     "avatarUploadError": "Erreur upload avatar. Réessaie."
   },
+  "articlesPage": {
+    "writeArticle": "Rédiger un article",
+    "draft": "Brouillon",
+    "publish": "Publier",
+    "titlePlaceholder": "Titre de l'article",
+    "subtitlePlaceholder": "Sous-titre ou description courte...",
+    "changeCover": "Changer la couverture",
+    "uploading": "Upload en cours...",
+    "addCover": "Ajouter une couverture",
+    "uploadError": "Erreur lors de l'upload de l'image",
+    "publishError": "Erreur lors de la publication",
+    "title": "Articles & Savoir",
+    "searchPlaceholder": "Rechercher des articles...",
+    "write": "Écrire",
+    "article": "Article",
+    "by": "Par {{name}}",
+    "empty": "Aucun article pour le moment",
+    "emptyDesc": "Soyez le premier à partager votre expertise avec la communauté."
+  },
   "statusPage": {
     "verificationEngine": "Verification Engine",
     "analyzing": "Analyse en cours...",

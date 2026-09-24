@@ -10,9 +10,11 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import ArticleEditor from '../components/articles/ArticleEditor';
 import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 
 export default function Articles() {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,7 +71,7 @@ export default function Articles() {
       setCoverUrl(publicUrl);
     } catch (err) {
       console.error('Error uploading cover:', err);
-      alert("Erreur lors de l'upload de l'image");
+      alert(t('articlesPage.uploadError'));
     } finally {
       setUploadingCover(false);
     }
@@ -99,7 +101,7 @@ export default function Articles() {
       fetchArticles();
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de la publication");
+      alert(t('articlesPage.publishError'));
     }
   };
 
@@ -113,29 +115,29 @@ export default function Articles() {
               <button onClick={() => setIsCreating(false)} className="text-gray-500 hover:text-white">
                 <ArrowLeft size={20} />
               </button>
-              <h2 className="text-lg font-bold text-white tracking-tight">Rédiger un article</h2>
+              <h2 className="text-lg font-bold text-white tracking-tight">{t('articlesPage.writeArticle')}</h2>
             </div>
             <div className="flex items-center gap-3">
               <button className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-4 py-2 hover:text-white transition-all">
-                Brouillon
+                {t('articlesPage.draft')}
               </button>
               <GoldButton onClick={handlePublish} className="h-9 px-6 text-[10px]">
-                Publier
+                {t('articlesPage.publish')}
               </GoldButton>
             </div>
           </header>
 
           <div className="flex-1 overflow-y-auto p-6 lg:p-10 max-w-4xl mx-auto w-full space-y-8">
-            <input 
+            <input
               value={title}
               onChange={e => setTitle(e.target.value)}
-              placeholder="Titre de l'article"
+              placeholder={t('articlesPage.titlePlaceholder')}
               className="w-full bg-transparent text-4xl lg:text-5xl font-black text-white placeholder-gray-800 focus:outline-none border-none p-0 tracking-tighter"
             />
-            <input 
+            <input
               value={subtitle}
               onChange={e => setSubtitle(e.target.value)}
-              placeholder="Sous-titre ou description courte..."
+              placeholder={t('articlesPage.subtitlePlaceholder')}
               className="w-full bg-transparent text-xl font-medium text-gray-500 placeholder-gray-800 focus:outline-none border-none p-0 tracking-tight"
             />
             
@@ -149,7 +151,7 @@ export default function Articles() {
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <div className="flex flex-col items-center gap-2 text-white">
                       <ImageIcon size={32} />
-                      <span className="text-[10px] font-bold uppercase tracking-widest">Changer la couverture</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest">{t('articlesPage.changeCover')}</span>
                     </div>
                   </div>
                 </>
@@ -161,7 +163,7 @@ export default function Articles() {
                     <Plus size={40} />
                   )}
                   <span className="text-[10px] font-bold uppercase tracking-widest">
-                    {uploadingCover ? 'Upload en cours...' : 'Ajouter une couverture'}
+                    {uploadingCover ? t('articlesPage.uploading') : t('articlesPage.addCover')}
                   </span>
                 </div>
               )}
@@ -187,17 +189,17 @@ export default function Articles() {
 
       <main className="flex-1 flex flex-col min-w-0 lg:ml-64">
         <header className="h-16 border-b border-[#1A1A1A] flex items-center justify-between px-6 bg-[#0A0A0A]/50 backdrop-blur-md sticky top-0 z-30">
-          <h2 className="text-lg font-bold text-white tracking-tight">Articles & Savoir</h2>
+          <h2 className="text-lg font-bold text-white tracking-tight">{t('articlesPage.title')}</h2>
           <div className="flex items-center gap-4">
             <div className="relative hidden sm:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
-              <input 
-                placeholder="Rechercher des articles..."
+              <input
+                placeholder={t('articlesPage.searchPlaceholder')}
                 className="bg-[#111111] border border-[#2a2a2a] rounded-xl pl-10 pr-4 py-2 text-xs text-white focus:outline-none focus:border-[#D4AF37] transition-all w-64"
               />
             </div>
             <GoldButton onClick={() => setIsCreating(true)} className="h-9 px-4 text-[10px]">
-              <Plus size={16} className="mr-2" /> Écrire
+              <Plus size={16} className="mr-2" /> {t('articlesPage.write')}
             </GoldButton>
           </div>
         </header>
@@ -222,7 +224,7 @@ export default function Articles() {
                     <div className="absolute top-4 left-4">
                       <div className="px-3 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center gap-2">
                         <BookOpen size={12} className="text-[#D4AF37]" />
-                        <span className="text-[8px] font-bold text-white uppercase tracking-widest">Article</span>
+                        <span className="text-[8px] font-bold text-white uppercase tracking-widest">{t('articlesPage.article')}</span>
                       </div>
                     </div>
                   </div>
@@ -233,7 +235,7 @@ export default function Articles() {
                         {article.author?.avatar_url && <img src={article.author.avatar_url} alt="" className="w-full h-full object-cover" />}
                       </div>
                       <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                        Par {article.author?.full_name}
+                        {t('articlesPage.by', { name: article.author?.full_name })}
                       </span>
                     </div>
 
@@ -249,7 +251,7 @@ export default function Articles() {
                         <span className="flex items-center gap-1.5"><Eye size={12} /> {article.reads_count}</span>
                         <span className="flex items-center gap-1.5"><Heart size={12} /> {article.likes_count}</span>
                       </div>
-                      <span>{formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: fr })}</span>
+                      <span>{formatDistanceToNow(new Date(article.created_at), { addSuffix: true, locale: i18n.language.startsWith('fr') ? fr : enUS })}</span>
                     </div>
                   </div>
                 </Card>
@@ -260,9 +262,9 @@ export default function Articles() {
           {!loading && articles.length === 0 && (
             <div className="text-center py-20">
               <BookOpen size={48} className="text-gray-800 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">Aucun article pour le moment</h3>
-              <p className="text-sm text-gray-500 max-w-xs mx-auto mb-8">Soyez le premier à partager votre expertise avec la communauté.</p>
-              <GoldButton onClick={() => setIsCreating(true)}>Rédiger un article</GoldButton>
+              <h3 className="text-xl font-bold text-white mb-2">{t('articlesPage.empty')}</h3>
+              <p className="text-sm text-gray-500 max-w-xs mx-auto mb-8">{t('articlesPage.emptyDesc')}</p>
+              <GoldButton onClick={() => setIsCreating(true)}>{t('articlesPage.writeArticle')}</GoldButton>
             </div>
           )}
         </div>
