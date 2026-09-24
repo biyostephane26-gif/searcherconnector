@@ -1,4 +1,91 @@
 {
+  "interviewSimPage": {
+    "micError": "Microphone error. Check your permissions.",
+    "insufficientCredits": "⚠️ Insufficient voice credits. Upgrade to a premium plan to use SCAI Voice.",
+    "creditsExhausted": "⚠️ Voice credits exhausted. Upgrade to Pro for 300 credits/month.",
+    "ttsError": "TTS error",
+    "analysisError": "Analysis error",
+    "fallbackStrength": "Structured answer",
+    "fallbackImprovement": "Add more concrete details",
+    "fallbackSuggestion": "Keep practicing!",
+    "badge": "SCAI Interview Prep",
+    "title": "Interview Simulation",
+    "subtitle": "Practice with SCAI in real time • Get instant feedback",
+    "readyTitle": "Ready to practice?",
+    "readyDesc": "SCAI will ask you {{count}} common interview questions. Answer out loud as if you were in a real interview. You'll get detailed feedback on each answer.",
+    "howItWorks": "How it works",
+    "step1": "SCAI asks a question out loud",
+    "step2": "You answer out loud (automatic microphone)",
+    "step3": "SCAI analyzes and gives you instant feedback",
+    "step4": "Next question automatically",
+    "startSimulation": "Start the simulation",
+    "requiresPlan": "⚡ Requires a Starter or Pro plan for SCAI Voice",
+    "questionOf": "Question {{current}} / {{total}}",
+    "restart": "Restart",
+    "scaiAsking": "SCAI is asking the question...",
+    "yourTurn": "Your turn to answer",
+    "getReady": "Get ready",
+    "keyTips": "💡 Key tips",
+    "recording": "Recording in progress...",
+    "clickToSpeak": "Click to speak",
+    "start": "Start",
+    "nextQuestion": "Next question →",
+    "simulationDone": "Simulation complete!",
+    "feedbackIntro": "Here's SCAI's feedback on your {{count}} answers",
+    "averageScore": "Average score",
+    "questionLabel": "Question {{n}}",
+    "strengths": "Strengths",
+    "toImprove": "To improve",
+    "scaiSuggestion": "💡 SCAI Suggestion",
+    "backToPreps": "Back to prep list",
+    "questions": [
+      {
+        "question": "Tell me about yourself and your professional background.",
+        "category": "behavioral",
+        "tips": [
+          "Structure: Present → Past → Future",
+          "Stay concise (2-3 minutes max)",
+          "Connect your experience to the role"
+        ]
+      },
+      {
+        "question": "Why do you want to join our company?",
+        "category": "motivation",
+        "tips": [
+          "Show that you've researched the company",
+          "Connect their values to your goals",
+          "Cite specific projects/products"
+        ]
+      },
+      {
+        "question": "Describe a situation where you solved a complex problem.",
+        "category": "situational",
+        "tips": [
+          "Use the STAR method",
+          "Quantify results if possible",
+          "Show your thought process"
+        ]
+      },
+      {
+        "question": "What are your strengths and weaknesses?",
+        "category": "behavioral",
+        "tips": [
+          "Strength: Prove it with a concrete example",
+          "Weakness: Show how you're improving",
+          "Stay authentic"
+        ]
+      },
+      {
+        "question": "Where do you see yourself in 5 years?",
+        "category": "motivation",
+        "tips": [
+          "Show realistic ambition",
+          "Align with the company's opportunities",
+          "Avoid clichéd answers"
+        ]
+      }
+    ]
+  },
   "appGuidePage": {
     "backToDashboard": "Back to dashboard",
     "guideSubtitle": "Full Searcher Connector guide",

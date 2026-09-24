@@ -24,6 +24,7 @@ import {
   MessageSquare,
   Sparkles
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface Question {
   id: number
@@ -32,61 +33,12 @@ interface Question {
   tips: string[]
 }
 
-const SAMPLE_QUESTIONS: Question[] = [
-  {
-    id: 1,
-    question: "Parlez-moi de vous et de votre parcours professionnel.",
-    category: 'behavioral',
-    tips: [
-      "Structure: Présent → Passé → Futur",
-      "Reste concis (2-3 minutes max)",
-      "Connecte ton expérience au poste visé"
-    ]
-  },
-  {
-    id: 2,
-    question: "Pourquoi voulez-vous rejoindre notre entreprise ?",
-    category: 'motivation',
-    tips: [
-      "Montre que tu as recherché l'entreprise",
-      "Connecte leurs valeurs à tes objectifs",
-      "Cite des projets/produits spécifiques"
-    ]
-  },
-  {
-    id: 3,
-    question: "Décrivez une situation où vous avez résolu un problème complexe.",
-    category: 'situational',
-    tips: [
-      "Utilise la méthode STAR",
-      "Quantifie les résultats si possible",
-      "Montre ton processus de réflexion"
-    ]
-  },
-  {
-    id: 4,
-    question: "Quelles sont vos forces et faiblesses ?",
-    category: 'behavioral',
-    tips: [
-      "Force: Prouve avec un exemple concret",
-      "Faiblesse: Montre comment tu t'améliores",
-      "Reste authentique"
-    ]
-  },
-  {
-    id: 5,
-    question: "Où vous voyez-vous dans 5 ans ?",
-    category: 'motivation',
-    tips: [
-      "Montre de l'ambition réaliste",
-      "Aligne avec les opportunités de l'entreprise",
-      "Évite les réponses clichés"
-    ]
-  }
-]
-
 export default function InterviewSimulation() {
+  const { t, i18n } = useTranslation()
   const { user, profile } = useAuth()
+
+  const tQuestions = t('interviewSimPage.questions', { returnObjects: true }) as { question: string; category: string; tips: string[] }[]
+  const SAMPLE_QUESTIONS: Question[] = tQuestions.map((q, i) => ({ id: i + 1, question: q.question, category: q.category as Question['category'], tips: q.tips }))
 
   // voice_credits vit dans user_voice_credits, pas sur le profil — sans ça,
   // la vérification ci-dessous était toujours "insuffisant", même pour un
@@ -116,14 +68,14 @@ export default function InterviewSimulation() {
     },
     onError: (err) => {
       console.error('Erreur vocal:', err)
-      alert('Erreur microphone. Vérifie tes permissions.')
+      alert(t('interviewSimPage.micError'))
     }
   })
 
   // Fonction pour que SCAI pose la question vocalement
   const speakQuestion = async (questionText: string) => {
     if (profile?.role !== 'founder' && voiceCredits <= 0) {
-      alert('⚠️ Crédits vocaux insuffisants. Passe à un plan premium pour utiliser SCAI Voice.')
+      alert(t('interviewSimPage.insufficientCredits'))
       return
     }
 
@@ -135,7 +87,7 @@ export default function InterviewSimulation() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           text: questionText,
-          language: 'fr',
+          language: i18n.language,
           userId: user?.id
         })
       })
@@ -143,9 +95,9 @@ export default function InterviewSimulation() {
       if (!response.ok) {
         const error = await response.json()
         if (error.upgrade) {
-          alert('⚠️ Crédits vocaux épuisés. Passe à Pro pour 300 crédits/mois.')
+          alert(t('interviewSimPage.creditsExhausted'))
         }
-        throw new Error(error.error || 'Erreur TTS')
+        throw new Error(error.error || t('interviewSimPage.ttsError'))
       }
 
       const audioBlob = await response.blob()
@@ -227,16 +179,16 @@ export default function InterviewSimulation() {
         })
       })
 
-      if (!response.ok) throw new Error('Erreur analyse')
+      if (!response.ok) throw new Error(t('interviewSimPage.analysisError'))
 
       const data = await response.json()
       return data.result
     } catch {
       return {
         score: 7,
-        strengths: ['Réponse structurée'],
-        improvements: ['Ajoute plus de détails concrets'],
-        suggestion: 'Continue à pratiquer!'
+        strengths: [t('interviewSimPage.fallbackStrength')],
+        improvements: [t('interviewSimPage.fallbackImprovement')],
+        suggestion: t('interviewSimPage.fallbackSuggestion')
       }
     }
   }
@@ -259,13 +211,13 @@ export default function InterviewSimulation() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-[#1A1500] border border-[#D4AF37]/30 rounded-full px-4 py-2 mb-4">
             <Sparkles className="w-4 h-4 text-[#D4AF37]" />
-            <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">SCAI Interview Prep</span>
+            <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">{t('interviewSimPage.badge')}</span>
           </div>
           <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-[#D4AF37] to-white bg-clip-text text-transparent">
-            Simulation d'Entretien
+            {t('interviewSimPage.title')}
           </h1>
           <p className="text-gray-400">
-            Pratique avec SCAI en temps réel • Reçois un feedback instantané
+            {t('interviewSimPage.subtitle')}
           </p>
         </div>
 
@@ -275,7 +227,7 @@ export default function InterviewSimulation() {
             <div className="w-20 h-20 bg-gradient-to-br from-[#D4AF37] to-[#B8962D] rounded-full flex items-center justify-center mx-auto mb-6">
               <Volume2 className="w-10 h-10 text-black" />
             </div>
-            <h2 className="text-2xl font-bold mb-4">Prêt à pratiquer ?</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('interviewSimPage.readyTitle')}</h2>
             <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
               SCAI va te poser {SAMPLE_QUESTIONS.length} questions d'entretien courantes. 
               Réponds à voix haute comme si tu étais en vrai entretien. 
@@ -285,35 +237,35 @@ export default function InterviewSimulation() {
             <div className="bg-[#0D0D0D] rounded-xl p-6 mb-8 max-w-2xl mx-auto">
               <h3 className="font-bold text-[#D4AF37] mb-4 flex items-center gap-2 justify-center">
                 <CheckCircle2 className="w-5 h-5" />
-                Comment ça marche
+                {t('interviewSimPage.howItWorks')}
               </h3>
               <div className="space-y-3 text-sm text-left">
                 <div className="flex items-start gap-3">
                   <div className="bg-[#D4AF37] text-black rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs flex-shrink-0">1</div>
-                  <p className="text-gray-300">SCAI pose une question vocalement</p>
+                  <p className="text-gray-300">{t('interviewSimPage.step1')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="bg-[#D4AF37] text-black rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs flex-shrink-0">2</div>
-                  <p className="text-gray-300">Tu réponds à voix haute (microphone automatique)</p>
+                  <p className="text-gray-300">{t('interviewSimPage.step2')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="bg-[#D4AF37] text-black rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs flex-shrink-0">3</div>
-                  <p className="text-gray-300">SCAI analyse et te donne un feedback instantané</p>
+                  <p className="text-gray-300">{t('interviewSimPage.step3')}</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="bg-[#D4AF37] text-black rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs flex-shrink-0">4</div>
-                  <p className="text-gray-300">Question suivante automatiquement</p>
+                  <p className="text-gray-300">{t('interviewSimPage.step4')}</p>
                 </div>
               </div>
             </div>
 
             <GoldButton onClick={startSimulation} className="text-lg py-4 px-8">
               <Play className="w-5 h-5" />
-              Démarrer la simulation
+              {t('interviewSimPage.startSimulation')}
             </GoldButton>
 
             <p className="text-xs text-gray-600 mt-4">
-              ⚡ Nécessite un plan Starter ou Pro pour SCAI Voice
+              {t('interviewSimPage.requiresPlan')}
             </p>
           </Card>
         )}
@@ -325,14 +277,14 @@ export default function InterviewSimulation() {
             <Card className="p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-bold text-gray-400">
-                  Question {currentQuestionIndex + 1} / {SAMPLE_QUESTIONS.length}
+                  {t('interviewSimPage.questionOf', { current: currentQuestionIndex + 1, total: SAMPLE_QUESTIONS.length })}
                 </span>
                 <button
                   onClick={resetSimulation}
                   className="text-xs text-gray-500 hover:text-white flex items-center gap-1"
                 >
                   <RotateCcw className="w-3 h-3" />
-                  Recommencer
+                  {t('interviewSimPage.restart')}
                 </button>
               </div>
               <div className="h-2 bg-[#1A1A1A] rounded-full overflow-hidden">
@@ -356,7 +308,7 @@ export default function InterviewSimulation() {
                     {currentQuestion.category}
                   </div>
                   <div className="text-sm text-gray-400">
-                    {isSpeaking ? 'SCAI pose la question...' : isListening ? 'À ton tour de répondre' : 'Prépare-toi'}
+                    {isSpeaking ? t('interviewSimPage.scaiAsking') : isListening ? t('interviewSimPage.yourTurn') : t('interviewSimPage.getReady')}
                   </div>
                 </div>
               </div>
@@ -366,7 +318,7 @@ export default function InterviewSimulation() {
               {/* Tips */}
               <div className="bg-[#0D0D0D] rounded-xl p-4 mb-6">
                 <div className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider mb-2">
-                  💡 Conseils clés
+                  {t('interviewSimPage.keyTips')}
                 </div>
                 <ul className="space-y-1">
                   {currentQuestion.tips.map((tip, i) => (
@@ -390,7 +342,7 @@ export default function InterviewSimulation() {
                       </div>
                       <div>
                         <div className="text-sm font-bold text-white">
-                          {isRecording ? 'Enregistrement en cours...' : 'Clique pour parler'}
+                          {isRecording ? t('interviewSimPage.recording') : t('interviewSimPage.clickToSpeak')}
                         </div>
                         <div className="text-xs text-gray-500">
                           {answerStartTime && `${Math.floor((Date.now() - answerStartTime) / 1000)}s`}
@@ -402,7 +354,7 @@ export default function InterviewSimulation() {
                         onClick={toggleRecording}
                         className="px-4 py-2 bg-[#D4AF37] text-black rounded-lg font-bold hover:bg-[#B8962D] transition-colors"
                       >
-                        Démarrer
+                        {t('interviewSimPage.start')}
                       </button>
                     )}
                   </div>
@@ -415,7 +367,7 @@ export default function InterviewSimulation() {
 
                   {currentAnswer && (
                     <GoldButton onClick={submitAnswer} fullWidth>
-                      Question suivante →
+                      {t('interviewSimPage.nextQuestion')}
                     </GoldButton>
                   )}
                 </div>
@@ -429,9 +381,9 @@ export default function InterviewSimulation() {
           <div className="space-y-6">
             <Card className="p-8 text-center">
               <CheckCircle2 className="w-16 h-16 text-green-400 mx-auto mb-4" />
-              <h2 className="text-3xl font-bold mb-2">Simulation terminée!</h2>
+              <h2 className="text-3xl font-bold mb-2">{t('interviewSimPage.simulationDone')}</h2>
               <p className="text-gray-400 mb-8">
-                Voici le feedback de SCAI sur tes {responses.length} réponses
+                {t('interviewSimPage.feedbackIntro', { count: responses.length })}
               </p>
 
               {/* Score moyen */}
@@ -439,7 +391,7 @@ export default function InterviewSimulation() {
                 <div className="text-6xl font-bold text-[#D4AF37] mb-2">
                   {Math.round(responses.reduce((sum, r) => sum + (r.feedback?.score || 7), 0) / responses.length)}/10
                 </div>
-                <div className="text-sm text-gray-500 uppercase tracking-wider">Score moyen</div>
+                <div className="text-sm text-gray-500 uppercase tracking-wider">{t('interviewSimPage.averageScore')}</div>
               </div>
             </Card>
 
@@ -449,7 +401,7 @@ export default function InterviewSimulation() {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">
-                      Question {index + 1}
+                      {t('interviewSimPage.questionLabel', { n: index + 1 })}
                     </div>
                     <h3 className="font-bold text-lg mb-2">{response.question}</h3>
                   </div>
@@ -467,7 +419,7 @@ export default function InterviewSimulation() {
                       <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
                         <div className="text-xs font-bold text-green-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                           <CheckCircle2 className="w-4 h-4" />
-                          Points forts
+                          {t('interviewSimPage.strengths')}
                         </div>
                         <ul className="space-y-1">
                           {response.feedback.strengths.map((s: string, i: number) => (
@@ -481,7 +433,7 @@ export default function InterviewSimulation() {
                       <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-4">
                         <div className="text-xs font-bold text-orange-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                           <TrendingUp className="w-4 h-4" />
-                          À améliorer
+                          {t('interviewSimPage.toImprove')}
                         </div>
                         <ul className="space-y-1">
                           {response.feedback.improvements.map((s: string, i: number) => (
@@ -494,7 +446,7 @@ export default function InterviewSimulation() {
                     {response.feedback.suggestion && (
                       <div className="bg-[#1A1500] border border-[#D4AF37]/20 rounded-lg p-4">
                         <div className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider mb-2">
-                          💡 Suggestion SCAI
+                          {t('interviewSimPage.scaiSuggestion')}
                         </div>
                         <p className="text-sm text-gray-300">{response.feedback.suggestion}</p>
                       </div>
@@ -507,10 +459,10 @@ export default function InterviewSimulation() {
             <div className="flex gap-4">
               <GoldButton variant="outlined" onClick={resetSimulation} fullWidth>
                 <RotateCcw className="w-5 h-5" />
-                Recommencer
+                {t('interviewSimPage.restart')}
               </GoldButton>
               <GoldButton onClick={() => window.location.href = '/interview-preps'} fullWidth>
-                Retour aux préparations
+                {t('interviewSimPage.backToPreps')}
               </GoldButton>
             </div>
           </div>

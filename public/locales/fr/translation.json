@@ -1,4 +1,91 @@
 {
+  "interviewSimPage": {
+    "micError": "Erreur microphone. Vérifie tes permissions.",
+    "insufficientCredits": "⚠️ Crédits vocaux insuffisants. Passe à un plan premium pour utiliser SCAI Voice.",
+    "creditsExhausted": "⚠️ Crédits vocaux épuisés. Passe à Pro pour 300 crédits/mois.",
+    "ttsError": "Erreur TTS",
+    "analysisError": "Erreur analyse",
+    "fallbackStrength": "Réponse structurée",
+    "fallbackImprovement": "Ajoute plus de détails concrets",
+    "fallbackSuggestion": "Continue à pratiquer!",
+    "badge": "SCAI Interview Prep",
+    "title": "Simulation d'Entretien",
+    "subtitle": "Pratique avec SCAI en temps réel • Reçois un feedback instantané",
+    "readyTitle": "Prêt à pratiquer ?",
+    "readyDesc": "SCAI va te poser {{count}} questions d'entretien courantes. Réponds à voix haute comme si tu étais en vrai entretien. Tu recevras un feedback détaillé sur chaque réponse.",
+    "howItWorks": "Comment ça marche",
+    "step1": "SCAI pose une question vocalement",
+    "step2": "Tu réponds à voix haute (microphone automatique)",
+    "step3": "SCAI analyse et te donne un feedback instantané",
+    "step4": "Question suivante automatiquement",
+    "startSimulation": "Démarrer la simulation",
+    "requiresPlan": "⚡ Nécessite un plan Starter ou Pro pour SCAI Voice",
+    "questionOf": "Question {{current}} / {{total}}",
+    "restart": "Recommencer",
+    "scaiAsking": "SCAI pose la question...",
+    "yourTurn": "À ton tour de répondre",
+    "getReady": "Prépare-toi",
+    "keyTips": "💡 Conseils clés",
+    "recording": "Enregistrement en cours...",
+    "clickToSpeak": "Clique pour parler",
+    "start": "Démarrer",
+    "nextQuestion": "Question suivante →",
+    "simulationDone": "Simulation terminée!",
+    "feedbackIntro": "Voici le feedback de SCAI sur tes {{count}} réponses",
+    "averageScore": "Score moyen",
+    "questionLabel": "Question {{n}}",
+    "strengths": "Points forts",
+    "toImprove": "À améliorer",
+    "scaiSuggestion": "💡 Suggestion SCAI",
+    "backToPreps": "Retour aux préparations",
+    "questions": [
+      {
+        "question": "Parlez-moi de vous et de votre parcours professionnel.",
+        "category": "behavioral",
+        "tips": [
+          "Structure: Présent → Passé → Futur",
+          "Reste concis (2-3 minutes max)",
+          "Connecte ton expérience au poste visé"
+        ]
+      },
+      {
+        "question": "Pourquoi voulez-vous rejoindre notre entreprise ?",
+        "category": "motivation",
+        "tips": [
+          "Montre que tu as recherché l'entreprise",
+          "Connecte leurs valeurs à tes objectifs",
+          "Cite des projets/produits spécifiques"
+        ]
+      },
+      {
+        "question": "Décrivez une situation où vous avez résolu un problème complexe.",
+        "category": "situational",
+        "tips": [
+          "Utilise la méthode STAR",
+          "Quantifie les résultats si possible",
+          "Montre ton processus de réflexion"
+        ]
+      },
+      {
+        "question": "Quelles sont vos forces et faiblesses ?",
+        "category": "behavioral",
+        "tips": [
+          "Force: Prouve avec un exemple concret",
+          "Faiblesse: Montre comment tu t'améliores",
+          "Reste authentique"
+        ]
+      },
+      {
+        "question": "Où vous voyez-vous dans 5 ans ?",
+        "category": "motivation",
+        "tips": [
+          "Montre de l'ambition réaliste",
+          "Aligne avec les opportunités de l'entreprise",
+          "Évite les réponses clichés"
+        ]
+      }
+    ]
+  },
   "appGuidePage": {
     "backToDashboard": "Retour au dashboard",
     "guideSubtitle": "Guide complet Searcher Connector",
