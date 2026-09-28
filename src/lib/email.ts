@@ -276,7 +276,7 @@ export async function sendOpportunityAlert(params: {
       <p class="text">Bonjour ${params.name}, SCAI a détecté des opportunités à score élevé correspondant à ton profil. Agis vite — ces offres sont fraîches !</p>
       ${oppRows}
       <a href="${APP_URL}/opportunities" class="btn">Voir toutes mes opportunités →</a>
-      <p class="meta" style="margin-top:16px;">Ces opportunités ont un score ≥ 75/100 et ont été publiées il y a moins de 24h.</p>
+      <p class="meta" style="margin-top:16px;">Ces opportunités ont un score ≥ 70/100 et ont été publiées il y a moins de 24h.</p>
     </div>
   `, `${params.opportunities.length} opportunités à score élevé — agis maintenant`)
 

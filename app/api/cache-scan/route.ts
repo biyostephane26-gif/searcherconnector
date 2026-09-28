@@ -418,13 +418,24 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
 
       // Seuil de NOTIFICATION (pas d'affichage — l'offre reste visible dans
       // la liste dès score>0) volontairement plus strict que le seuil
-      // d'insertion : un score élevé obtenu par un SEUL mot-clé + un gros
-      // boost fraîcheur ne suffit plus — il faut au moins 2 mots-clés du
-      // domaine, ET aucun signal négatif de niveau ou de type. Objectif :
-      // l'utilisateur n'est dérangé (notif + email) que pour du vrai fort
-      // potentiel, pas pour une coïncidence de mots-clés sur une offre fraîche.
+      // d'insertion : il faut au moins 2 mots-clés du domaine, ET aucun
+      // signal négatif de niveau ou de type. Objectif : l'utilisateur n'est
+      // dérangé (notif + email) que pour du vrai fort potentiel, pas pour
+      // une coïncidence de mots-clés sur une offre fraîche.
+      //
+      // Seuil numérique abaissé de 85 → 70 le 2026-09-28 : vérifié en
+      // production que le score>=85 n'était QUASIMENT JAMAIS atteint par ce
+      // pipeline précis (logs scheduler.js sur 15h/~150 ticks : "matchées"
+      // non nul à plusieurs reprises, "notifiées" resté à 0 à CHAQUE fois).
+      // Cause : applicantsBoost (max 22) est presque toujours 0 ici (la
+      // plupart des sources RSS/génériques n'exposent pas ce chiffre), et
+      // typeDelta/levelMatch retombent souvent à 0 par défaut faute de
+      // marqueurs explicites dans un snippet court — un score élevé sans
+      // ces deux boosts plafonne réalistement bien avant 85. Résultat
+      // concret : aucun email "opportunité trouvée" n'était jamais envoyé,
+      // peu importe combien de vraies opportunités étaient trouvées.
       const strongSignal = hits >= 2 && levelMatch.boost >= 0 && typeDelta >= 0
-      if (score >= 85 && strongSignal) {
+      if (score >= 70 && strongSignal) {
         notified++
         notificationRows.push({
           user_id:         u.id,
@@ -474,9 +485,16 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
   }
 
   if (opportunityRows.length > 0) {
+    // upsert + onConflict (pas insert) : l'index unique opportunities_user_url_unique
+    // (migration add_opportunities_dedup_constraint.sql) fait échouer TOUT le batch
+    // dès qu'UN SEUL user_id+original_url du lot existe déjà (ex: déjà inséré lors
+    // d'un cycle cache-scan précédent) — un simple .insert() perdait alors les
+    // opportunités personnalisées de TOUS les utilisateurs du batch, pas juste
+    // celui en conflit, ce qui désynchronisait le compteur dashboard vs la page
+    // Opportunités et empêchait silencieusement de nouvelles lignes d'apparaître.
     let { data: inserted, error } = await supabase
       .from('opportunities')
-      .insert(opportunityRows)
+      .upsert(opportunityRows, { onConflict: 'user_id,original_url', ignoreDuplicates: true })
       .select('id, user_id, original_url')
     // required_level/recommended n'existent que si la migration
     // add_skill_level_matching.sql est appliquée — retry sans ces champs
@@ -486,7 +504,7 @@ async function matchAndNotify(categories: string[]): Promise<{ matched: number; 
       const stripped = opportunityRows.map(({ required_level, recommended, ...rest }) => rest)
       const retry = await supabase
         .from('opportunities')
-        .insert(stripped)
+        .upsert(stripped, { onConflict: 'user_id,original_url', ignoreDuplicates: true })
         .select('id, user_id, original_url')
       inserted = retry.data
       error = retry.error
