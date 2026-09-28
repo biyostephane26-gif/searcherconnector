@@ -302,7 +302,7 @@ export default function AgentDashboard() {
       setIsVoiceNoteRecording(true);
     } catch (err) {
       console.error('[SCAI Voice Note] Erreur micro:', err);
-      alert("Impossible d'accéder au micro. Vérifie les permissions du navigateur.");
+      alert(t('agentDashboard.micAccessError'));
     }
   };
 
@@ -330,7 +330,7 @@ export default function AgentDashboard() {
         body: JSON.stringify({ userId: user.id, userProfile: { ...profile, localHour: new Date().getHours(), uiLanguage: i18n.language }, audio: audioBase64, mode: 'full', conversationId: activeConversationId }),
       });
       const data = await res.json();
-      if (!data.success) throw new Error(data.error || 'Erreur note vocale');
+      if (!data.success) throw new Error(data.error || t('agentDashboard.voiceNoteError'));
 
       if (data.text) {
         setChatHistory(prev => [...prev, { role: 'user', content: data.text }]);
@@ -535,15 +535,15 @@ export default function AgentDashboard() {
       let errorMessage = ''
 
       if (errorMsg.includes('429') || errorMsg.includes('rate_limit') || errorMsg.includes('Rate limit')) {
-        errorMessage = "Les clés IA sont temporairement saturées (limite atteinte). Elles se réinitialisent chaque minute — réessaie dans 60 secondes."
+        errorMessage = t('agentDashboard.rateLimitError')
       } else if (errorMsg.includes('Timeout') || errorMsg.includes('timeout')) {
-        errorMessage = "La connexion a pris trop de temps. Réessaie dans un instant."
+        errorMessage = t('agentDashboard.timeoutError')
       } else if (errorMsg.includes('fetch') || errorMsg.includes('network') || errorMsg.includes('NetworkError')) {
-        errorMessage = "Erreur réseau — vérifie ta connexion internet."
+        errorMessage = t('agentDashboard.networkErrorMsg')
       } else if (errorMsg.includes('Groq') || errorMsg.includes('Gemini') || errorMsg.includes('indisponibles') || errorMsg.includes('saturés')) {
         errorMessage = errorMsg // Afficher le message exact depuis scaiUtils
       } else {
-        errorMessage = `Erreur technique : ${errorMsg.slice(0, 150)}`
+        errorMessage = t('agentDashboard.technicalError', { msg: errorMsg.slice(0, 150) })
       }
 
       setChatHistory(prev => [...prev, {
@@ -619,14 +619,14 @@ export default function AgentDashboard() {
   const handleScan = async (zone: string = 'continental') => {
     setScanError(null);
     const steps = [
-      'Initialisation du scan global sur le Web...',
-      'Scan des job boards (LinkedIn, Indeed, RemoteOK, Glassdoor)...',
-      'Recherche sur les réseaux sociaux et forums pro (Twitter, Reddit)...',
-      'Analyse des sites carrières et annonces directes...',
-      'Scoring par IA (Analyse de pertinence Deep Learning)...',
-      'Filtrage des opportunités à haut potentiel...',
-      'Préparation des candidatures automatiques...',
-      'Finalisation et enregistrement des résultats...'
+      t('agentDashboard.scanStep1'),
+      t('agentDashboard.scanStep2'),
+      t('agentDashboard.scanStep3'),
+      t('agentDashboard.scanStep4'),
+      t('agentDashboard.scanStep5'),
+      t('agentDashboard.scanStep6'),
+      t('agentDashboard.scanStep7'),
+      t('agentDashboard.scanStep8'),
     ];
     setScanLog([]);
     let i = 0;
@@ -654,14 +654,14 @@ export default function AgentDashboard() {
       }
       setScanLog(prev => [
         ...prev,
-        `✅ Scan terminé : ${result.found || 0} opportunités trouvées, ${result.auto_applied || 0} candidatures envoyées automatiquement.`
+        t('agentDashboard.scanCompleteMsg', { found: result.found || 0, applied: result.auto_applied || 0 })
       ]);
     } else {
-      const errorMessage = result?.error || 'Le scan s’est arrêté avant la fin.';
+      const errorMessage = result?.error || t('agentDashboard.scanStoppedError');
       setScanError(errorMessage);
       setScanLog(prev => [
         ...prev,
-        `❌ Échec du scan : ${errorMessage}`
+        t('agentDashboard.scanFailedMsg', { error: errorMessage })
       ]);
     }
     loadData();
@@ -685,8 +685,8 @@ export default function AgentDashboard() {
     const meta = TOOL_META[tool];
     if (!opts?.skipUserEcho) {
       const userText = source
-        ? `${meta.emoji} Exporter mes ${source === 'opportunities' ? 'opportunités' : 'candidatures'} en ${meta.label}`
-        : `${meta.emoji} ${meta.label} : ${prompt}`;
+        ? `${meta.emoji} ${source === 'opportunities' ? t('agentDashboard.exportOpportunitiesLabel', { format: meta.label }) : t('agentDashboard.exportApplicationsLabel', { format: meta.label })}`
+        : `${meta.emoji} ${t('agentDashboard.toolInstructionLabel', { label: meta.label, prompt })}`;
       setChatHistory(prev => [...prev, { role: 'user', content: userText }]);
       saveChatMessage('user', userText);
     }
@@ -709,28 +709,28 @@ export default function AgentDashboard() {
 
       const res = await authFetch(endpoint, { method: 'POST', body: JSON.stringify(body) });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'La génération a échoué');
+      if (!res.ok) throw new Error(data.error || t('agentDashboard.generationFailedError'));
 
       let attachment: ToolAttachmentData;
       let content: string;
       if (tool === 'image') {
         attachment = { kind: 'image', src: data.image, url: data.fileUrl, provider: data.provider, fallback: data.fallback };
-        content = 'Voici ton image.';
+        content = t('agentDashboard.hereIsImage');
       } else if (tool === 'video') {
         attachment = { kind: 'video', job: data.job, provider: data.provider };
-        content = "Je crée ta vidéo, elle apparaîtra ici dès qu'elle est prête.";
+        content = t('agentDashboard.creatingVideo');
       } else if (tool === 'montage') {
         attachment = { kind: 'video', fileUrl: data.fileUrl, provider: data.provider };
-        content = `Ton montage **${data.title}** est prêt.`;
+        content = t('agentDashboard.montageReady', { title: data.title });
       } else if (tool === 'opportunity') {
         const leads = data.top_targets || [];
         attachment = { kind: 'opportunity', leads };
         content = leads.length > 0
-          ? `J'ai trouvé **${leads.length} entreprise(s)** qui pourraient avoir besoin de tes services (${data.total_leads} au total dans ton pipeline). Voici les messages d'approche prêts à envoyer :`
-          : `Aucune nouvelle entreprise trouvée cette fois (${data.total_found || 0} scannées, déjà toutes dans ton pipeline). Réessaie plus tard ou avec une zone internationale.`;
+          ? t('agentDashboard.foundCompaniesMsg', { count: leads.length, total: data.total_leads })
+          : t('agentDashboard.noCompaniesFoundMsg', { scanned: data.total_found || 0 });
       } else {
         attachment = { kind: 'file', filename: data.filename, mime: data.mime, base64: data.base64, url: data.fileUrl, size: data.size, title: data.title };
-        content = `Ton fichier **${data.title}** est prêt.`;
+        content = t('agentDashboard.fileReady', { title: data.title });
       }
       setChatHistory(prev => [...prev, { role: 'agent', content, attachment }]);
       persistToolMessage(content, attachment);
@@ -762,22 +762,22 @@ export default function AgentDashboard() {
     }
     if ((!text && attachedImages.length === 0) || isProcessing) return;
     if (activeTool) runTool(activeTool, text);
-    else handleSendMessage(text || 'Analyse cette image.', attachedImages.length > 0 ? attachedImages : undefined);
+    else handleSendMessage(text || t('agentDashboard.analyzeThisImage'), attachedImages.length > 0 ? attachedImages : undefined);
   };
 
   const tabs = [
-    { id: 'status', label: 'Statut Live', icon: '⚡' },
-    { id: 'queue', label: `File d'attente (${pendingQueue})`, icon: '📋' },
-    { id: 'communications', label: 'Emails & WA', icon: '📨' },
+    { id: 'status', label: t('agentDashboard.tabStatusLive'), icon: '⚡' },
+    { id: 'queue', label: t('agentDashboard.tabQueue', { count: pendingQueue }), icon: '📋' },
+    { id: 'communications', label: t('agentDashboard.tabCommunications'), icon: '📨' },
   ];
 
   // Rail gauche façon Cowork (Nouveau / Projets / Programmé / Connecteurs /
   // Personnaliser) — navigation persistante, plus des onglets qui se
   // mélangent avec le statut du chat.
   const railItems: { id: typeof activeTab; label: string; icon: JSX.Element }[] = [
-    { id: 'projects', label: 'Projets', icon: <FolderKanban size={16} /> },
-    { id: 'config', label: 'Programmé', icon: <CalendarClock size={16} /> },
-    { id: 'connectors', label: 'Connecteurs', icon: <Plug size={16} /> },
+    { id: 'projects', label: t('agentDashboard.railProjects'), icon: <FolderKanban size={16} /> },
+    { id: 'config', label: t('agentDashboard.railScheduled'), icon: <CalendarClock size={16} /> },
+    { id: 'connectors', label: t('agentDashboard.railConnectors'), icon: <Plug size={16} /> },
   ];
 
   // Extrait pour être rendu à deux endroits : l'écran d'accueil (aucun
@@ -793,21 +793,21 @@ export default function AgentDashboard() {
                       type="button"
                       onClick={() => setEditingImageIndex(i)}
                       className="block"
-                      title="Cliquer pour annoter (entourer, dessiner, écrire dessus)"
+                      title={t('agentDashboard.annotateImageTitle')}
                     >
-                      <img src={img} alt="Image à envoyer" className="w-14 h-14 object-cover rounded-lg border border-gray-700 hover:border-[#D4AF37] transition-colors" />
+                      <img src={img} alt={t('agentDashboard.imageToSendAlt')} className="w-14 h-14 object-cover rounded-lg border border-gray-700 hover:border-[#D4AF37] transition-colors" />
                     </button>
                     <button
                       onClick={() => setAttachedImages(prev => prev.filter((_, j) => j !== i))}
                       className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-black border border-gray-600 flex items-center justify-center text-gray-300 hover:text-white hover:border-red-500"
-                      aria-label="Retirer l'image"
+                      aria-label={t('agentDashboard.removeImageAria')}
                     >
                       <X size={10} />
                     </button>
                   </div>
                 ))}
                 <span className="text-[11px] text-gray-500">
-                  {attachedImages.length} image{attachedImages.length > 1 ? 's' : ''} prête{attachedImages.length > 1 ? 's' : ''} — clique sur une image pour l'annoter, ou décris ce que tu veux savoir.
+                  {t('agentDashboard.imagesReadyMsg', { count: attachedImages.length, s: attachedImages.length > 1 ? 's' : '' })}
                 </span>
               </div>
             )}
@@ -825,7 +825,7 @@ export default function AgentDashboard() {
               <div className="flex flex-wrap items-center gap-2 px-1 -mb-2">
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#D4AF37] bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-full pl-2.5 pr-1 py-1">
                   {TOOL_META[activeTool].emoji} {TOOL_META[activeTool].label}
-                  <button onClick={() => setActiveTool(null)} className="p-0.5 rounded-full hover:bg-[#D4AF37]/20" aria-label="Retirer l'outil"><X size={12} /></button>
+                  <button onClick={() => setActiveTool(null)} className="p-0.5 rounded-full hover:bg-[#D4AF37]/20" aria-label={t('agentDashboard.removeToolAria')}><X size={12} /></button>
                 </span>
                 {activeTool === 'excel' && (
                   <>
@@ -840,7 +840,7 @@ export default function AgentDashboard() {
                 {montageClips.map((c, i) => (
                   <span key={i} className="inline-flex items-center gap-1 text-[11px] text-gray-300 bg-[#1A1A1A] border border-gray-700 rounded-full pl-2.5 pr-1 py-1 max-w-[140px]">
                     <span className="truncate">{c.name}</span>
-                    <button onClick={() => setMontageClips(prev => prev.filter((_, j) => j !== i))} className="p-0.5 rounded-full hover:bg-white/10 shrink-0" aria-label="Retirer">
+                    <button onClick={() => setMontageClips(prev => prev.filter((_, j) => j !== i))} className="p-0.5 rounded-full hover:bg-white/10 shrink-0" aria-label={t('agentDashboard.removeAria')}>
                       <X size={10} />
                     </button>
                   </span>
@@ -855,10 +855,10 @@ export default function AgentDashboard() {
                   className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#D4AF37] hover:text-[#B8962D] disabled:opacity-40 transition-colors"
                 >
                   {montageUploading ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
-                  {montageUploading ? 'Envoi...' : 'Ajouter'}
+                  {montageUploading ? t('agentDashboard.sending') : t('agentDashboard.add')}
                 </button>
                 {montageClips.length > 0 && montageClips.length < 2 && (
-                  <span className="text-[11px] text-gray-500">Ajoute au moins un 2ᵉ élément</span>
+                  <span className="text-[11px] text-gray-500">{t('agentDashboard.addAtLeastOneMore')}</span>
                 )}
               </div>
             )}
@@ -868,22 +868,22 @@ export default function AgentDashboard() {
               <button
                 onClick={() => setShowToolsMenu(v => !v)}
                 className={`p-2 rounded-lg transition-colors ${showToolsMenu ? 'text-[#D4AF37] bg-[#1A1A1A]' : 'text-gray-400 hover:text-[#D4AF37]'}`}
-                title="Outils et connecteurs"
+                title={t('agentDashboard.toolsAndConnectors')}
                 aria-expanded={showToolsMenu}
               >
                 <Plus size={20} />
               </button>
               {showToolsMenu && (
                 <div className="absolute bottom-full left-0 mb-2 w-64 bg-[#0D0D0D] border border-[#2a2a2a] rounded-xl shadow-2xl p-1.5 z-20">
-                  <p className="px-2.5 pt-1.5 pb-1 text-[10px] font-bold uppercase tracking-widest text-gray-500">Créer avec SCAI</p>
-                  {(Object.keys(TOOL_META) as CoworkTool[]).map(t => (
-                    <button key={t} onClick={() => pickTool(t)} className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm text-gray-200 hover:bg-[#1A1A1A] text-left">
-                      <span className="w-5 text-center">{TOOL_META[t].emoji}</span>{TOOL_META[t].label}
+                  <p className="px-2.5 pt-1.5 pb-1 text-[10px] font-bold uppercase tracking-widest text-gray-500">{t('agentDashboard.createWithScai')}</p>
+                  {(Object.keys(TOOL_META) as CoworkTool[]).map(toolKey => (
+                    <button key={toolKey} onClick={() => pickTool(toolKey)} className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm text-gray-200 hover:bg-[#1A1A1A] text-left">
+                      <span className="w-5 text-center">{TOOL_META[toolKey].emoji}</span>{TOOL_META[toolKey].label}
                     </button>
                   ))}
                   <div className="h-px bg-[#1A1A1A] my-1" />
                   <button onClick={() => { setShowToolsMenu(false); setActiveTab('connectors'); }} className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm text-gray-200 hover:bg-[#1A1A1A] text-left">
-                    <Plug size={16} className="text-[#D4AF37]" /> Gérer les connecteurs
+                    <Plug size={16} className="text-[#D4AF37]" /> {t('agentDashboard.manageConnectors')}
                   </button>
                 </div>
               )}
@@ -901,7 +901,7 @@ export default function AgentDashboard() {
               <button
                 onClick={() => document.getElementById('agent-upload')?.click()}
                 className="p-2 text-gray-400 hover:text-[#D4AF37] transition-colors"
-                title="Envoyer une image à analyser (capture d'écran, portfolio...)"
+                title={t('agentDashboard.sendImageToAnalyze')}
               >
                 <Paperclip size={20} />
               </button>
@@ -916,7 +916,7 @@ export default function AgentDashboard() {
                   el.style.height = 'auto'
                   el.style.height = `${Math.min(el.scrollHeight, 160)}px`
                 }}
-                placeholder={isProcessing ? "SCAI travaille..." : activeTool ? TOOL_META[activeTool].placeholder : "Échangez avec SCAI (votre agent d'élite)... (Maj+Entrée pour un saut de ligne)"}
+                placeholder={isProcessing ? t('agentDashboard.scaiWorking') : activeTool ? TOOL_META[activeTool].placeholder : t('agentDashboard.chatPlaceholder')}
                 disabled={isProcessing}
                 className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-white py-2 resize-none leading-normal max-h-40 overflow-y-auto caret-[#D4AF37]"
                 onKeyDown={(e) => {
@@ -943,7 +943,7 @@ export default function AgentDashboard() {
                   // Paywall SCAI Voice pour free users (le fondateur n'a aucune restriction)
                   const isFree = !isPaidPlan(profile)
                   if (isFree) {
-                    alert('🎤 SCAI Voice est réservé aux membres Premium. Upgrade pour parler directement avec SCAI.')
+                    alert(t('agentDashboard.voicePremiumOnly'))
                     window.location.href = '/pricing'
                     return
                   }
@@ -956,7 +956,7 @@ export default function AgentDashboard() {
                     ? 'bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/50' 
                     : 'bg-[#1A1A1A] text-gray-400 hover:text-[#D4AF37] hover:bg-[#2A2A2A]'
                 }`}
-                title={isRecording ? "🔴 Enregistrement en cours... (clique pour arrêter)" : "🎤 SCAI Voice (Premium)"}
+                title={isRecording ? t('agentDashboard.recordingInProgress') : t('agentDashboard.scaiVoicePremium')}
               >
                 <Mic size={18} />
               </button>
@@ -970,7 +970,7 @@ export default function AgentDashboard() {
                     onMouseLeave={stopVoiceNote}
                     onTouchEnd={stopVoiceNote}
                     className="p-2.5 rounded-lg bg-red-500 text-white animate-pulse shadow-lg shadow-red-500/50 transition-all"
-                    title="Relâche pour envoyer"
+                    title={t('agentDashboard.releaseToSend')}
                   >
                     <Radio size={18} />
                   </button>
@@ -981,7 +981,7 @@ export default function AgentDashboard() {
                   onTouchStart={startVoiceNote}
                   disabled={isVoiceNoteProcessing || isProcessing}
                   className="p-2.5 rounded-lg bg-[#1A1A1A] text-gray-400 hover:text-[#D4AF37] hover:bg-[#2A2A2A] transition-all disabled:opacity-30"
-                  title="Maintenir appuyé pour envoyer une note vocale à SCAI"
+                  title={t('agentDashboard.holdToSendVoiceNote')}
                 >
                   <Radio size={18} />
                 </button>
@@ -999,25 +999,25 @@ export default function AgentDashboard() {
             <div className="flex items-center justify-between px-2 flex-wrap gap-2">
               <div className="flex gap-4">
                 <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
-                  <Camera size={12} /> Photos/Vidéos acceptées
+                  <Camera size={12} /> {t('agentDashboard.photosVideosAccepted')}
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
-                  <FileText size={12} /> Documents CV/Portfolio
+                  <FileText size={12} /> {t('agentDashboard.documentsAccepted')}
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="inline-flex items-center bg-[#1A1A1A] rounded-full p-0.5 text-[10px] font-bold" title="Manuel : SCAI prépare, tu valides. Auto : SCAI candidate seule dès qu'une offre dépasse le seuil.">
+                <div className="inline-flex items-center bg-[#1A1A1A] rounded-full p-0.5 text-[10px] font-bold" title={t('agentDashboard.manualAutoTooltip')}>
                   <button
                     onClick={() => handleScheduleChange('auto_apply_enabled', false)}
                     className={`px-2.5 py-1 rounded-full transition-colors ${!schedule?.auto_apply_enabled ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'}`}
                   >
-                    Manuel
+                    {t('agentDashboard.manual')}
                   </button>
                   <button
                     onClick={() => handleScheduleChange('auto_apply_enabled', true)}
                     className={`px-2.5 py-1 rounded-full transition-colors ${schedule?.auto_apply_enabled ? 'bg-[#D4AF37] text-black' : 'text-gray-400 hover:text-white'}`}
                   >
-                    Auto
+                    {t('agentDashboard.auto')}
                   </button>
                 </div>
                 <button
@@ -1026,7 +1026,7 @@ export default function AgentDashboard() {
                   className="flex items-center gap-1.5 text-[10px] text-gray-400 hover:text-[#D4AF37] disabled:opacity-50 transition-colors"
                 >
                   {scanning ? <Loader2 size={11} className="animate-spin" /> : <Play size={11} />}
-                  {scanning ? 'Scan en cours...' : 'Lancer un scan'}
+                  {scanning ? t('agentDashboard.scanInProgressBtn') : t('agentDashboard.launchScan')}
                 </button>
               </div>
             </div>
@@ -1042,7 +1042,7 @@ export default function AgentDashboard() {
         {opts?.onClose ? (
           <button onClick={opts.onClose} className="text-gray-500 hover:text-white transition-colors"><X size={16} /></button>
         ) : (
-          <button onClick={() => setRightPanelOpen(false)} className="text-gray-500 hover:text-white transition-colors" title="Replier le panneau">
+          <button onClick={() => setRightPanelOpen(false)} className="text-gray-500 hover:text-white transition-colors" title={t('agentDashboard.foldPanel')}>
             <PanelRightClose size={16} />
           </button>
         )}
@@ -1060,10 +1060,10 @@ export default function AgentDashboard() {
           <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">{t('agentDashboard.overview')}</p>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { label: 'Opportunités', value: opportunitiesCount, icon: <Search size={12} className="text-[#D4AF37]" /> },
-              { label: 'Notifications', value: pendingQueue, icon: <Clock size={12} className="text-blue-500" /> },
-              { label: 'Candidatures auto', value: recentActions?.filter((a: any) => a.action_type === 'auto_apply').length || 0, icon: <CheckCircle size={12} className="text-green-500" /> },
-              { label: 'Actions récentes', value: recentActions?.length || 0, icon: <Mail size={12} className="text-purple-500" /> },
+              { label: t('agentDashboard.statOpportunities'), value: opportunitiesCount, icon: <Search size={12} className="text-[#D4AF37]" /> },
+              { label: t('agentDashboard.statNotifications'), value: pendingQueue, icon: <Clock size={12} className="text-blue-500" /> },
+              { label: t('agentDashboard.statAutoApplications'), value: recentActions?.filter((a: any) => a.action_type === 'auto_apply').length || 0, icon: <CheckCircle size={12} className="text-green-500" /> },
+              { label: t('agentDashboard.statRecentActions'), value: recentActions?.length || 0, icon: <Mail size={12} className="text-purple-500" /> },
             ].map((stat, i) => (
               <div key={i} className="bg-[#111111] border border-gray-800 rounded-lg p-2.5 flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5 text-[9px] text-gray-500 font-syne uppercase tracking-wider">
@@ -1124,7 +1124,7 @@ export default function AgentDashboard() {
           <p className="text-[10px] font-syne font-bold uppercase tracking-widest text-gray-500 mb-3">{t('agentDashboard.context')}</p>
           {connectedConnectors.length === 0 ? (
             <button onClick={() => setActiveTab('connectors')} className="text-xs text-gray-600 hover:text-[#D4AF37] transition-colors text-left">
-              Aucun connecteur actif — SCAI travaille avec ton profil seul. Connecter un outil →
+              {t('agentDashboard.noActiveConnector')}
             </button>
           ) : (
             <div className="flex flex-wrap gap-1.5">
@@ -1133,7 +1133,7 @@ export default function AgentDashboard() {
                   key={name}
                   onClick={() => setActiveTab('connectors')}
                   className="text-[11px] bg-[#111111] border border-gray-800 rounded-full px-2.5 py-1 text-gray-300 hover:border-[#D4AF37]/50 hover:text-white transition-colors"
-                  title="Gérer les connecteurs"
+                  title={t('agentDashboard.manageConnectors')}
                 >
                   {name}
                 </button>
@@ -1156,12 +1156,12 @@ export default function AgentDashboard() {
               onClick={() => { setActiveTab('status'); startNewConversation(); }}
               className="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-syne font-bold text-black bg-[#D4AF37] hover:bg-[#B8962D] transition-colors"
             >
-              <Plus size={16} /> Nouveau
+              <Plus size={16} /> {t('agentDashboard.newBtn')}
             </button>
             <button
               onClick={() => setLeftRailOpen(false)}
               className="p-2 text-gray-500 hover:text-white transition-colors shrink-0"
-              title="Replier le rail"
+              title={t('agentDashboard.foldRail')}
             >
               <PanelLeftClose size={16} />
             </button>
@@ -1179,7 +1179,7 @@ export default function AgentDashboard() {
               </button>
             ))}
             <a href="/settings" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-[#111111] transition-colors">
-              <Settings2 size={16} /> Personnaliser
+              <Settings2 size={16} /> {t('agentDashboard.customize')}
             </a>
           </nav>
 
@@ -1208,7 +1208,7 @@ export default function AgentDashboard() {
         <button
           onClick={() => setLeftRailOpen(true)}
           className="hidden lg:flex fixed left-4 top-6 z-10 p-2 bg-[#111111] border border-gray-800 rounded-lg text-gray-400 hover:text-[#D4AF37] transition-colors"
-          title="Ouvrir le rail"
+          title={t('agentDashboard.openRail')}
         >
           <PanelLeftOpen size={18} />
         </button>
@@ -1233,7 +1233,7 @@ export default function AgentDashboard() {
             <div className="w-full max-w-2xl flex items-center justify-center mt-3">
               <span className="text-xs text-gray-500">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5 animate-pulse" />
-                Actif 24h/24 · {pendingQueue} tâche{pendingQueue > 1 ? 's' : ''} planifiée{pendingQueue > 1 ? 's' : ''}
+                {t('agentDashboard.activeAllDayTasks', { count: pendingQueue, s: pendingQueue > 1 ? 's' : '' })}
               </span>
             </div>
 
@@ -1266,7 +1266,7 @@ export default function AgentDashboard() {
               <h1 className="font-syne text-2xl font-bold text-white">SCAI Cowork</h1>
               <p className="text-sm text-gray-400 mt-1">
                 <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
-                Actif 24h/24 · {pendingQueue} tâches planifiées
+                {t('agentDashboard.activeAllDayTasks', { count: pendingQueue, s: 's' })}
               </p>
             </div>
           </div>
@@ -1285,13 +1285,13 @@ export default function AgentDashboard() {
                 <button
                   onClick={deleteActiveConversation}
                   className={`transition-colors ${showClearConfirm ? 'text-red-500 hover:text-red-400' : 'text-gray-600 hover:text-red-500'}`}
-                  title={showClearConfirm ? "Cliquer pour confirmer" : "Supprimer cette discussion"}
+                  title={showClearConfirm ? t('agentDashboard.deleteConfirmClickToConfirm') : t('agentDashboard.deleteThisDiscussion')}
                 >
                   <Trash2 size={12} />
                 </button>
                 {showClearConfirm && (
                   <button onClick={() => setShowClearConfirm(false)} className="text-[10px] text-gray-600 hover:text-white">
-                    Annuler
+                    {t('agentDashboard.cancelBtn')}
                   </button>
                 )}
               </div>
@@ -1302,10 +1302,10 @@ export default function AgentDashboard() {
                qui aurait fait doublon avec le chat lui-même. */}
             {pendingScanConfirm && (
               <div className="bg-black/40 border border-[#D4AF37]/30 rounded-xl p-4 mb-4">
-                <div className="font-syne text-sm font-bold text-[#D4AF37] mb-3">⚡ Prêt pour le scan</div>
+                <div className="font-syne text-sm font-bold text-[#D4AF37] mb-3">{t('agentDashboard.readyForScan')}</div>
                 <div className="text-xs text-gray-400 mb-3">
-                  Zone cible : {pendingScanConfirm.zone || 'continental'} ·
-                  Budget plateformes : {pendingScanConfirm.has_budget ? 'Oui' : 'Non'}
+                  {t('agentDashboard.targetZone')} {pendingScanConfirm.zone || 'continental'} ·
+                  {' '}{t('agentDashboard.budgetPlatforms')} {pendingScanConfirm.has_budget ? t('agentDashboard.yes') : t('agentDashboard.no')}
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -1316,20 +1316,20 @@ export default function AgentDashboard() {
                     disabled={scanning}
                     className="flex-1 bg-[#D4AF37] text-black px-4 py-2 rounded-lg font-syne font-bold text-sm hover:bg-[#B8962D] disabled:opacity-50 transition-colors"
                   >
-                    Oui, lancer le scan
+                    {t('agentDashboard.yesLaunchScan')}
                   </button>
                   <button
                     onClick={() => setPendingScanConfirm(null)}
                     className="flex-1 bg-transparent border border-gray-700 text-gray-400 px-4 py-2 rounded-lg font-syne font-bold text-sm hover:border-gray-500 hover:text-white transition-colors"
                   >
-                    Pas maintenant
+                    {t('agentDashboard.notNow')}
                   </button>
                 </div>
               </div>
             )}
             {scanLog.length > 0 && (
               <div className="bg-black/40 border border-[#D4AF37]/30 rounded-xl p-4 mb-4">
-                <div className="font-syne text-sm font-bold text-[#D4AF37] mb-3">⚡ Scan en cours</div>
+                <div className="font-syne text-sm font-bold text-[#D4AF37] mb-3">{t('agentDashboard.scanInProgressTitle')}</div>
                 {scanLog.map((line, i) => (
                   <div key={i} className="text-xs text-gray-300 py-1 border-b border-gray-800/50 last:border-0 font-mono">
                     <span className="text-gray-600 mr-2">{new Date().toLocaleTimeString('fr-FR')}</span>
@@ -1396,7 +1396,7 @@ export default function AgentDashboard() {
                         {msg?.images && msg.images.length > 0 && (
                           <div className="flex flex-wrap gap-2 mb-2">
                             {msg.images.map((img, i) => (
-                              <img key={i} src={img} alt="Image envoyée" className="rounded-lg max-w-[45%] max-h-64 object-cover" />
+                              <img key={i} src={img} alt={t('agentDashboard.imageSentAlt')} className="rounded-lg max-w-[45%] max-h-64 object-cover" />
                             ))}
                           </div>
                         )}
@@ -1475,7 +1475,7 @@ export default function AgentDashboard() {
           <button
             onClick={() => setMobilePanelOpen(true)}
             className="xl:hidden shrink-0 p-2 text-gray-400 hover:text-[#D4AF37] transition-colors"
-            title="Sorties & Contexte"
+            title={t('agentDashboard.openOutputsContext')}
           >
             <PanelRightOpen size={18} />
           </button>
@@ -1498,7 +1498,7 @@ export default function AgentDashboard() {
                 {queue.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="text-center py-8 text-gray-600 text-sm">
-                      Aucune tâche planifiée
+                      {t('agentDashboard.noTaskPlanned')}
                     </td>
                   </tr>
                 ) : queue.map(task => (
@@ -1506,11 +1506,11 @@ export default function AgentDashboard() {
                     <td className="px-4 py-3">
                       <div className="text-sm text-white">{task.task_type.replace(/_/g, ' ')}</div>
                       {task.payload?.opportunity_id && (
-                        <div className="text-xs text-gray-500">Relance #{task.payload.followup_number}</div>
+                        <div className="text-xs text-gray-500">{t('agentDashboard.relaunch', { n: task.payload.followup_number })}</div>
                       )}
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-400">
-                      {task.scheduled_for ? formatDistanceToNow(new Date(task.scheduled_for), { addSuffix: true, locale: fr }) : 'Non planifié'}
+                      {task.scheduled_for ? formatDistanceToNow(new Date(task.scheduled_for), { addSuffix: true, locale: i18n.language.startsWith('fr') ? fr : undefined }) : t('agentDashboard.notPlanned')}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-0.5">
@@ -1535,7 +1535,7 @@ export default function AgentDashboard() {
                           onClick={() => cancelTask(task.id)}
                           className="text-xs text-gray-500 hover:text-red-400 transition-colors"
                         >
-                          Annuler
+                          {t('agentDashboard.cancelBtn')}
                         </button>
                       )}
                     </td>
@@ -1551,7 +1551,7 @@ export default function AgentDashboard() {
           <div className="space-y-3">
             {emails.length === 0 ? (
               <div className="bg-[#111111] border border-gray-800 rounded-xl p-8 text-center text-gray-600 text-sm">
-                Aucun email géré par Searcher pour l'instant.
+                {t('agentDashboard.noEmailManaged')}
               </div>
             ) : emails.map(email => (
               <div key={email.id} className="bg-[#111111] border border-gray-800 rounded-xl p-4 hover:border-[#D4AF37]/30 transition-colors">
@@ -1573,12 +1573,12 @@ export default function AgentDashboard() {
                       'bg-gray-700 text-gray-400'
                     }`}>
                       {email.sentiment === 'positive' ? '😊' :
-                       email.sentiment === 'negative' ? '😞' : '😐'} {email.sentiment || 'inconnu'}
+                       email.sentiment === 'negative' ? '😞' : '😐'} {email.sentiment || t('agentDashboard.unknown')}
                     </span>
                     {email.searcher_replied ? (
-                      <span className="text-xs text-green-400">✅ Searcher a répondu</span>
+                      <span className="text-xs text-green-400">{t('agentDashboard.searcherReplied')}</span>
                     ) : email.requires_human ? (
-                      <span className="text-xs text-gold">⚠️ Votre action requise</span>
+                      <span className="text-xs text-gold">{t('agentDashboard.yourActionRequired')}</span>
                     ) : (
                       <span className="text-xs text-gray-600">{t('agentDashboard.pending')}</span>
                     )}
@@ -1606,7 +1606,7 @@ export default function AgentDashboard() {
               if (!lastScan) return (
                 <div className="bg-[#111111] border border-gray-800 rounded-xl p-4 flex items-center gap-3">
                   <Clock size={16} className="text-gray-500 shrink-0" />
-                  <p className="text-sm text-gray-400">Aucun scan encore effectué — le premier tournera dès que tu lances SCAI ou dans les {schedule.scan_frequency_hours}h.</p>
+                  <p className="text-sm text-gray-400">{t('agentDashboard.noScanYetHint', { h: schedule.scan_frequency_hours })}</p>
                 </div>
               )
               const next = new Date(new Date(lastScan.created_at).getTime() + schedule.scan_frequency_hours * 3600_000)
@@ -1615,17 +1615,17 @@ export default function AgentDashboard() {
                 <div className="bg-[#111111] border border-gray-800 rounded-xl p-4 flex items-center gap-3">
                   <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse shrink-0" />
                   <p className="text-sm text-gray-300">
-                    {isDue ? 'Prochain scan : imminent (dès la prochaine vérification)' : (
-                      <>Prochain scan planifié {formatDistanceToNow(next, { addSuffix: true, locale: fr })}</>
+                    {isDue ? t('agentDashboard.nextScanImminent') : (
+                      <>{t('agentDashboard.nextScanPlanned', { time: formatDistanceToNow(next, { addSuffix: true, locale: i18n.language.startsWith('fr') ? fr : undefined }) })}</>
                     )}
-                    <span className="text-gray-500"> · dernier scan {formatDistanceToNow(new Date(lastScan.created_at), { addSuffix: true, locale: fr })}</span>
+                    <span className="text-gray-500"> {t('agentDashboard.lastScanSuffix', { time: formatDistanceToNow(new Date(lastScan.created_at), { addSuffix: true, locale: i18n.language.startsWith('fr') ? fr : undefined }) })}</span>
                   </p>
                 </div>
               )
             })()}
 
             <div className="bg-[#111111] border border-gray-800 rounded-xl p-5">
-              <div className="font-syne font-bold text-sm text-white mb-4">⏰ Fréquence de scan</div>
+              <div className="font-syne font-bold text-sm text-white mb-4">{t('agentDashboard.scanFrequencyTitle')}</div>
               <div className="flex items-center gap-4">
                 <input
                   type="range" min="1" max="24" step="1"
@@ -1637,11 +1637,11 @@ export default function AgentDashboard() {
                   {schedule.scan_frequency_hours}h
                 </span>
               </div>
-              <div className="text-xs text-gray-500 mt-1">Scan automatique toutes les {schedule.scan_frequency_hours} heures</div>
+              <div className="text-xs text-gray-500 mt-1">{t('agentDashboard.autoScanEveryHours', { h: schedule.scan_frequency_hours })}</div>
             </div>
 
             <div className="bg-[#111111] border border-gray-800 rounded-xl p-5">
-              <div className="font-syne font-bold text-sm text-white mb-4">🎯 Seuil de rédaction automatique</div>
+              <div className="font-syne font-bold text-sm text-white mb-4">{t('agentDashboard.autoDraftThreshold')}</div>
               <div className="flex items-center gap-4">
                 <input
                   type="range" min="50" max="100" step="5"
@@ -1653,14 +1653,14 @@ export default function AgentDashboard() {
                   {schedule.auto_apply_threshold}+
                 </span>
               </div>
-              <div className="text-xs text-gray-500 mt-1">Searcher rédige et prépare automatiquement la candidature si score ≥ {schedule.auto_apply_threshold}/100</div>
+              <div className="text-xs text-gray-500 mt-1">{t('agentDashboard.autoDraftDesc', { threshold: schedule.auto_apply_threshold })}</div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
-                { key: 'email_auto_reply', label: '📧 Réponses email auto', desc: 'Searcher répond aux recruteurs' },
-                { key: 'whatsapp_auto_reply', label: '💬 Réponses WhatsApp auto', desc: 'Searcher gère les messages WA' },
-                { key: 'surveillance_active', label: '🔭 Surveillance continue', desc: 'Même après avoir trouvé un poste' },
+                { key: 'email_auto_reply', label: t('agentDashboard.emailAutoReplyLabel'), desc: t('agentDashboard.emailAutoReplyDesc') },
+                { key: 'whatsapp_auto_reply', label: t('agentDashboard.whatsappAutoReplyLabel'), desc: t('agentDashboard.whatsappAutoReplyDesc') },
+                { key: 'surveillance_active', label: t('agentDashboard.surveillanceLabel'), desc: t('agentDashboard.surveillanceDesc') },
               ].map(item => (
                 <div key={item.key} className="bg-[#111111] border border-gray-800 rounded-xl p-4">
                   <div className="flex items-center justify-between">
@@ -1701,7 +1701,7 @@ export default function AgentDashboard() {
         <button
           onClick={() => setRightPanelOpen(true)}
           className="hidden xl:flex fixed right-4 top-6 z-10 p-2 bg-[#111111] border border-gray-800 rounded-lg text-gray-400 hover:text-[#D4AF37] transition-colors"
-          title="Ouvrir Sorties & Contexte"
+          title={t('agentDashboard.openOutputsContextBtn')}
         >
           <PanelRightOpen size={18} />
         </button>
