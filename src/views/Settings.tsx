@@ -228,7 +228,7 @@ export default function Settings() {
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user) { alert('Non connecté'); return }
+    if (!user) { alert(t('settingsPage2.notConnected')); return }
     setLoading(true)
     setSavedMsg(false)
     try {
@@ -255,14 +255,14 @@ export default function Settings() {
       })
       const data = await res.json()
       if (!res.ok || data.error) {
-        alert(`Erreur sauvegarde: ${data.error || res.statusText}`)
+        alert(`${t('settingsPage2.saveErrorPrefix')} ${data.error || res.statusText}`)
         return
       }
       await refreshProfile()
       setSavedMsg(true)
       setTimeout(() => setSavedMsg(false), 3000)
     } catch (err: any) {
-      alert(`Erreur réseau: ${err.message}`)
+      alert(`${t('settingsPage2.networkErrorPrefix')} ${err.message}`)
     } finally {
       setLoading(false)
     }
@@ -309,11 +309,11 @@ export default function Settings() {
   const isFounder = FOUNDER_EMAILS.includes((profile?.email || '').toLowerCase()) || profile?.role === 'founder'
 
   const latestScanLabel  = latestScan?.created_at
-    ? new Date(latestScan.created_at).toLocaleString('fr-FR')
-    : 'Aucun scan lancé pour le moment'
+    ? new Date(latestScan.created_at).toLocaleString(i18n.language)
+    : t('settingsPage2.noScanYet')
   const scheduleSummary  = agentSchedule
-    ? `Toutes les ${agentSchedule.scan_frequency_hours}h${isAutoScanEnabled ? ` · ${agentSchedule.scan_times.join(', ')}` : ' · désactivé'}`
-    : 'Configuration agent indisponible'
+    ? `${t('settingsPage2.scheduleEvery', { h: agentSchedule.scan_frequency_hours })}${isAutoScanEnabled ? ` · ${agentSchedule.scan_times.join(', ')}` : ` ${t('settingsPage2.scheduleDisabled')}`}`
+    : t('settingsPage2.scheduleUnavailable')
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex">
@@ -341,13 +341,13 @@ export default function Settings() {
             )}
           </div>
           {noSettingsMatch && (
-            <p className="text-sm text-gray-500 text-center py-10">Aucun réglage ne correspond à « {settingsQuery} ».</p>
+            <p className="text-sm text-gray-500 text-center py-10">{t('settingsPage2.noSettingsMatch', { query: settingsQuery })}</p>
           )}
 
           {/* ── Profil ─────────────────────────────────────────── */}
           <section id="profil" hidden={!sectionVisible('profil')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
-              <User className="w-4 h-4" /> Profil
+              <User className="w-4 h-4" /> {t('settingsPage2.profileSection')}
             </h3>
             <Card className="p-6">
               <form onSubmit={handleUpdateProfile} className="space-y-5">
@@ -358,7 +358,7 @@ export default function Settings() {
                       className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Métier / Domaines (max 2) — ton intitulé de poste</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('settingsPage2.domainsLabel')}</label>
                     <div className="flex flex-wrap gap-2 mb-2">
                       {domains.map((d, i) => (
                         <span key={i} className="flex items-center gap-1.5 bg-[#1A1500] border border-[#D4AF37]/30 text-[#D4AF37] text-xs px-3 py-1.5 rounded-full">
@@ -377,11 +377,11 @@ export default function Settings() {
                         }
                       }}
                       disabled={domains.length >= 2}
-                      placeholder={domains.length >= 2 ? 'Maximum 2 métiers' : 'ex: Développeur Full Stack, Designer UI/UX (Entrée pour ajouter)'}
+                      placeholder={domains.length >= 2 ? t('settingsPage2.maxDomains') : t('settingsPage2.domainsPlaceholder')}
                       className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none disabled:opacity-50" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Compétences (max 15) — utilisées par SCAI pour évaluer ton niveau</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('settingsPage2.skillsLabel')}</label>
                     <div className="flex flex-wrap gap-2 mb-2">
                       {skills.map((s, i) => (
                         <span key={i} className="flex items-center gap-1.5 bg-[#111] border border-[#2a2a2a] text-gray-300 text-xs px-3 py-1.5 rounded-full">
@@ -400,31 +400,31 @@ export default function Settings() {
                         }
                       }}
                       disabled={skills.length >= 15}
-                      placeholder={skills.length >= 15 ? 'Maximum 15 compétences' : 'ex: React, Figma, SEO... (Entrée pour ajouter)'}
+                      placeholder={skills.length >= 15 ? t('settingsPage2.maxSkills') : t('settingsPage2.skillsPlaceholder')}
                       className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none disabled:opacity-50" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Pays</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('settingsPage2.country')}</label>
                     <input type="text" value={country} onChange={e => setCountry(e.target.value)}
-                      placeholder="ex: Cameroun, France..."
+                      placeholder={t('settingsPage2.countryPlaceholder')}
                       className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('settingsPage.city')}</label>
                     <input type="text" value={city} onChange={e => setCity(e.target.value)}
-                      placeholder="ex: Douala, Paris..."
+                      placeholder={t('settingsPage2.cityPlaceholder')}
                       className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('settingsPage.bio')}</label>
                   <textarea value={bio} onChange={e => setBio(e.target.value)} rows={3}
-                    placeholder="Décris ton expertise, tes expériences et tes objectifs..."
+                    placeholder={t('settingsPage2.bioPlaceholder')}
                     className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none resize-none" />
                   <div className="flex justify-between text-[10px] text-gray-600">
-                    <span>{bio.length} caractères</span>
+                    <span>{t('settingsPage2.charCount', { n: bio.length })}</span>
                     <span className={bio.length >= 50 ? 'text-green-400' : 'text-yellow-500'}>
-                      {bio.length >= 50 ? '✓ Suffisant' : `${50 - bio.length} caractères de plus pour +15pts`}
+                      {bio.length >= 50 ? t('settingsPage2.sufficient') : t('settingsPage2.moreCharsNeeded', { n: 50 - bio.length })}
                     </span>
                   </div>
                 </div>
@@ -433,40 +433,40 @@ export default function Settings() {
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('settingsPage.portfolio')}</label>
                       <input type="text" value={portfolioUrl} onChange={e => setPortfolioUrl(e.target.value)}
-                        placeholder="https://ton-portfolio.com"
+                        placeholder={t('settingsPage2.portfolioPlaceholder')}
                         className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">GitHub</label>
                       <input type="text" value={githubUrl} onChange={e => setGithubUrl(e.target.value)}
-                        placeholder="https://github.com/ton-pseudo"
+                        placeholder={t('settingsPage2.githubPlaceholder')}
                         className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">LinkedIn</label>
                       <input type="text" value={linkedinUrl} onChange={e => setLinkedinUrl(e.target.value)}
-                        placeholder="https://linkedin.com/in/ton-profil"
+                        placeholder={t('settingsPage2.linkedinPlaceholder')}
                         className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">WhatsApp</label>
                       <input type="text" value={whatsappNumber} onChange={e => setWhatsappNumber(e.target.value)}
-                        placeholder="+237 6XX XXX XXX"
+                        placeholder={t('settingsPage2.whatsappPlaceholder')}
                         className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none" />
-                      <p className="text-[10px] text-gray-600">Inclus dans les candidatures que SCAI prépare pour toi.</p>
+                      <p className="text-[10px] text-gray-600">{t('settingsPage2.whatsappHint')}</p>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Écris comme moi (optionnel)</label>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{t('settingsPage2.writeLikeMe')}</label>
                     <textarea value={responseTemplate} onChange={e => setResponseTemplate(e.target.value)}
-                      placeholder="Colle un message de candidature que tu as déjà écrit toi-même. SCAI imitera ton ton et ton style dans les prochaines candidatures qu'il prépare — sans jamais le recopier mot pour mot."
+                      placeholder={t('settingsPage2.writeLikeMePlaceholder')}
                       rows={4}
                       className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white focus:border-[#D4AF37] outline-none resize-none" />
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <GoldButton type="submit" loading={loading}>{t('settingsPage.save')}</GoldButton>
-                  {savedMsg && <span className="text-xs text-green-400 font-bold">✓ Profil mis à jour !</span>}
+                  {savedMsg && <span className="text-xs text-green-400 font-bold">{t('settingsPage2.profileUpdated')}</span>}
                 </div>
               </form>
             </Card>
@@ -475,15 +475,15 @@ export default function Settings() {
           {/* ── Apparence ──────────────────────────────────────── */}
           <section id="apparence" hidden={!sectionVisible('apparence')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
-              <Sun className="w-4 h-4" /> Apparence
+              <Sun className="w-4 h-4" /> {t('settingsPage2.appearanceSection')}
             </h3>
             <Card className="p-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {darkMode ? <Moon className="w-5 h-5 text-[#D4AF37]" /> : <Sun className="w-5 h-5 text-[#D4AF37]" />}
                   <div>
-                    <div className="font-medium text-white text-sm">{darkMode ? 'Mode sombre' : 'Mode clair (turquoise & or)'}</div>
-                    <p className="text-xs text-gray-600">Active le mode sombre (noir &amp; or)</p>
+                    <div className="font-medium text-white text-sm">{darkMode ? t('settingsPage2.darkModeLabel') : t('settingsPage2.lightModeLabel')}</div>
+                    <p className="text-xs text-gray-600">{t('settingsPage2.darkModeDesc')}</p>
                   </div>
                 </div>
                 <Toggle value={darkMode} onChange={toggleDarkMode} />
@@ -494,7 +494,7 @@ export default function Settings() {
           {/* ── Langue ──────────────────────────────────────────── */}
           <section id="langue" hidden={!sectionVisible('langue')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
-              <Globe className="w-4 h-4" /> Langue
+              <Globe className="w-4 h-4" /> {t('settingsPage2.languageSection')}
             </h3>
             <Card className="p-5">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-[400px] overflow-y-auto pr-2">
@@ -547,7 +547,7 @@ export default function Settings() {
                 ))}
               </div>
               <p className="text-[10px] text-gray-600 mt-4">
-                L'interface est disponible dans ces 33 langues, traduites une par une (pas de texte anglais recopié). SCAI (le chat IA) peut en plus discuter avec toi dans encore d'autres langues directement — essaie simplement de lui écrire dans ta langue.
+                {t('settingsPage2.languageNote')}
               </p>
             </Card>
           </section>
@@ -555,14 +555,14 @@ export default function Settings() {
           {/* ── Niveau de compétence évalué ──────────────────────── */}
           <section id="niveau" hidden={!sectionVisible('niveau')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
-              <Brain className="w-4 h-4" /> Niveau évalué par SCAI
+              <Brain className="w-4 h-4" /> {t('settingsPage2.skillLevelSection')}
             </h3>
             <Card className="p-5">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <div className="text-lg font-bold text-[#D4AF37] capitalize">{(profile as any)?.skill_level || 'Pas encore évalué'}</div>
+                  <div className="text-lg font-bold text-[#D4AF37] capitalize">{(profile as any)?.skill_level || t('settingsPage2.notYetAssessed')}</div>
                   <p className="text-xs text-gray-600 mt-1 max-w-md">
-                    {(profile as any)?.skill_level_reasoning || 'SCAI analyse ta bio, tes compétences, ton portfolio et tes missions pour ne te proposer en priorité que des opportunités adaptées à ton vrai niveau — ni trop simples, ni trop complexes.'}
+                    {(profile as any)?.skill_level_reasoning || t('settingsPage2.skillLevelDefaultReasoning')}
                   </p>
                 </div>
                 <GoldButton
@@ -583,7 +583,7 @@ export default function Settings() {
                     }
                   }}
                 >
-                  Réévaluer
+                  {t('settingsPage2.reassess')}
                 </GoldButton>
               </div>
             </Card>
@@ -592,24 +592,24 @@ export default function Settings() {
           {/* ── SCAI & IA ──────────────────────────────────────── */}
           <section id="scai" hidden={!sectionVisible('scai')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
-              <Brain className="w-4 h-4" /> SCAI & Intelligence
+              <Brain className="w-4 h-4" /> {t('settingsPage2.scaiIntelligenceSection')}
             </h3>
             <Card className="p-5 space-y-4">
               {/* SCAI Learning */}
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-white text-sm">{t('settingsPage.conversationMemory')}</div>
-                  <p className="text-xs text-gray-600 max-w-xs mt-0.5">SCAI garde l'historique de tes échanges pour que tu les retrouves après reconnexion. Désactive pour des conversations éphémères, non sauvegardées.</p>
+                  <p className="text-xs text-gray-600 max-w-xs mt-0.5">{t('settingsPage2.conversationMemoryDesc')}</p>
                 </div>
                 <Toggle value={scaiLearning} onChange={toggleScaiLearning} />
               </div>
               <div className="border-t border-[#1A1A1A] pt-4 flex items-center justify-between">
                 <div>
                   <div className="font-medium text-white text-sm">{t('settingsPage.conversationHistory')}</div>
-                  <p className="text-xs text-gray-600 mt-0.5">{scaiLearning ? 'Tes conversations avec SCAI sont conservées définitivement.' : 'Désactivé — tes conversations ne sont pas sauvegardées.'}</p>
+                  <p className="text-xs text-gray-600 mt-0.5">{scaiLearning ? t('settingsPage2.conversationsKept') : t('settingsPage2.conversationsNotKept')}</p>
                 </div>
                 <Link href="/agent" className="text-xs text-[#D4AF37] hover:underline flex items-center gap-1">
-                  Voir <ChevronRight className="w-3 h-3" />
+                  {t('settingsPage2.view')} <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
             </Card>
@@ -627,23 +627,23 @@ export default function Settings() {
                   <p className="text-xs text-gray-500">{t('settingsPage.commandCenterDesc')}</p>
                 </div>
                 <Link href="/agent" className="inline-flex items-center gap-2 text-sm font-bold text-[#D4AF37] hover:text-[#F5E6A3] transition-colors">
-                  Ouvrir l'agent <ArrowRight className="w-4 h-4" />
+                  {t('settingsPage2.openAgent')} <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="rounded-xl border border-[#1A1A1A] bg-[#0D0D0D] p-4">
                   <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">
-                    <Clock className="w-3 h-3 text-[#D4AF37]" /> Planning
+                    <Clock className="w-3 h-3 text-[#D4AF37]" /> {t('settingsPage2.planning')}
                   </div>
                   <div className="text-sm font-semibold text-white">{scheduleSummary}</div>
-                  <p className="text-xs text-gray-600 mt-1">Auto-apply seuil : {agentSchedule?.auto_apply_threshold ?? '--'}/100</p>
+                  <p className="text-xs text-gray-600 mt-1">{t('settingsPage2.autoApplyThreshold', { n: agentSchedule?.auto_apply_threshold ?? '--' })}</p>
                 </div>
                 <div className="rounded-xl border border-[#1A1A1A] bg-[#0D0D0D] p-4">
                   <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">
-                    <Zap className="w-3 h-3 text-[#D4AF37]" /> Dernier scan
+                    <Zap className="w-3 h-3 text-[#D4AF37]" /> {t('settingsPage2.lastScan')}
                   </div>
                   <div className="text-sm font-semibold text-white">{latestScanLabel}</div>
-                  <p className="text-xs text-gray-600 mt-1">{latestScan?.result?.slice(0, 60) || 'En attente du premier scan.'}</p>
+                  <p className="text-xs text-gray-600 mt-1">{latestScan?.result?.slice(0, 60) || t('settingsPage2.waitingFirstScan')}</p>
                 </div>
               </div>
               <div className="flex items-center justify-between gap-4 rounded-xl border border-[#1A1A1A] bg-[#0D0D0D] p-4">
@@ -655,24 +655,19 @@ export default function Settings() {
               </div>
               <div className="flex items-center justify-between gap-4 rounded-xl border border-[#D4AF37]/30 bg-[#0D0D0D] p-4">
                 <div>
-                  <div className="font-medium text-white text-sm">⚡ Candidatures auto-rédigées</div>
+                  <div className="font-medium text-white text-sm">{t('settingsPage2.autoDraftedApps')}</div>
                   <p className="text-xs text-gray-600">
-                    SCAI rédige et enregistre automatiquement un message de candidature pour les offres ≥ {agentSchedule?.auto_apply_threshold ?? 80}/100,
-                    même quand tu n'es pas connecté. Par défaut le message reste préparé, pas envoyé — active le réglage
-                    ci-dessous si tu veux aussi que l'envoi se fasse tout seul sur les offres ATS (Greenhouse/Lever).
-                    Désactivé par défaut — active en connaissance de cause.
+                    {t('settingsPage2.autoDraftedAppsDesc', { threshold: agentSchedule?.auto_apply_threshold ?? 80 })}
                   </p>
                 </div>
                 <Toggle value={!!agentSchedule?.auto_apply_enabled} onChange={toggleAutoApply} disabled={agentLoading} />
               </div>
               <div className="flex items-center justify-between gap-4 rounded-xl border border-red-900/40 bg-[#0D0D0D] p-4">
                 <div>
-                  <div className="font-medium text-white text-sm">🚀 Soumission ATS 100% autonome</div>
+                  <div className="font-medium text-white text-sm">{t('settingsPage2.atsAutoSubmitTitle')}</div>
                   <p className="text-xs text-gray-600">
-                    Sur les offres publiées via Greenhouse ou Lever, SCAI remplit ET envoie réellement ta candidature
-                    sans que tu la relises avant — nom, email, CV, message. Une fois envoyée, c'est envoyé : aucune
-                    validation ne t'est demandée. Ne fonctionne que si "Candidatures auto-rédigées" est aussi activé.
-                    {!isPaidUser && <span className="text-[#D4AF37]"> Réservé aux plans Pro et Premium.</span>}
+                    {t('settingsPage2.atsAutoSubmitDesc')}
+                    {!isPaidUser && <span className="text-[#D4AF37]">{t('settingsPage2.atsAutoSubmitPaidOnly')}</span>}
                   </p>
                 </div>
                 <Toggle value={!!agentSchedule?.ats_auto_submit_no_review} onChange={toggleAtsAutoSubmit} disabled={agentLoading || !isPaidUser} />
@@ -685,10 +680,7 @@ export default function Settings() {
             <h2 className="text-sm font-bold uppercase tracking-widest text-gray-500">{t('settingsPage.browserExtension')}</h2>
             <Card className="p-6 space-y-4">
               <p className="text-xs text-gray-600">
-                Une fois installée, l'extension détecte n'importe quel formulaire de candidature (LinkedIn, Upwork,
-                Freelancer, site d'entreprise...) et pré-remplit tes infos + le message SCAI automatiquement — tu gardes
-                toujours la main sur l'envoi final (sauf Greenhouse/Lever si tu actives l'option autonome dans l'extension).
-                Réservée aux plans Pro et Premium.
+                {t('settingsPage2.extensionDesc')}
               </p>
 
               {isPaidUser ? (
@@ -719,22 +711,22 @@ export default function Settings() {
                     </code>
                     <button onClick={copyExtensionToken}
                       className="px-3 py-2 text-xs text-gray-400 hover:text-white border border-[#2a2a2a] rounded-lg">
-                      {extensionTokenCopied ? '✓ Copié' : 'Copier'}
+                      {extensionTokenCopied ? t('settingsPage2.copied') : t('settingsPage2.copy')}
                     </button>
                   </div>
                   <button onClick={generateExtensionToken} disabled={extensionTokenLoading}
                     className="text-xs text-gray-500 hover:text-white">
-                    Régénérer (invalide le token actuel)
+                    {t('settingsPage2.regenerateToken')}
                   </button>
                   <span className="mx-2 text-gray-700">·</span>
                   <button onClick={revokeExtensionToken} disabled={extensionTokenLoading}
                     className="text-xs text-red-500 hover:text-red-400">
-                    Révoquer
+                    {t('settingsPage2.revoke')}
                   </button>
                 </div>
               ) : (
                 <GoldButton onClick={generateExtensionToken} loading={extensionTokenLoading}>
-                  Générer mon token d'extension
+                  {t('settingsPage2.generateToken')}
                 </GoldButton>
               ))}
             </Card>
@@ -743,7 +735,7 @@ export default function Settings() {
           {/* ── Sécurité ───────────────────────────────────────── */}
           <section id="securite" hidden={!sectionVisible('securite')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
-              <Shield className="w-4 h-4" /> Sécurité
+              <Shield className="w-4 h-4" /> {t('settingsPage2.securitySection')}
             </h3>
             <Card className="p-5 space-y-4">
               <div className="flex items-center justify-between">
@@ -751,7 +743,7 @@ export default function Settings() {
                   <div className="font-medium text-white text-sm">{t('settingsPage.changePassword')}</div>
                   <p className="text-xs text-gray-600">{t('settingsPage.changePasswordDesc')}</p>
                 </div>
-                <Link href="/login?reset=true" className="text-xs text-[#D4AF37] hover:underline">Réinitialiser →</Link>
+                <Link href="/login?reset=true" className="text-xs text-[#D4AF37] hover:underline">{t('settingsPage2.resetPassword')}</Link>
               </div>
             </Card>
           </section>
@@ -759,24 +751,24 @@ export default function Settings() {
           {/* ── Feedback & Retour d'expérience ─────────────────── */}
           <section id="feedback" hidden={!sectionVisible('feedback')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-gray-500 uppercase flex items-center gap-2">
-              <MessageSquare className="w-4 h-4" /> Retour d'expérience
+              <MessageSquare className="w-4 h-4" /> {t('settingsPage2.feedbackSection')}
             </h3>
             <Card className="p-5 space-y-4">
               <p className="text-xs text-gray-500 leading-relaxed">
-                Tu as rencontré un problème ? Une fonctionnalité qui ne marche pas ? Un bug ? Dis-le-nous — notre équipe est notifiée immédiatement.
+                {t('settingsPage2.feedbackIntro')}
               </p>
               <textarea
                 value={feedbackText}
                 onChange={e => setFeedbackText(e.target.value)}
-                placeholder="Décris le problème ou ton retour d'expérience..."
+                placeholder={t('settingsPage2.feedbackPlaceholder')}
                 rows={3}
                 className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-xl px-4 py-3 text-white text-sm outline-none resize-none focus:border-[#D4AF37]"
               />
               <div className="flex items-center gap-3">
                 <GoldButton onClick={handleFeedback} loading={feedbackLoading} disabled={!feedbackText.trim()}>
-                  Envoyer le retour
+                  {t('settingsPage2.sendFeedback')}
                 </GoldButton>
-                {feedbackSent && <span className="text-xs text-green-400">✓ Envoyé — merci !</span>}
+                {feedbackSent && <span className="text-xs text-green-400">{t('settingsPage2.feedbackSentMsg')}</span>}
               </div>
             </Card>
           </section>
@@ -785,15 +777,15 @@ export default function Settings() {
           {isFounder && (
             <section id="fondateur" hidden={!sectionVisible('fondateur')} className="space-y-4">
               <h3 className="text-xs font-bold tracking-[0.3em] text-[#D4AF37] uppercase flex items-center gap-2">
-                🔱 Accès Fondateur
+                {t('settingsPage2.founderAccessTitle')}
               </h3>
               <Card className="p-5 bg-[#1A1500] border-[#D4AF37]/30 space-y-3">
                 {[
-                  { label: 'Dashboard fondateur',   href: '/founder',              desc: 'Gestion complète de la plateforme' },
-                  { label: 'Monitoring & bugs',      href: '/founder?tab=monitor',  desc: 'Alertes système, limites API, plaintes' },
-                  { label: 'Tous les profils',       href: '/founder?tab=users',    desc: 'Accès à tous les comptes utilisateurs' },
-                  { label: 'Conversations SCAI',     href: '/founder?tab=chats',    desc: 'Modération et apprentissage' },
-                  { label: 'Revenus & paiements',    href: '/founder?tab=revenue',  desc: 'Historique de tous les paiements' },
+                  { label: t('settingsPage2.founderDashboard'),   href: '/founder',              desc: t('settingsPage2.founderDashboardDesc') },
+                  { label: t('settingsPage2.founderMonitoring'),      href: '/founder?tab=monitor',  desc: t('settingsPage2.founderMonitoringDesc') },
+                  { label: t('settingsPage2.founderAllProfiles'),       href: '/founder?tab=users',    desc: t('settingsPage2.founderAllProfilesDesc') },
+                  { label: t('settingsPage2.founderChats'),     href: '/founder?tab=chats',    desc: t('settingsPage2.founderChatsDesc') },
+                  { label: t('settingsPage2.founderRevenue'),    href: '/founder?tab=revenue',  desc: t('settingsPage2.founderRevenueDesc') },
                 ].map(item => (
                   <Link key={item.href} href={item.href}
                     className="flex items-center justify-between p-3 rounded-xl hover:bg-[#D4AF37]/10 transition-colors group">
@@ -811,15 +803,15 @@ export default function Settings() {
           {/* ── Danger Zone ────────────────────────────────────── */}
           <section id="danger" hidden={!sectionVisible('danger')} className="space-y-4">
             <h3 className="text-xs font-bold tracking-[0.3em] text-red-500 uppercase flex items-center gap-2">
-              <Trash2 className="w-4 h-4" /> Zone de danger
+              <Trash2 className="w-4 h-4" /> {t('settingsPage2.dangerZoneSection')}
             </h3>
             <Card className="p-5 border-red-900/50 bg-red-900/5 flex items-center justify-between">
               <div>
                 <div className="font-bold text-white mb-0.5">{t('settingsPage.deleteAccount')}</div>
-                <p className="text-xs text-gray-500">Suppression définitive de toutes tes données (30 jours).</p>
+                <p className="text-xs text-gray-500">{t('settingsPage2.deleteAccountDesc')}</p>
               </div>
               <button className="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors">
-                Supprimer
+                {t('settingsPage2.deleteBtn')}
               </button>
             </Card>
           </section>
@@ -827,14 +819,14 @@ export default function Settings() {
           {/* ── Liens ──────────────────────────────────────────── */}
           <section id="liens" hidden={!sectionVisible('liens')} className="space-y-3 border-t border-[#1A1A1A] pt-6">
             <div className="flex items-center gap-4 flex-wrap text-sm">
-              <Link href="/guide" className="text-[#D4AF37] hover:underline">📖 Guide complet</Link>
+              <Link href="/guide" className="text-[#D4AF37] hover:underline">{t('settingsPage2.guideLink')}</Link>
               <span className="text-gray-700">·</span>
               <button onClick={() => { localStorage.removeItem('sc_tour_completed_v1'); window.location.href = '/dashboard' }}
-                className="text-gray-500 hover:text-white transition-colors">🔄 Revoir le tour guidé</button>
+                className="text-gray-500 hover:text-white transition-colors">{t('settingsPage2.replayTour')}</button>
               <span className="text-gray-700">·</span>
-              <Link href="/support" className="text-gray-500 hover:text-white transition-colors">💬 Support</Link>
+              <Link href="/support" className="text-gray-500 hover:text-white transition-colors">{t('settingsPage2.supportLink')}</Link>
               <span className="text-gray-700">·</span>
-              <Link href="/privacy" className="text-gray-500 hover:text-white transition-colors">🔒 Confidentialité</Link>
+              <Link href="/privacy" className="text-gray-500 hover:text-white transition-colors">{t('settingsPage2.privacyLink')}</Link>
             </div>
           </section>
 
