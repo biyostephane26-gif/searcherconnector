@@ -10,28 +10,6 @@ import { Mic, Upload, Globe, Link as LinkIcon, Send, CheckCircle2, Loader2, Arro
 import { useVoiceInput } from '../hooks/useVoiceInput'
 import { useTranslation } from 'react-i18next'
 
-const CATEGORIES = [
-  'Développement',
-  'Marketing',
-  'Design',
-  'Rédaction',
-  'Finance',
-  'Comptabilité',
-  'Commerce',
-  'Ressources humaines',
-  'Data',
-  'IA/ML',
-  'Mobile',
-  'DevOps',
-  'Communication',
-  'Juridique',
-  'Éducation',
-  'Santé',
-  'Autre'
-]
-
-const EXPERIENCE_LEVELS = ['Junior', 'Confirmé', 'Senior']
-const JOB_TYPES = ['CDI', 'CDD', 'Remote', 'Hybride']
 const FREELANCE_AVAILABILITIES = ['One-shot', 'Long terme', 'Les deux']
 const CURRENCIES = ['USD', 'EUR', 'XAF', 'XOF', 'GBP', 'JPY']
 
@@ -315,218 +293,6 @@ export default function Onboarding() {
     }
   }
 
-  const renderJobSeekerSteps = () => {
-    switch (step) {
-      case 1:
-        return (
-          <div className="space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Quels sont tes domaines ?</h2>
-              <p className="text-gray-400">Choisis jusqu'à 2 métiers — SCAI cherchera des opportunités dans chacun.</p>
-            </div>
-
-            <Card className="p-6">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {CATEGORIES.map(category => {
-                  const selected = formData.domains.includes(category)
-                  const atMax = formData.domains.length >= 2 && !selected
-                  return (
-                    <button
-                      key={category}
-                      type="button"
-                      disabled={atMax}
-                      onClick={() => setFormData(prev => {
-                        const domains = selected
-                          ? prev.domains.filter(d => d !== category)
-                          : prev.domains.length < 2 ? [...prev.domains, category] : prev.domains
-                        return { ...prev, domains, domain: domains[0] || '' }
-                      })}
-                      className={`p-4 rounded-xl border text-left transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
-                        selected
-                          ? 'border-[#D4AF37] bg-[#1A1500] text-[#D4AF37]'
-                          : 'border-[#2a2a2a] bg-[#111] hover:border-[#D4AF37]/50'
-                      }`}
-                    >
-                      {category}
-                    </button>
-                  )
-                })}
-              </div>
-              <p className="text-xs text-gray-600 mt-4">{formData.domains.length}/2 sélectionnés</p>
-            </Card>
-
-            <GoldButton onClick={handleNext} fullWidth disabled={formData.domains.length === 0} loading={loading}>
-              Continue <ArrowRight className="w-4 h-4" />
-            </GoldButton>
-          </div>
-        )
-      case 2:
-        return (
-          <div className="space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Quel est ton niveau d'expérience ?</h2>
-            </div>
-            
-            <Card className="p-6">
-              <div className="grid grid-cols-3 gap-4">
-                {EXPERIENCE_LEVELS.map(level => (
-                  <button
-                    key={level}
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, experienceLevel: level }))}
-                    className={`p-6 rounded-xl border text-center transition-all ${
-                      formData.experienceLevel === level
-                        ? 'border-[#D4AF37] bg-[#1A1500] text-[#D4AF37]'
-                        : 'border-[#2a2a2a] bg-[#111] hover:border-[#D4AF37]/50'
-                    }`}
-                  >
-                    <div className="text-2xl font-bold">{level}</div>
-                  </button>
-                ))}
-              </div>
-            </Card>
-            
-            <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Précédent</GoldButton>
-              <GoldButton onClick={handleNext} fullWidth disabled={!formData.experienceLevel} loading={loading}>Suivant</GoldButton>
-            </div>
-          </div>
-        )
-      case 3:
-        return (
-          <div className="space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Tu cherches quoi ?</h2>
-            </div>
-            
-            <Card className="p-6">
-              <div className="grid grid-cols-2 gap-4">
-                {JOB_TYPES.map(type => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => setFormData(prev => ({
-                      ...prev,
-                      jobTypes: prev.jobTypes.includes(type)
-                        ? prev.jobTypes.filter(t => t !== type)
-                        : [...prev.jobTypes, type]
-                    }))}
-                    className={`p-6 rounded-xl border text-center transition-all ${
-                      formData.jobTypes.includes(type)
-                        ? 'border-[#D4AF37] bg-[#1A1500] text-[#D4AF37]'
-                        : 'border-[#2a2a2a] bg-[#111] hover:border-[#D4AF37]/50'
-                    }`}
-                  >
-                    <Briefcase className="w-6 h-6 mx-auto mb-2" />
-                    <div className="font-bold">{type}</div>
-                  </button>
-                ))}
-              </div>
-            </Card>
-            
-            <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Précédent</GoldButton>
-              <GoldButton onClick={handleNext} fullWidth disabled={formData.jobTypes.length === 0} loading={loading}>Suivant</GoldButton>
-            </div>
-          </div>
-        )
-      case 4:
-        return (
-          <div className="space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Quel salaire minimum tu vises ?</h2>
-            </div>
-            
-            <Card className="p-6 space-y-6">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Devise</label>
-                <select
-                  value={formData.currency}
-                  onChange={(e) => setFormData(prev => ({ ...prev, currency: e.target.value }))}
-                  className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none"
-                >
-                  {CURRENCIES.map(currency => (
-                    <option key={currency} value={currency}>{currency}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Salaire minimum par an</label>
-                <input
-                  type="number"
-                  value={formData.salaryMin}
-                  onChange={(e) => setFormData(prev => ({ ...prev, salaryMin: parseInt(e.target.value) || 0 }))}
-                  className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none"
-                  placeholder="e.g. 30000"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Salaire maximum par an (optionnel)</label>
-                <input
-                  type="number"
-                  value={formData.salaryMax}
-                  onChange={(e) => setFormData(prev => ({ ...prev, salaryMax: parseInt(e.target.value) || 0 }))}
-                  className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none"
-                  placeholder="e.g. 60000"
-                />
-              </div>
-            </Card>
-            
-            <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth>Précédent</GoldButton>
-              <GoldButton onClick={handleNext} fullWidth disabled={formData.salaryMin <= 0} loading={loading}>Suivant</GoldButton>
-            </div>
-          </div>
-        )
-      case 5:
-        return (
-          <div className="space-y-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">Dans quels pays tu cherches ?</h2>
-              <p className="text-gray-400">Tu peux sélectionner plusieurs pays.</p>
-            </div>
-            
-            <Card className="p-6">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Pays (séparés par des virgules)</label>
-                <input
-                  type="text"
-                  placeholder="France, Canada, Remote..."
-                  className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none"
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    countries: e.target.value.split(',').map(c => c.trim()).filter(c => c)
-                  }))}
-                />
-              </div>
-            </Card>
-
-            <Card className="p-8 border-dashed border-2 flex flex-col items-center justify-center text-center">
-              <Upload className="w-10 h-10 text-[#D4AF37] mb-3" />
-              <p className="text-sm text-gray-400 mb-4">Upload ton CV (optionnel) pour un matching plus précis</p>
-              <label className="cursor-pointer">
-                <span className="bg-[#D4AF37] text-[#0A0A0A] px-5 py-2.5 rounded-lg font-bold hover:bg-[#F5E6A3] transition-colors text-sm">
-                  {loading ? 'Chargement...' : formData.cvUploaded ? 'CV Uploadé ✔️' : 'Uploader CV'}
-                </span>
-                <input type="file" className="hidden" onChange={handleFileUpload} disabled={loading} accept=".pdf,.docx,.doc" />
-              </label>
-            </Card>
-            
-            <div className="flex gap-4">
-              <GoldButton variant="outlined" onClick={handleBack} fullWidth disabled={loading}>Précédent</GoldButton>
-              <GoldButton onClick={handleSubmit} fullWidth loading={loading}>
-                Terminer l'onboarding
-              </GoldButton>
-            </div>
-          </div>
-        )
-      default:
-        return null
-    }
-  }
-
   const renderFreelanceSteps = () => {
     switch (step) {
       case 1:
@@ -543,7 +309,7 @@ export default function Onboarding() {
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('onboarding.step1.label')}</label>
                   <input
                     type="text"
-                    placeholder="React, Node.js, Figma..."
+                    placeholder={t('onboarding.step1.skillsPlaceholder')}
                     className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none"
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
@@ -705,7 +471,7 @@ export default function Onboarding() {
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('onboarding.step5.countriesLabel')}</label>
                 <input
                   type="text"
-                  placeholder="France, Canada, Worldwide..."
+                  placeholder={t('onboarding.step5.countriesPlaceholder')}
                   className="w-full bg-[#0D0D0D] border border-[#2a2a2a] rounded-lg p-3 text-sm focus:border-[#D4AF37] outline-none"
                   onChange={(e) => setFormData(prev => ({
                     ...prev,

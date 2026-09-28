@@ -836,7 +836,8 @@
       "title": "What are your main skills?",
       "subtitle": "Select or type your skills.",
       "label": "Skills (comma-separated)",
-      "continue": "Continue"
+      "continue": "Continue",
+      "skillsPlaceholder": "React, Node.js, Figma..."
     },
     "step2": {
       "title": "What's your daily rate?",
@@ -859,7 +860,8 @@
       "uploadCv": "Upload your CV (optional)",
       "uploading": "Uploading...",
       "cvUploaded": "CV Uploaded ✔️",
-      "uploadCvBtn": "Upload CV"
+      "uploadCvBtn": "Upload CV",
+      "countriesPlaceholder": "France, Canada, Worldwide..."
     },
     "step6": {
       "title": "Last step: your background (optional)",

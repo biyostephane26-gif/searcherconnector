@@ -836,7 +836,8 @@
       "title": "Quelles sont tes compétences principales ?",
       "subtitle": "Sélectionne ou saisis tes compétences.",
       "label": "Compétences (séparées par des virgules)",
-      "continue": "Continuer"
+      "continue": "Continuer",
+      "skillsPlaceholder": "React, Node.js, Figma..."
     },
     "step2": {
       "title": "Quel est ton tarif journalier ?",
@@ -859,7 +860,8 @@
       "uploadCv": "Upload ton CV (optionnel)",
       "uploading": "Chargement...",
       "cvUploaded": "CV Uploadé ✔️",
-      "uploadCvBtn": "Uploader CV"
+      "uploadCvBtn": "Uploader CV",
+      "countriesPlaceholder": "France, Canada, Monde entier..."
     },
     "step6": {
       "title": "Dernière étape : ton parcours (optionnel)",
